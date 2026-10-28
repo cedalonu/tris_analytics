@@ -257,6 +257,25 @@ export default function App() {
       }
 
       if (numStr.length === 5 && /^\d{5}$/.test(numStr)) {
+        const parseDateStrToObj = (dStr: string) => {
+          if (!dStr) return null;
+          if (dStr.includes("/")) {
+            const parts = dStr.split("/").map(Number);
+            if (parts.length === 3) {
+              const [d, m, y] = parts;
+              const fullYear = y < 100 ? 2000 + y : y;
+              return new Date(fullYear, m - 1, d);
+            }
+          }
+          return null;
+        };
+        const recordDate = parseDateStrToObj(date);
+        const today = new Date();
+        today.setHours(23, 59, 59, 999);
+        if (recordDate && recordDate > today) {
+          continue;
+        }
+
         if (!dateDrawCounts[date]) {
           dateDrawCounts[date] = 0;
         }
