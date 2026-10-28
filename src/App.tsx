@@ -124,6 +124,7 @@ export default function App() {
       const dTypes = ["Mediodía", "Tres", "Extra", "Siete", "Clásico"];
       const sDate = new Date(2024, 0, 1);
       const eDate = new Date();
+      eDate.setDate(eDate.getDate() - 1); // Stop at yesterday
       let curDate = new Date(eDate.getTime());
       while (curDate >= sDate && cNum > 30000) {
         const yStr = curDate.getFullYear();

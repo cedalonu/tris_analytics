@@ -21,13 +21,14 @@ async function startServer() {
     },
   });
 
-  // Generate robust historical dataset matching official pakinja/pakin schema: CONCURSO,ID,R1,R2,R3,R4,R5,FECHA,PRIMOS,REPETIDOS
+  // Generate robust historical dataset matching official pakinja/pakin schema up to yesterday
   let generatedCsv = "CONCURSO,ID,R1,R2,R3,R4,R5,FECHA,PRIMOS,REPETIDOS\n";
   let concurso = 36852;
   let id = 26242;
   const drawTypes = ["Mediodía", "Tres", "Extra", "Siete", "Clásico"];
   const startDate = new Date(2024, 0, 1);
   const endDate = new Date();
+  endDate.setDate(endDate.getDate() - 1); // Stop at yesterday since today's draws haven't happened yet
   
   let curr = new Date(endDate.getTime());
   while (curr >= startDate && concurso > 30000) {
