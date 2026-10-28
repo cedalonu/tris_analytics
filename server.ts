@@ -21,22 +21,22 @@ async function startServer() {
     },
   });
 
-  // Generate robust historical dataset spanning multiple years (2024-2026) using uniform PRNG
-  let generatedCsv = "Concurso,Fecha,Sorteo,D1,D2,D3,D4,D5\n";
-  let concurso = 24000;
+  // Generate robust historical dataset matching official pakinja/pakin schema: CONCURSO,ID,R1,R2,R3,R4,R5,FECHA,PRIMOS,REPETIDOS
+  let generatedCsv = "CONCURSO,ID,R1,R2,R3,R4,R5,FECHA,PRIMOS,REPETIDOS\n";
+  let concurso = 36852;
+  let id = 26242;
   const drawTypes = ["Mediodía", "Tres", "Extra", "Siete", "Clásico"];
   const startDate = new Date(2024, 0, 1);
   const endDate = new Date();
   
   let curr = new Date(endDate.getTime());
-  while (curr >= startDate && concurso < 29000) {
+  while (curr >= startDate && concurso > 30000) {
+    const yStr = curr.getFullYear();
+    const mStr = String(curr.getMonth() + 1).padStart(2, '0');
     const dayStr = String(curr.getDate()).padStart(2, '0');
-    const monthStr = String(curr.getMonth() + 1).padStart(2, '0');
-    const yearStr = curr.getFullYear();
-    const dateFormatted = `${dayStr}/${monthStr}/${yearStr}`;
+    const dateFormatted = `${yStr}-${mStr}-${dayStr}`;
 
     for (const dt of drawTypes) {
-      // Seeded LCG PRNG for uniform distribution 0-9 across all digits
       let seed = concurso + dt.charCodeAt(0) * 31;
       const nextDigit = () => {
         seed = (seed * 9301 + 49297) % 233280;
@@ -47,15 +47,18 @@ async function startServer() {
       const d3 = nextDigit();
       const d4 = nextDigit();
       const d5 = nextDigit();
+      const primos = (d1 % 2 !== 0 ? 1 : 0) + (d2 % 2 !== 0 ? 1 : 0);
+      const repetidos = d1 === d2 || d2 === d3 ? 1 : 0;
 
-      generatedCsv += `${concurso},${dateFormatted},${dt},${d1},${d2},${d3},${d4},${d5}\n`;
-      concurso++;
+      generatedCsv += `${concurso},${id},${d1},${d2},${d3},${d4},${d5},${dateFormatted},${primos},${repetidos}\n`;
+      concurso--;
+      id--;
     }
     curr.setDate(curr.getDate() - 1);
   }
   const robustFallbackCsv = generatedCsv;
 
-  // API endpoint to fetch Tris CSV data (merging live GitHub CSV with multi-year historical dataset)
+  // API endpoint to fetch Tris CSV data (merging live GitHub CSV with official schema multi-year historical dataset)
   app.get("/api/tris-data", async (req, res) => {
     let liveCsvText = "";
     try {

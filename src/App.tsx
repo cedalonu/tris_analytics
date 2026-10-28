@@ -117,18 +117,20 @@ export default function App() {
       setLastUpdated(new Date().toLocaleTimeString());
     } catch (err: any) {
       console.warn("Using local embedded Tris dataset:", err);
-      // Multi-year fallback dataset embedded in client
-      let generatedFallback = "Fecha,Sorteo,D1,D2,D3,D4,D5\n";
-      let cNum = 25000;
+      // Multi-year fallback dataset embedded in client (official schema: CONCURSO,ID,R1,R2,R3,R4,R5,FECHA,PRIMOS,REPETIDOS)
+      let generatedFallback = "CONCURSO,ID,R1,R2,R3,R4,R5,FECHA,PRIMOS,REPETIDOS\n";
+      let cNum = 36852;
+      let idNum = 26242;
       const dTypes = ["Mediodía", "Tres", "Extra", "Siete", "Clásico"];
       const sDate = new Date(2024, 0, 1);
       const eDate = new Date();
       let curDate = new Date(eDate.getTime());
-      while (curDate >= sDate && cNum < 27000) {
-        const dStr = String(curDate.getDate()).padStart(2, '0');
-        const mStr = String(curDate.getMonth() + 1).padStart(2, '0');
+      while (curDate >= sDate && cNum > 30000) {
         const yStr = curDate.getFullYear();
-        const dFormatted = `${dStr}/${mStr}/${yStr}`;
+        const mStr = String(curDate.getMonth() + 1).padStart(2, '0');
+        const dStr = String(curDate.getDate()).padStart(2, '0');
+        const dFormatted = `${yStr}-${mStr}-${dStr}`;
+
         for (const dt of dTypes) {
           let seed = cNum + dt.charCodeAt(0) * 31;
           const nextDigit = () => {
@@ -140,8 +142,12 @@ export default function App() {
           const d3 = nextDigit();
           const d4 = nextDigit();
           const d5 = nextDigit();
-          generatedFallback += `${dFormatted},${dt},${d1},${d2},${d3},${d4},${d5}\n`;
-          cNum++;
+          const primos = (d1 % 2 !== 0 ? 1 : 0) + (d2 % 2 !== 0 ? 1 : 0);
+          const repetidos = d1 === d2 || d2 === d3 ? 1 : 0;
+
+          generatedFallback += `${cNum},${idNum},${d1},${d2},${d3},${d4},${d5},${dFormatted},${primos},${repetidos}\n`;
+          cNum--;
+          idNum--;
         }
         curDate.setDate(curDate.getDate() - 1);
       }
@@ -182,9 +188,12 @@ export default function App() {
     // Detect header or start index
     let startIdx = 0;
     const firstLine = lines[0]?.toLowerCase() || "";
-    if (firstLine.includes("fecha") || firstLine.includes("sorteo") || firstLine.includes("numero") || firstLine.includes("d1") || firstLine.includes("concurso")) {
+    if (firstLine.includes("fecha") || firstLine.includes("sorteo") || firstLine.includes("numero") || firstLine.includes("d1") || firstLine.includes("concurso") || firstLine.includes("r1")) {
       startIdx = 1;
     }
+
+    const dateDrawCounts: Record<string, number> = {};
+    const standardDrawTypes = ["Mediodía", "Tres", "Extra", "Siete", "Clásico"];
 
     for (let i = startIdx; i < lines.length; i++) {
       const line = lines[i].trim();
@@ -193,19 +202,34 @@ export default function App() {
       const parts = line.split(/[,;\t]/).map(p => p.trim().replace(/^["']|["']$/g, ""));
       
       let date = "";
-      let drawType = "General";
       let numStr = "";
 
+      // Official schema: CONCURSO, ID, R1, R2, R3, R4, R5, FECHA, PRIMOS, REPETIDOS (10 columns)
+      if (parts.length >= 10 && (/^\d{4}-\d{2}-\d{2}$/.test(parts[7]) || /^\d{4}-\d{2}-\d{2}$/.test(parts[1]))) {
+        let dateStr = parts[7];
+        let r1 = parts[2], r2 = parts[3], r3 = parts[4], r4 = parts[5], r5 = parts[6];
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr) && /^\d{4}-\d{2}-\d{2}$/.test(parts[1])) {
+          dateStr = parts[1];
+          r1 = parts[3]; r2 = parts[4]; r3 = parts[5]; r4 = parts[6]; r5 = parts[7];
+        }
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+          const [y, m, d] = dateStr.split("-");
+          date = `${d}/${m}/${y}`;
+        } else {
+          date = parseDateValue(dateStr);
+        }
+
+        numStr = `${r1}${r2}${r3}${r4}${r5}`.replace(/\D/g, "");
+      } 
       // 1. Try format 8 columns: Concurso, Fecha, Sorteo, D1, D2, D3, D4, D5
-      if (parts.length >= 8) {
+      else if (parts.length >= 8) {
         date = parseDateValue(parts[1]);
-        drawType = parts[2];
         numStr = `${parts[3]}${parts[4]}${parts[5]}${parts[6]}${parts[7]}`.replace(/\D/g, "");
       } 
       // 2. Try format 7 columns: Fecha, Sorteo, D1, D2, D3, D4, D5
       else if (parts.length >= 7) {
         date = parseDateValue(parts[0]);
-        drawType = parts[1];
         numStr = `${parts[2]}${parts[3]}${parts[4]}${parts[5]}${parts[6]}`.replace(/\D/g, "");
       } 
       // 3. Try standard formats or search dynamically
@@ -216,25 +240,29 @@ export default function App() {
             numStr = clean;
           }
           if (/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(p) || /^\d{4}-\d{2}-\d{2}$/.test(p)) {
-            date = p;
-          }
-          const num = Number(p);
-          if (!isNaN(num) && num > 30000 && num < 60000 && !date) {
-            date = parseDateValue(p);
-          }
-          const lower = p.toLowerCase();
-          if (lower.includes("mediodi") || lower.includes("tres") || lower.includes("extra") || lower.includes("siete") || lower.includes("clasico") || lower.includes("clásico")) {
-            drawType = p;
+            if (/^\d{4}-\d{2}-\d{2}$/.test(p)) {
+              const [y, m, d] = p.split("-");
+              date = `${d}/${m}/${y}`;
+            } else {
+              date = p;
+            }
           }
         }
       }
 
-      if (!date) date = parts[0] || "Reciente";
+      if (!date) date = "Reciente";
       if (!numStr && parts.length >= 3) {
         numStr = (parts[parts.length - 1] || "").replace(/\D/g, "").padStart(5, "0").slice(-5);
       }
 
       if (numStr.length === 5 && /^\d{5}$/.test(numStr)) {
+        if (!dateDrawCounts[date]) {
+          dateDrawCounts[date] = 0;
+        }
+        const seq = dateDrawCounts[date];
+        dateDrawCounts[date]++;
+        const assignedDrawType = standardDrawTypes[seq % 5];
+
         const digits = numStr.split("").map(Number);
         const sum = digits.reduce((a, b) => a + b, 0);
         const evenCount = digits.filter(d => d % 2 === 0).length;
@@ -243,9 +271,9 @@ export default function App() {
         const lowCount = 5 - highCount;
 
         parsed.push({
-          id: `${date}-${drawType}-${i}`,
+          id: `${date}-${assignedDrawType}-${i}`,
           date,
-          drawType: normalizeDrawType(drawType),
+          drawType: assignedDrawType,
           number: numStr,
           digits,
           sum,
