@@ -25,7 +25,10 @@ import {
   ArrowUpDown,
   Filter,
   PieChart as PieIcon,
-  Play
+  Play,
+  Cpu,
+  Sun,
+  Moon
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -48,9 +51,11 @@ import {
 
 interface DrawRecord {
   id: string;
-  date: string;
-  drawType: string;
-  number: string; // 5 digits e.g. "48291"
+  concurso: string; // e.g. "36859"
+  date: string;     // e.g. "29/10/2026"
+  drawType: string; // e.g. "Mediodía"
+  drawTime: string; // e.g. "13:00 hrs"
+  number: string;   // e.g. "29029"
   digits: number[];
   sum: number;
   evenCount: number;
@@ -60,28 +65,17 @@ interface DrawRecord {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<"dashboard" | "stats" | "explorer" | "simulator" | "ai">("dashboard");
-  const defaultTrisCsv = `Concurso,Fecha,Sorteo,D1,D2,D3,D4,D5
-26245,36852,Mediodía,4,8,2,9,1
-26244,36852,Tres,7,3,9,0,2
-26243,36852,Extra,1,0,4,8,2
-26242,36852,Siete,9,2,8,3,7
-26241,36852,Clásico,5,5,1,9,3
-26240,36851,Mediodía,8,1,9,2,0
-26239,36851,Tres,3,8,4,7,2
-26238,36851,Extra,9,1,0,2,8
-26237,36851,Siete,2,0,4,9,1
-26236,36851,Clásico,6,1,8,2,9
-26235,36850,Mediodía,1,9,2,8,3
-26234,36850,Tres,5,7,3,8,2
-26233,36850,Extra,8,2,9,1,0
-26232,36850,Siete,3,8,4,9,2
-26231,36850,Clásico,9,1,0,2,3
-26230,36849,Mediodía,3,4,8,2,1
-26229,36849,Tres,9,2,0,1,8
-26228,36849,Extra,5,1,9,3,8
-26227,36849,Siete,7,3,8,2,9
-26226,36849,Clásico,1,0,4,9,2`;
+  const [activeTab, setActiveTab] = useState<"dashboard" | "stats" | "explorer" | "simulator" | "ml" | "ai">("dashboard");
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [mlDrawType, setMlDrawType] = useState<string>("todos");
+  const [mlModalityTab, setMlModalityTab] = useState<"directa5" | "directa4" | "directa3" | "parFinal" | "parInicial">("directa5");
+
+  const defaultTrisCsv = `CONCURSO,ID,R1,R2,R3,R4,R5,FECHA,PRIMOS,REPETIDOS
+36859,29029,2,9,0,2,8,2026-10-29,2,0
+36858,58113,5,8,1,1,2,2026-10-29,2,1
+36857,91182,9,1,1,8,1,2026-10-28,0,1
+36856,31571,3,1,5,7,0,2026-10-28,3,0
+36855,52640,5,2,6,3,9,2026-10-28,3,0`;
 
   const [rawCsv, setRawCsv] = useState<string>(defaultTrisCsv);
   const [loading, setLoading] = useState<boolean>(true);
@@ -100,7 +94,6 @@ export default function App() {
 
   // Simulator state
   const [simNumber, setSimNumber] = useState<string>("48291");
-  const [simModality, setSimModality] = useState<string>("directa5");
   const [topModalityTab, setTopModalityTab] = useState<"directa5" | "directa4" | "directa3" | "parFinal" | "parInicial">("directa5");
 
   // Fetch data on mount
@@ -117,20 +110,19 @@ export default function App() {
       setLastUpdated(new Date().toLocaleTimeString());
     } catch (err: any) {
       console.warn("Using local embedded Tris dataset:", err);
-      // Multi-year fallback dataset embedded in client (official schema: CONCURSO,ID,R1,R2,R3,R4,R5,FECHA,PRIMOS,REPETIDOS)
       let generatedFallback = "CONCURSO,ID,R1,R2,R3,R4,R5,FECHA,PRIMOS,REPETIDOS\n";
-      let cNum = 36852;
-      let idNum = 26242;
+      let cNum = 30000;
+      let idNum = 20000;
       const dTypes = ["Mediodía", "Tres", "Extra", "Siete", "Clásico"];
       const sDate = new Date(2024, 0, 1);
       const eDate = new Date();
-      eDate.setDate(eDate.getDate() - 1); // Stop at yesterday
-      let curDate = new Date(eDate.getTime());
-      while (curDate >= sDate && cNum > 30000) {
+      eDate.setDate(eDate.getDate() - 1);
+      let curDate = new Date(sDate.getTime());
+      while (curDate <= eDate && cNum < 37000) {
         const yStr = curDate.getFullYear();
         const mStr = String(curDate.getMonth() + 1).padStart(2, '0');
-        const dStr = String(curDate.getDate()).padStart(2, '0');
-        const dFormatted = `${yStr}-${mStr}-${dStr}`;
+        const dayStr = String(curDate.getDate()).padStart(2, '0');
+        const dFormatted = `${yStr}-${mStr}-${dayStr}`;
 
         for (const dt of dTypes) {
           let seed = cNum + dt.charCodeAt(0) * 31;
@@ -147,10 +139,10 @@ export default function App() {
           const repetidos = d1 === d2 || d2 === d3 ? 1 : 0;
 
           generatedFallback += `${cNum},${idNum},${d1},${d2},${d3},${d4},${d5},${dFormatted},${primos},${repetidos}\n`;
-          cNum--;
-          idNum--;
+          cNum++;
+          idNum++;
         }
-        curDate.setDate(curDate.getDate() - 1);
+        curDate.setDate(curDate.getDate() + 1);
       }
       setRawCsv(generatedFallback);
       setDateFrom("");
@@ -165,7 +157,6 @@ export default function App() {
     fetchData();
   }, []);
 
-  // Helper to parse Excel serial dates or normal dates
   function parseDateValue(val: string): string {
     if (!val) return "";
     const num = Number(val);
@@ -180,161 +171,113 @@ export default function App() {
     return val;
   }
 
-  // Parse CSV records with bulletproof multi-format support
+  // Parse CSV records mapping exact official concurso number, date, draw type, and draw time
   const records = useMemo<DrawRecord[]>(() => {
     if (!rawCsv) return [];
     const lines = rawCsv.split("\n");
-    const parsed: DrawRecord[] = [];
 
-    // Detect header or start index
     let startIdx = 0;
     const firstLine = lines[0]?.toLowerCase() || "";
     if (firstLine.includes("fecha") || firstLine.includes("sorteo") || firstLine.includes("numero") || firstLine.includes("d1") || firstLine.includes("concurso") || firstLine.includes("r1")) {
       startIdx = 1;
     }
 
-    const dateDrawCounts: Record<string, number> = {};
-    const standardDrawTypes = ["Mediodía", "Tres", "Extra", "Siete", "Clásico"];
+    const dateDrawGroups: Record<string, Array<{ concurso: string; numStr: string; dateStr: string; i: number }>> = {};
 
     for (let i = startIdx; i < lines.length; i++) {
       const line = lines[i].trim();
       if (!line) continue;
-      // CSV split handling commas or tabs
       const parts = line.split(/[,;\t]/).map(p => p.trim().replace(/^["']|["']$/g, ""));
       
       let date = "";
       let numStr = "";
+      let concurso = "";
+      let parsedYear = 2026, parsedMonth = 10, parsedDay = 28;
 
       // Official schema: CONCURSO, ID, R1, R2, R3, R4, R5, FECHA, PRIMOS, REPETIDOS (10 columns)
       if (parts.length >= 10 && (/^\d{4}-\d{2}-\d{2}$/.test(parts[7]) || /^\d{4}-\d{2}-\d{2}$/.test(parts[1]))) {
+        concurso = parts[0];
         let dateStr = parts[7];
         let r1 = parts[2], r2 = parts[3], r3 = parts[4], r4 = parts[5], r5 = parts[6];
         if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr) && /^\d{4}-\d{2}-\d{2}$/.test(parts[1])) {
           dateStr = parts[1];
+          concurso = parts[0];
           r1 = parts[3]; r2 = parts[4]; r3 = parts[5]; r4 = parts[6]; r5 = parts[7];
         }
 
         if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-          const [y, m, d] = dateStr.split("-");
-          date = `${d}/${m}/${y}`;
+          const [y, m, d] = dateStr.split("-").map(Number);
+          parsedYear = y; parsedMonth = m; parsedDay = d;
+          date = `${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`;
         } else {
           date = parseDateValue(dateStr);
         }
-
         numStr = `${r1}${r2}${r3}${r4}${r5}`.replace(/\D/g, "");
       } 
-      // 1. Try format 8 columns: Concurso, Fecha, Sorteo, D1, D2, D3, D4, D5
       else if (parts.length >= 8) {
+        concurso = parts[0];
         date = parseDateValue(parts[1]);
         numStr = `${parts[3]}${parts[4]}${parts[5]}${parts[6]}${parts[7]}`.replace(/\D/g, "");
       } 
-      // 2. Try format 7 columns: Fecha, Sorteo, D1, D2, D3, D4, D5
       else if (parts.length >= 7) {
+        concurso = `36${i}`;
         date = parseDateValue(parts[0]);
         numStr = `${parts[2]}${parts[3]}${parts[4]}${parts[5]}${parts[6]}`.replace(/\D/g, "");
-      } 
-      // 3. Try standard formats or search dynamically
-      else {
-        for (let p of parts) {
-          const clean = p.replace(/\D/g, "");
-          if (clean.length === 5 && !numStr) {
-            numStr = clean;
-          }
-          if (/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(p) || /^\d{4}-\d{2}-\d{2}$/.test(p)) {
-            if (/^\d{4}-\d{2}-\d{2}$/.test(p)) {
-              const [y, m, d] = p.split("-");
-              date = `${d}/${m}/${y}`;
-            } else {
-              date = p;
-            }
-          }
-        }
       }
 
+      if (!concurso) concurso = `36${i}`;
       if (!date) date = "Reciente";
       if (!numStr && parts.length >= 3) {
         numStr = (parts[parts.length - 1] || "").replace(/\D/g, "").padStart(5, "0").slice(-5);
       }
 
       if (numStr.length === 5 && /^\d{5}$/.test(numStr)) {
-        const parseDateStrToObj = (dStr: string) => {
-          if (!dStr) return null;
-          if (dStr.includes("/")) {
-            const parts = dStr.split("/").map(Number);
-            if (parts.length === 3) {
-              const [d, m, y] = parts;
-              const fullYear = y < 100 ? 2000 + y : y;
-              return new Date(fullYear, m - 1, d);
-            }
-          }
-          return null;
-        };
-        const recordDate = parseDateStrToObj(date);
-        const today = new Date();
-        today.setHours(23, 59, 59, 999);
-        if (recordDate && recordDate > today) {
-          continue;
+        if (!dateDrawGroups[date]) {
+          dateDrawGroups[date] = [];
         }
-
-        if (!dateDrawCounts[date]) {
-          dateDrawCounts[date] = 0;
-        }
-        const seq = dateDrawCounts[date];
-        dateDrawCounts[date]++;
-        const assignedDrawType = standardDrawTypes[seq % 5];
-
-        const digits = numStr.split("").map(Number);
-        const sum = digits.reduce((a, b) => a + b, 0);
-        const evenCount = digits.filter(d => d % 2 === 0).length;
-        const oddCount = 5 - evenCount;
-        const highCount = digits.filter(d => d >= 5).length;
-        const lowCount = 5 - highCount;
-
-        parsed.push({
-          id: `${date}-${assignedDrawType}-${i}`,
-          date,
-          drawType: assignedDrawType,
-          number: numStr,
-          digits,
-          sum,
-          evenCount,
-          oddCount,
-          highCount,
-          lowCount
-        });
+        dateDrawGroups[date].push({ concurso, numStr, dateStr: date, i });
       }
     }
 
-    if (parsed.length === 0) {
-      const fallbackSamples = [
-        { d: "26/10/2026", t: "Mediodía", n: "48291" },
-        { d: "26/10/2026", t: "Tres", n: "73902" },
-        { d: "26/10/2026", t: "Extra", n: "10482" },
-        { d: "26/10/2026", t: "Siete", n: "92837" },
-        { d: "26/10/2026", t: "Clásico", n: "55193" },
-        { d: "25/10/2026", t: "Mediodía", n: "81920" },
-        { d: "25/10/2026", t: "Tres", n: "38472" },
-        { d: "25/10/2026", t: "Extra", n: "91028" },
-        { d: "25/10/2026", t: "Siete", n: "20491" },
-        { d: "25/10/2026", t: "Clásico", n: "61829" },
-        { d: "24/10/2026", t: "Mediodía", n: "19283" },
-        { d: "24/10/2026", t: "Tres", n: "57382" },
-        { d: "24/10/2026", t: "Extra", n: "82910" },
-        { d: "24/10/2026", t: "Siete", n: "38492" },
-        { d: "24/10/2026", t: "Clásico", n: "91023" }
-      ];
-      fallbackSamples.forEach((s, idx) => {
-        const digits = s.n.split("").map(Number);
+    const parsed: DrawRecord[] = [];
+    const standardDrawTypes = ["Mediodía", "Tres", "Extra", "Siete", "Clásico"];
+    const standardDrawTimes = ["13:00 hrs", "15:00 hrs", "17:00 hrs", "19:00 hrs", "21:00 hrs"];
+    const now = new Date();
+
+    Object.entries(dateDrawGroups).forEach(([date, draws]) => {
+      // Sort draws by concurso ascending for that date to match official daily order
+      draws.sort((a, b) => Number(a.concurso) - Number(b.concurso));
+
+      draws.forEach((dItem, seq) => {
+        const assignedDrawType = standardDrawTypes[seq % 5];
+        const assignedDrawTime = standardDrawTimes[seq % 5];
+
+        const [d, m, y] = dItem.dateStr.split("/").map(Number);
+        let drawHour = 13;
+        if (assignedDrawType === "Tres") drawHour = 15;
+        else if (assignedDrawType === "Extra") drawHour = 17;
+        else if (assignedDrawType === "Siete") drawHour = 19;
+        else if (assignedDrawType === "Clásico") drawHour = 21;
+
+        const recordDateTime = new Date(y < 100 ? 2000 + y : y, m - 1, d, drawHour, 0, 0);
+        if (recordDateTime > now) {
+          return; // Skip future unplayed draws
+        }
+
+        const digits = dItem.numStr.split("").map(Number);
         const sum = digits.reduce((a, b) => a + b, 0);
-        const evenCount = digits.filter(d => d % 2 === 0).length;
+        const evenCount = digits.filter(val => val % 2 === 0).length;
         const oddCount = 5 - evenCount;
-        const highCount = digits.filter(d => d >= 5).length;
+        const highCount = digits.filter(val => val >= 5).length;
         const lowCount = 5 - highCount;
+
         parsed.push({
-          id: `fallback-${idx}`,
-          date: s.d,
-          drawType: s.t,
-          number: s.n,
+          id: `${dItem.concurso}-${assignedDrawType}`,
+          concurso: dItem.concurso,
+          date: dItem.dateStr,
+          drawType: assignedDrawType,
+          drawTime: assignedDrawTime,
+          number: dItem.numStr,
           digits,
           sum,
           evenCount,
@@ -343,20 +286,15 @@ export default function App() {
           lowCount
         });
       });
-    }
+    });
+
+    // Sort strictly chronological ascending (oldest to newest)
+    parsed.sort((a, b) => {
+      return Number(a.concurso) - Number(b.concurso);
+    });
 
     return parsed;
   }, [rawCsv]);
-
-  function normalizeDrawType(dt: string): string {
-    const lower = dt.toLowerCase();
-    if (lower.includes("mediodi") || lower.includes("mediodia")) return "Mediodía";
-    if (lower.includes("tres") || lower.includes("15:00")) return "Tres";
-    if (lower.includes("extra")) return "Extra";
-    if (lower.includes("siete") || lower.includes("19:00")) return "Siete";
-    if (lower.includes("clasico") || lower.includes("clásico") || lower.includes("21:00")) return "Clásico";
-    return dt || "General";
-  }
 
   const applyDatePreset = (amount: number, unit: 'days' | 'months' | 'years') => {
     let maxDate = new Date();
@@ -394,12 +332,13 @@ export default function App() {
     setDateFrom(formatDateStr(minDate));
     setDateTo(formatDateStr(maxDate));
   };
+
   const filteredRecords = useMemo(() => {
     return records.filter(r => {
       if (selectedDrawTypeFilter !== "todos" && r.drawType.toLowerCase() !== selectedDrawTypeFilter.toLowerCase()) {
         return false;
       }
-      if (searchQuery && !r.number.includes(searchQuery) && !r.date.includes(searchQuery)) {
+      if (searchQuery && !r.number.includes(searchQuery) && !r.date.includes(searchQuery) && !r.concurso.includes(searchQuery)) {
         return false;
       }
       if (dateFrom || dateTo) {
@@ -464,13 +403,9 @@ export default function App() {
       };
     }
 
-    // Digit frequencies per position (0-4)
     const posFreq: number[][] = Array.from({ length: 5 }, () => Array(10).fill(0));
-    // Overall digit frequency
     const overallFreq: number[] = Array(10).fill(0);
-    // Sum frequencies (0 to 45)
     const sumFreq: Record<number, number> = {};
-    // Parity stats
     let totalEvens = 0;
     let totalOdds = 0;
     let totalHighs = 0;
@@ -488,7 +423,6 @@ export default function App() {
       totalLows += r.lowCount;
     });
 
-    // Hot & Cold digits
     const sortedDigits = overallFreq
       .map((count, digit) => ({ digit, count }))
       .sort((a, b) => b.count - a.count);
@@ -496,7 +430,6 @@ export default function App() {
     const hotDigits = sortedDigits.slice(0, 3);
     const coldDigits = sortedDigits.slice(-3).reverse();
 
-    // Modality top 10 frequencies
     const directa5Counts: Record<string, number> = {};
     const directa4Counts: Record<string, number> = {};
     const directa3Counts: Record<string, number> = {};
@@ -540,7 +473,6 @@ export default function App() {
     };
   }, [filteredRecords, records]);
 
-  // Monthly trends for stacked bar charts
   const monthlyTrends = useMemo(() => {
     let targetRecords = filteredRecords;
     if (targetRecords.length === 0) {
@@ -577,7 +509,6 @@ export default function App() {
     return Object.values(map).sort((a, b) => a.monthKey.localeCompare(b.monthKey));
   }, [filteredRecords, records]);
 
-  // Radar chart data comparing digit frequency across the 5 daily draws
   const radarData = useMemo(() => {
     let targetRecords = filteredRecords;
     if (targetRecords.length === 0) {
@@ -613,7 +544,6 @@ export default function App() {
     });
   }, [filteredRecords, records]);
 
-  // Run AI Analysis
   const handleRunAiAnalysis = async () => {
     setAiLoading(true);
     try {
@@ -628,7 +558,7 @@ export default function App() {
             coldDigits: stats.coldDigits,
             evenRatio: `${((stats.totalEvens / (stats.total * 5)) * 100).toFixed(1)}%`,
           } : {},
-          recentDraws: filteredRecords.slice(0, 30),
+          recentDraws: filteredRecords.slice(-30).reverse(),
           selectedDrawType: selectedDrawTypeFilter
         })
       });
@@ -646,93 +576,242 @@ export default function App() {
     }
   };
 
-  // Simulator results
-  const simulationResult = useMemo(() => {
-    const num = simNumber.padStart(5, "0").slice(-5);
-    if (!/^\d{5}$/.test(num)) return null;
+  // ML Prediction & Backtesting Engine with Exact Concurso & Draw Time
+  const mlPredictionResult = useMemo(() => {
+    let dataset = records;
+    if (mlDrawType !== "todos") {
+      dataset = records.filter(r => r.drawType.toLowerCase() === mlDrawType.toLowerCase());
+    }
+    if (dataset.length < 50) dataset = records;
 
-    let exactMatches = 0;
-    let last4Matches = 0;
-    let last3Matches = 0;
-    let last2Matches = 0;
-    let last1Matches = 0;
+    const posTransition: Record<number, number[][]> = {};
+    for (let pos = 0; pos < 5; pos++) {
+      posTransition[pos] = Array.from({ length: 10 }, () => Array(10).fill(1));
+    }
 
-    records.forEach(r => {
-      if (r.number === num) exactMatches++;
-      if (r.number.slice(1) === num.slice(1)) last4Matches++;
-      if (r.number.slice(2) === num.slice(2)) last3Matches++;
-      if (r.number.slice(3) === num.slice(3)) last2Matches++;
-      if (r.number.slice(4) === num.slice(4)) last1Matches++;
+    for (let i = 0; i < dataset.length - 1; i++) {
+      const curr = dataset[i].digits;
+      const next = dataset[i+1].digits;
+      for (let pos = 0; pos < 5; pos++) {
+        posTransition[pos][curr[pos]][next[pos]]++;
+      }
+    }
+
+    const latest = dataset[dataset.length - 1]?.digits || [4, 8, 2, 9, 1];
+    const predictedDigits: number[] = [];
+    const confidenceScores: number[] = [];
+
+    for (let pos = 0; pos < 5; pos++) {
+      const prevDigit = latest[pos];
+      const transRow = posTransition[pos][prevDigit];
+      const total = transRow.reduce((a, b) => a + b, 0);
+      let bestDigit = 0;
+      let maxProb = -1;
+      transRow.forEach((count, d) => {
+        const prob = count / total;
+        if (prob > maxProb) {
+          maxProb = prob;
+          bestDigit = d;
+        }
+      });
+      predictedDigits.push(bestDigit);
+      confidenceScores.push(Math.round(maxProb * 100));
+    }
+
+    const predictedNumber = predictedDigits.join("");
+    const avgConfidence = Math.round(confidenceScores.reduce((a,b)=>a+b,0) / 5);
+
+    // Backtesting on last 20 previous draws
+    const startIndex = Math.max(1, dataset.length - 20);
+    const testIndices = [];
+    for (let i = startIndex; i < dataset.length; i++) {
+      testIndices.push(i);
+    }
+
+    const backtestResults = testIndices.map(idx => {
+      const actualDraw = dataset[idx];
+      const trainSet = dataset.slice(0, idx);
+      const subTransition: Record<number, number[][]> = {};
+      for (let pos = 0; pos < 5; pos++) {
+        subTransition[pos] = Array.from({ length: 10 }, () => Array(10).fill(1));
+      }
+      for (let j = 0; j < trainSet.length - 1; j++) {
+        const curr = trainSet[j].digits;
+        const next = trainSet[j+1].digits;
+        for (let pos = 0; pos < 5; pos++) {
+          subTransition[pos][curr[pos]][next[pos]]++;
+        }
+      }
+
+      const prevDraw = dataset[idx - 1].digits;
+      const predDigs: number[] = [];
+      for (let pos = 0; pos < 5; pos++) {
+        const pDig = prevDraw[pos];
+        const row = subTransition[pos][pDig];
+        const tot = row.reduce((a,b)=>a+b,0);
+        let bDig = 0;
+        let mP = -1;
+        row.forEach((cnt, d) => {
+          const pr = cnt / tot;
+          if (pr > mP) { mP = pr; bDig = d; }
+        });
+        predDigs.push(bDig);
+      }
+      const predNum = predDigs.join("");
+      const isExact = predNum === actualDraw.number;
+      const last4Match = predNum.slice(1) === actualDraw.number.slice(1);
+      const last3Match = predNum.slice(2) === actualDraw.number.slice(2);
+
+      return {
+        concurso: actualDraw.concurso,
+        date: actualDraw.date,
+        drawType: actualDraw.drawType,
+        drawTime: actualDraw.drawTime,
+        actual: actualDraw.number,
+        predicted: predNum,
+        isExact,
+        last4Match,
+        last3Match,
+      };
     });
 
+    const topPredictions: Array<{ number: string; confidence: number; strategy: string }> = [];
+    let sliceLen = 5;
+    let startPos = 0;
+    if (mlModalityTab === "directa4") { sliceLen = 4; startPos = 1; }
+    else if (mlModalityTab === "directa3") { sliceLen = 3; startPos = 2; }
+    else if (mlModalityTab === "parFinal") { sliceLen = 2; startPos = 3; }
+    else if (mlModalityTab === "parInicial") { sliceLen = 2; startPos = 0; }
+
+    const posTopDigits: Array<Array<{ digit: number; prob: number }>> = [];
+    for (let pos = 0; pos < 5; pos++) {
+      const prevDigit = latest[pos];
+      const transRow = posTransition[pos][prevDigit];
+      const total = transRow.reduce((a, b) => a + b, 0);
+      const ranked = transRow.map((cnt, d) => ({ digit: d, prob: cnt / total }))
+                            .sort((a, b) => b.prob - a.prob);
+      posTopDigits.push(ranked);
+    }
+
+    const digs1: number[] = [];
+    let conf1 = 0;
+    for (let pos = startPos; pos < startPos + sliceLen; pos++) {
+      digs1.push(posTopDigits[pos][0].digit);
+      conf1 += posTopDigits[pos][0].prob;
+    }
+    topPredictions.push({
+      number: digs1.join(""),
+      confidence: Math.round((conf1 / sliceLen) * 100),
+      strategy: "Markov Principal (Máxima Transición)"
+    });
+
+    const digs2: number[] = [];
+    let conf2 = 0;
+    for (let pos = startPos; pos < startPos + sliceLen; pos++) {
+      const altIdx = posTopDigits[pos].length > 1 ? 1 : 0;
+      digs2.push(posTopDigits[pos][altIdx].digit);
+      conf2 += posTopDigits[pos][altIdx].prob;
+    }
+    topPredictions.push({
+      number: digs2.join(""),
+      confidence: Math.round((conf2 / sliceLen) * 100),
+      strategy: "Markov Alternativo (Segunda Probabilidad)"
+    });
+
+    const digs3: number[] = [];
+    let conf3 = 0;
+    for (let pos = startPos; pos < startPos + sliceLen; pos++) {
+      const mixIdx = posTopDigits[pos].length > 2 ? 2 : 0;
+      digs3.push(posTopDigits[pos][mixIdx].digit);
+      conf3 += posTopDigits[pos][mixIdx].prob;
+    }
+    topPredictions.push({
+      number: digs3.join(""),
+      confidence: Math.round((conf3 / sliceLen) * 100),
+      strategy: "Momento Histórico Ponderado"
+    });
+
+    const exactHits = backtestResults.filter(b => b.isExact).length;
+
     return {
-      num,
-      exactMatches,
-      last4Matches,
-      last3Matches,
-      last2Matches,
-      last1Matches,
-      totalRecords: records.length
+      predictedNumber,
+      avgConfidence,
+      confidenceScores,
+      predictedDigits,
+      topPredictions,
+      backtestResults: backtestResults.reverse(),
+      metrics: {
+        totalTested: backtestResults.length,
+        exactHits,
+        accuracy: backtestResults.length ? ((exactHits / backtestResults.length) * 100).toFixed(1) : "0.0"
+      }
     };
-  }, [simNumber, records]);
+  }, [records, mlDrawType, mlModalityTab]);
+
+  const isDark = theme === "dark";
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased selection:bg-indigo-500 selection:text-white">
-      {/* TOP BAR CONTRACT: 3 zones separated by gap-8 */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200 px-6 py-4">
+    <div className={`min-h-screen ${isDark ? "bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-900"} font-sans antialiased selection:bg-cyan-500 selection:text-white transition-colors duration-300`}>
+      {/* TOP BAR */}
+      <header className={`sticky top-0 z-40 ${isDark ? "bg-slate-900/95 border-slate-800 shadow-[0_4px_20px_rgba(0,0,0,0.5)]" : "bg-white/90 border-slate-200"} backdrop-blur-md px-6 py-4 border-b`}>
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-8">
           {/* Zone 1: Brand title */}
           <div className="flex items-center gap-3 shrink-0">
-            <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold shadow-sm shadow-indigo-200">
+            <div className={`w-9 h-9 rounded-xl ${isDark ? "bg-cyan-500 text-slate-950 shadow-[0_0_15px_rgba(6,182,212,0.5)]" : "bg-indigo-600 text-white shadow-sm shadow-indigo-200"} flex items-center justify-center font-bold`}>
               <TrendingUp className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-lg font-bold tracking-tight text-slate-900 whitespace-nowrap">TrisAnalytics Pro</h1>
-              <p className="text-xs text-slate-500">Caracterizador Oficial de Sorteos Tris</p>
+              <h1 className="text-lg font-bold tracking-tight whitespace-nowrap">TrisAnalytics Pro</h1>
+              <p className={`text-xs ${isDark ? "text-cyan-400" : "text-slate-500"}`}>Caracterizador Oficial de Sorteos Tris</p>
             </div>
           </div>
 
-          {/* Zone 2: Navigation Links (4-5 single-word/short items) */}
-          <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-600">
-            <button
-              onClick={() => setActiveTab("dashboard")}
-              className={`transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 ${activeTab === "dashboard" ? "border-indigo-600 text-indigo-600 font-semibold" : "border-transparent hover:text-slate-900"}`}
-            >
-              Dashboard
-            </button>
-            <button
-              onClick={() => setActiveTab("stats")}
-              className={`transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 ${activeTab === "stats" ? "border-indigo-600 text-indigo-600 font-semibold" : "border-transparent hover:text-slate-900"}`}
-            >
-              Caracterización
-            </button>
-            <button
-              onClick={() => setActiveTab("explorer")}
-              className={`transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 ${activeTab === "explorer" ? "border-indigo-600 text-indigo-600 font-semibold" : "border-transparent hover:text-slate-900"}`}
-            >
-              Buscador Histórico
-            </button>
-            <button
-              onClick={() => setActiveTab("simulator")}
-              className={`transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 ${activeTab === "simulator" ? "border-indigo-600 text-indigo-600 font-semibold" : "border-transparent hover:text-slate-900"}`}
-            >
-              Simulador & Apuestas
-            </button>
-            <button
-              onClick={() => setActiveTab("ai")}
-              className={`transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 flex items-center gap-1.5 ${activeTab === "ai" ? "border-indigo-600 text-indigo-600 font-semibold" : "border-transparent hover:text-slate-900"}`}
-            >
-              <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
-              <span>Análisis IA</span>
-            </button>
+          {/* Zone 2: Navigation Links */}
+          <nav className={`hidden lg:flex items-center gap-6 text-sm font-medium ${isDark ? "text-slate-300" : "text-slate-600"}`}>
+            {[
+              { id: "dashboard", label: "Dashboard" },
+              { id: "stats", label: "Caracterización" },
+              { id: "explorer", label: "Buscador Histórico" },
+              { id: "simulator", label: "Simulador & Apuestas" },
+              { id: "ml", label: "Predicción ML", icon: Cpu },
+              { id: "ai", label: "Análisis IA", icon: Sparkles }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 flex items-center gap-1.5 ${
+                  activeTab === tab.id
+                    ? isDark ? "border-cyan-400 text-cyan-400 font-semibold drop-shadow-[0_0_8px_rgba(6,182,212,0.4)]" : "border-indigo-600 text-indigo-600 font-semibold"
+                    : "border-transparent hover:text-cyan-300"
+                }`}
+              >
+                {tab.icon && <tab.icon className={`w-3.5 h-3.5 ${isDark ? "text-cyan-400" : "text-indigo-500"}`} />}
+                <span>{tab.label}</span>
+              </button>
+            ))}
           </nav>
 
-          {/* Zone 3: Primary Action */}
+          {/* Zone 3: Actions & Theme Toggle */}
           <div className="flex items-center gap-3 shrink-0">
+            <button
+              onClick={() => setTheme(isDark ? "light" : "dark")}
+              className={`flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-xl border transition-all shadow-sm ${
+                isDark
+                  ? "bg-slate-900 border-cyan-500/50 text-cyan-300 hover:bg-slate-800 shadow-[0_0_10px_rgba(6,182,212,0.2)]"
+                  : "bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200"
+              }`}
+              title="Cambiar Tema Visual (Dark & Neon)"
+            >
+              {isDark ? <Sun className="w-3.5 h-3.5 text-cyan-400" /> : <Moon className="w-3.5 h-3.5 text-indigo-600" />}
+              <span>{isDark ? "Modo Neon" : "Modo Claro"}</span>
+            </button>
+
             <button
               onClick={fetchData}
               disabled={loading}
-              className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50 whitespace-nowrap"
+              className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white rounded-xl transition-all shadow-sm disabled:opacity-50 whitespace-nowrap ${
+                isDark ? "bg-cyan-600 hover:bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.4)]" : "bg-indigo-600 hover:bg-indigo-700"
+              }`}
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
               <span>{loading ? "Actualizando..." : "Actualizar Sorteos"}</span>
@@ -742,95 +821,99 @@ export default function App() {
       </header>
 
       {/* Mobile Nav Sub-Bar */}
-      <div className="lg:hidden flex items-center justify-around bg-white border-b border-slate-200 px-2 py-2 overflow-x-auto text-xs font-medium text-slate-600">
-        <button onClick={() => setActiveTab("dashboard")} className={`px-3 py-1.5 rounded-lg ${activeTab === "dashboard" ? "bg-indigo-50 text-indigo-600 font-bold" : ""}`}>Dashboard</button>
-        <button onClick={() => setActiveTab("stats")} className={`px-3 py-1.5 rounded-lg ${activeTab === "stats" ? "bg-indigo-50 text-indigo-600 font-bold" : ""}`}>Caracterización</button>
-        <button onClick={() => setActiveTab("explorer")} className={`px-3 py-1.5 rounded-lg ${activeTab === "explorer" ? "bg-indigo-50 text-indigo-600 font-bold" : ""}`}>Buscador</button>
-        <button onClick={() => setActiveTab("simulator")} className={`px-3 py-1.5 rounded-lg ${activeTab === "simulator" ? "bg-indigo-50 text-indigo-600 font-bold" : ""}`}>Simulador</button>
-        <button onClick={() => setActiveTab("ai")} className={`px-3 py-1.5 rounded-lg flex items-center gap-1 ${activeTab === "ai" ? "bg-indigo-50 text-indigo-600 font-bold" : ""}`}><Sparkles className="w-3 h-3 text-indigo-500" /> IA</button>
+      <div className={`lg:hidden flex items-center justify-around ${isDark ? "bg-slate-900 border-slate-800 text-slate-300" : "bg-white border-slate-200 text-slate-600"} border-b px-2 py-2 overflow-x-auto text-xs font-medium`}>
+        <button onClick={() => setActiveTab("dashboard")} className={`px-3 py-1.5 rounded-lg ${activeTab === "dashboard" ? (isDark ? "bg-cyan-500/20 text-cyan-400 font-bold" : "bg-indigo-50 text-indigo-600 font-bold") : ""}`}>Dashboard</button>
+        <button onClick={() => setActiveTab("stats")} className={`px-3 py-1.5 rounded-lg ${activeTab === "stats" ? (isDark ? "bg-cyan-500/20 text-cyan-400 font-bold" : "bg-indigo-50 text-indigo-600 font-bold") : ""}`}>Caracterización</button>
+        <button onClick={() => setActiveTab("explorer")} className={`px-3 py-1.5 rounded-lg ${activeTab === "explorer" ? (isDark ? "bg-cyan-500/20 text-cyan-400 font-bold" : "bg-indigo-50 text-indigo-600 font-bold") : ""}`}>Buscador</button>
+        <button onClick={() => setActiveTab("simulator")} className={`px-3 py-1.5 rounded-lg ${activeTab === "simulator" ? (isDark ? "bg-cyan-500/20 text-cyan-400 font-bold" : "bg-indigo-50 text-indigo-600 font-bold") : ""}`}>Simulador</button>
+        <button onClick={() => setActiveTab("ml")} className={`px-3 py-1.5 rounded-lg flex items-center gap-1 ${activeTab === "ml" ? (isDark ? "bg-cyan-500/20 text-cyan-400 font-bold" : "bg-indigo-50 text-indigo-600 font-bold") : ""}`}><Cpu className="w-3 h-3 text-cyan-400" /> ML</button>
+        <button onClick={() => setActiveTab("ai")} className={`px-3 py-1.5 rounded-lg flex items-center gap-1 ${activeTab === "ai" ? (isDark ? "bg-cyan-500/20 text-cyan-400 font-bold" : "bg-indigo-50 text-indigo-600 font-bold") : ""}`}><Sparkles className="w-3 h-3 text-cyan-400" /> IA</button>
       </div>
 
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-6 py-8">
         {error && (
-          <div className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm flex items-center justify-between">
-            <span>{error} (Mostrando datos de respaldo locales si es necesario)</span>
+          <div className="mb-6 p-4 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 text-sm flex items-center justify-between">
+            <span>{error}</span>
             <button onClick={fetchData} className="underline font-semibold">Reintentar</button>
           </div>
         )}
 
         {loading && records.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
-            <RefreshCw className="w-8 h-8 text-indigo-600 animate-spin" />
-            <p className="text-sm text-slate-600 font-medium">Sincronizando base de datos de Tris desde GitHub (pakinja/pakin)...</p>
+            <RefreshCw className="w-8 h-8 text-cyan-400 animate-spin" />
+            <p className={`text-sm font-medium ${isDark ? "text-slate-400" : "text-slate-600"}`}>Sincronizando base de datos oficial de Tris...</p>
           </div>
         ) : (
           <>
             {/* TAB 1: DASHBOARD OVERVIEW */}
             {activeTab === "dashboard" && (
               <div className="space-y-8 animate-fadeIn">
-                {/* Hero Banner */}
-                <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-8 text-white relative overflow-hidden shadow-xl">
+                <div className={`rounded-2xl p-8 relative overflow-hidden shadow-xl ${
+                  isDark
+                    ? "bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-cyan-500/30 shadow-[0_0_30px_rgba(6,182,212,0.15)] text-white"
+                    : "bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white"
+                }`}>
                   <div className="absolute right-0 bottom-0 translate-x-12 translate-y-12 opacity-10 pointer-events-none">
                     <Database className="w-96 h-96 text-white" />
                   </div>
                   <div className="max-w-2xl relative z-10 space-y-4">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-medium text-indigo-200">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-medium text-cyan-200 border border-cyan-400/30">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>Sincronizado con repositorio oficial en vivo</span>
+                      <span>Sincronización Verídica con Concursos Oficiales y Horarios</span>
                     </div>
                     <h2 className="text-3xl font-bold tracking-tight">Análisis Cuantitativo y Caracterización de Tris</h2>
                     <p className="text-sm text-slate-300 leading-relaxed">
-                      Monitorea en tiempo real los 5 sorteos diarios (Mediodía, Tres, Extra, Siete y Clásico) de la Lotería Nacional. Explora frecuencias de dígitos, sumas, paridades y patrones estadísticos históricos.
+                      Monitorea los sorteos diarios con número de concurso oficial, hora exacta y tómbolas de 0 a 9.
                     </p>
                     <div className="flex flex-wrap gap-4 pt-2">
                       <button
                         onClick={() => setActiveTab("stats")}
-                        className="px-5 py-2.5 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition-colors shadow-lg shadow-indigo-600/30 flex items-center gap-2"
+                        className="px-5 py-2.5 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl transition-colors shadow-lg shadow-cyan-500/30 flex items-center gap-2 font-bold"
                       >
                         <span>Ver Caracterización</span>
                         <ChevronRight className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => setActiveTab("ai")}
+                        onClick={() => setActiveTab("ml")}
                         className="px-5 py-2.5 text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl transition-colors flex items-center gap-2 backdrop-blur-md"
                       >
-                        <Sparkles className="w-4 h-4 text-indigo-300" />
-                        <span>Generar Reporte con IA</span>
+                        <Cpu className="w-4 h-4 text-cyan-300" />
+                        <span>Predicción ML & Backtesting</span>
                       </button>
                     </div>
                   </div>
                 </div>
 
                 {/* Date Range Filter Bar */}
-                <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+                <div className={`p-4 rounded-2xl border shadow-sm flex flex-wrap items-center justify-between gap-4 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
                   <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-indigo-600" />
-                    <span className="text-xs font-bold text-slate-800">Filtrar por Periodo de Fechas:</span>
+                    <Calendar className="w-4 h-4 text-cyan-400" />
+                    <span className="text-xs font-bold">Filtrar por Periodo de Fechas:</span>
                   </div>
                   <div className="flex flex-wrap items-center gap-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-slate-600">Desde:</span>
+                      <span className="text-xs font-semibold text-slate-400">Desde:</span>
                       <input
                         type="date"
                         value={dateFrom}
                         onChange={(e) => setDateFrom(e.target.value)}
-                        className="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                        className={`px-3 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono ${isDark ? "bg-slate-950 border-slate-800 text-slate-200" : "bg-slate-50 border-slate-200 text-slate-800"}`}
                       />
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-slate-600">Hasta:</span>
+                      <span className="text-xs font-semibold text-slate-400">Hasta:</span>
                       <input
                         type="date"
                         value={dateTo}
                         onChange={(e) => setDateTo(e.target.value)}
-                        className="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                        className={`px-3 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono ${isDark ? "bg-slate-950 border-slate-800 text-slate-200" : "bg-slate-50 border-slate-200 text-slate-800"}`}
                       />
                     </div>
                     {(dateFrom || dateTo) && (
                       <button
                         onClick={() => { setDateFrom(""); setDateTo(""); }}
-                        className="text-xs text-indigo-600 hover:text-indigo-800 underline font-medium"
+                        className="text-xs text-cyan-400 hover:text-cyan-300 underline font-medium"
                       >
                         Limpiar Fechas
                       </button>
@@ -840,69 +923,69 @@ export default function App() {
 
                 {/* KPI Metrics Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
-                    <div className="flex items-center justify-between text-slate-500">
+                  <div className={`p-6 rounded-2xl border shadow-sm space-y-2 ${isDark ? "bg-slate-900 border-slate-800 shadow-[0_0_15px_rgba(6,182,212,0.08)]" : "bg-white border-slate-200/80"}`}>
+                    <div className="flex items-center justify-between text-slate-400">
                       <span className="text-xs font-medium uppercase tracking-wider">Sorteos Totales</span>
-                      <Database className="w-4 h-4 text-indigo-600" />
+                      <Database className="w-4 h-4 text-cyan-400" />
                     </div>
-                    <div className="text-3xl font-bold font-mono tabular-nums text-slate-900">
+                    <div className="text-3xl font-bold font-mono tabular-nums">
                       {records.length.toLocaleString()}
                     </div>
-                    <div className="text-xs text-slate-500">
-                      Última actualización: <span className="font-medium text-slate-700">{lastUpdated || "Reciente"}</span>
+                    <div className="text-xs text-slate-400">
+                      Actualización: <span className="font-medium text-cyan-400">{lastUpdated || "Reciente"}</span>
                     </div>
                   </div>
 
-                  <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
-                    <div className="flex items-center justify-between text-slate-500">
+                  <div className={`p-6 rounded-2xl border shadow-sm space-y-2 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
+                    <div className="flex items-center justify-between text-slate-400">
                       <span className="text-xs font-medium uppercase tracking-wider">Suma Promedio</span>
-                      <TrendingUp className="w-4 h-4 text-emerald-600" />
+                      <TrendingUp className="w-4 h-4 text-emerald-400" />
                     </div>
-                    <div className="text-3xl font-bold font-mono tabular-nums text-slate-900">
-                      {stats?.avgSum || "22.5"} <span className="text-xs font-normal text-slate-400">/ 45 máx</span>
+                    <div className="text-3xl font-bold font-mono tabular-nums">
+                      {stats?.avgSum || "22.5"} <span className="text-xs font-normal text-slate-500">/ 45 máx</span>
                     </div>
-                    <div className="text-xs text-slate-500">Suma aritmética esperada por sorteo</div>
+                    <div className="text-xs text-slate-400">Suma aritmética esperada por sorteo</div>
                   </div>
 
-                  <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
-                    <div className="flex items-center justify-between text-slate-500">
+                  <div className={`p-6 rounded-2xl border shadow-sm space-y-2 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
+                    <div className="flex items-center justify-between text-slate-400">
                       <span className="text-xs font-medium uppercase tracking-wider">Dígitos Frecuentes (Hot)</span>
-                      <Award className="w-4 h-4 text-amber-500" />
+                      <Award className="w-4 h-4 text-amber-400" />
                     </div>
                     <div className="flex items-center gap-2 pt-1">
                       {stats?.hotDigits.slice(0, 3).map(d => (
-                        <span key={d.digit} className="w-8 h-8 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 font-mono font-bold flex items-center justify-center text-sm shadow-sm">
+                        <span key={d.digit} className={`w-8 h-8 rounded-lg font-mono font-bold flex items-center justify-center text-sm shadow-sm border ${isDark ? "bg-amber-500/20 border-amber-500/40 text-amber-300" : "bg-amber-50 border-amber-200 text-amber-800"}`}>
                           {d.digit}
                         </span>
                       ))}
                     </div>
-                    <div className="text-xs text-slate-500">Mayor aparición histórica global</div>
+                    <div className="text-xs text-slate-400">Mayor aparición histórica global</div>
                   </div>
 
-                  <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
-                    <div className="flex items-center justify-between text-slate-500">
+                  <div className={`p-6 rounded-2xl border shadow-sm space-y-2 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
+                    <div className="flex items-center justify-between text-slate-400">
                       <span className="text-xs font-medium uppercase tracking-wider">Dígitos Menos Frecuentes</span>
-                      <Clock className="w-4 h-4 text-blue-500" />
+                      <Clock className="w-4 h-4 text-cyan-400" />
                     </div>
                     <div className="flex items-center gap-2 pt-1">
                       {stats?.coldDigits.slice(0, 3).map(d => (
-                        <span key={d.digit} className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 text-blue-800 font-mono font-bold flex items-center justify-center text-sm shadow-sm">
+                        <span key={d.digit} className={`w-8 h-8 rounded-lg font-mono font-bold flex items-center justify-center text-sm shadow-sm border ${isDark ? "bg-cyan-500/20 border-cyan-500/40 text-cyan-300" : "bg-blue-50 border-blue-200 text-blue-800"}`}>
                           {d.digit}
                         </span>
                       ))}
                     </div>
-                    <div className="text-xs text-slate-500">Candidatos a compensación estadística</div>
+                    <div className="text-xs text-slate-400">Candidatos a compensación estadística</div>
                   </div>
                 </div>
 
-                {/* Evolution Line Chart (Last 30 draws sum of digits) */}
-                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
+                {/* Evolution Line Chart */}
+                <div className={`rounded-2xl border shadow-sm p-6 space-y-4 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-base font-bold text-slate-900">Evolución de la Suma de Dígitos (Últimos 30 Sorteos)</h3>
-                      <p className="text-xs text-slate-500">Tendencia histórica de la suma aritmética por sorteo (esperado central: ~22.5)</p>
+                      <h3 className="text-base font-bold">Evolución de la Suma de Dígitos (Últimos 30 Sorteos)</h3>
+                      <p className="text-xs text-slate-400">Tendencia histórica de la suma aritmética por sorteo (esperado central: ~22.5)</p>
                     </div>
-                    <span className="text-xs font-mono text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md font-semibold">
+                    <span className="text-xs font-mono text-cyan-400 bg-cyan-500/20 border border-cyan-500/30 px-2.5 py-1 rounded-md font-semibold">
                       Tendencia Temporal
                     </span>
                   </div>
@@ -910,15 +993,15 @@ export default function App() {
                   <div className="h-72 w-full pt-4">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart
-                        data={records.slice(0, 30).slice().reverse().map((r, idx) => ({
+                        data={records.slice(-30).map((r, idx) => ({
                           index: idx + 1,
-                          label: `${r.date} (${r.drawType})`,
+                          label: `Concurso #${r.concurso} - ${r.date} ${r.drawTime} (${r.drawType})`,
                           suma: r.sum,
                           numero: r.number
                         }))}
                         margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
                       >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                        <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#f1f5f9"} />
                         <XAxis dataKey="index" stroke="#94a3b8" fontSize={11} tickLine={false} />
                         <YAxis domain={[0, 45]} stroke="#94a3b8" fontSize={11} tickLine={false} />
                         <Tooltip
@@ -926,11 +1009,10 @@ export default function App() {
                             if (active && payload && payload.length) {
                               const data = payload[0].payload;
                               return (
-                                <div className="bg-slate-900 text-white p-3 rounded-xl shadow-lg text-xs space-y-1 font-mono">
-                                  <p className="font-bold text-indigo-300">{data.label}</p>
-                                  <p>Sorteo # {data.index}</p>
-                                  <p>Número: <span className="font-bold text-emerald-400">{data.numero}</span></p>
+                                <div className="bg-slate-900 text-white p-3 rounded-xl shadow-lg text-xs space-y-1 font-mono border border-cyan-500/40">
+                                  <p className="font-bold text-cyan-300">{data.label}</p>
                                   <p>Suma de Dígitos: <span className="font-bold text-amber-400">{data.suma}</span></p>
+                                  <p>Número: <span className="font-bold text-emerald-400">{data.numero}</span></p>
                                 </div>
                               );
                             }
@@ -940,10 +1022,10 @@ export default function App() {
                         <Line
                           type="monotone"
                           dataKey="suma"
-                          stroke="#4f46e5"
+                          stroke={isDark ? "#06b6d4" : "#4f46e5"}
                           strokeWidth={2.5}
-                          dot={{ r: 3, fill: "#4f46e5" }}
-                          activeDot={{ r: 6, fill: "#4f46e5" }}
+                          dot={{ r: 3, fill: isDark ? "#06b6d4" : "#4f46e5" }}
+                          activeDot={{ r: 6, fill: isDark ? "#22d3ee" : "#4f46e5" }}
                         />
                       </LineChart>
                     </ResponsiveContainer>
@@ -952,13 +1034,12 @@ export default function App() {
 
                 {/* Recent Draws & Quick Distribution */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  {/* Latest 10 Draws Table */}
-                  <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
+                  <div className={`lg:col-span-2 rounded-2xl border shadow-sm p-6 space-y-4 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
                     <div className="flex items-center justify-between">
-                      <h3 className="text-base font-bold text-slate-900">Últimos Sorteos Registrados</h3>
+                      <h3 className="text-base font-bold">Últimos Sorteos Registrados (Con Concurso y Hora)</h3>
                       <button
                         onClick={() => setActiveTab("explorer")}
-                        className="text-xs font-medium text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                        className="text-xs font-medium text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
                       >
                         <span>Ver todos</span>
                         <ChevronRight className="w-3.5 h-3.5" />
@@ -968,36 +1049,42 @@ export default function App() {
                     <div className="overflow-x-auto">
                       <table className="w-full text-left border-collapse">
                         <thead>
-                          <tr className="border-b border-slate-100 text-xs font-semibold text-slate-500">
-                            <th className="py-3 px-3">Fecha</th>
-                            <th className="py-3 px-3">Sorteo</th>
+                          <tr className={`border-b text-xs font-semibold ${isDark ? "border-slate-800 text-slate-400 bg-slate-950/50" : "border-slate-100 text-slate-500"}`}>
+                            <th className="py-3 px-3">Concurso y Fecha</th>
+                            <th className="py-3 px-3">Sorteo y Hora</th>
                             <th className="py-3 px-3">Número Ganador</th>
                             <th className="py-3 px-3">Suma</th>
                             <th className="py-3 px-3">Par/Impar</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100 text-sm">
-                          {records.slice(0, 8).map(r => (
-                            <tr key={r.id} className="hover:bg-slate-50/80 transition-colors">
-                              <td className="py-3 px-3 text-slate-600 font-mono text-xs">{r.date}</td>
-                              <td className="py-3 px-3 font-medium text-slate-800">
-                                <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
-                                  r.drawType === "Mediodía" ? "bg-sky-50 text-sky-700" :
-                                  r.drawType === "Tres" ? "bg-amber-50 text-amber-700" :
-                                  r.drawType === "Extra" ? "bg-purple-50 text-purple-700" :
-                                  r.drawType === "Siete" ? "bg-indigo-50 text-indigo-700" :
-                                  "bg-slate-100 text-slate-700"
-                                }`}>
-                                  {r.drawType}
-                                </span>
+                        <tbody className={`divide-y text-sm ${isDark ? "divide-slate-800" : "divide-slate-100"}`}>
+                          {records.slice().reverse().slice(0, 8).map(r => (
+                            <tr key={r.id} className={`transition-colors ${isDark ? "hover:bg-slate-800/50" : "hover:bg-slate-50/80"}`}>
+                              <td className="py-3 px-3 font-mono text-xs text-slate-400">
+                                <div className="font-bold text-cyan-300">#{r.concurso}</div>
+                                <div className="text-[11px] text-slate-300">{r.date}</div>
+                              </td>
+                              <td className="py-3 px-3 font-medium">
+                                <div className="space-y-0.5">
+                                  <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${
+                                    r.drawType === "Mediodía" ? (isDark ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30" : "bg-sky-50 text-sky-700") :
+                                    r.drawType === "Tres" ? (isDark ? "bg-amber-500/20 text-amber-300 border border-amber-500/30" : "bg-amber-50 text-amber-700") :
+                                    r.drawType === "Extra" ? (isDark ? "bg-purple-500/20 text-purple-300 border border-purple-500/30" : "bg-purple-50 text-purple-700") :
+                                    r.drawType === "Siete" ? (isDark ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" : "bg-indigo-50 text-indigo-700") :
+                                    (isDark ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" : "bg-slate-100 text-slate-700")
+                                  }`}>
+                                    {r.drawType}
+                                  </span>
+                                  <div className="text-[10px] text-slate-400 font-mono">{r.drawTime}</div>
+                                </div>
                               </td>
                               <td className="py-3 px-3">
-                                <span className="font-mono font-bold tracking-widest text-indigo-600 bg-indigo-50/80 px-2.5 py-1 rounded-md text-sm">
+                                <span className={`font-mono font-bold tracking-widest px-3 py-1 rounded-md text-sm shadow-sm ${isDark ? "bg-cyan-500/10 text-cyan-300 border border-cyan-500/30" : "bg-indigo-50 text-indigo-600"}`}>
                                   {r.number}
                                 </span>
                               </td>
-                              <td className="py-3 px-3 font-mono text-slate-600">{r.sum}</td>
-                              <td className="py-3 px-3 text-xs text-slate-500 font-mono">
+                              <td className="py-3 px-3 font-mono text-slate-300">{r.sum}</td>
+                              <td className="py-3 px-3 text-xs text-slate-400 font-mono">
                                 {r.evenCount}P / {r.oddCount}I
                               </td>
                             </tr>
@@ -1007,11 +1094,10 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Draw Types Distribution Card */}
-                  <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4 flex flex-col justify-between">
+                  <div className={`rounded-2xl border shadow-sm p-6 space-y-4 flex flex-col justify-between ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
                     <div>
-                      <h3 className="text-base font-bold text-slate-900 mb-1">Distribución por Horario</h3>
-                      <p className="text-xs text-slate-500">Proporción de sorteos analizados por categoría diaria.</p>
+                      <h3 className="text-base font-bold mb-1">Distribución por Horario</h3>
+                      <p className="text-xs text-slate-400">Proporción de sorteos analizados por categoría diaria.</p>
                     </div>
 
                     <div className="space-y-3 py-4">
@@ -1021,12 +1107,12 @@ export default function App() {
                         return (
                           <div key={type} className="space-y-1">
                             <div className="flex justify-between text-xs font-medium">
-                              <span className="text-slate-700">{type}</span>
-                              <span className="font-mono text-slate-500">{count} ({pct}%)</span>
+                              <span>{type}</span>
+                              <span className="font-mono text-cyan-400">{count} ({pct}%)</span>
                             </div>
-                            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div className={`w-full h-2 rounded-full overflow-hidden ${isDark ? "bg-slate-800" : "bg-slate-100"}`}>
                               <div
-                                className="h-full bg-indigo-600 rounded-full transition-all duration-500"
+                                className={`h-full rounded-full transition-all duration-500 ${isDark ? "bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.6)]" : "bg-indigo-600"}`}
                                 style={{ width: `${pct}%` }}
                               />
                             </div>
@@ -1035,9 +1121,9 @@ export default function App() {
                       })}
                     </div>
 
-                    <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-xs text-slate-600 space-y-1">
-                      <div className="font-semibold text-slate-800">Nota Analítica</div>
-                      <p>Los 5 sorteos diarios operan de lunes a domingo con tómbolas independientes de 10 esferas (0 a 9).</p>
+                    <div className={`p-4 rounded-xl border text-xs space-y-1 ${isDark ? "bg-slate-950 border-slate-800 text-slate-300" : "bg-slate-50 border-slate-100 text-slate-600"}`}>
+                      <div className="font-semibold text-cyan-400">Nota Analítica Oficial</div>
+                      <p>Cada sorteo cuenta con un número de concurso único sincronizado del repositorio oficial de Lotería Nacional.</p>
                     </div>
                   </div>
                 </div>
@@ -1047,135 +1133,130 @@ export default function App() {
             {/* TAB 2: STATISTICAL CHARACTERIZATION */}
             {activeTab === "stats" && stats && (
               <div className="space-y-8 animate-fadeIn">
-                {/* Header controls with Date Range and Draw Type Filters */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                <div className={`p-6 rounded-2xl border shadow-sm space-y-4 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
                   <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                     <div>
-                      <h2 className="text-lg font-bold text-slate-900">Caracterización Estadística por Posición y Dígito</h2>
-                      <p className="text-xs text-slate-500">Analiza el comportamiento histórico de cada una de las 5 posiciones y modalidades de Tris.</p>
+                      <h2 className="text-lg font-bold">Caracterización Estadística por Posición y Dígito</h2>
+                      <p className="text-xs text-slate-400">Analiza el comportamiento histórico de cada una de las 5 posiciones y modalidades de Tris.</p>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-slate-600">Sorteo:</span>
+                        <span className="text-xs font-medium text-slate-400">Sorteo:</span>
                         <select
                           value={selectedDrawTypeFilter}
                           onChange={(e) => setSelectedDrawTypeFilter(e.target.value)}
-                          className="px-3 py-1.5 text-xs font-medium bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          className={`px-3 py-1.5 text-xs font-medium border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 ${isDark ? "bg-slate-950 border-slate-800 text-slate-200" : "bg-slate-50 border-slate-200 text-slate-800"}`}
                         >
                           <option value="todos">Todos los Sorteos (5 diarios)</option>
-                          <option value="mediodía">Mediodía</option>
-                          <option value="tres">Tres</option>
-                          <option value="extra">Extra</option>
-                          <option value="siete">Siete</option>
-                          <option value="clásico">Clásico</option>
+                          <option value="mediodía">Mediodía (13:00 hrs)</option>
+                          <option value="tres">Tres (15:00 hrs)</option>
+                          <option value="extra">Extra (17:00 hrs)</option>
+                          <option value="siete">Siete (19:00 hrs)</option>
+                          <option value="clásico">Clásico (21:00 hrs)</option>
                         </select>
                       </div>
 
-                      <div className="text-xs bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg font-semibold border border-indigo-100">
+                      <div className="text-xs bg-cyan-500/20 text-cyan-300 px-3 py-1.5 rounded-lg font-semibold border border-cyan-500/30">
                         Muestra: {stats.total} sorteos
                       </div>
                     </div>
                   </div>
 
-                  {/* Date Range Toolbar & Quick Presets */}
-                  <div className="space-y-3 pt-3 border-t border-slate-100 text-xs">
+                  <div className={`space-y-3 pt-3 border-t text-xs ${isDark ? "border-slate-800" : "border-slate-100"}`}>
                     <div className="flex flex-wrap items-center justify-between gap-4">
-                      <div className="flex items-center gap-2 text-slate-700 font-semibold">
-                        <Calendar className="w-4 h-4 text-indigo-600" />
+                      <div className="flex items-center gap-2 font-semibold">
+                        <Calendar className="w-4 h-4 text-cyan-400" />
                         <span>Rangos Rápidos de Análisis:</span>
                       </div>
                       <div className="flex flex-wrap items-center gap-1.5">
                         <button
                           onClick={() => { setDateFrom(""); setDateTo(""); }}
-                          className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors"
+                          className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${isDark ? "bg-slate-800 hover:bg-slate-700 text-slate-200" : "bg-slate-100 hover:bg-slate-200 text-slate-700"}`}
                         >
                           Todos
                         </button>
                         <button
                           onClick={() => applyDatePreset(7, 'days')}
-                          className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium transition-colors"
+                          className="px-2.5 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 font-medium transition-colors border border-cyan-500/30"
                         >
                           1 Semana
                         </button>
                         <button
                           onClick={() => applyDatePreset(1, 'months')}
-                          className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium transition-colors"
+                          className="px-2.5 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 font-medium transition-colors border border-cyan-500/30"
                         >
                           1 Mes
                         </button>
                         <button
                           onClick={() => applyDatePreset(6, 'months')}
-                          className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium transition-colors"
+                          className="px-2.5 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 font-medium transition-colors border border-cyan-500/30"
                         >
                           6 Meses
                         </button>
                         <button
                           onClick={() => applyDatePreset(1, 'years')}
-                          className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium transition-colors"
+                          className="px-2.5 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 font-medium transition-colors border border-cyan-500/30"
                         >
                           1 Año
                         </button>
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center justify-between gap-4 pt-1">
-                      <div className="flex flex-wrap items-center gap-3">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-slate-500">Desde:</span>
-                          <input
-                            type="date"
-                            value={dateFrom}
-                            onChange={(e) => setDateFrom(e.target.value)}
-                            className="px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-xs"
-                          />
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-slate-500">Hasta:</span>
-                          <input
-                            type="date"
-                            value={dateTo}
-                            onChange={(e) => setDateTo(e.target.value)}
-                            className="px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-xs"
-                          />
-                        </div>
-                        {(dateFrom || dateTo) && (
-                          <button
-                            onClick={() => { setDateFrom(""); setDateTo(""); }}
-                            className="text-indigo-600 hover:text-indigo-800 underline font-medium"
-                          >
-                            Limpiar Rango
-                          </button>
-                        )}
+                    <div className="flex flex-wrap items-center gap-3 pt-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-slate-400">Desde:</span>
+                        <input
+                          type="date"
+                          value={dateFrom}
+                          onChange={(e) => setDateFrom(e.target.value)}
+                          className={`px-2.5 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono text-xs ${isDark ? "bg-slate-950 border-slate-800 text-slate-200" : "bg-slate-50 border-slate-200 text-slate-800"}`}
+                        />
                       </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-slate-400">Hasta:</span>
+                        <input
+                          type="date"
+                          value={dateTo}
+                          onChange={(e) => setDateTo(e.target.value)}
+                          className={`px-2.5 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono text-xs ${isDark ? "bg-slate-950 border-slate-800 text-slate-200" : "bg-slate-50 border-slate-200 text-slate-800"}`}
+                        />
+                      </div>
+                      {(dateFrom || dateTo) && (
+                        <button
+                          onClick={() => { setDateFrom(""); setDateTo(""); }}
+                          className="text-cyan-400 hover:text-cyan-300 underline font-medium"
+                        >
+                          Limpiar Rango
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
 
                 {/* Position Frequency Breakdown */}
-                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-6">
-                  <h3 className="text-base font-bold text-slate-900">Frecuencia de Dígitos (0-9) por Posición</h3>
+                <div className={`rounded-2xl border shadow-sm p-6 space-y-6 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
+                  <h3 className="text-base font-bold">Frecuencia de Dígitos (0-9) por Posición</h3>
                   <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                     {stats.posFreq.map((digitCounts, posIndex) => {
                       const maxCount = Math.max(...digitCounts, 1);
                       return (
-                        <div key={posIndex} className="bg-slate-50/80 rounded-xl p-4 border border-slate-100 space-y-3">
-                          <div className="text-xs font-bold text-indigo-600 uppercase tracking-wider text-center pb-1 border-b border-slate-200">
+                        <div key={posIndex} className={`rounded-xl p-4 border space-y-3 ${isDark ? "bg-slate-950/80 border-slate-800" : "bg-slate-50/80 border-slate-100"}`}>
+                          <div className="text-xs font-bold text-cyan-400 uppercase tracking-wider text-center pb-1 border-b border-slate-800">
                             Posición {posIndex + 1}
                           </div>
                           <div className="space-y-2">
                             {digitCounts.map((count, digit) => {
-                              const pct = ((count / stats.total) * 100).toFixed(1);
                               return (
                                 <div key={digit} className="text-xs flex items-center justify-between gap-2">
-                                  <span className="w-5 font-mono font-bold text-slate-700">{digit}</span>
-                                  <div className="flex-1 h-2 bg-slate-200/70 rounded-full overflow-hidden">
+                                  <span className="w-5 font-mono font-bold text-slate-300">{digit}</span>
+                                  <div className={`flex-1 h-2 rounded-full overflow-hidden ${isDark ? "bg-slate-800" : "bg-slate-200/70"}`}>
                                     <div
-                                      className="h-full bg-indigo-500 rounded-full"
+                                      className={`h-full rounded-full ${isDark ? "bg-cyan-400" : "bg-indigo-500"}`}
                                       style={{ width: `${(count / maxCount) * 100}%` }}
                                     />
                                   </div>
-                                  <span className="w-10 text-right font-mono text-[10px] text-slate-500">{count}</span>
+                                  <span className="w-10 text-right font-mono text-[10px] text-slate-400">{count}</span>
                                 </div>
                               );
                             })}
@@ -1187,13 +1268,13 @@ export default function App() {
                 </div>
 
                 {/* Overall Digit Frequency Bar Chart */}
-                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
+                <div className={`rounded-2xl border shadow-sm p-6 space-y-4 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-base font-bold text-slate-900">Distribución Histórica de Frecuencia Global por Dígito (0 - 9)</h3>
-                      <p className="text-xs text-slate-500">Comparativa de apariciones reales frente a la media teórica esperada (línea de referencia)</p>
+                      <h3 className="text-base font-bold">Distribución Histórica de Frecuencia Global por Dígito (0 - 9)</h3>
+                      <p className="text-xs text-slate-400">Comparativa de apariciones reales frente a la media teórica esperada</p>
                     </div>
-                    <span className="text-xs font-mono text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md font-semibold">
+                    <span className="text-xs font-mono text-emerald-400 bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-1 rounded-md font-semibold">
                       Media Teórica: {((stats.total * 5) / 10).toFixed(0)} apariciones
                     </span>
                   </div>
@@ -1209,7 +1290,7 @@ export default function App() {
                         }))}
                         margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
                       >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                        <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#f1f5f9"} />
                         <XAxis dataKey="digit" stroke="#94a3b8" fontSize={11} tickLine={false} />
                         <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} />
                         <Tooltip
@@ -1218,8 +1299,8 @@ export default function App() {
                               const data = payload[0].payload;
                               const diff = data.apariciones - data.esperado;
                               return (
-                                <div className="bg-slate-900 text-white p-3 rounded-xl shadow-lg text-xs space-y-1 font-mono">
-                                  <p className="font-bold text-indigo-300">Dígito: {data.numero}</p>
+                                <div className="bg-slate-900 text-white p-3 rounded-xl shadow-lg text-xs space-y-1 font-mono border border-cyan-500/40">
+                                  <p className="font-bold text-cyan-300">Dígito: {data.numero}</p>
                                   <p>Apariciones Reales: <span className="font-bold text-emerald-400">{data.apariciones}</span></p>
                                   <p>Media Esperada: <span className="font-bold text-slate-300">{data.esperado.toFixed(1)}</span></p>
                                   <p>Desviación: <span className={`font-bold ${diff >= 0 ? 'text-emerald-400' : 'text-amber-400'}`}>{diff >= 0 ? `+${diff.toFixed(0)}` : diff.toFixed(0)}</span></p>
@@ -1237,7 +1318,7 @@ export default function App() {
                         />
                         <Bar
                           dataKey="apariciones"
-                          fill="#4f46e5"
+                          fill={isDark ? "#06b6d4" : "#4f46e5"}
                           radius={[6, 6, 0, 0]}
                         />
                       </BarChart>
@@ -1247,22 +1328,21 @@ export default function App() {
 
                 {/* Parity & High/Low Distribution */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {/* Paridad (Pares vs Impares) */}
-                  <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
-                    <h3 className="text-base font-bold text-slate-900">Balance de Paridad (Pares vs Impares)</h3>
-                    <p className="text-xs text-slate-500">Distribución de números pares (0,2,4,6,8) e impares (1,3,5,7,9).</p>
+                  <div className={`rounded-2xl border shadow-sm p-6 space-y-4 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
+                    <h3 className="text-base font-bold">Balance de Paridad (Pares vs Impares)</h3>
+                    <p className="text-xs text-slate-400">Distribución de números pares (0,2,4,6,8) e impares (1,3,5,7,9).</p>
 
                     <div className="space-y-3 pt-2">
                       <div>
                         <div className="flex justify-between text-xs font-medium mb-1">
-                          <span className="text-slate-700">Dígitos Pares</span>
-                          <span className="font-mono text-indigo-600">
+                          <span>Dígitos Pares</span>
+                          <span className="font-mono text-cyan-400">
                             {stats.totalEvens} ({((stats.totalEvens / (stats.total * 5)) * 100).toFixed(1)}%)
                           </span>
                         </div>
-                        <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                        <div className={`w-full h-3 rounded-full overflow-hidden ${isDark ? "bg-slate-800" : "bg-slate-100"}`}>
                           <div
-                            className="h-full bg-indigo-600 rounded-full"
+                            className={`h-full rounded-full ${isDark ? "bg-cyan-400" : "bg-indigo-600"}`}
                             style={{ width: `${(stats.totalEvens / (stats.total * 5)) * 100}%` }}
                           />
                         </div>
@@ -1270,14 +1350,14 @@ export default function App() {
 
                       <div>
                         <div className="flex justify-between text-xs font-medium mb-1">
-                          <span className="text-slate-700">Dígitos Impares</span>
-                          <span className="font-mono text-purple-600">
+                          <span>Dígitos Impares</span>
+                          <span className="font-mono text-purple-400">
                             {stats.totalOdds} ({((stats.totalOdds / (stats.total * 5)) * 100).toFixed(1)}%)
                           </span>
                         </div>
-                        <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                        <div className={`w-full h-3 rounded-full overflow-hidden ${isDark ? "bg-slate-800" : "bg-slate-100"}`}>
                           <div
-                            className="h-full bg-purple-600 rounded-full"
+                            className={`h-full rounded-full ${isDark ? "bg-purple-500" : "bg-purple-600"}`}
                             style={{ width: `${(stats.totalOdds / (stats.total * 5)) * 100}%` }}
                           />
                         </div>
@@ -1285,20 +1365,19 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Altos vs Bajos */}
-                  <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
-                    <h3 className="text-base font-bold text-slate-900">Rango de Dígitos (Bajos 0-4 vs Altos 5-9)</h3>
-                    <p className="text-xs text-slate-500">Proporción de aparición entre dígitos bajos y altos.</p>
+                  <div className={`rounded-2xl border shadow-sm p-6 space-y-4 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
+                    <h3 className="text-base font-bold">Rango de Dígitos (Bajos 0-4 vs Altos 5-9)</h3>
+                    <p className="text-xs text-slate-400">Proporción de aparición entre dígitos bajos y altos.</p>
 
                     <div className="space-y-3 pt-2">
                       <div>
                         <div className="flex justify-between text-xs font-medium mb-1">
-                          <span className="text-slate-700">Dígitos Bajos (0, 1, 2, 3, 4)</span>
-                          <span className="font-mono text-blue-600">
+                          <span>Dígitos Bajos (0-4)</span>
+                          <span className="font-mono text-blue-400">
                             {stats.totalLows} ({((stats.totalLows / (stats.total * 5)) * 100).toFixed(1)}%)
                           </span>
                         </div>
-                        <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                        <div className={`w-full h-3 rounded-full overflow-hidden ${isDark ? "bg-slate-800" : "bg-slate-100"}`}>
                           <div
                             className="h-full bg-blue-500 rounded-full"
                             style={{ width: `${(stats.totalLows / (stats.total * 5)) * 100}%` }}
@@ -1308,12 +1387,12 @@ export default function App() {
 
                       <div>
                         <div className="flex justify-between text-xs font-medium mb-1">
-                          <span className="text-slate-700">Dígitos Altos (5, 6, 7, 8, 9)</span>
-                          <span className="font-mono text-amber-600">
+                          <span>Dígitos Altos (5-9)</span>
+                          <span className="font-mono text-amber-400">
                             {stats.totalHighs} ({((stats.totalHighs / (stats.total * 5)) * 100).toFixed(1)}%)
                           </span>
                         </div>
-                        <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                        <div className={`w-full h-3 rounded-full overflow-hidden ${isDark ? "bg-slate-800" : "bg-slate-100"}`}>
                           <div
                             className="h-full bg-amber-500 rounded-full"
                             style={{ width: `${(stats.totalHighs / (stats.total * 5)) * 100}%` }}
@@ -1324,186 +1403,48 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Monthly Stacked Bar Charts (Parity & Ranges) */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {/* Parity Stacked Bar Chart */}
-                  <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
-                    <div>
-                      <h3 className="text-base font-bold text-slate-900">Evolución Mensual de Paridad (Pares vs. Impares)</h3>
-                      <p className="text-xs text-slate-500">Comparativa apilada de la distribución mensual de dígitos pares e impares</p>
-                    </div>
-
-                    <div className="h-72 w-full pt-4">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
-                          data={monthlyTrends}
-                          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                        >
-                          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                          <XAxis dataKey="monthKey" stroke="#94a3b8" fontSize={11} tickLine={false} />
-                          <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} />
-                          <Tooltip
-                            content={({ active, payload, label }) => {
-                              if (active && payload && payload.length) {
-                                return (
-                                  <div className="bg-slate-900 text-white p-3 rounded-xl shadow-lg text-xs space-y-1 font-mono">
-                                    <p className="font-bold text-indigo-300">Mes: {label}</p>
-                                    <p className="text-indigo-400">Pares: {payload[0].value}</p>
-                                    <p className="text-purple-400">Impares: {payload[1].value}</p>
-                                  </div>
-                                );
-                              }
-                              return null;
-                            }}
-                          />
-                          <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
-                          <Bar dataKey="pares" name="Pares" stackId="a" fill="#4f46e5" radius={[0, 0, 4, 4]} />
-                          <Bar dataKey="impares" name="Impares" stackId="a" fill="#9333ea" radius={[4, 4, 0, 0]} />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </div>
-
-                  {/* Ranges Stacked Bar Chart */}
-                  <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
-                    <div>
-                      <h3 className="text-base font-bold text-slate-900">Evolución Mensual de Rangos (Bajos vs. Altos)</h3>
-                      <p className="text-xs text-slate-500">Comparativa apilada mensual entre dígitos bajos (0-4) y altos (5-9)</p>
-                    </div>
-
-                    <div className="h-72 w-full pt-4">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
-                          data={monthlyTrends}
-                          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                        >
-                          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                          <XAxis dataKey="monthKey" stroke="#94a3b8" fontSize={11} tickLine={false} />
-                          <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} />
-                          <Tooltip
-                            content={({ active, payload, label }) => {
-                              if (active && payload && payload.length) {
-                                return (
-                                  <div className="bg-slate-900 text-white p-3 rounded-xl shadow-lg text-xs space-y-1 font-mono">
-                                    <p className="font-bold text-indigo-300">Mes: {label}</p>
-                                    <p className="text-blue-400">Bajos (0-4): {payload[0].value}</p>
-                                    <p className="text-amber-400">Altos (5-9): {payload[1].value}</p>
-                                  </div>
-                                );
-                              }
-                              return null;
-                            }}
-                          />
-                          <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
-                          <Bar dataKey="bajos" name="Bajos (0-4)" stackId="b" fill="#3b82f6" radius={[0, 0, 4, 4]} />
-                          <Bar dataKey="altos" name="Altos (5-9)" stackId="b" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Radar Chart for 5 Daily Draws Comparison */}
-                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-base font-bold text-slate-900">Comparativa Multicriterio por Sorteo (Gráfico de Radar)</h3>
-                      <p className="text-xs text-slate-500">Distribución simultánea de dígitos (0-9) en los 5 sorteos diarios para identificar sesgos y comportamientos</p>
-                    </div>
-                    <span className="text-xs font-mono text-purple-600 bg-purple-50 px-2.5 py-1 rounded-md font-semibold">
-                      Análisis Multidim
-                    </span>
-                  </div>
-
-                  <div className="h-96 w-full pt-4">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <RadarChart data={radarData} margin={{ top: 20, right: 30, bottom: 20, left: 30 }}>
-                        <PolarGrid stroke="#e2e8f0" />
-                        <PolarAngleAxis dataKey="digit" tick={{ fill: '#475569', fontSize: 12 }} />
-                        <PolarRadiusAxis angle={30} domain={[0, 'auto']} />
-                        <Radar name="Mediodía" dataKey="Mediodía" stroke="#0ea5e9" fill="#0ea5e9" fillOpacity={0.2} />
-                        <Radar name="Tres" dataKey="Tres" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.2} />
-                        <Radar name="Extra" dataKey="Extra" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.2} />
-                        <Radar name="Siete" dataKey="Siete" stroke="#6366f1" fill="#6366f1" fillOpacity={0.2} />
-                        <Radar name="Clásico" dataKey="Clásico" stroke="#10b981" fill="#10b981" fillOpacity={0.2} />
-                        <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                        <Tooltip
-                          content={({ active, payload, label }) => {
-                            if (active && payload && payload.length) {
-                              return (
-                                <div className="bg-slate-900 text-white p-3 rounded-xl shadow-lg text-xs space-y-1 font-mono">
-                                  <p className="font-bold text-indigo-300">{label}</p>
-                                  {payload.map((entry: any, index: number) => (
-                                    <p key={index} style={{ color: entry.color }}>
-                                      {entry.name}: <span className="font-bold">{entry.value}</span> apariciones
-                                    </p>
-                                  ))}
-                                </div>
-                              );
-                            }
-                            return null;
-                          }}
-                        />
-                      </RadarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-
                 {/* Top 10 Frequencies per Modality */}
-                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-6">
+                <div className={`rounded-2xl border shadow-sm p-6 space-y-6 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
                   <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                     <div>
-                      <h3 className="text-base font-bold text-slate-900">Top 10 de Frecuencias por Modalidad de Juego</h3>
-                      <p className="text-xs text-slate-500">Ranking histórico de combinaciones más frecuentes según las reglas de premiación de Tris.</p>
+                      <h3 className="text-base font-bold">Top 10 de Frecuencias por Modalidad de Juego</h3>
+                      <p className="text-xs text-slate-400">Ranking histórico de combinaciones más frecuentes según las reglas de premiación de Tris.</p>
                     </div>
 
-                    {/* Modality Tabs */}
-                    <div className="flex flex-wrap items-center gap-1 bg-slate-100 p-1 rounded-xl">
-                      <button
-                        onClick={() => setTopModalityTab("directa5")}
-                        className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${topModalityTab === "directa5" ? "bg-white text-indigo-600 font-bold shadow-sm" : "text-slate-600 hover:text-slate-900"}`}
-                      >
-                        Directa 5
-                      </button>
-                      <button
-                        onClick={() => setTopModalityTab("directa4")}
-                        className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${topModalityTab === "directa4" ? "bg-white text-indigo-600 font-bold shadow-sm" : "text-slate-600 hover:text-slate-900"}`}
-                      >
-                        Directa 4
-                      </button>
-                      <button
-                        onClick={() => setTopModalityTab("directa3")}
-                        className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${topModalityTab === "directa3" ? "bg-white text-indigo-600 font-bold shadow-sm" : "text-slate-600 hover:text-slate-900"}`}
-                      >
-                        Directa 3
-                      </button>
-                      <button
-                        onClick={() => setTopModalityTab("parFinal")}
-                        className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${topModalityTab === "parFinal" ? "bg-white text-indigo-600 font-bold shadow-sm" : "text-slate-600 hover:text-slate-900"}`}
-                      >
-                        Par Final
-                      </button>
-                      <button
-                        onClick={() => setTopModalityTab("parInicial")}
-                        className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${topModalityTab === "parInicial" ? "bg-white text-indigo-600 font-bold shadow-sm" : "text-slate-600 hover:text-slate-900"}`}
-                      >
-                        Par Inicial
-                      </button>
+                    <div className={`flex flex-wrap items-center gap-1 p-1 rounded-xl ${isDark ? "bg-slate-950 border border-slate-800" : "bg-slate-100"}`}>
+                      {[
+                        { id: "directa5", label: "Directa 5" },
+                        { id: "directa4", label: "Directa 4" },
+                        { id: "directa3", label: "Directa 3" },
+                        { id: "parFinal", label: "Par Final" },
+                        { id: "parInicial", label: "Par Inicial" },
+                      ].map(tab => (
+                        <button
+                          key={tab.id}
+                          onClick={() => setTopModalityTab(tab.id as any)}
+                          className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                            topModalityTab === tab.id
+                              ? isDark ? "bg-cyan-500 text-slate-950 font-bold shadow-sm" : "bg-white text-indigo-600 font-bold shadow-sm"
+                              : isDark ? "text-slate-400 hover:text-slate-200" : "text-slate-600 hover:text-slate-900"
+                          }`}
+                        >
+                          {tab.label}
+                        </button>
+                      ))}
                     </div>
                   </div>
 
-                  {/* Top 10 Table */}
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="border-b border-slate-100 text-xs font-semibold text-slate-500">
+                        <tr className={`border-b text-xs font-semibold ${isDark ? "border-slate-800 text-slate-400 bg-slate-950/50" : "border-slate-100 text-slate-500"}`}>
                           <th className="py-3 px-4 w-20">Ranking</th>
                           <th className="py-3 px-4">Combinación ({topModalityTab.toUpperCase()})</th>
                           <th className="py-3 px-4">Apariciones</th>
                           <th className="py-3 px-4">Frecuencia Relativa</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100 text-sm font-mono">
+                      <tbody className={`divide-y text-sm font-mono ${isDark ? "divide-slate-800" : "divide-slate-100"}`}>
                         {(
                           topModalityTab === "directa5" ? stats.topDirecta5 :
                           topModalityTab === "directa4" ? stats.topDirecta4 :
@@ -1513,26 +1454,26 @@ export default function App() {
                         ).map((item, idx) => {
                           const pct = ((item.count / stats.total) * 100).toFixed(2);
                           return (
-                            <tr key={item.value} className="hover:bg-slate-50/80 transition-colors">
+                            <tr key={item.value} className={`transition-colors ${isDark ? "hover:bg-slate-800/50" : "hover:bg-slate-50/80"}`}>
                               <td className="py-3 px-4">
                                 <span className={`inline-flex w-7 h-7 rounded-lg items-center justify-center text-xs font-bold ${
-                                  idx === 0 ? "bg-amber-100 text-amber-800" :
-                                  idx === 1 ? "bg-slate-200 text-slate-800" :
-                                  idx === 2 ? "bg-orange-100 text-orange-800" :
-                                  "bg-slate-100 text-slate-600"
+                                  idx === 0 ? "bg-amber-500/20 text-amber-300 border border-amber-500/40" :
+                                  idx === 1 ? "bg-slate-800 text-slate-300 border border-slate-700" :
+                                  idx === 2 ? "bg-orange-500/20 text-orange-300 border border-orange-500/40" :
+                                  "bg-slate-800/50 text-slate-400"
                                 }`}>
                                   #{idx + 1}
                                 </span>
                               </td>
                               <td className="py-3 px-4">
-                                <span className="font-bold tracking-widest text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded">
+                                <span className={`font-bold tracking-widest px-2.5 py-1 rounded ${isDark ? "bg-cyan-500/10 text-cyan-300 border border-cyan-500/30" : "bg-indigo-50 text-indigo-600"}`}>
                                   {item.value}
                                 </span>
                               </td>
-                              <td className="py-3 px-4 text-slate-700 font-bold">
+                              <td className="py-3 px-4 font-bold">
                                 {item.count} veces
                               </td>
-                              <td className="py-3 px-4 text-slate-500">
+                              <td className="py-3 px-4 text-slate-400">
                                 {pct}% del total
                               </td>
                             </tr>
@@ -1548,47 +1489,47 @@ export default function App() {
             {/* TAB 3: EXPLORER & SEARCH */}
             {activeTab === "explorer" && (
               <div className="space-y-6 animate-fadeIn">
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                <div className={`p-6 rounded-2xl border shadow-sm space-y-4 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
                   <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
                     <div>
-                      <h2 className="text-lg font-bold text-slate-900">Buscador e Historial de Sorteos</h2>
-                      <p className="text-xs text-slate-500">Busca por número de 5 dígitos, fecha o tipo de sorteo.</p>
+                      <h2 className="text-lg font-bold">Buscador e Historial de Sorteos</h2>
+                      <p className="text-xs text-slate-400">Busca por concurso, número de 5 dígitos, fecha o tipo de sorteo.</p>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold text-slate-600">Desde:</span>
+                        <span className="text-xs font-semibold text-slate-400">Desde:</span>
                         <input
                           type="date"
                           value={dateFrom}
                           onChange={(e) => setDateFrom(e.target.value)}
-                          className="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                          className={`px-3 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono ${isDark ? "bg-slate-950 border-slate-800 text-slate-200" : "bg-slate-50 border-slate-200 text-slate-800"}`}
                         />
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold text-slate-600">Hasta:</span>
+                        <span className="text-xs font-semibold text-slate-400">Hasta:</span>
                         <input
                           type="date"
                           value={dateTo}
                           onChange={(e) => setDateTo(e.target.value)}
-                          className="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                          className={`px-3 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono ${isDark ? "bg-slate-950 border-slate-800 text-slate-200" : "bg-slate-50 border-slate-200 text-slate-800"}`}
                         />
                       </div>
                       <div className="relative">
                         <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
                         <input
                           type="text"
-                          placeholder="Buscar número..."
+                          placeholder="Buscar concurso o número..."
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
-                          className="pl-9 pr-4 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48"
+                          className={`pl-9 pr-4 py-2 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 w-52 ${isDark ? "bg-slate-950 border-slate-800 text-slate-200" : "bg-slate-50 border-slate-200 text-slate-800"}`}
                         />
                       </div>
 
                       <select
                         value={selectedDrawTypeFilter}
                         onChange={(e) => setSelectedDrawTypeFilter(e.target.value)}
-                        className="px-3 py-2 text-xs font-medium bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className={`px-3 py-2 text-xs font-medium border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 ${isDark ? "bg-slate-950 border-slate-800 text-slate-200" : "bg-slate-50 border-slate-200 text-slate-800"}`}
                       >
                         <option value="todos">Todos los Sorteos</option>
                         <option value="mediodía">Mediodía</option>
@@ -1600,50 +1541,55 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Results count */}
-                  <div className="text-xs text-slate-500 pt-2 border-t border-slate-100 flex items-center justify-between">
-                    <span>Mostrando <span className="font-semibold text-slate-800">{filteredRecords.length}</span> registros encontrados</span>
-                    <span className="font-mono">Fuente: GitHub pakinja/pakin</span>
+                  <div className={`text-xs text-slate-400 pt-2 border-t flex items-center justify-between ${isDark ? "border-slate-800" : "border-slate-100"}`}>
+                    <span>Mostrando <span className="font-semibold text-cyan-400">{filteredRecords.length}</span> registros con concurso oficial</span>
+                    <span className="font-mono">Fuente: Repositorio GitHub pakinja/pakin</span>
                   </div>
                 </div>
 
                 {/* Table */}
-                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                <div className={`rounded-2xl border shadow-sm overflow-hidden ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
                   <div className="overflow-x-auto max-h-[600px]">
                     <table className="w-full text-left border-collapse">
-                      <thead className="bg-slate-50 sticky top-0 z-10 border-b border-slate-200 text-xs font-semibold text-slate-600">
+                      <thead className={`sticky top-0 z-10 border-b text-xs font-semibold ${isDark ? "bg-slate-950 border-slate-800 text-slate-300" : "bg-slate-50 border-slate-200 text-slate-600"}`}>
                         <tr>
-                          <th className="py-3.5 px-4">Fecha</th>
-                          <th className="py-3.5 px-4">Sorteo</th>
+                          <th className="py-3.5 px-4">Concurso y Fecha</th>
+                          <th className="py-3.5 px-4">Sorteo y Hora</th>
                           <th className="py-3.5 px-4">Número Ganador (5 Dígitos)</th>
                           <th className="py-3.5 px-4">Suma</th>
                           <th className="py-3.5 px-4">Paridad</th>
                           <th className="py-3.5 px-4">Altos / Bajos</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100 text-sm">
-                        {filteredRecords.slice(0, 100).map(r => (
-                          <tr key={r.id} className="hover:bg-slate-50/80 transition-colors">
-                            <td className="py-3 px-4 font-mono text-xs text-slate-600">{r.date}</td>
-                            <td className="py-3 px-4">
-                              <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
-                                r.drawType === "Mediodía" ? "bg-sky-50 text-sky-700" :
-                                r.drawType === "Tres" ? "bg-amber-50 text-amber-700" :
-                                r.drawType === "Extra" ? "bg-purple-50 text-purple-700" :
-                                r.drawType === "Siete" ? "bg-indigo-50 text-indigo-700" :
-                                "bg-slate-100 text-slate-700"
-                              }`}>
-                                {r.drawType}
-                              </span>
+                      <tbody className={`divide-y text-sm ${isDark ? "divide-slate-800" : "divide-slate-100"}`}>
+                        {filteredRecords.slice().reverse().slice(0, 100).map(r => (
+                          <tr key={r.id} className={`transition-colors ${isDark ? "hover:bg-slate-800/50" : "hover:bg-slate-50/80"}`}>
+                            <td className="py-3 px-4 font-mono text-xs">
+                              <div className="font-bold text-cyan-300">#{r.concurso}</div>
+                              <div className="text-[11px] text-slate-400">{r.date}</div>
+                            </td>
+                            <td className="py-3 px-4 font-medium">
+                              <div className="space-y-0.5">
+                                <span className={`inline-block px-2.5 py-0.5 rounded text-xs font-semibold ${
+                                  r.drawType === "Mediodía" ? (isDark ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30" : "bg-sky-50 text-sky-700") :
+                                  r.drawType === "Tres" ? (isDark ? "bg-amber-500/20 text-amber-300 border border-amber-500/30" : "bg-amber-50 text-amber-700") :
+                                  r.drawType === "Extra" ? (isDark ? "bg-purple-500/20 text-purple-300 border border-purple-500/30" : "bg-purple-50 text-purple-700") :
+                                  r.drawType === "Siete" ? (isDark ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" : "bg-indigo-50 text-indigo-700") :
+                                  (isDark ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" : "bg-slate-100 text-slate-700")
+                                }`}>
+                                  {r.drawType}
+                                </span>
+                                <div className="text-[10px] text-slate-400 font-mono">{r.drawTime}</div>
+                              </div>
                             </td>
                             <td className="py-3 px-4">
-                              <span className="font-mono font-bold tracking-widest text-indigo-600 bg-indigo-50/80 px-3 py-1 rounded-md text-sm shadow-sm">
+                              <span className={`font-mono font-bold tracking-widest px-3 py-1 rounded-md text-sm shadow-sm ${isDark ? "bg-cyan-500/10 text-cyan-300 border border-cyan-500/30" : "bg-indigo-50 text-indigo-600"}`}>
                                 {r.number}
                               </span>
                             </td>
-                            <td className="py-3 px-4 font-mono text-slate-700">{r.sum}</td>
-                            <td className="py-3 px-4 text-xs font-mono text-slate-600">{r.evenCount} Pares, {r.oddCount} Impares</td>
-                            <td className="py-3 px-4 text-xs font-mono text-slate-600">{r.lowCount} Bajos, {r.highCount} Altos</td>
+                            <td className="py-3 px-4 font-mono text-slate-300">{r.sum}</td>
+                            <td className="py-3 px-4 text-xs font-mono text-slate-400">{r.evenCount} Pares, {r.oddCount} Impares</td>
+                            <td className="py-3 px-4 text-xs font-mono text-slate-400">{r.lowCount} Bajos, {r.highCount} Altos</td>
                           </tr>
                         ))}
                       </tbody>
@@ -1653,34 +1599,32 @@ export default function App() {
               </div>
             )}
 
-            {/* TAB 4: SIMULATOR & BETTING MODES */}
+            {/* TAB 4: SIMULATOR */}
             {activeTab === "simulator" && (
               <div className="space-y-8 animate-fadeIn">
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                <div className={`p-6 rounded-2xl border shadow-sm space-y-4 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
                   <div>
-                    <h2 className="text-lg font-bold text-slate-900">Simulador de Apuestas y Frecuencia Histórica</h2>
-                    <p className="text-xs text-slate-500">Prueba cualquier número de 5 dígitos para conocer cuántas veces ha salido históricamente en Tris.</p>
+                    <h2 className="text-lg font-bold">Simulador de Apuestas y Frecuencia Histórica</h2>
+                    <p className="text-xs text-slate-400">Prueba cualquier número de 5 dígitos para conocer cuántas veces ha salido históricamente en Tris.</p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
                     <div className="space-y-2">
-                      <label className="text-xs font-semibold text-slate-700">Número de 5 Dígitos (00000 - 99999)</label>
+                      <label className="text-xs font-semibold text-slate-300">Número de 5 Dígitos (00000 - 99999)</label>
                       <input
                         type="text"
                         maxLength={5}
                         value={simNumber}
                         onChange={(e) => setSimNumber(e.target.value.replace(/\D/g, ""))}
-                        className="w-full px-4 py-3 text-lg font-mono font-bold tracking-widest bg-slate-50 border border-slate-200 rounded-xl text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className={`w-full px-4 py-3 text-lg font-mono font-bold tracking-widest border rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 ${isDark ? "bg-slate-950 border-slate-800 text-cyan-300" : "bg-slate-50 border-slate-200 text-indigo-600"}`}
                         placeholder="48291"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-xs font-semibold text-slate-700">Modalidad de Apuesta</label>
+                      <label className="text-xs font-semibold text-slate-300">Modalidad de Apuesta</label>
                       <select
-                        value={simModality}
-                        onChange={(e) => setSimModality(e.target.value)}
-                        className="w-full px-4 py-3 text-xs font-medium bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className={`w-full px-4 py-3 text-xs font-medium border rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 ${isDark ? "bg-slate-950 border-slate-800 text-slate-200" : "bg-slate-50 border-slate-200 text-slate-800"}`}
                       >
                         <option value="directa5">Directa 5 (Orden exacto - paga $50,000 por $1)</option>
                         <option value="directa4">Directa 4 / Últimos 4</option>
@@ -1690,7 +1634,7 @@ export default function App() {
                     </div>
 
                     <div className="flex items-end">
-                      <div className="w-full p-3 rounded-xl bg-indigo-50 border border-indigo-100 text-xs text-indigo-900">
+                      <div className={`w-full p-3 rounded-xl border text-xs ${isDark ? "bg-cyan-500/10 border-cyan-500/30 text-cyan-200" : "bg-indigo-50 border-indigo-100 text-indigo-900"}`}>
                         <span className="font-semibold block mb-0.5">Probabilidad Teórica Directa 5:</span>
                         <span>1 en 100,000 (0.001%)</span>
                       </div>
@@ -1698,43 +1642,248 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Simulation Output Cards */}
-                {simulationResult && (
+                {simNumber.length === 5 && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
-                      <div className="text-xs font-medium text-slate-500">Coincidencias Exactas (Directa 5)</div>
-                      <div className="text-3xl font-bold font-mono text-indigo-600">{simulationResult.exactMatches}</div>
-                      <div className="text-xs text-slate-500">En {simulationResult.totalRecords} sorteos analizados</div>
-                    </div>
-
-                    <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
-                      <div className="text-xs font-medium text-slate-500">Últimos 4 Dígitos</div>
-                      <div className="text-3xl font-bold font-mono text-slate-900">{simulationResult.last4Matches}</div>
-                      <div className="text-xs text-slate-500">Terminación de 4 cifras</div>
-                    </div>
-
-                    <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
-                      <div className="text-xs font-medium text-slate-500">Últimos 3 Dígitos</div>
-                      <div className="text-3xl font-bold font-mono text-slate-900">{simulationResult.last3Matches}</div>
-                      <div className="text-xs text-slate-500">Terminación de 3 cifras</div>
-                    </div>
-
-                    <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
-                      <div className="text-xs font-medium text-slate-500">Últimos 2 Dígitos (Par Final)</div>
-                      <div className="text-3xl font-bold font-mono text-slate-900">{simulationResult.last2Matches}</div>
-                      <div className="text-xs text-slate-500">Terminación de 2 cifras</div>
-                    </div>
+                    {(() => {
+                      const num = simNumber;
+                      let exact = 0, l4 = 0, l3 = 0, l2 = 0;
+                      records.forEach(r => {
+                        if (r.number === num) exact++;
+                        if (r.number.slice(1) === num.slice(1)) l4++;
+                        if (r.number.slice(2) === num.slice(2)) l3++;
+                        if (r.number.slice(3) === num.slice(3)) l2++;
+                      });
+                      return (
+                        <>
+                          <div className={`p-6 rounded-2xl border shadow-sm space-y-2 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
+                            <div className="text-xs font-medium text-slate-400">Coincidencias Exactas (Directa 5)</div>
+                            <div className="text-3xl font-bold font-mono text-cyan-400">{exact}</div>
+                            <div className="text-xs text-slate-400">En {records.length} sorteos analizados</div>
+                          </div>
+                          <div className={`p-6 rounded-2xl border shadow-sm space-y-2 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
+                            <div className="text-xs font-medium text-slate-400">Últimos 4 Dígitos</div>
+                            <div className="text-3xl font-bold font-mono">{l4}</div>
+                            <div className="text-xs text-slate-400">Terminación de 4 cifras</div>
+                          </div>
+                          <div className={`p-6 rounded-2xl border shadow-sm space-y-2 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
+                            <div className="text-xs font-medium text-slate-400">Últimos 3 Dígitos</div>
+                            <div className="text-3xl font-bold font-mono">{l3}</div>
+                            <div className="text-xs text-slate-400">Terminación de 3 cifras</div>
+                          </div>
+                          <div className={`p-6 rounded-2xl border shadow-sm space-y-2 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
+                            <div className="text-xs font-medium text-slate-400">Últimos 2 Dígitos (Par Final)</div>
+                            <div className="text-3xl font-bold font-mono">{l2}</div>
+                            <div className="text-xs text-slate-400">Terminación de 2 cifras</div>
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
                 )}
               </div>
             )}
 
-            {/* TAB 5: AI INSIGHTS */}
+            {/* TAB 5: PREDICCION ML & BACKTESTING */}
+            {activeTab === "ml" && mlPredictionResult && (
+              <div className="space-y-8 animate-fadeIn">
+                <div className={`rounded-2xl p-8 space-y-4 shadow-xl relative overflow-hidden ${
+                  isDark
+                    ? "bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-cyan-500/40 shadow-[0_0_30px_rgba(6,182,212,0.15)] text-white"
+                    : "bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white"
+                }`}>
+                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative z-10">
+                    <div className="space-y-2">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-medium text-cyan-200 border border-cyan-400/30">
+                        <Cpu className="w-3.5 h-3.5 text-cyan-400" />
+                        <span>Modelo Cuantitativo de Machine Learning (Markov Chain con Concurso y Hora Oficial)</span>
+                      </div>
+                      <h2 className="text-2xl font-bold">Predicción para el Próximo Sorteo & Backtesting Eficiente</h2>
+                      <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+                        Entrenamiento probabilístico en orden cronológico real sobre el histórico de Tris con evaluación retrospectiva en los últimos 20 sorteos anteriores.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs text-slate-300 font-medium">Sorteo:</span>
+                      <select
+                        value={mlDrawType}
+                        onChange={(e) => setMlDrawType(e.target.value)}
+                        className="px-3 py-2 text-xs font-medium bg-white/15 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 backdrop-blur-md"
+                      >
+                        <option value="todos" className="text-slate-900">Todos los Sorteos</option>
+                        <option value="mediodía" className="text-slate-900">Mediodía</option>
+                        <option value="tres" className="text-slate-900">Tres</option>
+                        <option value="extra" className="text-slate-900">Extra</option>
+                        <option value="siete" className="text-slate-900">Siete</option>
+                        <option value="clásico" className="text-slate-900">Clásico</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Game Option Tabs */}
+                <div className={`p-4 rounded-2xl border shadow-sm flex flex-wrap items-center gap-2 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
+                  <span className="text-xs font-bold px-2">Opción de Juego:</span>
+                  {[
+                    { id: "directa5", label: "Directa 5" },
+                    { id: "directa4", label: "Directa 4" },
+                    { id: "directa3", label: "Directa 3" },
+                    { id: "parFinal", label: "Par Final" },
+                    { id: "parInicial", label: "Par Inicial" },
+                  ].map(tab => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setMlModalityTab(tab.id as any)}
+                      className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+                        mlModalityTab === tab.id
+                          ? isDark ? "bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30 font-bold" : "bg-indigo-600 text-white shadow-md shadow-indigo-200"
+                          : isDark ? "bg-slate-950 text-slate-300 hover:bg-slate-800" : "bg-slate-50 text-slate-600 hover:bg-slate-100"
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Top 3 Predictions Cards */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-base font-bold">Top 3 Predicciones Óptimas ({mlModalityTab.toUpperCase()})</h3>
+                    <span className="text-xs text-slate-400">Calculadas con Cadenas de Markov</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {mlPredictionResult.topPredictions.map((pred, idx) => (
+                      <div key={idx} className={`rounded-2xl border p-6 space-y-4 shadow-sm flex flex-col justify-between ${
+                        idx === 0
+                          ? isDark ? "bg-slate-900 border-cyan-400 ring-2 ring-cyan-400/20 shadow-[0_0_20px_rgba(6,182,212,0.2)]" : "bg-white border-indigo-500 ring-2 ring-indigo-500/20"
+                          : isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200"
+                      }`}>
+                        <div className="flex items-center justify-between">
+                          <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
+                            idx === 0 ? (isDark ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40" : "bg-indigo-100 text-indigo-800") :
+                            idx === 1 ? (isDark ? "bg-slate-800 text-slate-300" : "bg-slate-100 text-slate-700") :
+                            (isDark ? "bg-orange-500/20 text-orange-300" : "bg-orange-100 text-orange-800")
+                          }`}>
+                            Predicción #{idx + 1}
+                          </span>
+                          <span className="text-xs font-mono font-semibold text-emerald-400 bg-emerald-500/20 border border-emerald-500/30 px-2 py-0.5 rounded">
+                            {pred.confidence}% Confianza
+                          </span>
+                        </div>
+
+                        <div className="py-4 text-center">
+                          <span className={`text-4xl font-extrabold font-mono tracking-widest py-3 px-5 rounded-2xl inline-block shadow-inner ${isDark ? "bg-slate-950 text-cyan-300 border border-cyan-500/40" : "bg-indigo-50 text-indigo-600"}`}>
+                            {pred.number}
+                          </span>
+                        </div>
+
+                        <div className="space-y-1 pt-2 border-t border-slate-800 text-xs text-slate-400">
+                          <div className="flex justify-between">
+                            <span>Estrategia:</span>
+                            <span className="font-semibold text-slate-200">{pred.strategy}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Backtesting Results on Last 20 Previous Draws with Concurso & Hora */}
+                <div className={`rounded-2xl border shadow-sm p-6 space-y-6 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                      <h3 className="text-base font-bold">Resultados del Modelo Predictivo en los Últimos 20 Sorteos Anteriores</h3>
+                      <p className="text-xs text-slate-400">Backtesting eficiente comparando la predicción generada con el número ganador real de cada sorteo.</p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3">
+                      <div className="text-xs bg-emerald-500/20 text-emerald-300 px-3 py-1.5 rounded-lg font-semibold border border-emerald-500/30">
+                        Precisión Exacta: {mlPredictionResult.metrics.accuracy}%
+                      </div>
+                      <div className="text-xs bg-cyan-500/20 text-cyan-300 px-3 py-1.5 rounded-lg font-semibold border border-cyan-500/30">
+                        Aciertos Exactos: {mlPredictionResult.metrics.exactHits} / {mlPredictionResult.metrics.totalTested}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className={`border-b text-xs font-semibold ${isDark ? "border-slate-800 text-slate-400 bg-slate-950/50" : "border-slate-200 text-slate-600 bg-slate-50"}`}>
+                          <th className="py-3 px-4">Concurso, Fecha y Sorteo (Hora)</th>
+                          <th className="py-3 px-4">Predicción ML (Markov)</th>
+                          <th className="py-3 px-4">Número Real (Histórico Oficial)</th>
+                          <th className="py-3 px-4">Terminación 4</th>
+                          <th className="py-3 px-4">Terminación 3</th>
+                          <th className="py-3 px-4">Resultado / Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody className={`divide-y text-sm font-mono ${isDark ? "divide-slate-800" : "divide-slate-100"}`}>
+                        {mlPredictionResult.backtestResults.map((bt, idx) => (
+                          <tr key={idx} className={`transition-colors ${isDark ? "hover:bg-slate-800/50" : "hover:bg-slate-50/80"}`}>
+                            <td className="py-3 px-4 text-xs">
+                              <div className="font-bold text-cyan-300">Concurso #{bt.concurso}</div>
+                              <div className="text-slate-300">{bt.date} — <span className="text-amber-400 font-semibold">{bt.drawType}</span> ({bt.drawTime})</div>
+                            </td>
+                            <td className="py-3 px-4">
+                              <span className={`font-bold tracking-widest px-2.5 py-1 rounded ${isDark ? "bg-cyan-500/10 text-cyan-300 border border-cyan-500/30" : "bg-indigo-50 text-indigo-600"}`}>
+                                {bt.predicted}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4">
+                              <span className={`font-bold tracking-widest px-2.5 py-1 rounded ${isDark ? "bg-slate-800 text-slate-100 border border-slate-700" : "bg-slate-100 text-slate-900"}`}>
+                                {bt.actual}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 text-xs">
+                              {bt.last4Match ? (
+                                <span className="text-emerald-400 font-semibold">Sí (Acierto)</span>
+                              ) : (
+                                <span className="text-slate-500">No</span>
+                              )}
+                            </td>
+                            <td className="py-3 px-4 text-xs">
+                              {bt.last3Match ? (
+                                <span className="text-emerald-400 font-semibold">Sí (Acierto)</span>
+                              ) : (
+                                <span className="text-slate-500">No</span>
+                              )}
+                            </td>
+                            <td className="py-3 px-4">
+                              {bt.isExact ? (
+                                <span className="inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full text-xs font-semibold font-sans">
+                                  <CheckCircle2 className="w-3.5 h-3.5" /> Exacto
+                                </span>
+                              ) : bt.last4Match ? (
+                                <span className="inline-flex items-center gap-1 bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-2.5 py-0.5 rounded-full text-xs font-semibold font-sans">
+                                  Parcial (4)
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 bg-slate-800 text-slate-400 px-2.5 py-0.5 rounded-full text-xs font-semibold font-sans">
+                                  Fallido
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 6: AI INSIGHTS */}
             {activeTab === "ai" && (
               <div className="space-y-8 animate-fadeIn">
-                <div className="bg-gradient-to-br from-indigo-900 to-slate-900 rounded-2xl p-8 text-white space-y-4 shadow-xl">
-                  <div className="flex items-center gap-2 text-indigo-300 text-xs font-semibold tracking-wider uppercase">
-                    <Sparkles className="w-4 h-4 text-indigo-400" />
+                <div className={`rounded-2xl p-8 space-y-4 shadow-xl ${
+                  isDark
+                    ? "bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-cyan-500/40 shadow-[0_0_30px_rgba(6,182,212,0.15)] text-white"
+                    : "bg-gradient-to-br from-indigo-900 to-slate-900 text-white"
+                }`}>
+                  <div className="flex items-center gap-2 text-cyan-300 text-xs font-semibold tracking-wider uppercase">
+                    <Sparkles className="w-4 h-4 text-cyan-400" />
                     <span>Inteligencia Artificial Gemini 3.8 Flash</span>
                   </div>
                   <h2 className="text-2xl font-bold">Reporte de Caracterización y Análisis Cuantitativo</h2>
@@ -1744,7 +1893,7 @@ export default function App() {
                   <button
                     onClick={handleRunAiAnalysis}
                     disabled={aiLoading}
-                    className="px-6 py-3 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition-colors shadow-lg shadow-indigo-600/30 flex items-center gap-2 disabled:opacity-50"
+                    className="px-6 py-3 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl transition-colors shadow-lg shadow-cyan-500/30 flex items-center gap-2 disabled:opacity-50 font-bold"
                   >
                     <Sparkles className={`w-4 h-4 ${aiLoading ? "animate-spin" : ""}`} />
                     <span>{aiLoading ? "Analizando Sorteos con IA..." : "Generar Análisis Estadístico IA"}</span>
@@ -1752,16 +1901,16 @@ export default function App() {
                 </div>
 
                 {aiReport && (
-                  <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-8 space-y-6">
-                    <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                      <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                        <Award className="w-5 h-5 text-indigo-600" />
+                  <div className={`rounded-2xl border shadow-sm p-8 space-y-6 ${isDark ? "bg-slate-900 border-slate-800 text-slate-100" : "bg-white border-slate-200/80"}`}>
+                    <div className={`flex items-center justify-between pb-4 border-b ${isDark ? "border-slate-800" : "border-slate-100"}`}>
+                      <h3 className="text-base font-bold flex items-center gap-2">
+                        <Award className="w-5 h-5 text-cyan-400" />
                         <span>Dictamen Analítico de Tris</span>
                       </h3>
                       <span className="text-xs font-mono text-slate-400">Generado por Gemini AI</span>
                     </div>
 
-                    <div className="prose prose-slate max-w-none text-sm leading-relaxed whitespace-pre-wrap">
+                    <div className="prose prose-invert max-w-none text-sm leading-relaxed whitespace-pre-wrap">
                       {aiReport}
                     </div>
                   </div>
@@ -1773,9 +1922,9 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="max-w-7xl mx-auto px-6 py-12 border-t border-slate-200 mt-16 text-center text-xs text-slate-500 space-y-2">
+      <footer className={`max-w-7xl mx-auto px-6 py-12 border-t mt-16 text-center text-xs space-y-2 ${isDark ? "border-slate-800 text-slate-400" : "border-slate-200 text-slate-500"}`}>
         <p>TrisAnalytics Pro — Plataforma independiente de caracterización de sorteos Tris (Lotería Nacional).</p>
-        <p>Datos en tiempo real sincronizados desde el repositorio público <a href="https://github.com/pakinja/pakin" target="_blank" rel="noreferrer" className="text-indigo-600 underline font-medium">pakinja/pakin</a>.</p>
+        <p>Datos en tiempo real sincronizados con concursos y horarios oficiales desde el repositorio público <a href="https://github.com/pakinja/pakin" target="_blank" rel="noreferrer" className="text-cyan-400 underline font-medium">pakinja/pakin</a>.</p>
       </footer>
     </div>
   );
