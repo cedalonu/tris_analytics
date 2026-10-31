@@ -39,6 +39,7 @@ import {
   ReferenceLine,
   XAxis,
   YAxis,
+  ZAxis,
   Tooltip,
   CartesianGrid,
   Legend,
@@ -46,7 +47,10 @@ import {
   PolarGrid,
   PolarAngleAxis,
   PolarRadiusAxis,
-  Radar
+  Radar,
+  ScatterChart,
+  Scatter,
+  Cell
 } from "recharts";
 
 interface DrawRecord {
@@ -65,10 +69,37 @@ interface DrawRecord {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<"dashboard" | "stats" | "explorer" | "simulator" | "ml" | "ai">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "stats" | "ml">("dashboard");
   const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [mlSelectedModalities, setMlSelectedModalities] = useState<string[]>(["directa5"]);
+  const [mlBacktestModality, setMlBacktestModality] = useState<string>("directa5");
   const [mlDrawType, setMlDrawType] = useState<string>("todos");
-  const [mlModalityTab, setMlModalityTab] = useState<"directa5" | "directa4" | "directa3" | "parFinal" | "parInicial">("directa5");
+  const [mlSortOrder, setMlSortOrder] = useState<"desc" | "asc">("desc");
+  const [mlFilterHitsOnly, setMlFilterHitsOnly] = useState<boolean>(false);
+  const [mlFilterOptionIndex, setMlFilterOptionIndex] = useState<number | null>(null);
+  const [mlTopSize, setMlTopSize] = useState<number>(10);
+
+  const modalityMeta: Record<string, { label: string; sliceLen: number; startPos: number }> = {
+    directa5: { label: "Directa 5", sliceLen: 5, startPos: 0 },
+    directa4: { label: "Directa 4", sliceLen: 4, startPos: 1 },
+    directa3: { label: "Directa 3", sliceLen: 3, startPos: 2 },
+    parFinal: { label: "Par Final", sliceLen: 2, startPos: 3 },
+    parInicial: { label: "Par Inicial", sliceLen: 2, startPos: 0 },
+    primerDigito: { label: "Primer Dígito", sliceLen: 1, startPos: 0 },
+    ultimoDigito: { label: "Último Dígito", sliceLen: 1, startPos: 4 },
+  };
+
+  const handleToggleModality = (modId: string) => {
+    if (mlSelectedModalities.includes(modId)) {
+      if (mlSelectedModalities.length > 1) {
+        setMlSelectedModalities(mlSelectedModalities.filter(id => id !== modId));
+      }
+    } else {
+      setMlSelectedModalities([...mlSelectedModalities, modId]);
+    }
+  };
+
+
 
   const defaultTrisCsv = `CONCURSO,ID,R1,R2,R3,R4,R5,FECHA,PRIMOS,REPETIDOS
 36859,29029,2,9,0,2,8,2026-10-29,2,0
@@ -96,12 +127,41 @@ export default function App() {
   const [simNumber, setSimNumber] = useState<string>("48291");
   const [topModalityTab, setTopModalityTab] = useState<"directa5" | "directa4" | "directa3" | "parFinal" | "parInicial">("directa5");
 
+  // 3D Heatmap state
+  const [heatmapRotX, setHeatmapRotX] = useState<number>(30);
+  const [heatmapRotY, setHeatmapRotY] = useState<number>(-35);
+
+  // Snapshot / Heatmap modality state
+  const [snapshotSelectedModalities, setSnapshotSelectedModalities] = useState<string[]>(["directa5"]);
+  const handleToggleSnapshotModality = (modId: string) => {
+    if (snapshotSelectedModalities.includes(modId)) {
+      if (snapshotSelectedModalities.length > 1) {
+        setSnapshotSelectedModalities(snapshotSelectedModalities.filter(id => id !== modId));
+      }
+    } else {
+      setSnapshotSelectedModalities([...snapshotSelectedModalities, modId]);
+    }
+  };
+
   // Fetch data on mount
   const fetchData = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/tris-data");
+      const githubRes = await fetch("https://raw.githubusercontent.com/pakinja/pakin/master/Tris.csv?t=" + Date.now(), { signal: AbortSignal.timeout(4000) });
+      if (githubRes.ok) {
+        const text = await githubRes.text();
+        if (text && !text.includes("<!DOCTYPE html>") && !text.includes("<html") && text.length > 50) {
+          setRawCsv(text);
+          setDateFrom("");
+          setDateTo("");
+          setLastUpdated(new Date().toLocaleTimeString());
+          setLoading(false);
+          return;
+        }
+      }
+
+      const res = await fetch("/api/tris-data?t=" + Date.now());
       if (!res.ok) throw new Error("Error al obtener los datos del sorteo");
       const text = await res.text();
       setRawCsv(text);
@@ -155,6 +215,17 @@ export default function App() {
 
   useEffect(() => {
     fetchData();
+    const interval = setInterval(() => {
+      fetchData();
+    }, 120000);
+    const onFocus = () => {
+      fetchData();
+    };
+    window.addEventListener("focus", onFocus);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("focus", onFocus);
+    };
   }, []);
 
   function parseDateValue(val: string): string {
@@ -194,7 +265,6 @@ export default function App() {
       let concurso = "";
       let parsedYear = 2026, parsedMonth = 10, parsedDay = 28;
 
-      // Official schema: CONCURSO, ID, R1, R2, R3, R4, R5, FECHA, PRIMOS, REPETIDOS (10 columns)
       if (parts.length >= 10 && (/^\d{4}-\d{2}-\d{2}$/.test(parts[7]) || /^\d{4}-\d{2}-\d{2}$/.test(parts[1]))) {
         concurso = parts[0];
         let dateStr = parts[7];
@@ -245,7 +315,6 @@ export default function App() {
     const now = new Date();
 
     Object.entries(dateDrawGroups).forEach(([date, draws]) => {
-      // Sort draws by concurso ascending for that date to match official daily order
       draws.sort((a, b) => Number(a.concurso) - Number(b.concurso));
 
       draws.forEach((dItem, seq) => {
@@ -261,7 +330,7 @@ export default function App() {
 
         const recordDateTime = new Date(y < 100 ? 2000 + y : y, m - 1, d, drawHour, 0, 0);
         if (recordDateTime > now) {
-          return; // Skip future unplayed draws
+          return; 
         }
 
         const digits = dItem.numStr.split("").map(Number);
@@ -288,13 +357,491 @@ export default function App() {
       });
     });
 
-    // Sort strictly chronological ascending (oldest to newest)
-    parsed.sort((a, b) => {
-      return Number(a.concurso) - Number(b.concurso);
-    });
+    parsed.sort((a, b) => Number(a.concurso) - Number(b.concurso));
 
     return parsed;
   }, [rawCsv]);
+
+  // Helper to compute top N options independently (optimized for Direct 3 & all modalities)
+  const computeOptionsForModality = (trainDataset: DrawRecord[], modId: string, prevDigits: number[], topSize: number) => {
+    const meta = modalityMeta[modId] || modalityMeta["directa5"];
+    const { sliceLen, startPos } = meta;
+
+    const buildSliceMap = (datasetToUse: DrawRecord[]) => {
+      const sliceMap: Record<string, { count: number; lastIndex: number; indices: number[] }> = {};
+      datasetToUse.forEach((r, rIdx) => {
+        let sliceStr = r.number.slice(startPos, startPos + sliceLen);
+        if (modId === "directa4") sliceStr = r.number.slice(1);
+        else if (modId === "directa3") sliceStr = r.number.slice(2);
+        else if (modId === "parFinal") sliceStr = r.number.slice(3);
+        else if (modId === "parInicial") sliceStr = r.number.slice(0, 2);
+        else if (modId === "primerDigito") sliceStr = r.number.slice(0, 1);
+        else if (modId === "ultimoDigito") sliceStr = r.number.slice(4, 5);
+
+        if (!sliceMap[sliceStr]) {
+          sliceMap[sliceStr] = { count: 0, lastIndex: -1, indices: [] };
+        }
+        sliceMap[sliceStr].count++;
+        sliceMap[sliceStr].indices.push(rIdx);
+        sliceMap[sliceStr].lastIndex = rIdx;
+      });
+      return sliceMap;
+    };
+
+    const totalDraws = trainDataset.length;
+    const sliceMap = buildSliceMap(trainDataset);
+    const maxCount = Math.max(...Object.values(sliceMap).map(s => s.count), 1);
+
+    const allCands: Array<{ number: string; count: number; currentWait: number; avgGap: number; agingRatio: number; aging: number; score: number }> = [];
+    Object.entries(sliceMap).forEach(([cand, hist]) => {
+      let avgGap = 0;
+      if (hist.indices.length > 1) {
+        let gapSum = 0;
+        for (let k = 1; k < hist.indices.length; k++) {
+          gapSum += hist.indices[k] - hist.indices[k-1];
+        }
+        avgGap = gapSum / (hist.indices.length - 1);
+      } else {
+        avgGap = totalDraws - hist.indices[0];
+      }
+      const currentWait = hist.lastIndex >= 0 ? totalDraws - 1 - hist.lastIndex : totalDraws;
+      const agingRatio = avgGap > 0 ? Number((currentWait / avgGap).toFixed(2)) : 1;
+      const aging = currentWait - avgGap;
+      
+      let baseScore = (hist.count / maxCount) * 50 + (agingRatio * 15);
+
+      // Direct 3 Advanced Backtesting Optimization (Sum & Transition Weighting)
+      if (modId === "directa3" && cand.length === 3) {
+        const sumD = cand.split("").reduce((a, b) => a + Number(b), 0);
+        if (sumD >= 10 && sumD <= 18) {
+          baseScore *= 1.35;
+        }
+        if (prevDigits.length >= 3) {
+          const lastPrev3 = prevDigits.slice(-3).join("");
+          if (cand[0] === lastPrev3[1] || cand[1] === lastPrev3[2]) {
+            baseScore *= 1.25;
+          }
+        }
+      }
+
+      allCands.push({ number: cand, count: hist.count, currentWait, avgGap, agingRatio, aging, score: baseScore });
+    });
+
+    // Option 1: Markov + Frecuencia Óptima
+    const opt1Cands = [...allCands].sort((a, b) => b.score - a.score).slice(0, topSize).map(c => ({
+      number: c.number,
+      confidence: Math.round(Math.min(98, Math.max(30, c.score + 20))),
+      agingRatio: c.agingRatio,
+      currentWait: c.currentWait
+    }));
+
+    // Option 2: Universo Frío / Aging Inverso (Ventana 3000)
+    const win3000 = trainDataset.length > 3500 ? trainDataset.slice(0, trainDataset.length - 3000) : trainDataset;
+    const map3000 = buildSliceMap(win3000);
+    const cands3000: Array<{ number: string; aging: number }> = [];
+    Object.entries(map3000).forEach(([cand, hist]) => {
+      let avgGap = hist.indices.length > 1 ? (hist.indices[hist.indices.length-1] - hist.indices[0]) / (hist.indices.length - 1) : win3000.length;
+      let curW = hist.lastIndex >= 0 ? win3000.length - 1 - hist.lastIndex : win3000.length;
+      cands3000.push({ number: cand, aging: curW - avgGap });
+    });
+    cands3000.sort((a, b) => b.aging - a.aging);
+    const opt2Cands = cands3000.slice(0, topSize).map((item, idx) => {
+      const base = allCands.find(x => x.number === item.number) || allCands[idx % allCands.length];
+      return {
+        number: item.number,
+        confidence: Math.round(Math.min(95, Math.max(35, 80 - idx * 3))),
+        agingRatio: base ? base.agingRatio : 1.2,
+        currentWait: base ? base.currentWait : 30
+      };
+    });
+
+    // Option 3: Bajo Aging / Fresh
+    const opt3Cands = [...allCands].sort((a, b) => a.agingRatio - b.agingRatio).slice(0, topSize).map((c, idx) => ({
+      number: c.number,
+      confidence: Math.round(Math.min(98, Math.max(35, 90 - idx * 3))),
+      agingRatio: c.agingRatio,
+      currentWait: c.currentWait
+    }));
+
+    // Option 4: Mediano Plazo Ventana 1500 & Asymmetric Pair Weighting (1.2x)
+    const win1500 = trainDataset.length > 1600 ? trainDataset.slice(Math.max(0, trainDataset.length - 1500)) : trainDataset;
+    const map1500 = buildSliceMap(win1500);
+    const cands1500: Array<{ number: string; aging: number; count: number; currentWait: number; avgGap: number }> = [];
+    Object.entries(map1500).forEach(([cand, hist]) => {
+      let avgGap = hist.indices.length > 1 ? 50 : win1500.length;
+      let curW = hist.lastIndex >= 0 ? win1500.length - 1 - hist.lastIndex : win1500.length;
+      cands1500.push({ number: cand, aging: curW - avgGap, count: hist.count, currentWait: curW, avgGap });
+    });
+    cands1500.sort((a, b) => b.aging - a.aging);
+    const sub1500 = cands1500.slice(0, Math.max(1, Math.floor(cands1500.length * 0.5)));
+    sub1500.sort((a, b) => b.count - a.count);
+    const opt4Cands = sub1500.slice(0, topSize).map((item, idx) => {
+      const base = allCands.find(x => x.number === item.number) || allCands[idx % allCands.length];
+      return {
+        number: item.number,
+        confidence: Math.round(Math.min(96, Math.max(30, 85 - idx * 3))),
+        agingRatio: base ? base.agingRatio : 1.1,
+        currentWait: item.currentWait
+      };
+    });
+
+    // Option 5: Presión Estadística Ventana -3000 & Tercias
+    const winOpt5 = trainDataset.length > 3500 ? trainDataset.slice(0, trainDataset.length - 3000) : trainDataset;
+    const mapOpt5 = buildSliceMap(winOpt5);
+    const candsOpt5: Array<{ number: string; aging: number; count: number; currentWait: number; avgGap: number }> = [];
+    Object.entries(mapOpt5).forEach(([cand, hist]) => {
+      let avgGap = 50;
+      let curW = hist.lastIndex >= 0 ? winOpt5.length - 1 - hist.lastIndex : winOpt5.length;
+      candsOpt5.push({ number: cand, aging: curW - avgGap, count: hist.count, currentWait: curW, avgGap });
+    });
+    candsOpt5.sort((a, b) => b.aging - a.aging);
+    const subOpt5 = candsOpt5.slice(0, Math.max(1, Math.floor(candsOpt5.length * 0.5)));
+    subOpt5.sort((a, b) => b.count - a.count);
+    const opt5Cands = subOpt5.slice(0, topSize).map((item, idx) => {
+      const base = allCands.find(x => x.number === item.number) || allCands[idx % allCands.length];
+      return {
+        number: item.number,
+        confidence: Math.round(Math.min(97, Math.max(30, 88 - idx * 3))),
+        agingRatio: base ? base.agingRatio : 1.3,
+        currentWait: item.currentWait
+      };
+    });
+
+    return [
+      { title: "Opción 1: Markov + Frecuencia Óptima", top5: opt1Cands },
+      { title: "Opción 2: Universo Frío (Aging Inverso)", top5: opt2Cands },
+      { title: "Opción 3: Bajo Aging (Fresh)", top5: opt3Cands },
+      { title: "Opción 4: Mediano Plazo & Pares (1.2x)", top5: opt4Cands },
+      { title: "Opción 5: Presión Estadística & Tercias", top5: opt5Cands },
+    ];
+  };
+
+  // ML Prediction & Backtesting Engine with Deterministic Low-Aging Option & Immutability
+  const mlPredictionResult = useMemo(() => {
+    let dataset = records;
+    if (mlDrawType !== "todos") {
+      dataset = records.filter(r => r.drawType.toLowerCase() === mlDrawType.toLowerCase());
+    }
+    if (dataset.length < 50) dataset = records;
+
+    const latest = dataset[dataset.length - 1]?.digits || [4, 8, 2, 9, 1];
+
+    // 1. Top predictions for next draw by modality
+    const topPredictionsByModality: Record<string, Array<{ title: string; top5: Array<{ number: string; confidence: number; agingRatio: number; currentWait: number }> }>> = {};
+    mlSelectedModalities.forEach(modId => {
+      topPredictionsByModality[modId] = computeOptionsForModality(dataset, modId, latest, mlTopSize);
+    });
+
+    // 2. Backtesting on last 20 previous draws deterministically and immutably
+    const startIndex = Math.max(1, dataset.length - 20);
+    const testIndices = [];
+    for (let i = startIndex; i < dataset.length; i++) {
+      testIndices.push(i);
+    }
+
+    const backtestResults = testIndices.map(idx => {
+      const actualDraw = dataset[idx];
+      const trainSet = dataset.slice(0, idx);
+      const prevDrawDigits = dataset[idx - 1].digits;
+
+      const modalityResults: Record<string, { actualSlice: string; options: Array<{ title: string; top5: Array<{ number: string; confidence: number; agingRatio: number; currentWait: number }>; isHit: boolean }> }> = {};
+
+      mlSelectedModalities.forEach(modId => {
+        const meta = modalityMeta[modId] || modalityMeta["directa5"];
+        const { sliceLen, startPos } = meta;
+
+        let actualSlice = actualDraw.number;
+        if (modId === "directa4") actualSlice = actualDraw.number.slice(1);
+        else if (modId === "directa3") actualSlice = actualDraw.number.slice(2);
+        else if (modId === "parFinal") actualSlice = actualDraw.number.slice(3);
+        else if (modId === "parInicial") actualSlice = actualDraw.number.slice(0, 2);
+        else if (modId === "primerDigito") actualSlice = actualDraw.number.slice(0, 1);
+        else if (modId === "ultimoDigito") actualSlice = actualDraw.number.slice(4, 5);
+
+        const options = computeOptionsForModality(trainSet, modId, prevDrawDigits, mlTopSize);
+        const optionsWithHits = options.map(opt => ({
+          ...opt,
+          isHit: opt.top5.some(t => t.number === actualSlice)
+        }));
+
+        modalityResults[modId] = {
+          actualSlice,
+          options: optionsWithHits
+        };
+      });
+
+      const anyHitOverall = Object.values(modalityResults).some(m => m.options.some(o => o.isHit));
+
+      return {
+        concurso: actualDraw.concurso,
+        date: actualDraw.date,
+        drawType: actualDraw.drawType,
+        drawTime: actualDraw.drawTime,
+        actualNumber: actualDraw.number,
+        modalityResults,
+        anyHit: anyHitOverall
+      };
+    });
+
+    const totalHits = backtestResults.filter(b => b.anyHit).length;
+
+    const sortedBacktestResults = [...backtestResults].sort((a, b) => {
+      const compA = Number(a.concurso);
+      const compB = Number(b.concurso);
+      return mlSortOrder === "desc" ? compB - compA : compA - compB;
+    });
+    let finalBacktestResults = sortedBacktestResults;
+    if (mlFilterHitsOnly) {
+      finalBacktestResults = finalBacktestResults.filter(b => b.anyHit);
+    }
+    if (mlFilterOptionIndex !== null) {
+      finalBacktestResults = finalBacktestResults.filter(b => {
+        return mlSelectedModalities.some(modId => {
+          const mRes = b.modalityResults[modId];
+          return mRes && mRes.options[mlFilterOptionIndex] && mRes.options[mlFilterOptionIndex].isHit;
+        });
+      });
+    }
+
+    return {
+      topPredictionsByModality,
+      backtestResults: finalBacktestResults,
+      metrics: {
+        totalTested: backtestResults.length,
+        totalHits,
+        accuracy: backtestResults.length ? ((totalHits / backtestResults.length) * 100).toFixed(1) : "0.0"
+      }
+    };
+  }, [records, mlDrawType, mlSelectedModalities, mlTopSize]);
+
+  // Exclusive Strategy Top 50 / Uncovered Engine
+  const exclusivePredictionResult = useMemo(() => {
+    let dataset = records;
+    if (mlDrawType !== "todos") {
+      dataset = records.filter(r => r.drawType.toLowerCase() === mlDrawType.toLowerCase());
+    }
+    if (dataset.length < 50) dataset = records;
+
+    const computeExclusiveForModality = (trainDataset: DrawRecord[], modId: string, prevDigits: number[]) => {
+      const primaryOpts = computeOptionsForModality(trainDataset, modId, prevDigits, mlTopSize);
+
+      const meta = modalityMeta[modId] || modalityMeta["directa5"];
+      const { sliceLen, startPos } = meta;
+
+      const buildSliceMap = (datasetToUse: DrawRecord[]) => {
+        const sliceMap: Record<string, { count: number; lastIndex: number; indices: number[] }> = {};
+        datasetToUse.forEach((r, rIdx) => {
+          let sliceStr = r.number.slice(startPos, startPos + sliceLen);
+          if (modId === "directa4") sliceStr = r.number.slice(1);
+          else if (modId === "directa3") sliceStr = r.number.slice(2);
+          else if (modId === "parFinal") sliceStr = r.number.slice(3);
+          else if (modId === "parInicial") sliceStr = r.number.slice(0, 2);
+          else if (modId === "primerDigito") sliceStr = r.number.slice(0, 1);
+          else if (modId === "ultimoDigito") sliceStr = r.number.slice(4, 5);
+
+          if (!sliceMap[sliceStr]) {
+            sliceMap[sliceStr] = { count: 0, lastIndex: -1, indices: [] };
+          }
+          sliceMap[sliceStr].count++;
+          sliceMap[sliceStr].indices.push(rIdx);
+          sliceMap[sliceStr].lastIndex = rIdx;
+        });
+        return sliceMap;
+      };
+
+      const totalDraws = trainDataset.length;
+      const sliceMap = buildSliceMap(trainDataset);
+      const maxCount = Math.max(...Object.values(sliceMap).map(s => s.count), 1);
+
+      const allCands: Array<{ number: string; count: number; currentWait: number; avgGap: number; agingRatio: number; aging: number; score: number }> = [];
+      Object.entries(sliceMap).forEach(([cand, hist]) => {
+        let avgGap = 0;
+        if (hist.indices.length > 1) {
+          let gapSum = 0;
+          for (let k = 1; k < hist.indices.length; k++) {
+            gapSum += hist.indices[k] - hist.indices[k-1];
+          }
+          avgGap = gapSum / (hist.indices.length - 1);
+        } else {
+          avgGap = totalDraws - hist.indices[0];
+        }
+        const currentWait = hist.lastIndex >= 0 ? totalDraws - 1 - hist.lastIndex : totalDraws;
+        const agingRatio = avgGap > 0 ? Number((currentWait / avgGap).toFixed(2)) : 1;
+        const aging = currentWait - avgGap;
+        const score = (hist.count / maxCount) * 50 + (agingRatio * 10);
+        allCands.push({ number: cand, count: hist.count, currentWait, avgGap, agingRatio, aging, score });
+      });
+
+      const primarySet = new Set<string>();
+      primaryOpts.forEach(opt => {
+        opt.top5.forEach(t => primarySet.add(t.number));
+      });
+
+      if (modId === "primerDigito" || modId === "ultimoDigito") {
+        const digitCounts: Record<string, number> = {};
+        for (let d = 0; d <= 9; d++) digitCounts[String(d)] = 0;
+        trainDataset.forEach(r => {
+          const dStr = modId === "primerDigito" ? r.number.slice(0, 1) : r.number.slice(4, 5);
+          digitCounts[dStr] = (digitCounts[dStr] || 0) + 1;
+        });
+
+        const allDigits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+        const uncovered = allDigits.filter(d => !primarySet.has(d));
+        const sourceDigits = uncovered.length > 0 ? uncovered : allDigits;
+
+        sourceDigits.sort((a, b) => (digitCounts[a] || 0) - (digitCounts[b] || 0));
+
+        const top50 = sourceDigits.map((d, idx) => ({
+          number: d,
+          confidence: Math.round(Math.min(95, Math.max(25, 75 - idx * 5))),
+          agingRatio: 1.0,
+          currentWait: 0
+        }));
+        return top50;
+      }
+
+      const exclusiveCands = allCands.filter(c => !primarySet.has(c.number));
+      // Sort in ascending order of frequency (count ascending: least frequent first)
+      exclusiveCands.sort((a, b) => a.count - b.count);
+
+      const top50 = exclusiveCands.slice(0, 50).map((c, idx) => ({
+        number: c.number,
+        confidence: Math.round(Math.min(95, Math.max(25, 75 - idx))),
+        agingRatio: c.agingRatio,
+        currentWait: c.currentWait
+      }));
+
+      return top50;
+    };
+
+    const latest = dataset[dataset.length - 1]?.digits || [4, 8, 2, 9, 1];
+    const top50ByModality: Record<string, Array<{ number: string; confidence: number; agingRatio: number; currentWait: number }>> = {};
+    mlSelectedModalities.forEach(modId => {
+      top50ByModality[modId] = computeExclusiveForModality(dataset, modId, latest);
+    });
+
+    const startIndex = Math.max(1, dataset.length - 20);
+    const testIndices = [];
+    for (let i = startIndex; i < dataset.length; i++) {
+      testIndices.push(i);
+    }
+
+    const backtestResults = testIndices.map(idx => {
+      const actualDraw = dataset[idx];
+      const trainSet = dataset.slice(0, idx);
+      const prevDigits = dataset[idx - 1].digits;
+
+      const modalityResults: Record<string, { actualSlice: string; top50: Array<{ number: string; confidence: number; agingRatio: number; currentWait: number }>; isHit: boolean }> = {};
+
+      mlSelectedModalities.forEach(modId => {
+        const meta = modalityMeta[modId] || modalityMeta["directa5"];
+        const { sliceLen, startPos } = meta;
+
+        let actualSlice = actualDraw.number;
+        if (modId === "directa4") actualSlice = actualDraw.number.slice(1);
+        else if (modId === "directa3") actualSlice = actualDraw.number.slice(2);
+        else if (modId === "parFinal") actualSlice = actualDraw.number.slice(3);
+        else if (modId === "parInicial") actualSlice = actualDraw.number.slice(0, 2);
+        else if (modId === "primerDigito") actualSlice = actualDraw.number.slice(0, 1);
+        else if (modId === "ultimoDigito") actualSlice = actualDraw.number.slice(4, 5);
+
+        const top50 = computeExclusiveForModality(trainSet, modId, prevDigits);
+        const isHit = top50.some(t => t.number === actualSlice);
+
+        modalityResults[modId] = {
+          actualSlice,
+          top50,
+          isHit
+        };
+      });
+
+      const anyHitOverall = Object.values(modalityResults).some(m => m.isHit);
+
+      return {
+        concurso: actualDraw.concurso,
+        date: actualDraw.date,
+        drawType: actualDraw.drawType,
+        drawTime: actualDraw.drawTime,
+        actualNumber: actualDraw.number,
+        modalityResults,
+        anyHit: anyHitOverall
+      };
+    });
+
+    const totalHits = backtestResults.filter(b => b.anyHit).length;
+    const sortedBacktestResults = [...backtestResults].sort((a, b) => {
+      const compA = Number(a.concurso);
+      const compB = Number(b.concurso);
+      return mlSortOrder === "desc" ? compB - compA : compA - compB;
+    });
+    let finalBacktestResults = sortedBacktestResults;
+    if (mlFilterHitsOnly) {
+      finalBacktestResults = finalBacktestResults.filter(b => b.anyHit);
+    }
+
+    return {
+      top50ByModality,
+      backtestResults: finalBacktestResults,
+      metrics: {
+        totalTested: backtestResults.length,
+        totalHits,
+        accuracy: backtestResults.length ? ((totalHits / backtestResults.length) * 100).toFixed(1) : "0.0"
+      }
+    };
+  }, [records, mlDrawType, mlSelectedModalities, mlSortOrder, mlFilterHitsOnly]);
+
+  const snapshotData = useMemo(() => {
+    const pickMap: Record<string, { count: number; lastIndex: number; indices: number[] }> = {};
+    records.forEach((r, idx) => {
+      snapshotSelectedModalities.forEach(modId => {
+        const meta = modalityMeta[modId] || modalityMeta["directa5"];
+        const { sliceLen, startPos } = meta;
+        let sliceStr = r.number.slice(startPos, startPos + sliceLen);
+        if (modId === "directa4") sliceStr = r.number.slice(1);
+        else if (modId === "directa3") sliceStr = r.number.slice(2);
+        else if (modId === "parFinal") sliceStr = r.number.slice(3);
+        else if (modId === "parInicial") sliceStr = r.number.slice(0, 2);
+        else if (modId === "primerDigito") sliceStr = r.number.slice(0, 1);
+        else if (modId === "ultimoDigito") sliceStr = r.number.slice(4, 5);
+
+        const key = `${modId}:${sliceStr}`;
+        if (!pickMap[key]) {
+          pickMap[key] = { count: 0, lastIndex: -1, indices: [] };
+        }
+        pickMap[key].count++;
+        pickMap[key].indices.push(idx);
+        pickMap[key].lastIndex = idx;
+      });
+    });
+
+    const totalDraws = records.length;
+
+    return Object.entries(pickMap).map(([key, data]) => {
+      const [modId, pickVal] = key.split(":");
+      const totalApps = data.count;
+      let avgGap = 0;
+      if (data.indices.length > 1) {
+        let gapSum = 0;
+        for (let i = 1; i < data.indices.length; i++) {
+          gapSum += data.indices[i] - data.indices[i-1];
+        }
+        avgGap = gapSum / (data.indices.length - 1);
+      } else {
+        avgGap = totalDraws - data.indices[0];
+      }
+
+      const currentWait = totalDraws - 1 - data.lastIndex;
+      const agingRatio = avgGap > 0 ? Number((currentWait / avgGap).toFixed(2)) : 1;
+
+      return {
+        pick: `${modalityMeta[modId]?.label || modId}: ${pickVal}`,
+        avgGap: Number(avgGap.toFixed(1)),
+        totalApps,
+        currentWait,
+        agingRatio
+      };
+    }).sort((a, b) => b.totalApps - a.totalApps).slice(0, 150);
+  }, [records, snapshotSelectedModalities]);
 
   const applyDatePreset = (amount: number, unit: 'days' | 'months' | 'years') => {
     let maxDate = new Date();
@@ -576,205 +1123,32 @@ export default function App() {
     }
   };
 
-  // ML Prediction & Backtesting Engine with Exact Concurso & Draw Time
-  const mlPredictionResult = useMemo(() => {
-    let dataset = records;
-    if (mlDrawType !== "todos") {
-      dataset = records.filter(r => r.drawType.toLowerCase() === mlDrawType.toLowerCase());
-    }
-    if (dataset.length < 50) dataset = records;
 
-    const posTransition: Record<number, number[][]> = {};
-    for (let pos = 0; pos < 5; pos++) {
-      posTransition[pos] = Array.from({ length: 10 }, () => Array(10).fill(1));
-    }
-
-    for (let i = 0; i < dataset.length - 1; i++) {
-      const curr = dataset[i].digits;
-      const next = dataset[i+1].digits;
-      for (let pos = 0; pos < 5; pos++) {
-        posTransition[pos][curr[pos]][next[pos]]++;
-      }
-    }
-
-    const latest = dataset[dataset.length - 1]?.digits || [4, 8, 2, 9, 1];
-    const predictedDigits: number[] = [];
-    const confidenceScores: number[] = [];
-
-    for (let pos = 0; pos < 5; pos++) {
-      const prevDigit = latest[pos];
-      const transRow = posTransition[pos][prevDigit];
-      const total = transRow.reduce((a, b) => a + b, 0);
-      let bestDigit = 0;
-      let maxProb = -1;
-      transRow.forEach((count, d) => {
-        const prob = count / total;
-        if (prob > maxProb) {
-          maxProb = prob;
-          bestDigit = d;
-        }
-      });
-      predictedDigits.push(bestDigit);
-      confidenceScores.push(Math.round(maxProb * 100));
-    }
-
-    const predictedNumber = predictedDigits.join("");
-    const avgConfidence = Math.round(confidenceScores.reduce((a,b)=>a+b,0) / 5);
-
-    // Backtesting on last 20 previous draws
-    const startIndex = Math.max(1, dataset.length - 20);
-    const testIndices = [];
-    for (let i = startIndex; i < dataset.length; i++) {
-      testIndices.push(i);
-    }
-
-    const backtestResults = testIndices.map(idx => {
-      const actualDraw = dataset[idx];
-      const trainSet = dataset.slice(0, idx);
-      const subTransition: Record<number, number[][]> = {};
-      for (let pos = 0; pos < 5; pos++) {
-        subTransition[pos] = Array.from({ length: 10 }, () => Array(10).fill(1));
-      }
-      for (let j = 0; j < trainSet.length - 1; j++) {
-        const curr = trainSet[j].digits;
-        const next = trainSet[j+1].digits;
-        for (let pos = 0; pos < 5; pos++) {
-          subTransition[pos][curr[pos]][next[pos]]++;
-        }
-      }
-
-      const prevDraw = dataset[idx - 1].digits;
-      const predDigs: number[] = [];
-      for (let pos = 0; pos < 5; pos++) {
-        const pDig = prevDraw[pos];
-        const row = subTransition[pos][pDig];
-        const tot = row.reduce((a,b)=>a+b,0);
-        let bDig = 0;
-        let mP = -1;
-        row.forEach((cnt, d) => {
-          const pr = cnt / tot;
-          if (pr > mP) { mP = pr; bDig = d; }
-        });
-        predDigs.push(bDig);
-      }
-      const predNum = predDigs.join("");
-      const isExact = predNum === actualDraw.number;
-      const last4Match = predNum.slice(1) === actualDraw.number.slice(1);
-      const last3Match = predNum.slice(2) === actualDraw.number.slice(2);
-
-      return {
-        concurso: actualDraw.concurso,
-        date: actualDraw.date,
-        drawType: actualDraw.drawType,
-        drawTime: actualDraw.drawTime,
-        actual: actualDraw.number,
-        predicted: predNum,
-        isExact,
-        last4Match,
-        last3Match,
-      };
-    });
-
-    const topPredictions: Array<{ number: string; confidence: number; strategy: string }> = [];
-    let sliceLen = 5;
-    let startPos = 0;
-    if (mlModalityTab === "directa4") { sliceLen = 4; startPos = 1; }
-    else if (mlModalityTab === "directa3") { sliceLen = 3; startPos = 2; }
-    else if (mlModalityTab === "parFinal") { sliceLen = 2; startPos = 3; }
-    else if (mlModalityTab === "parInicial") { sliceLen = 2; startPos = 0; }
-
-    const posTopDigits: Array<Array<{ digit: number; prob: number }>> = [];
-    for (let pos = 0; pos < 5; pos++) {
-      const prevDigit = latest[pos];
-      const transRow = posTransition[pos][prevDigit];
-      const total = transRow.reduce((a, b) => a + b, 0);
-      const ranked = transRow.map((cnt, d) => ({ digit: d, prob: cnt / total }))
-                            .sort((a, b) => b.prob - a.prob);
-      posTopDigits.push(ranked);
-    }
-
-    const digs1: number[] = [];
-    let conf1 = 0;
-    for (let pos = startPos; pos < startPos + sliceLen; pos++) {
-      digs1.push(posTopDigits[pos][0].digit);
-      conf1 += posTopDigits[pos][0].prob;
-    }
-    topPredictions.push({
-      number: digs1.join(""),
-      confidence: Math.round((conf1 / sliceLen) * 100),
-      strategy: "Markov Principal (Máxima Transición)"
-    });
-
-    const digs2: number[] = [];
-    let conf2 = 0;
-    for (let pos = startPos; pos < startPos + sliceLen; pos++) {
-      const altIdx = posTopDigits[pos].length > 1 ? 1 : 0;
-      digs2.push(posTopDigits[pos][altIdx].digit);
-      conf2 += posTopDigits[pos][altIdx].prob;
-    }
-    topPredictions.push({
-      number: digs2.join(""),
-      confidence: Math.round((conf2 / sliceLen) * 100),
-      strategy: "Markov Alternativo (Segunda Probabilidad)"
-    });
-
-    const digs3: number[] = [];
-    let conf3 = 0;
-    for (let pos = startPos; pos < startPos + sliceLen; pos++) {
-      const mixIdx = posTopDigits[pos].length > 2 ? 2 : 0;
-      digs3.push(posTopDigits[pos][mixIdx].digit);
-      conf3 += posTopDigits[pos][mixIdx].prob;
-    }
-    topPredictions.push({
-      number: digs3.join(""),
-      confidence: Math.round((conf3 / sliceLen) * 100),
-      strategy: "Momento Histórico Ponderado"
-    });
-
-    const exactHits = backtestResults.filter(b => b.isExact).length;
-
-    return {
-      predictedNumber,
-      avgConfidence,
-      confidenceScores,
-      predictedDigits,
-      topPredictions,
-      backtestResults: backtestResults.reverse(),
-      metrics: {
-        totalTested: backtestResults.length,
-        exactHits,
-        accuracy: backtestResults.length ? ((exactHits / backtestResults.length) * 100).toFixed(1) : "0.0"
-      }
-    };
-  }, [records, mlDrawType, mlModalityTab]);
 
   const isDark = theme === "dark";
 
   return (
     <div className={`min-h-screen ${isDark ? "bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-900"} font-sans antialiased selection:bg-cyan-500 selection:text-white transition-colors duration-300`}>
       {/* TOP BAR */}
-      <header className={`sticky top-0 z-40 ${isDark ? "bg-slate-900/95 border-slate-800 shadow-[0_4px_20px_rgba(0,0,0,0.5)]" : "bg-white/90 border-slate-200"} backdrop-blur-md px-6 py-4 border-b`}>
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-8">
+      <header className={`sticky top-0 z-40 ${isDark ? "bg-slate-900/95 border-slate-800 shadow-[0_4px_20px_rgba(0,0,0,0.5)]" : "bg-white/90 border-slate-200"} backdrop-blur-md px-3 sm:px-6 py-3 border-b`}>
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 sm:gap-6">
           {/* Zone 1: Brand title */}
-          <div className="flex items-center gap-3 shrink-0">
-            <div className={`w-9 h-9 rounded-xl ${isDark ? "bg-cyan-500 text-slate-950 shadow-[0_0_15px_rgba(6,182,212,0.5)]" : "bg-indigo-600 text-white shadow-sm shadow-indigo-200"} flex items-center justify-center font-bold`}>
-              <TrendingUp className="w-5 h-5" />
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl ${isDark ? "bg-cyan-500 text-slate-950 shadow-[0_0_15px_rgba(6,182,212,0.5)]" : "bg-indigo-600 text-white shadow-sm shadow-indigo-200"} flex items-center justify-center font-bold`}>
+              <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <h1 className="text-lg font-bold tracking-tight whitespace-nowrap">TrisAnalytics Pro</h1>
-              <p className={`text-xs ${isDark ? "text-cyan-400" : "text-slate-500"}`}>Caracterizador Oficial de Sorteos Tris</p>
+              <h1 className="text-sm sm:text-lg font-bold tracking-tight whitespace-nowrap">TrisAnalytics Pro</h1>
+              <p className={`text-[10px] sm:text-xs ${isDark ? "text-cyan-400" : "text-slate-500"}`}>Caracterizador Oficial</p>
             </div>
           </div>
 
           {/* Zone 2: Navigation Links */}
-          <nav className={`hidden lg:flex items-center gap-6 text-sm font-medium ${isDark ? "text-slate-300" : "text-slate-600"}`}>
+          <nav className={`flex items-center gap-3 lg:gap-5 text-xs lg:text-sm font-medium overflow-x-auto max-w-sm lg:max-w-xl py-1 px-1 shrink-0 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
             {[
               { id: "dashboard", label: "Dashboard" },
               { id: "stats", label: "Caracterización" },
-              { id: "explorer", label: "Buscador Histórico" },
-              { id: "simulator", label: "Simulador & Apuestas" },
-              { id: "ml", label: "Predicción ML", icon: Cpu },
-              { id: "ai", label: "Análisis IA", icon: Sparkles }
+              { id: "ml", label: "Predicción ML", icon: Cpu }
             ].map(tab => (
               <button
                 key={tab.id}
@@ -824,14 +1198,11 @@ export default function App() {
       <div className={`lg:hidden flex items-center justify-around ${isDark ? "bg-slate-900 border-slate-800 text-slate-300" : "bg-white border-slate-200 text-slate-600"} border-b px-2 py-2 overflow-x-auto text-xs font-medium`}>
         <button onClick={() => setActiveTab("dashboard")} className={`px-3 py-1.5 rounded-lg ${activeTab === "dashboard" ? (isDark ? "bg-cyan-500/20 text-cyan-400 font-bold" : "bg-indigo-50 text-indigo-600 font-bold") : ""}`}>Dashboard</button>
         <button onClick={() => setActiveTab("stats")} className={`px-3 py-1.5 rounded-lg ${activeTab === "stats" ? (isDark ? "bg-cyan-500/20 text-cyan-400 font-bold" : "bg-indigo-50 text-indigo-600 font-bold") : ""}`}>Caracterización</button>
-        <button onClick={() => setActiveTab("explorer")} className={`px-3 py-1.5 rounded-lg ${activeTab === "explorer" ? (isDark ? "bg-cyan-500/20 text-cyan-400 font-bold" : "bg-indigo-50 text-indigo-600 font-bold") : ""}`}>Buscador</button>
-        <button onClick={() => setActiveTab("simulator")} className={`px-3 py-1.5 rounded-lg ${activeTab === "simulator" ? (isDark ? "bg-cyan-500/20 text-cyan-400 font-bold" : "bg-indigo-50 text-indigo-600 font-bold") : ""}`}>Simulador</button>
         <button onClick={() => setActiveTab("ml")} className={`px-3 py-1.5 rounded-lg flex items-center gap-1 ${activeTab === "ml" ? (isDark ? "bg-cyan-500/20 text-cyan-400 font-bold" : "bg-indigo-50 text-indigo-600 font-bold") : ""}`}><Cpu className="w-3 h-3 text-cyan-400" /> ML</button>
-        <button onClick={() => setActiveTab("ai")} className={`px-3 py-1.5 rounded-lg flex items-center gap-1 ${activeTab === "ai" ? (isDark ? "bg-cyan-500/20 text-cyan-400 font-bold" : "bg-indigo-50 text-indigo-600 font-bold") : ""}`}><Sparkles className="w-3 h-3 text-cyan-400" /> IA</button>
       </div>
 
       {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 py-6">
         {error && (
           <div className="mb-6 p-4 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 text-sm flex items-center justify-between">
             <span>{error}</span>
@@ -1032,13 +1403,159 @@ export default function App() {
                   </div>
                 </div>
 
+                {/* "Foto del Sorteo": Espectro de Objetivos (Scatter / Snapshot Chart) */}
+                <div className={`rounded-2xl border shadow-sm p-6 space-y-6 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
+                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div>
+                      <h3 className="text-base font-bold flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5 text-cyan-400" />
+                        <span>Foto del Sorteo: Espectro de Objetivos y Modalidades</span>
+                      </h3>
+                      <p className="text-xs text-slate-400">Eje X: Gap Promedio de cada objetivo | Eje Y: Aging (Espera actual vs. Gap Promedio) | Z (Tamaño): Apariciones Totales</p>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-mono text-cyan-400 bg-cyan-500/25 border border-cyan-500/40 px-3 py-1 rounded-lg font-semibold shadow-sm">
+                        Análisis Espectral de Envejecimiento
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Modality Selector Checkboxes for Snapshot */}
+                  <div className={`p-4 rounded-xl border flex flex-wrap items-center gap-3 ${isDark ? "bg-slate-950/80 border-slate-800" : "bg-slate-50 border-slate-200"}`}>
+                    <span className="text-xs font-bold text-cyan-400">Modalidades de Juego en Foto del Sorteo:</span>
+                    {[
+                      { id: "ultimoDigito", label: "Último Dígito" },
+                      { id: "directa5", label: "Directa 5" },
+                      { id: "directa4", label: "Directa 4" },
+                      { id: "directa3", label: "Directa 3" },
+                      { id: "parFinal", label: "Par Final" },
+                      { id: "parInicial", label: "Par Inicial" },
+                      { id: "primerDigito", label: "Primer Dígito" },
+                    ].map(mod => {
+                      const isChecked = snapshotSelectedModalities.includes(mod.id);
+                      return (
+                        <label
+                          key={mod.id}
+                          onClick={() => handleToggleSnapshotModality(mod.id)}
+                          className={`cursor-pointer px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all border ${
+                            isChecked
+                              ? isDark ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/60 shadow-[0_0_10px_rgba(6,182,212,0.3)]" : "bg-indigo-50 text-indigo-700 border-indigo-300 shadow-sm"
+                              : isDark ? "bg-slate-900 text-slate-300 border-slate-800 hover:border-slate-700" : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => handleToggleSnapshotModality(mod.id)}
+                            className="rounded border-slate-700 text-cyan-500 focus:ring-cyan-500 w-3.5 h-3.5 accent-cyan-400"
+                          />
+                          <span>{mod.label}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+
+                  <div className="h-96 w-full pt-4 relative">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#f1f5f9"} />
+                        <XAxis
+                          type="number"
+                          dataKey="avgGap"
+                          name="Gap Promedio (Eje X)"
+                          stroke="#94a3b8"
+                          fontSize={11}
+                          tickLine={false}
+                          unit=" sort."
+                        />
+                        <YAxis
+                          type="number"
+                          dataKey="agingRatio"
+                          name="Aging (Eje Y)"
+                          stroke="#94a3b8"
+                          fontSize={11}
+                          tickLine={false}
+                          unit="x"
+                        />
+                        <ZAxis
+                          type="number"
+                          dataKey="totalApps"
+                          range={[60, 350]}
+                          name="Apariciones Totales (Z)"
+                        />
+                        <Tooltip
+                          cursor={{ strokeDasharray: '3 3' }}
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              const data = payload[0].payload;
+                              return (
+                                <div className="bg-slate-900 text-white p-3 rounded-xl shadow-2xl text-xs space-y-1.5 font-mono border border-cyan-400">
+                                  <p className="font-bold text-cyan-300 text-sm">{data.pick}</p>
+                                  <p>Gap Promedio (Eje X): <strong className="text-emerald-400">{data.avgGap} sorteos</strong></p>
+                                  <p>Aging (Eje Y): <span className={`font-bold ${data.agingRatio >= 1.5 ? "text-rose-400" : "text-cyan-400"}`}>{data.agingRatio}x (Espera / Gap)</span></p>
+                                  <p>Espera Actual: <span className="text-indigo-300">{data.currentWait} sorteos sin salir</span></p>
+                                  <p>Apariciones Totales (Z): <strong className="text-amber-400">{data.totalApps} veces</strong></p>
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Scatter
+                          name="Espectro Tris"
+                          data={snapshotData}
+                        >
+                          {snapshotData.map((entry, index) => (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={entry.currentWait < 20 ? (isDark ? "#f59e0b" : "#d97706") : (isDark ? "#06b6d4" : "#4f46e5")}
+                            />
+                          ))}
+                        </Scatter>
+                      </ScatterChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-xs text-slate-400">
+                    <div className={`p-3 rounded-xl border ${isDark ? "bg-slate-950/60 border-slate-800" : "bg-slate-50 border-slate-200"}`}>
+                      <span className="font-bold text-cyan-300 block mb-1">Eje X (Gap Promedio)</span>
+                      <span>Tiempo medio entre apariciones históricas de cada número objetivo.</span>
+                    </div>
+                    <div className={`p-3 rounded-xl border ${isDark ? "bg-slate-950/60 border-slate-800" : "bg-slate-50 border-slate-200"}`}>
+                      <span className="font-bold text-amber-300 block mb-1">Eje Y (Aging / Envejecimiento)</span>
+                      <span>Relación entre la espera actual y su gap promedio (sobre-atraso).</span>
+                    </div>
+                    <div className={`p-3 rounded-xl border ${isDark ? "bg-slate-950/60 border-slate-800" : "bg-slate-50 border-slate-200"}`}>
+                      <span className="font-bold text-emerald-300 block mb-1">Eje Z (Apariciones Totales)</span>
+                      <span>Volumen total de veces que ha salido el número (tamaño de burbuja).</span>
+                    </div>
+                  </div>
+
+                  <div className={`p-3 rounded-xl border flex flex-wrap items-center gap-6 text-xs ${isDark ? "bg-slate-950/60 border-slate-800 text-slate-300" : "bg-slate-50 border-slate-200 text-slate-700"}`}>
+                    <div className="flex items-center gap-2">
+                      <span className="w-3.5 h-3.5 rounded-full bg-amber-500 inline-block shadow-[0_0_8px_rgba(245,158,11,0.6)]"></span>
+                      <span className="font-medium">Presentados en los últimos 20 sorteos (Espera menor a 20)</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-3.5 h-3.5 rounded-full bg-cyan-500 inline-block shadow-[0_0_8px_rgba(6,182,212,0.4)]"></span>
+                      <span className="font-medium">Resto del espectro histórico</span>
+                    </div>
+                  </div>
+                </div>
+
+
+
+
+
+
                 {/* Recent Draws & Quick Distribution */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                   <div className={`lg:col-span-2 rounded-2xl border shadow-sm p-6 space-y-4 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
                     <div className="flex items-center justify-between">
                       <h3 className="text-base font-bold">Últimos Sorteos Registrados (Con Concurso y Hora)</h3>
                       <button
-                        onClick={() => setActiveTab("explorer")}
+                        onClick={() => setActiveTab("stats")}
                         className="text-xs font-medium text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
                       >
                         <span>Ver todos</span>
@@ -1486,202 +2003,9 @@ export default function App() {
               </div>
             )}
 
-            {/* TAB 3: EXPLORER & SEARCH */}
-            {activeTab === "explorer" && (
-              <div className="space-y-6 animate-fadeIn">
-                <div className={`p-6 rounded-2xl border shadow-sm space-y-4 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
-                  <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-                    <div>
-                      <h2 className="text-lg font-bold">Buscador e Historial de Sorteos</h2>
-                      <p className="text-xs text-slate-400">Busca por concurso, número de 5 dígitos, fecha o tipo de sorteo.</p>
-                    </div>
 
-                    <div className="flex flex-wrap items-center gap-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold text-slate-400">Desde:</span>
-                        <input
-                          type="date"
-                          value={dateFrom}
-                          onChange={(e) => setDateFrom(e.target.value)}
-                          className={`px-3 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono ${isDark ? "bg-slate-950 border-slate-800 text-slate-200" : "bg-slate-50 border-slate-200 text-slate-800"}`}
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold text-slate-400">Hasta:</span>
-                        <input
-                          type="date"
-                          value={dateTo}
-                          onChange={(e) => setDateTo(e.target.value)}
-                          className={`px-3 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono ${isDark ? "bg-slate-950 border-slate-800 text-slate-200" : "bg-slate-50 border-slate-200 text-slate-800"}`}
-                        />
-                      </div>
-                      <div className="relative">
-                        <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
-                        <input
-                          type="text"
-                          placeholder="Buscar concurso o número..."
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          className={`pl-9 pr-4 py-2 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 w-52 ${isDark ? "bg-slate-950 border-slate-800 text-slate-200" : "bg-slate-50 border-slate-200 text-slate-800"}`}
-                        />
-                      </div>
 
-                      <select
-                        value={selectedDrawTypeFilter}
-                        onChange={(e) => setSelectedDrawTypeFilter(e.target.value)}
-                        className={`px-3 py-2 text-xs font-medium border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 ${isDark ? "bg-slate-950 border-slate-800 text-slate-200" : "bg-slate-50 border-slate-200 text-slate-800"}`}
-                      >
-                        <option value="todos">Todos los Sorteos</option>
-                        <option value="mediodía">Mediodía</option>
-                        <option value="tres">Tres</option>
-                        <option value="extra">Extra</option>
-                        <option value="siete">Siete</option>
-                        <option value="clásico">Clásico</option>
-                      </select>
-                    </div>
-                  </div>
 
-                  <div className={`text-xs text-slate-400 pt-2 border-t flex items-center justify-between ${isDark ? "border-slate-800" : "border-slate-100"}`}>
-                    <span>Mostrando <span className="font-semibold text-cyan-400">{filteredRecords.length}</span> registros con concurso oficial</span>
-                    <span className="font-mono">Fuente: Repositorio GitHub pakinja/pakin</span>
-                  </div>
-                </div>
-
-                {/* Table */}
-                <div className={`rounded-2xl border shadow-sm overflow-hidden ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
-                  <div className="overflow-x-auto max-h-[600px]">
-                    <table className="w-full text-left border-collapse">
-                      <thead className={`sticky top-0 z-10 border-b text-xs font-semibold ${isDark ? "bg-slate-950 border-slate-800 text-slate-300" : "bg-slate-50 border-slate-200 text-slate-600"}`}>
-                        <tr>
-                          <th className="py-3.5 px-4">Concurso y Fecha</th>
-                          <th className="py-3.5 px-4">Sorteo y Hora</th>
-                          <th className="py-3.5 px-4">Número Ganador (5 Dígitos)</th>
-                          <th className="py-3.5 px-4">Suma</th>
-                          <th className="py-3.5 px-4">Paridad</th>
-                          <th className="py-3.5 px-4">Altos / Bajos</th>
-                        </tr>
-                      </thead>
-                      <tbody className={`divide-y text-sm ${isDark ? "divide-slate-800" : "divide-slate-100"}`}>
-                        {filteredRecords.slice().reverse().slice(0, 100).map(r => (
-                          <tr key={r.id} className={`transition-colors ${isDark ? "hover:bg-slate-800/50" : "hover:bg-slate-50/80"}`}>
-                            <td className="py-3 px-4 font-mono text-xs">
-                              <div className="font-bold text-cyan-300">#{r.concurso}</div>
-                              <div className="text-[11px] text-slate-400">{r.date}</div>
-                            </td>
-                            <td className="py-3 px-4 font-medium">
-                              <div className="space-y-0.5">
-                                <span className={`inline-block px-2.5 py-0.5 rounded text-xs font-semibold ${
-                                  r.drawType === "Mediodía" ? (isDark ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30" : "bg-sky-50 text-sky-700") :
-                                  r.drawType === "Tres" ? (isDark ? "bg-amber-500/20 text-amber-300 border border-amber-500/30" : "bg-amber-50 text-amber-700") :
-                                  r.drawType === "Extra" ? (isDark ? "bg-purple-500/20 text-purple-300 border border-purple-500/30" : "bg-purple-50 text-purple-700") :
-                                  r.drawType === "Siete" ? (isDark ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" : "bg-indigo-50 text-indigo-700") :
-                                  (isDark ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" : "bg-slate-100 text-slate-700")
-                                }`}>
-                                  {r.drawType}
-                                </span>
-                                <div className="text-[10px] text-slate-400 font-mono">{r.drawTime}</div>
-                              </div>
-                            </td>
-                            <td className="py-3 px-4">
-                              <span className={`font-mono font-bold tracking-widest px-3 py-1 rounded-md text-sm shadow-sm ${isDark ? "bg-cyan-500/10 text-cyan-300 border border-cyan-500/30" : "bg-indigo-50 text-indigo-600"}`}>
-                                {r.number}
-                              </span>
-                            </td>
-                            <td className="py-3 px-4 font-mono text-slate-300">{r.sum}</td>
-                            <td className="py-3 px-4 text-xs font-mono text-slate-400">{r.evenCount} Pares, {r.oddCount} Impares</td>
-                            <td className="py-3 px-4 text-xs font-mono text-slate-400">{r.lowCount} Bajos, {r.highCount} Altos</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* TAB 4: SIMULATOR */}
-            {activeTab === "simulator" && (
-              <div className="space-y-8 animate-fadeIn">
-                <div className={`p-6 rounded-2xl border shadow-sm space-y-4 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
-                  <div>
-                    <h2 className="text-lg font-bold">Simulador de Apuestas y Frecuencia Histórica</h2>
-                    <p className="text-xs text-slate-400">Prueba cualquier número de 5 dígitos para conocer cuántas veces ha salido históricamente en Tris.</p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-                    <div className="space-y-2">
-                      <label className="text-xs font-semibold text-slate-300">Número de 5 Dígitos (00000 - 99999)</label>
-                      <input
-                        type="text"
-                        maxLength={5}
-                        value={simNumber}
-                        onChange={(e) => setSimNumber(e.target.value.replace(/\D/g, ""))}
-                        className={`w-full px-4 py-3 text-lg font-mono font-bold tracking-widest border rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 ${isDark ? "bg-slate-950 border-slate-800 text-cyan-300" : "bg-slate-50 border-slate-200 text-indigo-600"}`}
-                        placeholder="48291"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-xs font-semibold text-slate-300">Modalidad de Apuesta</label>
-                      <select
-                        className={`w-full px-4 py-3 text-xs font-medium border rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 ${isDark ? "bg-slate-950 border-slate-800 text-slate-200" : "bg-slate-50 border-slate-200 text-slate-800"}`}
-                      >
-                        <option value="directa5">Directa 5 (Orden exacto - paga $50,000 por $1)</option>
-                        <option value="directa4">Directa 4 / Últimos 4</option>
-                        <option value="directa3">Directa 3 / Últimos 3</option>
-                        <option value="candado">Candado (Cualquier orden)</option>
-                      </select>
-                    </div>
-
-                    <div className="flex items-end">
-                      <div className={`w-full p-3 rounded-xl border text-xs ${isDark ? "bg-cyan-500/10 border-cyan-500/30 text-cyan-200" : "bg-indigo-50 border-indigo-100 text-indigo-900"}`}>
-                        <span className="font-semibold block mb-0.5">Probabilidad Teórica Directa 5:</span>
-                        <span>1 en 100,000 (0.001%)</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {simNumber.length === 5 && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {(() => {
-                      const num = simNumber;
-                      let exact = 0, l4 = 0, l3 = 0, l2 = 0;
-                      records.forEach(r => {
-                        if (r.number === num) exact++;
-                        if (r.number.slice(1) === num.slice(1)) l4++;
-                        if (r.number.slice(2) === num.slice(2)) l3++;
-                        if (r.number.slice(3) === num.slice(3)) l2++;
-                      });
-                      return (
-                        <>
-                          <div className={`p-6 rounded-2xl border shadow-sm space-y-2 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
-                            <div className="text-xs font-medium text-slate-400">Coincidencias Exactas (Directa 5)</div>
-                            <div className="text-3xl font-bold font-mono text-cyan-400">{exact}</div>
-                            <div className="text-xs text-slate-400">En {records.length} sorteos analizados</div>
-                          </div>
-                          <div className={`p-6 rounded-2xl border shadow-sm space-y-2 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
-                            <div className="text-xs font-medium text-slate-400">Últimos 4 Dígitos</div>
-                            <div className="text-3xl font-bold font-mono">{l4}</div>
-                            <div className="text-xs text-slate-400">Terminación de 4 cifras</div>
-                          </div>
-                          <div className={`p-6 rounded-2xl border shadow-sm space-y-2 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
-                            <div className="text-xs font-medium text-slate-400">Últimos 3 Dígitos</div>
-                            <div className="text-3xl font-bold font-mono">{l3}</div>
-                            <div className="text-xs text-slate-400">Terminación de 3 cifras</div>
-                          </div>
-                          <div className={`p-6 rounded-2xl border shadow-sm space-y-2 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
-                            <div className="text-xs font-medium text-slate-400">Últimos 2 Dígitos (Par Final)</div>
-                            <div className="text-3xl font-bold font-mono">{l2}</div>
-                            <div className="text-xs text-slate-400">Terminación de 2 cifras</div>
-                          </div>
-                        </>
-                      );
-                    })()}
-                  </div>
-                )}
-              </div>
-            )}
 
             {/* TAB 5: PREDICCION ML & BACKTESTING */}
             {activeTab === "ml" && mlPredictionResult && (
@@ -1695,174 +2019,356 @@ export default function App() {
                     <div className="space-y-2">
                       <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-medium text-cyan-200 border border-cyan-400/30">
                         <Cpu className="w-3.5 h-3.5 text-cyan-400" />
-                        <span>Modelo Cuantitativo de Machine Learning (Markov Chain con Concurso y Hora Oficial)</span>
+                        <span>Predicción ML con Top 5 Opciones y Resaltado de Aciertos</span>
                       </div>
-                      <h2 className="text-2xl font-bold">Predicción para el Próximo Sorteo & Backtesting Eficiente</h2>
+                      <h2 className="text-2xl font-bold">Predicción para el Próximo Sorteo & Backtesting por Modalidad</h2>
                       <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
-                        Entrenamiento probabilístico en orden cronológico real sobre el histórico de Tris con evaluación retrospectiva en los últimos 20 sorteos anteriores.
+                        Selecciona tu modalidad de juego para visualizar las 5 opciones del modelo en columnas y comprobar sus aciertos históricos.
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs text-slate-300 font-medium">Sorteo:</span>
-                      <select
-                        value={mlDrawType}
-                        onChange={(e) => setMlDrawType(e.target.value)}
-                        className="px-3 py-2 text-xs font-medium bg-white/15 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 backdrop-blur-md"
-                      >
-                        <option value="todos" className="text-slate-900">Todos los Sorteos</option>
-                        <option value="mediodía" className="text-slate-900">Mediodía</option>
-                        <option value="tres" className="text-slate-900">Tres</option>
-                        <option value="extra" className="text-slate-900">Extra</option>
-                        <option value="siete" className="text-slate-900">Siete</option>
-                        <option value="clásico" className="text-slate-900">Clásico</option>
-                      </select>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-slate-300 font-medium">Tamaño Top:</span>
+                        <div className="flex bg-white/15 p-1 rounded-xl border border-white/20 backdrop-blur-md">
+                          <button
+                            onClick={() => setMlTopSize(5)}
+                            className={`px-3 py-1 text-xs rounded-lg font-bold transition-all ${mlTopSize === 5 ? "bg-cyan-500 text-slate-950 shadow-sm" : "text-white hover:bg-white/10"}`}
+                          >
+                            Top 5
+                          </button>
+                          <button
+                            onClick={() => setMlTopSize(10)}
+                            className={`px-3 py-1 text-xs rounded-lg font-bold transition-all ${mlTopSize === 10 ? "bg-cyan-500 text-slate-950 shadow-sm" : "text-white hover:bg-white/10"}`}
+                          >
+                            Top 10
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-slate-300 font-medium">Sorteo:</span>
+                        <select
+                          value={mlDrawType}
+                          onChange={(e) => setMlDrawType(e.target.value)}
+                          className="px-3 py-2 text-xs font-medium bg-white/15 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 backdrop-blur-md"
+                        >
+                          <option value="todos" className="text-slate-900">Todos los Sorteos</option>
+                          <option value="mediodía" className="text-slate-900">Mediodía</option>
+                          <option value="tres" className="text-slate-900">Tres</option>
+                          <option value="extra" className="text-slate-900">Extra</option>
+                          <option value="siete" className="text-slate-900">Siete</option>
+                          <option value="clásico" className="text-slate-900">Clásico</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Game Option Tabs */}
-                <div className={`p-4 rounded-2xl border shadow-sm flex flex-wrap items-center gap-2 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
-                  <span className="text-xs font-bold px-2">Opción de Juego:</span>
-                  {[
-                    { id: "directa5", label: "Directa 5" },
-                    { id: "directa4", label: "Directa 4" },
-                    { id: "directa3", label: "Directa 3" },
-                    { id: "parFinal", label: "Par Final" },
-                    { id: "parInicial", label: "Par Inicial" },
-                  ].map(tab => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setMlModalityTab(tab.id as any)}
-                      className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
-                        mlModalityTab === tab.id
-                          ? isDark ? "bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30 font-bold" : "bg-indigo-600 text-white shadow-md shadow-indigo-200"
-                          : isDark ? "bg-slate-950 text-slate-300 hover:bg-slate-800" : "bg-slate-50 text-slate-600 hover:bg-slate-100"
-                      }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Top 3 Predictions Cards */}
-                <div className="space-y-4">
+                {/* Top Predictions for Next Draw by Selected Modality */}
+                <div className={`rounded-2xl border shadow-sm p-6 space-y-6 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
                   <div className="flex items-center justify-between">
-                    <h3 className="text-base font-bold">Top 3 Predicciones Óptimas ({mlModalityTab.toUpperCase()})</h3>
-                    <span className="text-xs text-slate-400">Calculadas con Cadenas de Markov</span>
+                    <div>
+                      <h3 className="text-base font-bold">Opciones Recomendadas para el Sorteo Siguiente</h3>
+                      <p className="text-xs text-slate-400">Predicciones basadas en cadenas de Markov y análisis de transición para las modalidades seleccionadas.</p>
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {mlPredictionResult.topPredictions.map((pred, idx) => (
-                      <div key={idx} className={`rounded-2xl border p-6 space-y-4 shadow-sm flex flex-col justify-between ${
-                        idx === 0
-                          ? isDark ? "bg-slate-900 border-cyan-400 ring-2 ring-cyan-400/20 shadow-[0_0_20px_rgba(6,182,212,0.2)]" : "bg-white border-indigo-500 ring-2 ring-indigo-500/20"
-                          : isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200"
-                      }`}>
-                        <div className="flex items-center justify-between">
-                          <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                            idx === 0 ? (isDark ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40" : "bg-indigo-100 text-indigo-800") :
-                            idx === 1 ? (isDark ? "bg-slate-800 text-slate-300" : "bg-slate-100 text-slate-700") :
-                            (isDark ? "bg-orange-500/20 text-orange-300" : "bg-orange-100 text-orange-800")
-                          }`}>
-                            Predicción #{idx + 1}
-                          </span>
-                          <span className="text-xs font-mono font-semibold text-emerald-400 bg-emerald-500/20 border border-emerald-500/30 px-2 py-0.5 rounded">
-                            {pred.confidence}% Confianza
-                          </span>
-                        </div>
-
-                        <div className="py-4 text-center">
-                          <span className={`text-4xl font-extrabold font-mono tracking-widest py-3 px-5 rounded-2xl inline-block shadow-inner ${isDark ? "bg-slate-950 text-cyan-300 border border-cyan-500/40" : "bg-indigo-50 text-indigo-600"}`}>
-                            {pred.number}
-                          </span>
-                        </div>
-
-                        <div className="space-y-1 pt-2 border-t border-slate-800 text-xs text-slate-400">
-                          <div className="flex justify-between">
-                            <span>Estrategia:</span>
-                            <span className="font-semibold text-slate-200">{pred.strategy}</span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {mlSelectedModalities.map(modId => {
+                      const optionsList = mlPredictionResult.topPredictionsByModality[modId] || [];
+                      const label = modalityMeta[modId]?.label || modId;
+                      return (
+                        <div key={modId} className={`p-5 rounded-2xl border space-y-4 ${isDark ? "bg-slate-950/60 border-slate-800" : "bg-slate-50 border-slate-200"}`}>
+                          <div className="flex items-center justify-between border-b pb-3">
+                            <span className="text-sm font-bold text-cyan-400 uppercase tracking-wider">{label}</span>
+                            <span className="text-xs font-mono text-slate-400">Top 5 por Opción</span>
+                          </div>
+                          <div className="space-y-4">
+                            {optionsList.map((opt, oIdx) => (
+                              <div key={oIdx} className={`p-3 rounded-xl border space-y-2 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200 shadow-sm"}`}>
+                                <div className="text-xs font-bold text-amber-300">{opt.title}</div>
+                                <div className="grid grid-cols-5 gap-1.5 pt-1">
+                                  {opt.top5.map((t, tIdx) => (
+                                    <div key={tIdx} className={`p-1.5 rounded text-center font-mono text-xs ${isDark ? "bg-slate-950 border border-slate-800 text-cyan-300 font-bold" : "bg-slate-100 text-indigo-700 font-bold"}`} title={`${t.confidence}% conf.`}>
+                                      <div className="text-[10px] text-slate-400">#{tIdx+1}</div>
+                                      <div>{t.number}</div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
-                {/* Backtesting Results on Last 20 Previous Draws with Concurso & Hora */}
+                {/* Backtesting Results Table with 5 Model Option Columns & Highlighted Hits */}
                 <div className={`rounded-2xl border shadow-sm p-6 space-y-6 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
-                      <h3 className="text-base font-bold">Resultados del Modelo Predictivo en los Últimos 20 Sorteos Anteriores</h3>
-                      <p className="text-xs text-slate-400">Backtesting eficiente comparando la predicción generada con el número ganador real de cada sorteo.</p>
+                      <h3 className="text-base font-bold">Resultados y 5 Opciones del Modelo (Últimos 20 Sorteos)</h3>
+                      <p className="text-xs text-slate-400">Columnas con las 5 opciones del modelo comparadas frente al número real histórico. Se resaltan en verde los aciertos.</p>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3">
                       <div className="text-xs bg-emerald-500/20 text-emerald-300 px-3 py-1.5 rounded-lg font-semibold border border-emerald-500/30">
-                        Precisión Exacta: {mlPredictionResult.metrics.accuracy}%
+                        Efectividad: {mlPredictionResult.metrics.accuracy}%
                       </div>
                       <div className="text-xs bg-cyan-500/20 text-cyan-300 px-3 py-1.5 rounded-lg font-semibold border border-cyan-500/30">
-                        Aciertos Exactos: {mlPredictionResult.metrics.exactHits} / {mlPredictionResult.metrics.totalTested}
+                        Aciertos: {mlPredictionResult.metrics.totalHits} / {mlPredictionResult.metrics.totalTested}
                       </div>
                     </div>
                   </div>
 
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                  {/* Modality Selector integrated inside Results Section in Checkbox format */}
+                  <div className={`p-4 rounded-xl border flex flex-wrap items-center gap-3 ${isDark ? "bg-slate-950/80 border-slate-800" : "bg-slate-50 border-slate-200"}`}>
+                    <span className="text-xs font-bold text-cyan-400">Seleccionar Modalidad de Juego (Múltiples):</span>
+                    {[
+                      { id: "ultimoDigito", label: "Último Dígito" },
+                      { id: "directa5", label: "Directa 5" },
+                      { id: "directa4", label: "Directa 4" },
+                      { id: "directa3", label: "Directa 3" },
+                      { id: "parFinal", label: "Par Final" },
+                      { id: "parInicial", label: "Par Inicial" },
+                      { id: "primerDigito", label: "Primer Dígito" },
+                    ].map(mod => {
+                      const isChecked = mlSelectedModalities.includes(mod.id);
+                      return (
+                        <label
+                          key={mod.id}
+                          onClick={() => handleToggleModality(mod.id)}
+                          className={`cursor-pointer px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all border ${
+                            isChecked
+                              ? isDark ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/60 shadow-[0_0_10px_rgba(6,182,212,0.3)]" : "bg-indigo-50 text-indigo-700 border-indigo-300 shadow-sm"
+                              : isDark ? "bg-slate-900 text-slate-300 border-slate-800 hover:border-slate-700" : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => handleToggleModality(mod.id)}
+                            className="rounded border-slate-700 text-cyan-500 focus:ring-cyan-500 w-3.5 h-3.5 accent-cyan-400"
+                          />
+                          <span>{mod.label}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+
+                  <div className="overflow-x-auto w-full">
+                    <table className="w-full text-left border-collapse min-w-[850px]">
                       <thead>
                         <tr className={`border-b text-xs font-semibold ${isDark ? "border-slate-800 text-slate-400 bg-slate-950/50" : "border-slate-200 text-slate-600 bg-slate-50"}`}>
-                          <th className="py-3 px-4">Concurso, Fecha y Sorteo (Hora)</th>
-                          <th className="py-3 px-4">Predicción ML (Markov)</th>
-                          <th className="py-3 px-4">Número Real (Histórico Oficial)</th>
-                          <th className="py-3 px-4">Terminación 4</th>
-                          <th className="py-3 px-4">Terminación 3</th>
-                          <th className="py-3 px-4">Resultado / Estado</th>
+                          <th 
+                            onClick={() => setMlSortOrder(mlSortOrder === "desc" ? "asc" : "desc")}
+                            className="py-3 px-3 cursor-pointer hover:text-cyan-300 transition-colors select-none group"
+                            title="Click para alternar orden: más reciente / más añejo"
+                          >
+                            <div className="flex items-center gap-1.5">
+                              <span>Concurso, Fecha y Hora</span>
+                              <ArrowUpDown className={`w-3.5 h-3.5 transition-transform ${mlSortOrder === "asc" ? "rotate-180 text-cyan-400" : "text-slate-400"}`} />
+                            </div>
+                          </th>
+                          {[0, 1, 2, 3, 4].map(optIdx => {
+                            const isFilteredByThis = mlFilterOptionIndex === optIdx;
+                            return (
+                              <th
+                                key={optIdx}
+                                onClick={() => setMlFilterOptionIndex(isFilteredByThis ? null : optIdx)}
+                                className={`py-3 px-3 cursor-pointer transition-colors select-none group ${isFilteredByThis ? "text-cyan-300 font-bold bg-cyan-500/10" : "hover:text-cyan-300"}`}
+                                title={`Click para filtrar solo aciertos de Opción ${optIdx + 1}`}
+                              >
+                                <div className="flex items-center gap-1">
+                                  <span>{optIdx === 2 ? "Opción 3 (Fresh)" : `Opción ${optIdx + 1}`}</span>
+                                  <Filter className={`w-3 h-3 ${isFilteredByThis ? "text-cyan-400" : "text-slate-500 opacity-60 group-hover:opacity-100"}`} />
+                                </div>
+                              </th>
+                            );
+                          })}
+                          <th className="py-3 px-3">Número Real (Modalidades)</th>
+                          <th 
+                            onClick={() => setMlFilterHitsOnly(!mlFilterHitsOnly)}
+                            className={`py-3 px-3 cursor-pointer transition-colors select-none group ${mlFilterHitsOnly ? "text-emerald-400 font-bold bg-emerald-500/10" : "hover:text-cyan-300"}`}
+                            title="Click para alternar filtro de Solo Aciertos"
+                          >
+                            <div className="flex items-center gap-1.5">
+                              <span>Estado</span>
+                              <Filter className={`w-3.5 h-3.5 ${mlFilterHitsOnly ? "text-emerald-400 font-bold" : "text-slate-400"}`} />
+                            </div>
+                          </th>
                         </tr>
                       </thead>
                       <tbody className={`divide-y text-sm font-mono ${isDark ? "divide-slate-800" : "divide-slate-100"}`}>
                         {mlPredictionResult.backtestResults.map((bt, idx) => (
                           <tr key={idx} className={`transition-colors ${isDark ? "hover:bg-slate-800/50" : "hover:bg-slate-50/80"}`}>
-                            <td className="py-3 px-4 text-xs">
-                              <div className="font-bold text-cyan-300">Concurso #{bt.concurso}</div>
-                              <div className="text-slate-300">{bt.date} — <span className="text-amber-400 font-semibold">{bt.drawType}</span> ({bt.drawTime})</div>
+                            <td className="py-3 px-3 text-xs">
+                              <div className="font-bold text-cyan-300">#{bt.concurso}</div>
+                              <div className="text-slate-300">{bt.date} <span className="text-amber-400">({bt.drawType})</span></div>
                             </td>
-                            <td className="py-3 px-4">
-                              <span className={`font-bold tracking-widest px-2.5 py-1 rounded ${isDark ? "bg-cyan-500/10 text-cyan-300 border border-cyan-500/30" : "bg-indigo-50 text-indigo-600"}`}>
-                                {bt.predicted}
-                              </span>
+
+                            {/* Options 1 to 5 */}
+                            {[0, 1, 2, 3, 4].map(optIdx => (
+                              <td key={optIdx} className="py-3 px-3 space-y-2">
+                                {mlSelectedModalities.map(modId => {
+                                  const mRes = bt.modalityResults[modId];
+                                  if (!mRes) return null;
+                                  const optObj = mRes.options[optIdx];
+                                  if (!optObj) return null;
+                                  const label = modalityMeta[modId]?.label || modId;
+                                  return (
+                                    <div key={modId} className="space-y-1">
+                                      <div className="text-[10px] text-slate-400 font-sans flex items-center justify-between">
+                                        <span>{label}:</span>
+                                      </div>
+                                      <div className="flex flex-wrap gap-1">
+                                        {optObj.top5.map((t, tIdx) => {
+                                          const isMatch = t.number === mRes.actualSlice;
+                                          return (
+                                            <span
+                                              key={tIdx}
+                                              className={`text-xs px-1.5 py-0.5 rounded font-mono ${
+                                                isMatch
+                                                  ? "bg-emerald-500/30 text-emerald-300 border border-emerald-500/60 font-bold shadow-[0_0_6px_rgba(16,185,129,0.4)]"
+                                                  : isDark ? "bg-slate-800 text-slate-300" : "bg-slate-100 text-slate-700"
+                                              }`}
+                                              title={`Top #${tIdx+1} (${t.confidence}% conf.)`}
+                                            >
+                                              {t.number}
+                                            </span>
+                                          );
+                                        })}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </td>
+                            ))}
+
+                            {/* Número Real */}
+                            <td className="py-3 px-3 space-y-1.5">
+                              {mlSelectedModalities.map(modId => {
+                                const mRes = bt.modalityResults[modId];
+                                if (!mRes) return null;
+                                const label = modalityMeta[modId]?.label || modId;
+                                return (
+                                  <div key={modId} className="flex items-center justify-between gap-2 text-xs">
+                                    <span className="text-slate-400 text-[10px] font-sans">{label}:</span>
+                                    <span className={`font-bold tracking-widest px-2 py-0.5 rounded ${isDark ? "bg-slate-800 text-slate-100 border border-slate-700" : "bg-slate-100 text-slate-900"}`}>
+                                      {mRes.actualSlice}
+                                    </span>
+                                  </div>
+                                );
+                              })}
                             </td>
-                            <td className="py-3 px-4">
-                              <span className={`font-bold tracking-widest px-2.5 py-1 rounded ${isDark ? "bg-slate-800 text-slate-100 border border-slate-700" : "bg-slate-100 text-slate-900"}`}>
-                                {bt.actual}
-                              </span>
-                            </td>
-                            <td className="py-3 px-4 text-xs">
-                              {bt.last4Match ? (
-                                <span className="text-emerald-400 font-semibold">Sí (Acierto)</span>
+
+                            {/* Estado / Acierto */}
+                            <td className="py-3 px-3">
+                              {bt.anyHit ? (
+                                <span className="inline-block w-6 h-6 rounded-lg bg-emerald-500/30 border border-emerald-500/60 shadow-[0_0_6px_rgba(16,185,129,0.3)]" />
                               ) : (
-                                <span className="text-slate-500">No</span>
+                                <span className="inline-block w-6 h-6 rounded-lg bg-slate-800/50 border border-slate-700" />
                               )}
                             </td>
-                            <td className="py-3 px-4 text-xs">
-                              {bt.last3Match ? (
-                                <span className="text-emerald-400 font-semibold">Sí (Acierto)</span>
-                              ) : (
-                                <span className="text-slate-500">No</span>
-                              )}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Second Table: Top 50 Exclusive Complementary Strategy */}
+                <div className={`rounded-2xl border shadow-sm p-6 space-y-6 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                      <h3 className="text-base font-bold">Estrategia Excluyente — Top 50 Complementario por Modalidad (Backtesting)</h3>
+                      <p className="text-xs text-slate-400">Segunda tabla basada en el universo excluyente (complemento de la primera selección). Presenta el Top 50 de mayor presión estadística secundaria.</p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3">
+                      <div className="text-xs bg-emerald-500/20 text-emerald-300 px-3 py-1.5 rounded-lg font-semibold border border-emerald-500/30">
+                        Efectividad Top 50: {exclusivePredictionResult.metrics.accuracy}%
+                      </div>
+                      <div className="text-xs bg-cyan-500/20 text-cyan-300 px-3 py-1.5 rounded-lg font-semibold border border-cyan-500/30">
+                        Aciertos: {exclusivePredictionResult.metrics.totalHits} / {exclusivePredictionResult.metrics.totalTested}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="overflow-x-auto w-full">
+                    <table className="w-full text-left border-collapse min-w-[850px]">
+                      <thead>
+                        <tr className={`border-b text-xs font-semibold ${isDark ? "border-slate-800 text-slate-400 bg-slate-950/50" : "border-slate-200 text-slate-600 bg-slate-50"}`}>
+                          <th className="py-3 px-3">Concurso, Fecha y Hora</th>
+                          <th className="py-3 px-3">Estrategia Excluyente (Top 50)</th>
+                          <th className="py-3 px-3">Número Real (Modalidades)</th>
+                          <th className="py-3 px-3">Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody className={`divide-y text-sm font-mono ${isDark ? "divide-slate-800" : "divide-slate-100"}`}>
+                        {exclusivePredictionResult.backtestResults.map((bt, idx) => (
+                          <tr key={idx} className={`transition-colors ${isDark ? "hover:bg-slate-800/50" : "hover:bg-slate-50/80"}`}>
+                            <td className="py-3 px-3 text-xs">
+                              <div className="font-bold text-cyan-300">#{bt.concurso}</div>
+                              <div className="text-slate-300">{bt.date} <span className="text-amber-400">({bt.drawType})</span></div>
                             </td>
-                            <td className="py-3 px-4">
-                              {bt.isExact ? (
-                                <span className="inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full text-xs font-semibold font-sans">
-                                  <CheckCircle2 className="w-3.5 h-3.5" /> Exacto
-                                </span>
-                              ) : bt.last4Match ? (
-                                <span className="inline-flex items-center gap-1 bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-2.5 py-0.5 rounded-full text-xs font-semibold font-sans">
-                                  Parcial (4)
-                                </span>
+                            <td className="py-3 px-3 space-y-2">
+                              {mlSelectedModalities.map(modId => {
+                                const mRes = bt.modalityResults[modId];
+                                if (!mRes) return null;
+                                const label = modalityMeta[modId]?.label || modId;
+                                return (
+                                  <div key={modId} className="space-y-1">
+                                    <div className="text-[10px] text-slate-400 font-sans flex items-center justify-between">
+                                      <span>{label}:</span>
+                                    </div>
+                                    <div className="flex flex-wrap gap-1 max-h-20 overflow-y-auto">
+                                      {mRes.top50.slice(0, 10).map((t, tIdx) => {
+                                        const isMatch = t.number === mRes.actualSlice;
+                                        return (
+                                          <span
+                                            key={tIdx}
+                                            className={`text-[11px] px-1.5 py-0.5 rounded font-mono ${
+                                              isMatch
+                                                ? "bg-emerald-500/30 text-emerald-300 border border-emerald-500/60 font-bold shadow-[0_0_6px_rgba(16,185,129,0.4)]"
+                                                : isDark ? "bg-slate-800 text-slate-300" : "bg-slate-100 text-slate-700"
+                                            }`}
+                                            title={`Candidato #${tIdx+1} (${t.confidence}% conf.)`}
+                                          >
+                                            {t.number}
+                                          </span>
+                                        );
+                                      })}
+                                      {mRes.top50.length > 10 && (
+                                        <span className="text-[10px] text-slate-400 self-center">+{mRes.top50.length - 10} más...</span>
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </td>
+                            <td className="py-3 px-3 space-y-1.5">
+                              {mlSelectedModalities.map(modId => {
+                                const mRes = bt.modalityResults[modId];
+                                if (!mRes) return null;
+                                const label = modalityMeta[modId]?.label || modId;
+                                return (
+                                  <div key={modId} className="flex items-center justify-between gap-2 text-xs">
+                                    <span className="text-slate-400 text-[10px] font-sans">{label}:</span>
+                                    <span className={`font-bold tracking-widest px-2 py-0.5 rounded ${isDark ? "bg-slate-800 text-slate-100 border border-slate-700" : "bg-slate-100 text-slate-900"}`}>
+                                      {mRes.actualSlice}
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </td>
+                            <td className="py-3 px-3">
+                              {bt.anyHit ? (
+                                <span className="inline-block w-6 h-6 rounded-lg bg-emerald-500/30 border border-emerald-500/60 shadow-[0_0_6px_rgba(16,185,129,0.3)]" />
                               ) : (
-                                <span className="inline-flex items-center gap-1 bg-slate-800 text-slate-400 px-2.5 py-0.5 rounded-full text-xs font-semibold font-sans">
-                                  Fallido
-                                </span>
+                                <span className="inline-block w-6 h-6 rounded-lg bg-slate-800/50 border border-slate-700" />
                               )}
                             </td>
                           </tr>
@@ -1874,49 +2380,7 @@ export default function App() {
               </div>
             )}
 
-            {/* TAB 6: AI INSIGHTS */}
-            {activeTab === "ai" && (
-              <div className="space-y-8 animate-fadeIn">
-                <div className={`rounded-2xl p-8 space-y-4 shadow-xl ${
-                  isDark
-                    ? "bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-cyan-500/40 shadow-[0_0_30px_rgba(6,182,212,0.15)] text-white"
-                    : "bg-gradient-to-br from-indigo-900 to-slate-900 text-white"
-                }`}>
-                  <div className="flex items-center gap-2 text-cyan-300 text-xs font-semibold tracking-wider uppercase">
-                    <Sparkles className="w-4 h-4 text-cyan-400" />
-                    <span>Inteligencia Artificial Gemini 3.8 Flash</span>
-                  </div>
-                  <h2 className="text-2xl font-bold">Reporte de Caracterización y Análisis Cuantitativo</h2>
-                  <p className="text-sm text-slate-300 leading-relaxed max-w-3xl">
-                    Utiliza modelos avanzados de lenguaje para procesar las tendencias de los sorteos Tris, detectar rachas, comportamientos de dígitos y generar perspectivas estadísticas.
-                  </p>
-                  <button
-                    onClick={handleRunAiAnalysis}
-                    disabled={aiLoading}
-                    className="px-6 py-3 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl transition-colors shadow-lg shadow-cyan-500/30 flex items-center gap-2 disabled:opacity-50 font-bold"
-                  >
-                    <Sparkles className={`w-4 h-4 ${aiLoading ? "animate-spin" : ""}`} />
-                    <span>{aiLoading ? "Analizando Sorteos con IA..." : "Generar Análisis Estadístico IA"}</span>
-                  </button>
-                </div>
 
-                {aiReport && (
-                  <div className={`rounded-2xl border shadow-sm p-8 space-y-6 ${isDark ? "bg-slate-900 border-slate-800 text-slate-100" : "bg-white border-slate-200/80"}`}>
-                    <div className={`flex items-center justify-between pb-4 border-b ${isDark ? "border-slate-800" : "border-slate-100"}`}>
-                      <h3 className="text-base font-bold flex items-center gap-2">
-                        <Award className="w-5 h-5 text-cyan-400" />
-                        <span>Dictamen Analítico de Tris</span>
-                      </h3>
-                      <span className="text-xs font-mono text-slate-400">Generado por Gemini AI</span>
-                    </div>
-
-                    <div className="prose prose-invert max-w-none text-sm leading-relaxed whitespace-pre-wrap">
-                      {aiReport}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
           </>
         )}
       </main>
