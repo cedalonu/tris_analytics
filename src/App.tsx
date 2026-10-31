@@ -69,7 +69,7 @@ interface DrawRecord {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<"dashboard" | "stats" | "ml">("dashboard");
+  const [activeTab, setActiveTab] = useState<"stats" | "ml">("stats");
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [mlSelectedModalities, setMlSelectedModalities] = useState<string[]>(["directa5"]);
   const [mlBacktestModality, setMlBacktestModality] = useState<string>("directa5");
@@ -151,6 +151,9 @@ export default function App() {
 
   // Snapshot / Heatmap modality state
   const [snapshotSelectedModalities, setSnapshotSelectedModalities] = useState<string[]>(["directa5"]);
+  const [snapshotAxisX, setSnapshotAxisX] = useState<string>("avgGap");
+  const [snapshotAxisY, setSnapshotAxisY] = useState<string>("agingRatio");
+  const [snapshotAxisZ, setSnapshotAxisZ] = useState<string>("totalApps");
   const handleToggleSnapshotModality = (modId: string) => {
     if (snapshotSelectedModalities.includes(modId)) {
       if (snapshotSelectedModalities.length > 1) {
@@ -837,13 +840,15 @@ export default function App() {
 
       const currentWait = totalDraws - 1 - data.lastIndex;
       const agingRatio = avgGap > 0 ? Number((currentWait / avgGap).toFixed(2)) : 1;
+      const aging = Number((currentWait - avgGap).toFixed(1));
 
       return {
         pick: `${modalityMeta[modId]?.label || modId}: ${pickVal}`,
         avgGap: Number(avgGap.toFixed(1)),
         totalApps,
         currentWait,
-        agingRatio
+        agingRatio,
+        aging
       };
     }).sort((a, b) => b.totalApps - a.totalApps).slice(0, 150);
   }, [records, snapshotSelectedModalities]);
@@ -1151,8 +1156,7 @@ export default function App() {
           {/* Zone 2: Navigation Links */}
           <nav className={`flex items-center gap-3 lg:gap-5 text-xs lg:text-sm font-medium overflow-x-auto max-w-sm lg:max-w-xl py-1 px-1 shrink-0 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
             {[
-              { id: "dashboard", label: "Dashboard" },
-              { id: "stats", label: "Caracterización" },
+              { id: "stats", label: "Caracterización", icon: BarChart3 },
               { id: "ml", label: "Predicción ML", icon: Cpu }
             ].map(tab => (
               <button
@@ -1201,7 +1205,6 @@ export default function App() {
 
       {/* Mobile Nav Sub-Bar */}
       <div className={`lg:hidden flex items-center justify-around ${isDark ? "bg-slate-900 border-slate-800 text-slate-300" : "bg-white border-slate-200 text-slate-600"} border-b px-2 py-2 overflow-x-auto text-xs font-medium`}>
-        <button onClick={() => setActiveTab("dashboard")} className={`px-3 py-1.5 rounded-lg ${activeTab === "dashboard" ? (isDark ? "bg-cyan-500/20 text-cyan-400 font-bold" : "bg-indigo-50 text-indigo-600 font-bold") : ""}`}>Dashboard</button>
         <button onClick={() => setActiveTab("stats")} className={`px-3 py-1.5 rounded-lg ${activeTab === "stats" ? (isDark ? "bg-cyan-500/20 text-cyan-400 font-bold" : "bg-indigo-50 text-indigo-600 font-bold") : ""}`}>Caracterización</button>
         <button onClick={() => setActiveTab("ml")} className={`px-3 py-1.5 rounded-lg flex items-center gap-1 ${activeTab === "ml" ? (isDark ? "bg-cyan-500/20 text-cyan-400 font-bold" : "bg-indigo-50 text-indigo-600 font-bold") : ""}`}><Cpu className="w-3 h-3 text-cyan-400" /> ML</button>
       </div>
@@ -1222,8 +1225,8 @@ export default function App() {
           </div>
         ) : (
           <>
-            {/* TAB 1: DASHBOARD OVERVIEW */}
-            {activeTab === "dashboard" && (
+            {/* TAB: STATISTICAL CHARACTERIZATION & DASHBOARD OVERVIEW */}
+            {activeTab === "stats" && stats && (
               <div className="space-y-8 animate-fadeIn">
                 <div className={`rounded-2xl p-8 relative overflow-hidden shadow-xl ${
                   isDark
@@ -1461,33 +1464,79 @@ export default function App() {
                     })}
                   </div>
 
+                  {/* Axis Selectors for X, Y, Z dimensions */}
+                  <div className={`p-4 rounded-xl border grid grid-cols-1 md:grid-cols-3 gap-4 ${isDark ? "bg-slate-950/80 border-slate-800" : "bg-slate-50 border-slate-200"}`}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-cyan-400 whitespace-nowrap">Eje X:</span>
+                      <select
+                        value={snapshotAxisX}
+                        onChange={(e) => setSnapshotAxisX(e.target.value)}
+                        className={`w-full px-2.5 py-1.5 text-xs font-medium border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 ${isDark ? "bg-slate-900 border-slate-700 text-slate-200" : "bg-white border-slate-300 text-slate-800"}`}
+                      >
+                        <option value="avgGap">Gap Promedio</option>
+                        <option value="agingRatio">Aging Ratio (Espera/Gap)</option>
+                        <option value="aging">Aging Absoluto (Retraso)</option>
+                        <option value="totalApps">Apariciones Totales</option>
+                        <option value="currentWait">Espera Actual</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-amber-400 whitespace-nowrap">Eje Y:</span>
+                      <select
+                        value={snapshotAxisY}
+                        onChange={(e) => setSnapshotAxisY(e.target.value)}
+                        className={`w-full px-2.5 py-1.5 text-xs font-medium border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 ${isDark ? "bg-slate-900 border-slate-700 text-slate-200" : "bg-white border-slate-300 text-slate-800"}`}
+                      >
+                        <option value="agingRatio">Aging Ratio (Espera/Gap)</option>
+                        <option value="avgGap">Gap Promedio</option>
+                        <option value="aging">Aging Absoluto (Retraso)</option>
+                        <option value="totalApps">Apariciones Totales</option>
+                        <option value="currentWait">Espera Actual</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-emerald-400 whitespace-nowrap">Eje Z (Tamaño):</span>
+                      <select
+                        value={snapshotAxisZ}
+                        onChange={(e) => setSnapshotAxisZ(e.target.value)}
+                        className={`w-full px-2.5 py-1.5 text-xs font-medium border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 ${isDark ? "bg-slate-900 border-slate-700 text-slate-200" : "bg-white border-slate-300 text-slate-800"}`}
+                      >
+                        <option value="totalApps">Apariciones Totales</option>
+                        <option value="avgGap">Gap Promedio</option>
+                        <option value="agingRatio">Aging Ratio (Espera/Gap)</option>
+                        <option value="aging">Aging Absoluto (Retraso)</option>
+                        <option value="currentWait">Espera Actual</option>
+                      </select>
+                    </div>
+                  </div>
+
                   <div className="h-96 w-full pt-4 relative">
                     <ResponsiveContainer width="100%" height="100%">
                       <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#f1f5f9"} />
                         <XAxis
                           type="number"
-                          dataKey="avgGap"
-                          name="Gap Promedio (Eje X)"
+                          dataKey={snapshotAxisX}
+                          name="Eje X"
                           stroke="#94a3b8"
                           fontSize={11}
                           tickLine={false}
-                          unit=" sort."
                         />
                         <YAxis
                           type="number"
-                          dataKey="agingRatio"
-                          name="Aging (Eje Y)"
+                          dataKey={snapshotAxisY}
+                          name="Eje Y"
                           stroke="#94a3b8"
                           fontSize={11}
                           tickLine={false}
-                          unit="x"
                         />
                         <ZAxis
                           type="number"
-                          dataKey="totalApps"
+                          dataKey={snapshotAxisZ}
                           range={[60, 350]}
-                          name="Apariciones Totales (Z)"
+                          name="Eje Z (Tamaño)"
                         />
                         <Tooltip
                           cursor={{ strokeDasharray: '3 3' }}
@@ -1649,18 +1698,13 @@ export default function App() {
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
 
-            {/* TAB 2: STATISTICAL CHARACTERIZATION */}
-            {activeTab === "stats" && stats && (
-              <div className="space-y-8 animate-fadeIn">
-                <div className={`p-6 rounded-2xl border shadow-sm space-y-4 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
-                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                    <div>
-                      <h2 className="text-lg font-bold">Caracterización Estadística por Posición y Dígito</h2>
-                      <p className="text-xs text-slate-400">Analiza el comportamiento histórico de cada una de las 5 posiciones y modalidades de Tris.</p>
-                    </div>
+            <div className={`p-6 rounded-2xl border shadow-sm space-y-4 ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80"}`}>
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-lg font-bold">Caracterización Estadística por Posición y Dígito</h2>
+                  <p className="text-xs text-slate-400">Analiza el comportamiento histórico de cada una de las 5 posiciones y modalidades de Tris.</p>
+                </div>
 
                     <div className="flex flex-wrap items-center gap-3">
                       <div className="flex items-center gap-2">
