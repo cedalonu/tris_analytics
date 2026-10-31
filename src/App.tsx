@@ -505,7 +505,11 @@ export default function App() {
     }));
 
     // Option 2: Universo Frío / Aging Inverso
-    const sortedByAging = [...allCands].sort((a, b) => b.aging - a.aging);
+    const sortedByAging = [...allCands].sort((a, b) => {
+      const wa = a.aging + (prevDigits.length > 0 && prevDigits.some(d => a.number.includes(String(d))) ? 2 : 0);
+      const wb = b.aging + (prevDigits.length > 0 && prevDigits.some(d => b.number.includes(String(d))) ? 2 : 0);
+      return wb - wa;
+    });
     const opt2Cands = sortedByAging.slice(0, topSize).map((item, idx) => ({
       number: item.number,
       confidence: Math.round(Math.min(95, Math.max(35, 80 - idx * 3))),
@@ -514,7 +518,11 @@ export default function App() {
     }));
 
     // Option 3: Bajo Aging / Fresh
-    const opt3Cands = [...allCands].sort((a, b) => a.agingRatio - b.agingRatio).slice(0, topSize).map((c, idx) => ({
+    const opt3Cands = [...allCands].sort((a, b) => {
+      const ra = a.agingRatio - (prevDigits.length > 0 && prevDigits.some(d => a.number.includes(String(d))) ? 0.1 : 0);
+      const rb = b.agingRatio - (prevDigits.length > 0 && prevDigits.some(d => b.number.includes(String(d))) ? 0.1 : 0);
+      return ra - rb;
+    }).slice(0, topSize).map((c, idx) => ({
       number: c.number,
       confidence: Math.round(Math.min(98, Math.max(35, 90 - idx * 3))),
       agingRatio: c.agingRatio,
@@ -522,7 +530,13 @@ export default function App() {
     }));
 
     // Option 4: Mediano Plazo & Pares
-    const opt4Cands = [...allCands].sort((a, b) => b.count - a.count).slice(0, topSize).map((item, idx) => ({
+    const opt4Cands = [...allCands].sort((a, b) => {
+      const matchA = prevDigits.length > 0 && prevDigits.some(d => a.number.includes(String(d))) ? 1.3 : 1.0;
+      const matchB = prevDigits.length > 0 && prevDigits.some(d => b.number.includes(String(d))) ? 1.3 : 1.0;
+      const scoreA = (a.count * matchA) / (Math.abs(a.aging) + 2);
+      const scoreB = (b.count * matchB) / (Math.abs(b.aging) + 2);
+      return scoreB - scoreA;
+    }).slice(0, topSize).map((item, idx) => ({
       number: item.number,
       confidence: Math.round(Math.min(96, Math.max(30, 85 - idx * 3))),
       agingRatio: item.agingRatio,
@@ -530,7 +544,11 @@ export default function App() {
     }));
 
     // Option 5: Presión Estadística & Tercias
-    const opt5Cands = [...allCands].sort((a, b) => (b.count * b.agingRatio) - (a.count * a.agingRatio)).slice(0, topSize).map((item, idx) => ({
+    const opt5Cands = [...allCands].sort((a, b) => {
+      const sa = (a.count * a.agingRatio) * (prevDigits.length > 0 && prevDigits.some(d => a.number.includes(String(d))) ? 1.25 : 1.0);
+      const sb = (b.count * b.agingRatio) * (prevDigits.length > 0 && prevDigits.some(d => b.number.includes(String(d))) ? 1.25 : 1.0);
+      return sb - sa;
+    }).slice(0, topSize).map((item, idx) => ({
       number: item.number,
       confidence: Math.round(Math.min(97, Math.max(30, 88 - idx * 3))),
       agingRatio: item.agingRatio,
