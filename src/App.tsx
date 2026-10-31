@@ -536,7 +536,7 @@ export default function App() {
       });
     });
 
-    const startIndex = Math.max(1, dataset.length - 20);
+    const startIndex = Math.max(1, dataset.length - 50);
     const testIndices = [];
     for (let i = startIndex; i < dataset.length; i++) {
       testIndices.push(i);
@@ -725,7 +725,7 @@ export default function App() {
       top50ByModality[modId] = computeExclusiveForModality(dataset, modId, latest);
     });
 
-    const startIndex = Math.max(1, dataset.length - 20);
+    const startIndex = Math.max(1, dataset.length - 50);
     const testIndices = [];
     for (let i = startIndex; i < dataset.length; i++) {
       testIndices.push(i);
@@ -2034,24 +2034,6 @@ export default function App() {
 
                     <div className="flex flex-wrap items-center gap-3">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-slate-300 font-medium">Tamaño Top:</span>
-                        <div className="flex bg-white/15 p-1 rounded-xl border border-white/20 backdrop-blur-md">
-                          <button
-                            onClick={() => setMlTopSize(5)}
-                            className={`px-3 py-1 text-xs rounded-lg font-bold transition-all ${mlTopSize === 5 ? "bg-cyan-500 text-slate-950 shadow-sm" : "text-white hover:bg-white/10"}`}
-                          >
-                            Top 5
-                          </button>
-                          <button
-                            onClick={() => setMlTopSize(10)}
-                            className={`px-3 py-1 text-xs rounded-lg font-bold transition-all ${mlTopSize === 10 ? "bg-cyan-500 text-slate-950 shadow-sm" : "text-white hover:bg-white/10"}`}
-                          >
-                            Top 10
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2">
                         <span className="text-xs text-slate-300 font-medium">Sorteo:</span>
                         <select
                           value={mlDrawType}
@@ -2217,6 +2199,25 @@ export default function App() {
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-slate-400 font-medium">Tamaño Top:</span>
+                        <div className={`flex p-1 rounded-xl border ${isDark ? "bg-slate-950 border-slate-800" : "bg-slate-100 border-slate-200"}`}>
+                          {[5, 10, 25, 50].map(size => (
+                            <button
+                              key={size}
+                              onClick={() => setMlTopSize(size)}
+                              className={`px-2.5 py-1 text-xs rounded-lg font-bold transition-all ${
+                                mlTopSize === size
+                                  ? isDark ? "bg-cyan-500 text-slate-950 shadow-sm" : "bg-indigo-600 text-white shadow-sm"
+                                  : isDark ? "text-slate-300 hover:bg-slate-800" : "text-slate-600 hover:bg-slate-200"
+                              }`}
+                            >
+                              Top {size}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
                       <div className="text-xs bg-emerald-500/20 text-emerald-300 px-3 py-1.5 rounded-lg font-semibold border border-emerald-500/30">
                         Efectividad: {mlPredictionResult.metrics.accuracy}%
                       </div>
