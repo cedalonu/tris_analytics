@@ -107,6 +107,34 @@ export default function App() {
     ultimoDigito: { label: "Último Dígito", sliceLen: 1, startPos: 4 },
   };
 
+  const variableMeta: Record<string, { title: string; desc: string; color: string }> = {
+    avgGap: {
+      title: "Gap Promedio",
+      desc: "Tiempo medio entre apariciones históricas de cada número objetivo.",
+      color: "text-cyan-300"
+    },
+    agingRatio: {
+      title: "Aging Ratio (Espera / Gap)",
+      desc: "Relación proporcional entre la espera actual y su gap promedio (sobre-atraso).",
+      color: "text-amber-300"
+    },
+    aging: {
+      title: "Aging Absoluto (Retraso)",
+      desc: "Sorteos transcurridos desde la última aparición oficial del número.",
+      color: "text-purple-300"
+    },
+    totalApps: {
+      title: "Apariciones Totales",
+      desc: "Volumen total de veces que ha salido el número en el historial analizado (tamaño de burbuja).",
+      color: "text-emerald-300"
+    },
+    currentWait: {
+      title: "Espera Actual",
+      desc: "Número de sorteos acumulados sin presentarse desde su última salida.",
+      color: "text-indigo-300"
+    }
+  };
+
   const handleToggleModality = (modId: string) => {
     if (mlSelectedModalities.includes(modId)) {
       if (mlSelectedModalities.length > 1) {
@@ -1572,18 +1600,19 @@ export default function App() {
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-xs text-slate-400">
-                    <div className={`p-3 rounded-xl border ${isDark ? "bg-slate-950/60 border-slate-800" : "bg-slate-50 border-slate-200"}`}>
-                      <span className="font-bold text-cyan-300 block mb-1">Eje X (Gap Promedio)</span>
-                      <span>Tiempo medio entre apariciones históricas de cada número objetivo.</span>
-                    </div>
-                    <div className={`p-3 rounded-xl border ${isDark ? "bg-slate-950/60 border-slate-800" : "bg-slate-50 border-slate-200"}`}>
-                      <span className="font-bold text-amber-300 block mb-1">Eje Y (Aging / Envejecimiento)</span>
-                      <span>Relación entre la espera actual y su gap promedio (sobre-atraso).</span>
-                    </div>
-                    <div className={`p-3 rounded-xl border ${isDark ? "bg-slate-950/60 border-slate-800" : "bg-slate-50 border-slate-200"}`}>
-                      <span className="font-bold text-emerald-300 block mb-1">Eje Z (Apariciones Totales)</span>
-                      <span>Volumen total de veces que ha salido el número (tamaño de burbuja).</span>
-                    </div>
+                    {[
+                      { axisLabel: "Eje X", varKey: snapshotAxisX },
+                      { axisLabel: "Eje Y", varKey: snapshotAxisY },
+                      { axisLabel: "Eje Z (Tamaño)", varKey: snapshotAxisZ },
+                    ].map(item => {
+                      const meta = variableMeta[item.varKey] || variableMeta["avgGap"];
+                      return (
+                        <div key={item.axisLabel} className={`p-3 rounded-xl border ${isDark ? "bg-slate-950/60 border-slate-800" : "bg-slate-50 border-slate-200"}`}>
+                          <span className={`font-bold ${meta.color} block mb-1`}>{item.axisLabel}: {meta.title}</span>
+                          <span>{meta.desc}</span>
+                        </div>
+                      );
+                    })}
                   </div>
 
                   <div className={`p-3 rounded-xl border flex flex-wrap items-center gap-6 text-xs ${isDark ? "bg-slate-950/60 border-slate-800 text-slate-300" : "bg-slate-50 border-slate-200 text-slate-700"}`}>
