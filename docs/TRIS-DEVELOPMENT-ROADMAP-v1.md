@@ -151,3 +151,12 @@ La rama research-core-v1 contiene módulos de análisis, memoria y ciclos. Las p
 - Limitación: esta primera aproximación cubre dependencia por clúster completo, no correlaciones parciales ni redes de solapamiento entre familias, posiciones, ventanas y concursos. La siguiente calibración deberá explorar dependencias parciales/solapadas y contrastarlas con datos prospectivos reales.
 - Variables: `TRIS_NULL_CLUSTER_SIZES` controla los tamaños; cada tamaño debe ser menor o igual a `TRIS_NULL_SERIES`.
 - No se ajustan automáticamente umbrales ni se consulta ningún API o CSV real.
+
+
+### Fase 5 — dependencia parcial y solapamiento de señales
+- Se amplía la simulación nula: dentro de cada clúster, cada serie toma en cada concurso la secuencia candidata compartida con una fracción configurable y su propia secuencia Markov en el resto.
+- Parámetro `sharedSignalOverlap` ∈ [0,1]: 0 usa trayectorias idiosincráticas; 0.5 mezcla mitad decisiones compartidas/mitad propias; 1 reproduce la secuencia común completa. No es un coeficiente de correlación empírica.
+- Runner compara por defecto solapamientos 0, 0.5 y 1, junto con clústeres 1, 5 y 10, tasas marginales y autocorrelación. Reporta falsas alertas por serie y probabilidad familiar observada.
+- Se añadieron pruebas de determinismo y validación de límites del parámetro.
+- Límite: la mezcla puede alterar la autocorrelación temporal efectiva de cada serie; los resultados son escenarios de estrés sintéticos y no estiman dependencias reales entre señales TRIS. No ajusta umbrales automáticamente, no usa CSV real y no llama APIs.
+- Siguiente validación: comprobar CI y revisar que la escala de escenarios sea computacionalmente viable; después estudiar solapamiento parcial por subconjuntos de posiciones/ventanas y contrastar con series prospectivas.
