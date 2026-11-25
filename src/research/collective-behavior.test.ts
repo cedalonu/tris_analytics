@@ -38,3 +38,23 @@ test("correlated positions show lift above independence baseline",()=>{
  assert.equal(association!.lift,2);
 });
 
+
+test("migration counts 25 position-pair observations per eligible contest and lag",()=>{
+ const report=analyzeCollectiveBehavior(repeated);
+ assert.equal(report.migrations.length,5);
+ assert.equal(report.migrations[0].observations,59*25);
+ assert.equal(report.migrations[4].observations,55*25);
+ assert.equal(report.migrations[0].sameDigitRate,4/25);
+ assert.equal(report.migrations[0].meanCircularDistance,0.8);
+});
+
+test("rejects gaps and invalid digits",()=>{
+ assert.throws(()=>analyzeCollectiveBehavior([repeated[0],{...repeated[2]}]),/non-contiguous/);
+ assert.throws(()=>analyzeCollectiveBehavior([{drawId:1,digits:[1,2,3,4,10] as Draw["digits"]}]),/invalid draw/);
+});
+
+test("supports short histories without fabricating unavailable lag reports",()=>{
+ const report=analyzeCollectiveBehavior(repeated.slice(0,3));
+ assert.deepEqual(report.windows.map(w=>w.draws),[3,3,3,3]);
+ assert.deepEqual(report.migrations.map(m=>m.lag),[1,2]);
+});
