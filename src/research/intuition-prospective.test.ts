@@ -31,7 +31,7 @@ test("freezes an exact next-contest prediction and resolves without changing it"
  assert.equal(frozen!.historyThroughDrawId,9219);
  const prediction=[...frozen!.prediction];
  const actual:Draw={drawId:9220,digits:[9,0,1,2,3]};
- const resolved=resolveProspectiveForecast(frozen!,actual,"2026-11-25T10:05:00.000Z");
+ const resolved=resolveProspectiveForecast(frozen!,actual,history,"2026-11-25T10:05:00.000Z");
  assert.equal(resolved.actual,"90123");
  assert.deepEqual(frozen!.prediction,prediction);
  assert.equal(resolved.candidateHit,true);
@@ -45,7 +45,7 @@ test("resolves digit-pool forecasts against the correct position",()=>{
  const c=candidate("pool-ranking",{position:4,method:"frequency",poolSize:10,window:50});
  const frozen=freezeProspectiveForecast(history,c,9220,"2026-11-25T10:00:00.000Z");
  assert.ok(frozen);
- const resolved=resolveProspectiveForecast(frozen!,{drawId:9220,digits:[9,8,7,6,5]},"2026-11-25T10:01:00.000Z");
+ const resolved=resolveProspectiveForecast(frozen!,{drawId:9220,digits:[9,8,7,6,5]},history,"2026-11-25T10:01:00.000Z");
  assert.equal(resolved.candidateHit,true);
  assert.equal(resolved.baselineHit,true);
 });
