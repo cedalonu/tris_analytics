@@ -47,7 +47,7 @@ export function analyzeCrossSignalConcordance(draws:Draw[]):CrossSignalReport {
  const interaction=analyzeSignalInteractions(draws),adaptive=analyzeAdaptiveSignalMemory(draws);
  const regime=analyzeRegimeConditionedMemory(draws),temporal=analyzeTemporalMemory(draws),contextual=analyzeContextualMemory(draws);
  const markers=new Map<string,FamilyMarker[]>();
- const add=(p:number,d:number,m:FamilyMarker)=>{const k=key(p,d),list=markers.get(k)??[];if(!list.some(x=>x.family===m.family))list.push(m);markers.set(k,list);};
+ const add=(p:number,d:number,m:FamilyMarker)=>{const k=key(p,d),list=markers.get(k)??[];if(list.filter(x=>x.family===m.family).length<3&&!list.some(x=>x.family===m.family&&x.detail===m.detail))list.push(m);markers.set(k,list);};
  for(const c of interaction.selected)add(c.position,c.digit,{family:"interaction",detail:c.features.join(" + "),strength:"descriptive",support:c.discovery.active});
  const adaptiveByKey=new Map<string,typeof adaptive.signals[number]>();
  for(const s of adaptive.signals){adaptiveByKey.set(key(s.position,s.digit),s);if(s.status==="emerging"||s.status==="strengthening"||s.status==="persistent"||s.status==="weakening")
