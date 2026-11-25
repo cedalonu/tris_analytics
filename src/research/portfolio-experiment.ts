@@ -22,3 +22,9 @@ export function createPlan(draws:Draw[],mode:ResearchTicketMode,seeds:number[],s
  const ordered=[...draws].sort((a,b)=>a.drawId-b.drawId);
  return {protocolVersion:'portfolio-experiment-v1',sourceUrl:'https://raw.githubusercontent.com/pakinja/pakin/master/Tris.csv',sourceFetchedAt,dataFingerprint,totalDraws:ordered.length,drawIdStart:ordered[0]?.drawId??null,drawIdEnd:ordered.at(-1)?.drawId??null,mode,ticketCounts:[5,10,20,50,100],seeds:[...seeds],strategyVersion,notes:['Plan metadata only; no outcomes evaluated.','Confirm chronological validation/holdout boundaries and freeze strategy settings before experiment.','Verify input draw quality and chronology before using this plan.']};
 }
+/** Draw-specific wrapper: rejects non-ascending IDs and duplicates before temporal split. */
+export function splitValidatedDraws(draws:Draw[],config:SplitConfig={}):ChronologicalSplit<Draw>{
+ for(let i=1;i<draws.length;i++){if(draws[i].drawId<=draws[i-1].drawId)throw new Error('Draw IDs must be strictly ascending and unique; validate and sort explicitly before splitting.');}
+ if(draws.length<100)throw new Error('Insufficient draws for this protocol split (minimum 100; increase or version protocol for smaller samples).');
+ return splitChronologically(draws,config);
+}
