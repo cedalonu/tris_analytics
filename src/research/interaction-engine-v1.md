@@ -23,7 +23,7 @@ All features are frozen from history through t-1. The outcome at t is never used
 - Fixed library: 8 features; 28 pairs and 56 triples = 84 rules per position-digit stream.
 - Discovery / validation / holdout: chronological 60% / 20% / 20%, independently within each position-digit stream.
 - Discovery requires at least 25 active rows for a rule.
-- Top 3 combinations per stream are retained, then the global report is capped at 60.
+- Top 3 combinations per stream are retained, then the global report is capped at 60 using discovery metrics only; validation and holdout never break ranking ties.
 - A rule is ranked on discovery incremental hit rate over the strongest individual feature. Validation and holdout are reported but do not select the rule.
 
 ## Interpretation safeguards
