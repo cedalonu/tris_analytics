@@ -19,7 +19,7 @@ await writeFile(json,JSON.stringify({source:basename(source),sourceSha256:sha,re
 const lines=[
  "# TRIS temporal-memory analysis","",
  "- Source: "+basename(source),"- Source SHA-256: "+sha,
- "- Contests: "+report.drawCount+" ("+report.firstDrawId+"–"+report.lastDrawId),
+ "- Contests: "+report.drawCount+" ("+report.firstDrawId+"–"+report.lastDrawId+")",
  "",
  "## Scope overview","",
  "| Scope | Draws | Contest range | Position-pair / lag comparisons |",
