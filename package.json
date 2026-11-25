@@ -12,7 +12,8 @@
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
     "test:research": "tsx --test src/research/*.test.ts",
-    "research:pools": "tsx scripts/run-pool-matrix.ts"
+    "research:pools": "tsx scripts/run-pool-matrix.ts",
+    "research:sync": "tsx scripts/run-tris-sync.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
