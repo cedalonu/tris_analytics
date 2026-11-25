@@ -8,7 +8,7 @@ export type CandidateFamily = "transition"|"position-mutation"|"absence-return"|
 export interface CandidateConfig {
   family:CandidateFamily;
   mode?:string;
-  lag?:1|2|3;
+  lag?:1|2|3|4|5;
   position?:0|1|2|3|4;
   priorMisses?:number;
   method?:string;
@@ -28,7 +28,7 @@ const canonical=(config:CandidateConfig)=>JSON.stringify(config,Object.keys(conf
 
 export interface CandidateOptions {
   modes?:string[];
-  lags?:(1|2|3)[];
+  lags?:(1|2|3|4|5)[];
   positions?:(0|1|2|3|4)[];
   absenceThresholds?:number[];
   poolMethods?:string[];
@@ -38,7 +38,7 @@ export interface CandidateOptions {
 }
 const defaults:Required<CandidateOptions>={
  modes:["full5","last4","last3","first2","last2","firstLast"],
- lags:[1,2,3],
+ lags:[1,2,3,4,5],
  positions:[0,1,2,3,4],
  absenceThresholds:[0,1,2,3,5,8,13,20],
  poolMethods:["frequency","long-absence","short-absence","balanced","recent-frequency"],
