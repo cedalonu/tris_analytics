@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import type {Draw} from "../research-core";
 import {generateIntuitionCandidates} from "./intuition-candidate-generator";
 import {selectCandidatePortfolio} from "./candidate-portfolio-selector";
-import {buildPortfolioPhaseBoundaries,evaluateCandidatePortfolioWalkForward} from "./candidate-portfolio-walk-forward";
+import {buildPortfolioPhaseBoundaries,buildHoldoutStabilityBlocks,evaluateCandidatePortfolioWalkForward} from "./candidate-portfolio-walk-forward";
 
 const draws:Draw[]=Array.from({length:260},(_,i)=>{let x=(i*7919+17)%100000;const digits=Array.from({length:5},(_,p)=>{x=(x*48271+p*31)%2147483647;return x%10}) as Draw["digits"];return{drawId:5000+i,digits};});
 const catalog=generateIntuitionCandidates({modes:["full5"],lags:[1],positions:[0,1],absenceThresholds:[1],poolMethods:["frequency"],poolSizes:[2,3],windows:[20],includePools:true});
@@ -39,4 +39,39 @@ test("future outcomes cannot change earlier portfolio observations",()=>{
  const b=evaluateCandidatePortfolioWalkForward(changed,p,catalog,bounds);
  const early=(x:typeof a)=>x.phases.filter(p=>p.phase!=="holdout");
  assert.deepEqual(early(a),early(b));
+});
+
+
+test("holdout stability blocks cover the interval exactly and flag a short tail",()=>{
+ const blocks=buildHoldoutStabilityBlocks([{phase:"holdout",firstDrawId:5200,lastDrawId:5258}],25,10);
+ assert.deepEqual(blocks.map(b=>[b.firstDrawId,b.lastDrawId,b.partial,b.underpowered]),[
+  [5200,5224,false,false],[5225,5249,false,false],[5250,5258,true,true]
+ ]);
+ assert.equal(blocks.reduce((n,b)=>n+b.lastDrawId-b.firstDrawId+1,0),59);
+ assert.throws(()=>buildHoldoutStabilityBlocks([{phase:"holdout",firstDrawId:1,lastDrawId:5}],1),/block size/);
+});
+
+test("holdout stability reports common blocks, eligible denominators and coverage separately",()=>{
+ const p=selectCandidatePortfolio("family-balanced",4,19,catalog);
+ const bounds=[{phase:"holdout" as const,firstDrawId:5200,lastDrawId:5259}];
+ const report=evaluateCandidatePortfolioWalkForward(draws,p,catalog,bounds);
+ assert.deepEqual(report.stabilityBlocks.map(b=>[b.firstDrawId,b.lastDrawId,b.partial]),[
+  [5200,5224,false],[5225,5249,false],[5250,5259,true]
+ ]);
+ for(const block of report.stabilityBlocks){
+  assert.equal(block.signalDraws+block.skipped,block.candidateCount*(block.lastDrawId-block.firstDrawId+1));
+  assert.equal(block.coverage,block.signalDraws/(block.candidateCount*(block.lastDrawId-block.firstDrawId+1)));
+  assert.ok(block.rate>=0&&block.rate<=1);
+ }
+ assert.equal(report.stability?.blockCount,3);
+ assert.ok((report.stability?.rateStdDev??-1)>=0);
+});
+
+test("future outcomes cannot alter earlier holdout stability blocks",()=>{
+ const p=selectCandidatePortfolio("family-balanced",4,19,catalog);
+ const bounds=[{phase:"holdout" as const,firstDrawId:5200,lastDrawId:5259}];
+ const a=evaluateCandidatePortfolioWalkForward(draws,p,catalog,bounds);
+ const changed=draws.map(d=>d.drawId>=5225?{...d,digits:[9,9,9,9,9] as Draw["digits"]}:d);
+ const b=evaluateCandidatePortfolioWalkForward(changed,p,catalog,bounds);
+ assert.deepEqual(a.stabilityBlocks[0],b.stabilityBlocks[0]);
 });
