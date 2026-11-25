@@ -15,7 +15,7 @@ function syntheticRows(random:()=>number,p:number,draws:number,rep:number,series
 }
 export function simulatePositionChangeNull(options:NullSimulationOptions={}):NullSimulationResult{
  const replications=options.replications??1000,seriesPerReplication=options.seriesPerReplication??1,drawsPerBlock=options.drawsPerBlock??25,blocks=options.blocks??6,hitRate=options.hitRate??.2,seed=options.seed??20261125,blockSize=options.blockSize??drawsPerBlock,serialCorrelation=options.serialCorrelation??0,pairedDependence=options.pairedDependence??0;
- if(!Number.isInteger(replications)||replications<1||!Number.isInteger(seriesPerReplication)||seriesPerReplication<1||!Number.isInteger(drawsPerBlock)||drawsPerBlock<10||!Number.isInteger(blocks)||blocks<4||!Number.isFinite(hitRate)||hitRate<=0||hitRate>=1||!Number.isInteger(seed)||!Number.isInteger(blockSize)||blockSize<10||!Number.isFinite(serialCorrelation)||serialCorrelation<0||serialCorrelation>=1||!Number.isFinite(pairedDependence)||pairedDependence<0||pairedDependence>1)throw new Error("invalid null simulation options");
+ if(!Number.isInteger(replications)||replications<1||!Number.isInteger(seriesPerReplication)||seriesPerReplication<1||!Number.isInteger(drawsPerBlock)||drawsPerBlock<10||!Number.isInteger(blocks)||blocks<4||!Number.isFinite(hitRate)||hitRate<=0||hitRate>=1||!Number.isInteger(seed)||!Number.isInteger(blockSize)||blockSize<10||blockSize!==drawsPerBlock||!Number.isFinite(serialCorrelation)||serialCorrelation<0||serialCorrelation>=1||!Number.isFinite(pairedDependence)||pairedDependence<0||pairedDependence>1)throw new Error("invalid null simulation options");
  const random=rng(seed),counts:Record<PositionChangeState,number>={"insufficient-data":0,stable:0,improvement:0,deterioration:0,"persistent-change":0,recovery:0};
  let falseAlerts=0,persistent=0,familyWise=0,total=0;
  for(let r=0;r<replications;r++){let any=false;for(let s=0;s<seriesPerReplication;s++){const rows=syntheticRows(random,hitRate,drawsPerBlock*blocks,r,s,serialCorrelation,pairedDependence),state=detectPositionBehaviorChanges(rows,blockSize).series[0]?.state??"insufficient-data";counts[state]++;total++;if(state!=="stable"&&state!=="insufficient-data"){falseAlerts++;any=true}if(state==="persistent-change"||state==="recovery")persistent++}if(any)familyWise++}
@@ -42,7 +42,7 @@ function alternativeRows(random:()=>number,base:number,draws:number,rep:number,s
 }
 export function simulatePositionChangeAlternative(options:AlternativeSimulationOptions={}):AlternativeSimulationResult{
  const replications=options.replications??500,drawsPerBlock=options.drawsPerBlock??25,blocks=options.blocks??8,baselineRate=options.baselineRate??.2,effectSize=options.effectSize??.15,seed=options.seed??20261126,blockSize=options.blockSize??drawsPerBlock,shape=options.shape??"abrupt-improvement";
- if(!Number.isInteger(replications)||replications<1||!Number.isInteger(drawsPerBlock)||drawsPerBlock<10||!Number.isInteger(blocks)||blocks<6||!Number.isFinite(baselineRate)||baselineRate<=0||baselineRate>=1||!Number.isFinite(effectSize)||effectSize<=0||effectSize>=.5||baselineRate+effectSize>=1||!Number.isInteger(seed)||!Number.isInteger(blockSize)||blockSize<10||!["abrupt-improvement","abrupt-deterioration","gradual-improvement","recovery"].includes(shape))throw new Error("invalid alternative simulation options");
+ if(!Number.isInteger(replications)||replications<1||!Number.isInteger(drawsPerBlock)||drawsPerBlock<10||!Number.isInteger(blocks)||blocks<6||!Number.isFinite(baselineRate)||baselineRate<=0||baselineRate>=1||!Number.isFinite(effectSize)||effectSize<=0||effectSize>=.5||baselineRate+effectSize>=1||!Number.isInteger(seed)||!Number.isInteger(blockSize)||blockSize<10||blockSize!==drawsPerBlock||!["abrupt-improvement","abrupt-deterioration","gradual-improvement","recovery"].includes(shape))throw new Error("invalid alternative simulation options");
  const random=rng(seed),counts:Record<PositionChangeState,number>={"insufficient-data":0,stable:0,improvement:0,deterioration:0,"persistent-change":0,recovery:0},latencies:number[]=[];
  let detected=0,correct=0;
  const expected=shape==="abrupt-deterioration"?"deterioration":shape==="recovery"?"recovery":"improvement";
@@ -55,7 +55,7 @@ export function simulatePositionChangeAlternative(options:AlternativeSimulationO
  if(state!=="stable"&&state!=="insufficient-data")detected++;
  const correctFinal=expected==="recovery"?state==="recovery":expected==="improvement"?(state==="improvement"||(state==="persistent-change"&&(finalSeries?.change??0)>0)):state==="deterioration"||(state==="persistent-change"&&(finalSeries?.change??0)<0);
  if(correctFinal)correct++;
- if(firstDetection!==null)latencies.push(firstDetection-(blocks-2));
+ if(firstDetection!==null){const onsetBlock=shape==="gradual-improvement"?blocks-4:blocks-2;latencies.push(firstDetection-onsetBlock);}
  }
  const latencyDistribution:Record<string,number>={};for(const n of latencies){const k=String(n);latencyDistribution[k]=(latencyDistribution[k]??0)+1}
  const sorted=latencies.slice().sort((a,b)=>a-b),median=sorted.length?sorted[Math.floor((sorted.length-1)/2)]:null;
