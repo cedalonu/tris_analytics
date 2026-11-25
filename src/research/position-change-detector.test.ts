@@ -4,7 +4,7 @@ import {detectPositionBehaviorChanges} from "./position-change-detector";
 import type {ResolvedCycleSignal} from "./cycle-learning";
 function rows(rates:number[],position=0,config='{"family":"absence-return","position":0,"priorMisses":1}',candidateId="c1"):ResolvedCycleSignal[]{
  const out:ResolvedCycleSignal[]=[];
- rates.forEach((rate,b)=>{for(let i=0;i<25;i++){const hit=i<Math.round(rate*25);out.push({schemaVersion:1,forecastId:"f"+b+"-"+i,candidateId,family:"absence-return",frozenConfig:config,targetDrawId:100+b*25+i,generatedAt:"2026-01-01T00:00:00.000Z",historyThroughDrawId:99+b*25+i,historySha256:"h",prediction:[],baseline:[],resolvedAt:"2026-01-01T00:00:00.000Z",actual:"",candidateHit:hit,baselineHit:false,cycleId:"c"+b,modelVersion:"tris-cycle-learning-v1",position,context:{previousPoolSize:4,previousDuplicatePairs:1,previousRepeatedPositions:1,poolRegime:"mixed",duplicateRegime:"few-duplicates"}})}});
+ rates.forEach((rate,b)=>{for(let i=0;i<25;i++){const hit=i<Math.round(rate*25);out.push({schemaVersion:1,forecastId:"f"+candidateId+"-"+b+"-"+i,candidateId,family:"absence-return",frozenConfig:config,targetDrawId:100+b*25+i,generatedAt:"2026-01-01T00:00:00.000Z",historyThroughDrawId:99+b*25+i,historySha256:"h",prediction:[],baseline:[],resolvedAt:"2026-01-01T00:00:00.000Z",actual:"",candidateHit:hit,baselineHit:false,cycleId:"c"+b,modelVersion:"tris-cycle-learning-v1",position,context:{previousPoolSize:4,previousDuplicatePairs:1,previousRepeatedPositions:1,poolRegime:"mixed",duplicateRegime:"few-duplicates"}})}});
  return out;
 }
 test("stable behavior remains neutral",()=>assert.equal(detectPositionBehaviorChanges(rows([.2,.2,.2,.2])).series[0].state,"stable"));
