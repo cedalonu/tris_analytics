@@ -1,4 +1,4 @@
-/** Import adapter for the TRIS CSV published by pakinja/pakinja. */
+/** Import adapter for a manually supplied local TRIS CSV; performs no network access. */
 import type { Draw, Digit, Validation } from "../research-core";
 export interface DatasetProvenance { sourceLabel:string; fetchedAt:string; sourceHeader:string[]; rowCount:number; minDrawId:number|null; maxDrawId:number|null; dateRange:[string|null,string|null]; contentFingerprint?:string }
 export interface ImportedDataset { validation:Validation; provenance:DatasetProvenance }
@@ -23,5 +23,5 @@ export function importTrisCsv(csv:string,fetchedAt=new Date().toISOString()):Imp
  for(const row of rows){if(ids.has(row.drawId)){errors.push("duplicate draw "+row.drawId);continue;}ids.add(row.drawId);unique.push(row);}
  for(let i=1;i<unique.length;i++)if(unique[i].drawId-unique[i-1].drawId>1)warnings.push("draw gap "+unique[i-1].drawId+" → "+unique[i].drawId);
  const dates=unique.map(d=>d.date).filter((d):d is string=>!!d).sort();
- return {validation:{valid:unique,errors,warnings},provenance:{sourceUrl,fetchedAt,sourceHeader:header,rowCount:unique.length,minDrawId:unique[0]?.drawId??null,maxDrawId:unique.at(-1)?.drawId??null,dateRange:[dates[0]??null,dates.at(-1)??null]}};
+ return {validation:{valid:unique,errors,warnings},provenance:{sourceLabel,fetchedAt,sourceHeader:header,rowCount:unique.length,minDrawId:unique[0]?.drawId??null,maxDrawId:unique.at(-1)?.drawId??null,dateRange:[dates[0]??null,dates.at(-1)??null]}};
 }
