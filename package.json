@@ -24,7 +24,8 @@
     "research:interactions": "tsx scripts/run-tris-interactions.ts",
     "research:adaptive-memory": "tsx scripts/run-tris-adaptive-memory.ts",
     "research:regime-memory": "tsx scripts/run-tris-regime-memory.ts",
-    "research:concordance": "tsx scripts/run-tris-concordance.ts"
+    "research:concordance": "tsx scripts/run-tris-concordance.ts",
+    "research:cycles": "tsx scripts/run-tris-cycles.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
