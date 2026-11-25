@@ -110,6 +110,13 @@ function scanStream(rows:InteractionObservation[],position:Pos,digit:Digit):Inte
   b.discovery.liftVsBaseline-a.discovery.liftVsBaseline||b.discovery.active-a.discovery.active);
  return found.slice(0,TOP_PER_STREAM);
 }
+/** Rebuild one position/digit stream with past-only feature values. */
+export function buildInteractionObservations(draws:Draw[],position:Pos,digit:Digit):InteractionObservation[] {
+ validate(draws);
+ const rows:InteractionObservation[]=[];
+ for(let i=WARMUP;i<draws.length;i++)rows.push(makeObservation(draws,i,position,digit));
+ return rows;
+}
 export function analyzeSignalInteractions(draws:Draw[]):InteractionReport {
  validate(draws);
  const selected:InteractionCandidate[]=[];let combinationsTested=0;
