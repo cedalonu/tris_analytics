@@ -38,3 +38,8 @@
 - Added a unit test asserting distinct pools on a constructed history.
 - Prior pool matrix/report is explicitly marked pre-correction and requires a fresh rerun to reconcile. The prior shortlist is provisional and should not be used as validated evidence.
 - Test execution is still unverified; GitHub Actions and local TS runtime were not confirmed.
+
+
+## CI dependency issue and fix (2026-11-25)
+- GitHub Actions failed before TypeScript/tests: npm ERESOLVE, because Vite 8.3.8 requires optional peer esbuild `^0.27 || ^0.28`, while project declared `^0.25.0`.
+- Updated `package.json` devDependency esbuild to `^0.28.2` to align peer requirement. Awaiting the new workflow run to confirm installation, typecheck, and tests.
