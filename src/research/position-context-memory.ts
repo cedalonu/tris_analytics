@@ -111,7 +111,7 @@ export function analyzePositionContextMemory(rows:ResolvedCycleSignal[]):Positio
     "No material advantage in the latest eligible block."
   });
  }
- positions.sort((a,b)=>a.position-b.position||a.family.localeCompare(b.family)||a.poolRegime.localeCompare(b.poolRegime)||a.duplicateRegime.localeCompare(b.duplicateRegime));
+ positions.sort((a,b)=>a.position-b.position||a.family.localeCompare(b.family)||a.configuration.localeCompare(b.configuration)||a.poolRegime.localeCompare(b.poolRegime)||a.duplicateRegime.localeCompare(b.duplicateRegime));
  const modeScopes:PositionModeMemory[]=[];
  for(const [mode,trials] of modeGroups){
   const byDraw=new Map<number,Trial[]>();for(const t of trials){const a=byDraw.get(t.drawId)??[];a.push(t);byDraw.set(t.drawId,a);}
