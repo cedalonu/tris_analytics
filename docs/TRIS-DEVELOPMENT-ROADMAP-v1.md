@@ -133,3 +133,11 @@ La rama research-core-v1 contiene módulos de análisis, memoria y ciclos. Las p
 - El runner evalúa 3 tasas marginales × 3 niveles de autocorrelación; por defecto 300 réplicas × 10 series × 9 escenarios = 27,000 series.
 - La tasa marginal de candidato y baseline permanece igual en cada escenario. Se reporta tasa por serie y probabilidad familiar de al menos una alerta por réplica.
 - Los escenarios son pruebas de estrés sintéticas, no una simulación calibrada al TRIS real. No ajustan umbrales automáticamente.
+
+
+### Fase 5 — sensibilidad ante cambios verdaderos
+- Se amplió el banco offline con cuatro alternativas: mejora abrupta, deterioro abrupto, mejora gradual y recuperación.
+- Se miden detección final, dirección correcta, estados y latencia en bloques desde el inicio del cambio hasta la primera alerta direccional correcta.
+- Por defecto: 300 réplicas por escenario, ocho bloques de 25 concursos, baseline 20% y efecto máximo 15 puntos porcentuales.
+- La alternativa usa flujos Bernoulli independientes y sin autocorrelación; por tanto, esta etapa mide sensibilidad en escenarios controlados, no generalización al TRIS.
+- La calibración nula y la sensibilidad se reportan juntas, pero no se usan para ajustar automáticamente umbrales.
