@@ -170,3 +170,12 @@ La rama research-core-v1 contiene módulos de análisis, memoria y ciclos. Las p
 - Pruebas cubren componentes disjuntos, componente singleton idéntico (dependencia perfecta), solapamiento parcial, reproducibilidad y entradas inválidas.
 - Límite importante: cada señal selecciona un componente latente por sorteo; por ello la estructura de componentes controla dependencia transversal, pero puede modificar la autocorrelación temporal efectiva. Jaccard/coseno son descriptores de diseño, no correlaciones; Pearson es la dependencia medida en la simulación.
 - Esta matriz no afirma que las hipótesis TRIS reales compartan componentes ni estima su dependencia real. Para ello se necesitarán series prospectivas congeladas y resultados resueltos. No usa CSV real, APIs, descargas ni ajuste automático de umbrales.
+
+
+### Fase 5 — grafo de solapamiento del catálogo (2026-11-25)
+- Added `src/research/candidate-overlap-graph.ts`, which maps the actual deterministic 1,095-candidate catalog into explicit shared dimensions: positions, lags, transition modes, pool methods, pool sizes, windows and absence thresholds.
+- Default family counts are asserted as 30 transition, 25 position-mutation, 40 absence-return and 1,000 pool-ranking candidates.
+- The graph reports nominal Jaccard/cosine overlap and shared-component edges. These are structural relationships inferred from frozen candidate configurations, not empirical correlations or evidence that one signal predicts another.
+- The offline null report now includes graph size, component frequencies and a small set of strongest nominal edges, while keeping the full graph out of the report artifact to avoid unnecessary size.
+- Unit tests cover full-catalog coverage, family counts, shared-position/lag edges and duplicate-ID rejection.
+- Next validation must compare graph structure against prospective resolved signal series. No synthetic overlap parameter will be interpreted as a measured TRIS correlation; no thresholds are automatically tuned.
