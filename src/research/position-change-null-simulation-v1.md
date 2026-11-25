@@ -1,4 +1,4 @@
-# TRIS — calibración nula y sensibilidad del detector v1.5
+# TRIS — calibración nula y sensibilidad del detector v1.6
 
 ## Objetivo
 Separar dos preguntas: ¿cuántas falsas alertas aparecen cuando no hay ventaja? y ¿con qué frecuencia se detectan cambios verdaderos definidos de antemano?
@@ -40,3 +40,9 @@ La primera ejecución con efecto 0.15 mostró detección final baja y, en partic
 Con la nueva regla de recuperación, la clasificación explícita `recovery` fue 1.67%, 5.67%, 20.00% y 24.67% para tamaños de efecto 0.10, 0.15, 0.25 y 0.35, respectivamente (300 réplicas por escenario). La regla detecta más recuperaciones que la versión anterior, pero sigue clasificando erróneamente muchas como mejora o cambio persistente; no se considera resuelto el problema.
 
 En los escenarios nulos con p=0.20, la tasa de falsas alertas por serie fue 5.63%, 9.50% y 14.80% con autocorrelación 0, 0.3 y 0.6. La probabilidad de al menos una alerta entre 10 series fue 42.00%, 64.00% y 80.67%. Esto confirma que el detector no debe usarse para seleccionar automáticamente señales sin una calibración de multiplicidad y dependencia más completa.
+
+
+## Proyección de multiplicidad bajo independencia
+El runner proyecta la probabilidad de al menos una falsa alerta para familias de 10, 50, 250 y 1,095 señales mediante la fórmula 1-(1-p)^m, donde p es la tasa de falsa alerta por serie observada y m el tamaño de la familia. Los intervalos Wilson por serie se transforman con la misma función monótona.
+
+Esta proyección es una referencia matemática bajo independencia, no una estimación del sistema real: las señales pueden compartir sorteos, dígitos, ventanas, configuraciones y datos, por lo que no son independientes. La siguiente calibración debe simular dependencia entre señales y comparar los resultados con esta referencia. No se aplican correcciones automáticas ni se cambia el umbral del detector.
