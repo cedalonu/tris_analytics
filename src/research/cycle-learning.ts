@@ -8,10 +8,19 @@ import type {Draw} from "../research-core";
 import type {IntuitionCandidate} from "./intuition-candidate-generator";
 import {freezeProspectiveForecast,resolveProspectiveForecast,type FrozenForecast,type ResolvedForecast} from "./intuition-prospective";
 
+export interface PreDrawContext {
+ previousPoolSize:number;
+ previousDuplicatePairs:number;
+ previousRepeatedPositions:number;
+ poolRegime:"compact"|"mixed"|"broad";
+ duplicateRegime:"few-duplicates"|"many-duplicates";
+}
 export interface FrozenCycleSignal {
  candidateId:string;
  priorityScore:number;
  priorityReasons:string[];
+ position:number|null;
+ context:PreDrawContext;
  forecast:FrozenForecast;
 }
 export interface FrozenLearningCycle {
@@ -29,6 +38,8 @@ export interface FrozenLearningCycle {
 export interface ResolvedCycleSignal extends ResolvedForecast {
  cycleId:string;
  modelVersion:"tris-cycle-learning-v1";
+ position:number|null;
+ context:PreDrawContext;
 }
 export interface CycleBlock {
  startDrawId:number;
@@ -79,9 +90,20 @@ export function freezeLearningCycle(
  if(!Number.isFinite(Date.parse(generatedAt)))throw new Error("valid cycle timestamp required");
  const historySha256=fingerprintCycleHistory(history);
  const signals:FrozenCycleSignal[]=[];
+ const previous=history.at(-1)!;
+ const previousPoolSize=new Set(previous.digits).size;
+ let previousDuplicatePairs=0;
+ for(let p=0;p<5;p++)for(let q=p+1;q<5;q++)if(previous.digits[p]===previous.digits[q])previousDuplicatePairs++;
+ const previousRepeatedPositions=5-previousPoolSize;
+ const context:PreDrawContext={
+  previousPoolSize,previousDuplicatePairs,previousRepeatedPositions,
+  poolRegime:previousPoolSize<=3?"compact":previousPoolSize>=4?"broad":"mixed",
+  duplicateRegime:previousDuplicatePairs/10>=.20?"many-duplicates":"few-duplicates"
+ };
  for(const item of selected){
   const forecast=freezeProspectiveForecast(history,item.candidate,targetDrawId,generatedAt);
-  if(forecast)signals.push({candidateId:item.candidate.id,priorityScore:item.priorityScore,priorityReasons:[...item.priorityReasons],forecast});
+  if(forecast)signals.push({candidateId:item.candidate.id,priorityScore:item.priorityScore,priorityReasons:[...item.priorityReasons],
+   position:item.candidate.config.position??null,context:{...context},forecast});
  }
  const cycleId=sha([targetDrawId,historySha256,...signals.map(s=>s.candidateId).sort()].join("|"));
  return {schemaVersion:1,cycleId,modelVersion:"tris-cycle-learning-v1",targetDrawId,generatedAt,
@@ -93,7 +115,7 @@ export function resolveLearningCycleSignal(
 ):ResolvedCycleSignal {
  if(signal.forecast.targetDrawId!==cycle.targetDrawId||signal.forecast.historySha256!==cycle.historySha256)throw new Error("signal does not belong to the frozen cycle");
  const resolved=resolveProspectiveForecast(signal.forecast,actualDraw,priorHistory,resolvedAt);
- return {...resolved,cycleId:cycle.cycleId,modelVersion:cycle.modelVersion};
+ return {...resolved,cycleId:cycle.cycleId,modelVersion:cycle.modelVersion,position:signal.position,context:{...signal.context}} as ResolvedCycleSignal;
 }
 /** Build non-overlapping chronological blocks. Partial final blocks need >=10 observations. */
 export function assessCycleSignalLifecycle(rows:ResolvedCycleSignal[],blockSize=25):CycleSignalLifecycle[] {
