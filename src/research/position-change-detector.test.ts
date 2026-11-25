@@ -12,7 +12,9 @@ test("abrupt sustained change is flagged after two blocks",()=>assert.equal(dete
 test("single changed block is only a tentative improvement",()=>assert.equal(detectPositionBehaviorChanges(rows([.1,.1,.1,.5])).series[0].state,"improvement"));
 test("gradual change becomes visible only after sustained separation",()=>assert.equal(detectPositionBehaviorChanges(rows([.1,.1,.15,.25,.45,.65])).series[0].state,"persistent-change"));
 test("noisy isolated spike does not become persistent",()=>assert.notEqual(detectPositionBehaviorChanges(rows([.1,.1,.5,.1])).series[0].state,"persistent-change"));
-test("recovery follows sustained deterioration",()=>assert.equal(detectPositionBehaviorChanges(rows([.9,.9,.1,.1,.9,.9])).series[0].state,"recovery"));
+test("recovery follows a sustained two-block deterioration and rebound",()=>assert.equal(detectPositionBehaviorChanges(rows([.9,.9,.1,.1,.9,.9])).series[0].state,"recovery"));
+test("partial recovery is recognized without requiring full restoration",()=>assert.equal(detectPositionBehaviorChanges(rows([.2,.2,0,0,.1,.1])).series[0].state,"recovery"));
+test("a single rebound spike is not classified as recovery",()=>assert.notEqual(detectPositionBehaviorChanges(rows([.2,.2,0,0,0,.5])).series[0].state,"recovery"));
 test("insufficient history stays unclassified",()=>assert.equal(detectPositionBehaviorChanges(rows([.2,.4,.4])).series[0].state,"insufficient-data"));
 test("position and exact config are not pooled",()=>{const a=rows([.2,.2,.4,.4]),b=rows([.2,.2,.2,.2],1,'{"family":"absence-return","position":1,"priorMisses":2}',"c2");const r=detectPositionBehaviorChanges([...a,...b]);assert.equal(r.seriesCount,2);assert.deepEqual(r.series.map(x=>x.position),[0,1])});
 test("duplicate candidate result is rejected",()=>assert.throws(()=>detectPositionBehaviorChanges([...rows([.2,.2,.2,.2]),rows([.2,.2,.2,.2])[0]]),/duplicate candidate outcome/));
