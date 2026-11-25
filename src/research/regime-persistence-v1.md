@@ -4,9 +4,9 @@
 The first 50 contests form a fixed reference distribution. The remaining contests are split into non-overlapping blocks of 10. Each block is compared with the same reference for five positional distributions, pool-size distribution, duplicate-position-pair rate, and ten positional-pair joint distributions.
 
 ## Labels
-- `persistent`: at least two consecutive blocks cross the watch threshold (TV >= 0.20 or JS >= 0.08).
-- `transient`: an isolated watch block is followed by a block that no longer crosses the watch threshold.
-- `reverted`: after a watch, a later block returns to TV <= 0.10 from the original reference.
+- `persistent`: at least two consecutive blocks cross the watch threshold (TV >= 0.20 or JS >= 0.08), with no later return-to-reference block.
+- `transient`: only one watch block occurs; it does not establish persistence.
+- `reverted`: after at least two consecutive watch blocks, a later block returns to TV <= 0.10 from the original reference.
 - `no-sustained-shift`: no watch sequence was found.
 - `insufficient-history`: fewer than 50 reference contests, or no post-reference block.
 
