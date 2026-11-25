@@ -6,13 +6,14 @@
 import { createHash } from "node:crypto";
 import type { Draw, Digit, Pos, PoolMethod } from "../research-core";
 import { buildPool } from "../research-core";
-import type { IntuitionCandidate } from "./intuition-candidate-generator";
+import type { IntuitionCandidate, CandidateConfig, CandidateFamily } from "./intuition-candidate-generator";
 import { MODES, outcomeForMode } from "./draw-evolution";
 
 export interface FrozenForecast {
   schemaVersion:1;
   forecastId:string;
   candidateId:string;
+  family:CandidateFamily;
   frozenConfig:string;
   targetDrawId:number;
   generatedAt:string;
@@ -110,7 +111,7 @@ export function freezeProspectiveForecast(
  const fingerprint=historyHash(history);
  const identity=[candidate.id,candidate.frozenConfig,targetDrawId,fingerprint,generatedAt].join("|");
  return {
-  schemaVersion:1,forecastId:sha(identity),candidateId:candidate.id,frozenConfig:candidate.frozenConfig,
+  schemaVersion:1,forecastId:sha(identity),candidateId:candidate.id,family:candidate.family,frozenConfig:candidate.frozenConfig,
   targetDrawId,generatedAt,historyThroughDrawId:history.at(-1)!.drawId,historySha256:fingerprint,
   prediction:result.prediction,baseline:result.baseline
  };
@@ -123,16 +124,13 @@ export function resolveProspectiveForecast(
  if(actualDraw.digits.length!==5||actualDraw.digits.some(d=>!Number.isInteger(d)||d<0||d>9))throw new Error("invalid actual draw");
  if(!Number.isFinite(Date.parse(resolvedAt)))throw new Error("valid resolvedAt timestamp required");
  const actual=actualDraw.digits.join("");
- const actualValue=forecast.prediction.length===1&&forecast.prediction[0].length===5?actual:
-  forecast.prediction.length===1&&forecast.prediction[0].length===4?actual.slice(1):
-  forecast.prediction.length===1&&forecast.prediction[0].length===3?actual.slice(2):
-  forecast.prediction.length===1&&forecast.prediction[0].length===2?actual.slice(0,2):actual;
- const positions=MODES.find(m=>m.positions.map(p=>p).join(",")===forecast.frozenConfig)?.positions;
- void positions;
- const modeMatch=forecast.prediction.length===1&&forecast.prediction[0].length!==1;
- const candidateHit=modeMatch?forecast.prediction.includes(actualValue):
-  forecast.prediction.some(v=>v===actual[0]||v===actual[1]||v===actual[2]||v===actual[3]||v===actual[4]);
- const baselineHit=modeMatch?forecast.baseline.includes(actualValue):
-  forecast.baseline.some(v=>v===actual[0]||v===actual[1]||v===actual[2]||v===actual[3]||v===actual[4]);
- return {...forecast,resolvedAt,actual,candidateHit,baselineHit};
+ const config=JSON.parse(forecast.frozenConfig) as CandidateConfig;
+ let outcome:string;
+ if(forecast.family==="transition") outcome=outcomeForMode(actualDraw.digits,config.mode as Parameters<typeof outcomeForMode>[1]);
+ else outcome=String(actualDraw.digits[config.position!]);
+ return {
+  ...forecast,resolvedAt,actual,
+  candidateHit:forecast.prediction.includes(outcome),
+  baselineHit:forecast.baseline.includes(outcome)
+ };
 }
