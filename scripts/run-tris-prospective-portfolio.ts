@@ -6,7 +6,7 @@ import {createHash} from "node:crypto";
 import {importTrisCsv} from "../src/research/data-adapter";
 import {generateIntuitionCandidates} from "../src/research/intuition-candidate-generator";
 import {freezeProspectiveForecast,resolveProspectiveForecast,type FrozenForecast,type ResolvedForecast} from "../src/research/intuition-prospective";
-import {createProspectivePortfolioManifest,validateProspectivePortfolioManifest,summarizeProspectivePortfolio,type ProspectivePortfolioManifest} from "../src/research/prospective-portfolio-monitor";
+import {createProspectivePortfolioManifest,validateProspectivePortfolioManifest,summarizeProspectivePortfolio,type ProspectivePortfolioManifest} from "../src/research/prospective-portfolio-monitor";\nimport {summarizeProspectiveFamilyConcordance} from "../src/research/prospective-family-concordance";
 
 const input=process.argv[2];
 if(!input){console.error("Uso: npm run research:prospective-portfolio -- ./data/Tris.csv [directorio-ledger]");process.exit(2);}
@@ -49,7 +49,7 @@ for(const candidateId of manifest.candidateIds){
 }
 if(newForecasts.length)await appendFile(forecastsPath,newForecasts.map(f=>JSON.stringify(f)).join("\n")+"\n","utf8");
 const allForecasts=[...forecasts,...newForecasts];
-const summary=summarizeProspectivePortfolio(manifest,allForecasts,allResults,draws.at(-1)!.drawId);
+const summary=summarizeProspectivePortfolio(manifest,allForecasts,allResults,draws.at(-1)!.drawId);\nconst familyConcordance=summarizeProspectiveFamilyConcordance(manifest,candidates,allForecasts,allResults,draws.at(-1)!.drawId);
 const sha256=createHash("sha256").update(csv,"utf8").digest("hex");
 const report=[
  "# TRIS — seguimiento prospectivo de portafolio congelado","",
