@@ -29,22 +29,25 @@ const positionalOverlap=(a:string,b:string):number=>{
 };
 /** Select highest-ranked candidates subject to per-mode quota and overlap limit. */
 export function selectDiversePortfolio(candidates:ScoredTicketCandidate[],config:SelectionConfig):PortfolioSelection{
- const maxOverlap=config.maxPositionOverlap??0.8, dedupe=config.dedupe??true;
- const audits:SelectionAudit[]=[],tickets:Ticket[]=[];
+ const rawOverlap=config.maxPositionOverlap??0.8, maxOverlap=Number.isFinite(rawOverlap)?Math.max(0,Math.min(1,rawOverlap)):0.8, dedupe=config.dedupe??true;
+ const audits:SelectionAudit[]=[],tickets:Ticket[]=[]; const notes:string[]=[];
+ if(rawOverlap!==maxOverlap)notes.push('maxPositionOverlap was outside [0,1] or non-finite; normalized to a safe value.');
+ const globalSelectedByMode=new Map<TicketMode,Set<string>>();
  for(const q of config.quotas){
   const list=candidates.filter(c=>c.mode===q.mode).slice().sort((a,b)=>b.score-a.score||b.support-a.support||a.proposal.localeCompare(b.proposal));
-  const selected:ScoredTicketCandidate[]=[];let invalid=0,duplicate=0,overlap=0;
+  const selected:ScoredTicketCandidate[]=[];let invalid=0,duplicate=0,overlap=0; const globalSeen=globalSelectedByMode.get(q.mode)||new Set<string>();
   for(const c of list){
    if(selected.length>=Math.max(0,Math.floor(q.count)))break;
-   if(!ticketValid(c)){invalid++;continue;}
-   if(dedupe&&selected.some(s=>s.proposal===c.proposal)){duplicate++;continue;}
+   if(!ticketValid(c)||!Number.isFinite(c.score)||!Number.isFinite(c.support)){invalid++;continue;}
+   if(dedupe&&(selected.some(s=>s.proposal===c.proposal)||globalSeen.has(c.proposal))){duplicate++;continue;}
    if(selected.some(s=>positionalOverlap(s.proposal,c.proposal)>maxOverlap)){overlap++;continue;}
-   selected.push(c);
+   selected.push(c); globalSeen.add(c.proposal);
   }
+  globalSelectedByMode.set(q.mode,globalSeen);
   tickets.push(...selected.map(c=>({mode:c.mode,proposal:c.proposal})));
   audits.push({mode:q.mode,requested:Math.max(0,Math.floor(q.count)),selected:selected.length,candidateCount:list.length,rejectedInvalid:invalid,rejectedDuplicate:duplicate,rejectedOverlap:overlap,selectedTickets:selected});
  }
- return {tickets,audit:audits,totalRequested:config.quotas.reduce((s,q)=>s+Math.max(0,Math.floor(q.count)),0),totalSelected:tickets.length,notes:[
+ return {tickets,audit:audits,totalRequested:config.quotas.reduce((s,q)=>s+Math.max(0,Number.isFinite(q.count)?Math.floor(q.count):0),0),totalSelected:tickets.length,notes:[...notes,
   "Candidate score is used for ranking only; it is not a calibrated probability or proof of advantage.",
   "Diversity is a configurable heuristic, not a guarantee of better coverage or expected return.",
   "Selection quotas are per ticket mode; compare portfolios with equal ticket counts and cost.",
