@@ -31,3 +31,24 @@ test('frequency uses all history while recent-frequency uses trailing window',()
  assert.deepEqual(buildPool(history,'frequency',2,3),[0,1]);
  assert.deepEqual(buildPool(history,'recent-frequency',2,3),[7,8]);
 });
+
+test('ranking-prefix optimization preserves pool membership and hit totals',()=>{
+ const methods=['frequency','long-absence','short-absence','balanced','recent-frequency'] as const;
+ const sizes=[1,3,6,10],position=1,minTrain=100,window=35;
+ const optimized=runPoolMethodExperiment(draws,position,[...methods],sizes,minTrain,window);
+ const frequency=(hist:Draw['digits'][number][],k:number)=>Array.from({length:10},(_,d)=>d)
+  .sort((a,b)=>hist.filter(x=>x===b).length-hist.filter(x=>x===a).length||a-b).slice(0,k);
+ for(const row of optimized){
+  let expectedHits=0,expectedFixed=0,expectedRolling=0;
+  for(let i=minTrain;i<draws.length;i++){
+   const hist=draws.slice(0,i).map(d=>d.digits[position]),target=draws[i].digits[position];
+   const pool=buildPool(hist,row.method,row.poolSize,window);
+   const fixed=frequency(draws.slice(0,minTrain).map(d=>d.digits[position]),row.poolSize);
+   const rolling=frequency(hist.slice(-window),row.poolSize);
+   expectedHits+=Number(pool.includes(target));expectedFixed+=Number(fixed.includes(target));expectedRolling+=Number(rolling.includes(target));
+  }
+  assert.equal(row.hits,expectedHits,row.method+' pool '+row.poolSize);
+  assert.equal(row.fixedFrequencyHits,expectedFixed);
+  assert.equal(row.rollingFrequencyHits,expectedRolling);
+ }
+});
