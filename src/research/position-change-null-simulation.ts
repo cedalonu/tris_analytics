@@ -25,7 +25,7 @@ export function simulatePositionChangeNull(options:NullSimulationOptions={}):Nul
 
 export type AlternativeShape="abrupt-improvement"|"abrupt-deterioration"|"gradual-improvement"|"recovery";
 export interface AlternativeSimulationOptions{replications?:number;drawsPerBlock?:number;blocks?:number;baselineRate?:number;effectSize?:number;seed?:number;blockSize?:number;shape?:AlternativeShape}
-export interface AlternativeSimulationResult{shape:AlternativeShape;replications:number;drawsPerBlock:number;blocks:number;baselineRate:number;effectSize:number;seed:number;detectionRate:number;correctDirectionRate:number;medianDetectionLatencyBlocks:number|null;latencyDistribution:Record<string,number>;stateCounts:Record<PositionChangeState,number>;wilson95:[number,number];interpretation:string}
+export interface AlternativeSimulationResult{shape:AlternativeShape;replications:number;drawsPerBlock:number;blocks:number;baselineRate:number;effectSize:number;seed:number;detectionRate:number;correctDirectionRate:number;medianDetectionLatencyBlocks:number|null;latencyObservations:number;latencyDistribution:Record<string,number>;stateCounts:Record<PositionChangeState,number>;wilson95:[number,number];interpretation:string}
 function effectAt(shape:AlternativeShape,block:number,blocks:number,effect:number):number{
  const onset=blocks-2;
  if(shape==="abrupt-improvement")return block>=onset?effect:0;
@@ -59,5 +59,5 @@ export function simulatePositionChangeAlternative(options:AlternativeSimulationO
  }
  const latencyDistribution:Record<string,number>={};for(const n of latencies){const k=String(n);latencyDistribution[k]=(latencyDistribution[k]??0)+1}
  const sorted=latencies.slice().sort((a,b)=>a-b),median=sorted.length?sorted[Math.floor((sorted.length-1)/2)]:null;
- return{shape,replications,drawsPerBlock,blocks,baselineRate,effectSize,seed,detectionRate:detected/replications,correctDirectionRate:correct/replications,medianDetectionLatencyBlocks:median,latencyDistribution,stateCounts:counts,wilson95:wilson(correct,replications),interpretation:"Alternativa sintética: la probabilidad del candidato cambia según el escenario y la baseline permanece fija. La detección mide el estado correcto al final; la latencia cuenta bloques desde el inicio del cambio hasta la primera alerta direccional. Los flujos se generan independientemente y sin autocorrelación."};
+ return{shape,replications,drawsPerBlock,blocks,baselineRate,effectSize,seed,detectionRate:detected/replications,correctDirectionRate:correct/replications,medianDetectionLatencyBlocks:median,latencyObservations:latencies.length,latencyDistribution,stateCounts:counts,wilson95:wilson(correct,replications),interpretation:"Alternativa sintética: la probabilidad del candidato cambia según el escenario y la baseline permanece fija. La detección mide el estado correcto al final; la latencia cuenta bloques desde el inicio del cambio hasta la primera alerta direccional. Los flujos se generan independientemente y sin autocorrelación."};
 }
