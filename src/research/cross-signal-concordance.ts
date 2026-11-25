@@ -4,7 +4,7 @@
  * as independent evidence or generate forecasts.
  */
 import type {Draw,Pos,Digit} from "../research-core";
-import {analyzeSignalInteractions,type InteractionFeatureId} from "./interaction-engine";
+import {analyzeSignalInteractions} from "./interaction-engine";
 import {analyzeAdaptiveSignalMemory,type AdaptiveMemoryStatus} from "./adaptive-signal-memory";
 import {analyzeRegimeConditionedMemory} from "./regime-conditioned-memory";
 import {analyzeTemporalMemory} from "./temporal-memory";
@@ -78,7 +78,6 @@ export function analyzeCrossSignalConcordance(draws:Draw[]):CrossSignalReport {
   const conflictNotes:string[]=[];
   if(hasPositiveRegime&&hasNegativeRegime)conflictNotes.push("La señal muestra bloques favorables y desfavorables en distintos regímenes.");
   if(adaptiveWeak&&hasPositiveRegime)conflictNotes.push("La memoria adaptativa reciente no confirma de forma uniforme la evidencia histórica por régimen.");
-  if(familySet.has("temporal-transition")&&familySet.has("contextual-memory"))conflictNotes.push("Transición y contexto coinciden en el dígito objetivo, pero comparten datos históricos y no son pruebas independientes.");
   const count=familySet.size;
   const concordance:CrossSignalRecord["concordance"]=conflictNotes.length?"conflicting":count>=2?"multi-family":count===1?"single-family":"no-screened-signal";
   const a=absence.get(key(p,d))!;
@@ -89,7 +88,7 @@ export function analyzeCrossSignalConcordance(draws:Draw[]):CrossSignalReport {
  }
  const familyCounts:Record<SignalFamily,number>={interaction:0,"adaptive-memory":0,"regime-memory":0,"temporal-transition":0,"contextual-memory":0};
  for(const r of records)for(const f of r.families)familyCounts[f.family]++;
- const n=draws.length-5,discovery=Math.floor(n*.6),validation=Math.floor(n*.2);
+ const n=draws.length-5,discovery=Math.floor(n*.6),validationEnd=Math.floor(n*.8),validation=validationEnd-discovery;
  return {drawCount:draws.length,firstDrawId:draws[0].drawId,lastDrawId:draws[draws.length-1].drawId,
   discoveryValidationHoldout:{discovery,validation,holdout:n-discovery-validation},
   screenedRecords:records.filter(r=>r.familyCount>0).length,records,familyCounts,
