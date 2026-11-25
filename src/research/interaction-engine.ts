@@ -61,7 +61,7 @@ function validate(draws:Draw[]):void {
  }
 }
 function makeObservation(draws:Draw[],i:number,position:Pos,digit:Digit):InteractionObservation {
- const prior=draws.slice(0,i),last=prior[prior.length-1],recent3=prior.slice(-3),recent5=prior.slice(-5);
+ const last=draws[i-1],recent3=draws.slice(Math.max(0,i-3),i),recent5=draws.slice(Math.max(0,i-5),i);
  const previousPoolSize=new Set(last.digits).size;
  const neighborPositions=[position>0?position-1:-1,position<4?position+1:-1].filter(p=>p>=0);
  const features:Record<InteractionFeatureId,boolean>={
