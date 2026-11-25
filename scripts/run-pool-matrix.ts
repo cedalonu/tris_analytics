@@ -22,6 +22,13 @@ if (imported.validation.errors.length) {
   process.exit(1);
 }
 const draws = imported.validation.valid;
+const gapWarnings = imported.validation.warnings.filter(w => w.startsWith('draw gap '));
+if (gapWarnings.length) {
+  console.error('Strict chronological analysis stopped: missing contest IDs were detected.');
+  gapWarnings.slice(0, 30).forEach(w => console.error('- ' + w));
+  console.error('Restore the missing draws or prepare a continuous local CSV before running lag-sensitive research.');
+  process.exit(1);
+}
 if (draws.length <= 1000) {
   console.error('Need more than 1,000 valid draws for this matrix (minTrain=1000).');
   process.exit(1);
