@@ -59,7 +59,7 @@ function analyzeWindow(draws:Draw[],window:number):CollectiveWindowReport{
  const rows=draws.slice(-window),n=rows.length;
  const ordered=new Set<string>(),unordered=new Set<string>(),poolDist:Record<1|2|3|4|5,number>={1:0,2:0,3:0,4:0,5:0};
  const positional=Array.from({length:5},()=>Array(10).fill(0));
- const joint=Array.from({length:10},()=>Array.from({length:10},()=>Array(10).fill(0)));
+ const joint=Array.from({length:25},()=>Array.from({length:10},()=>Array(10).fill(0)));
  let distinctTotal=0,duplicatePairs=0,totalPairs=0;
  for(const draw of rows){
   ordered.add(draw.digits.join(""));
