@@ -30,7 +30,8 @@
     "research:position-change": "tsx scripts/run-tris-position-change.ts",
     "research:position-null": "tsx scripts/run-tris-position-null.ts",
     "research:overlap": "tsx scripts/run-tris-overlap.ts",
-    "research:candidate-portfolios": "tsx scripts/run-tris-candidate-portfolios.ts"
+    "research:candidate-portfolios": "tsx scripts/run-tris-candidate-portfolios.ts",
+    "research:portfolio-walk-forward": "tsx scripts/run-tris-portfolio-walk-forward.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
