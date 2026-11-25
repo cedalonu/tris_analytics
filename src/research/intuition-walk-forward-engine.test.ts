@@ -71,7 +71,6 @@ test("top-1 transition preserves leading zeroes in mode outcomes",()=>{
 });
 
 test("incremental pools match the reference pool builder for every method",()=>{
- const {buildPool}=require("../research-core") as typeof import("../research-core");
  for(const method of ["frequency","long-absence","short-absence","balanced","recent-frequency"] as const){
   const c=candidate("pool-ranking",{family:"pool-ranking",position:3,method,poolSize:4,window:20});
   const result=runIntuitionWalkForward(draws,c,boundaries);
