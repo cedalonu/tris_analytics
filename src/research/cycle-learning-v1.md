@@ -16,6 +16,9 @@ The CSV is refreshed approximately one hour after each individual draw, not once
 5. Freeze the next contest only, from the latest available history. Never backfill missed contests.
 6. Recompute lifecycle summaries from append-only outcomes; candidates meeting the retired rule are excluded from subsequent cycle selections.
 
+## Position and pre-draw context memory
+Each frozen signal also records the immediately preceding contest's distinct-digit count, duplicate-pair count, repeated-position count and coarse pool/duplicate regime. This snapshot is copied into its resolved outcome. Position-specific families are analyzed by R1–R5; full-result transition modes stay separate. The integrated runner writes `position-context-memory.json` and adds a summary to the latest report. Several candidate trials in one contest are averaged within that unique contest before group comparisons. Context strata are exploratory and do not change weights or predictions.
+
 ## Signal outcomes
 A transition candidate is scored against its configured TRIS outcome mode. Position, mutation, absence and pool candidates are scored as a hit when the target-position digit belongs to the frozen prediction set. Every outcome is paired with the baseline frozen at the same time. These are binary coverage events, not calibrated probabilities; no Brier score or log loss is reported.
 
