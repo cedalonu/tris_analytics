@@ -42,6 +42,7 @@ for(const cycle of cycles){
  }
 }
 if(newOutcomes.length)await appendFile(outcomesPath,newOutcomes.map(x=>JSON.stringify(x)).join("\n")+"\n","utf8");
+const allOutcomes=[...outcomes,...newOutcomes],lifecycle=assessCycleSignalLifecycle(allOutcomes);
 const nextTarget=latest.drawId+1,alreadyFrozen=cycles.some(c=>c.targetDrawId===nextTarget);
 let newCycle:FrozenLearningCycle|null=null;
 if(!alreadyFrozen){
@@ -51,7 +52,6 @@ if(!alreadyFrozen){
  newCycle=freezeLearningCycle(draws,selected,nextTarget,stamp,selected.length);
  if(newCycle.frozenCount)await appendFile(cyclesPath,JSON.stringify(newCycle)+"\n","utf8");
 }
-const allOutcomes=[...outcomes,...newOutcomes],lifecycle=assessCycleSignalLifecycle(allOutcomes);
 await writeFile(resolve(ledgerDir,"lifecycle.json"),JSON.stringify({generatedAt:stamp,source:basename(csvPath),signals:lifecycle},null,2)+"\n","utf8");
 const csvSha=createHash("sha256").update(csv,"utf8").digest("hex");
 const previousId=state?.processedThroughDrawId??null;
