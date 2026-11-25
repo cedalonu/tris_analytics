@@ -72,7 +72,9 @@ export function evaluateHypothesis(rows:Observation[],phase:EvaluationPhase,opti
  const periods=summarizePeriods(ordered),positivePeriods=periods.filter(p=>p.difference>0).length;
  const pairedCI=pairedDiffCI(wins,losses,n),minimumN=Math.max(1,Math.floor(options.minimumN??100));
  let decision:EvaluationDecision="insufficient-data";
- if(n>=minimumN){
+ if(phase==="discovery"){
+  decision="insufficient-data";
+ } else if(n>=minimumN){
   if(phase==="validation"&&difference>0&&pairedCI[0]>0&&adjustedP<=adjustedAlpha)decision="continue-research";
   else if(phase==="holdout"&&difference>0&&pairedCI[0]>0&&adjustedP<=adjustedAlpha)decision="holdout-confirmed";
   else if(phase==="prospective"&&difference>0&&pairedCI[0]>0&&adjustedP<=adjustedAlpha)decision="prospective-replicated";
