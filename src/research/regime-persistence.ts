@@ -36,12 +36,11 @@ function trend(feature:string,reference:Draw[],blocks:Draw[][]):FeatureTrend{
  signals.forEach((s,i)=>{if(s.watch){if(run===0)watchRuns++;run++;if(first===null)first=i;}else run=0;longest=Math.max(longest,run);});
  let pattern:TrendPattern="no-sustained-shift",returnBlock:number|null=null;
  if(blocks.length===0)pattern="insufficient-history";
- else if(longest>=2)pattern="persistent";
  else if(first!==null){
   const later=signals.slice(first+1);
   const ret=later.findIndex(s=>s.nearBaseline);
-  if(ret>=1){pattern="reverted";returnBlock=first+1+ret;}
-  else if(later.some(s=>!s.watch))pattern="transient";
+  if(longest>=2&&ret>=0){returnBlock=first+1+ret;pattern="reverted";}
+  else if(longest>=2)pattern="persistent";
   else pattern="transient";
  }
  return {feature,pattern,blocks:signals,watchRuns,longestWatchRun:longest,firstWatchBlock:first,returnBlock};
