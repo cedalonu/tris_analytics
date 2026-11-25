@@ -25,3 +25,10 @@
 
 ## Next action
 Run the workflow in GitHub or locally in a connected checkout. Resolve any failures, then use test output to proceed to historical data experiment execution.
+
+## Pool experiment module added (continuation)
+- `pool-method-experiment.ts` compares candidate pool methods against uniform k/10, fixed initial-frequency, and rolling-frequency baselines.
+- Reports paired per-draw hit differences against rolling frequency and a normal-approximation 95% interval; explicitly warns this interval ignores serial dependence and multiple testing.
+- Added test file for output shape, determinism, and empty evaluation handling.
+- Protocol: `pool-method-experiment-protocol-v1.md`.
+- Source/test/protocol have been committed to the research branch. Runtime execution remains unverified for the same network limitation; do not interpret these tests as passing.
