@@ -179,3 +179,11 @@ La rama research-core-v1 contiene módulos de análisis, memoria y ciclos. Las p
 - The offline null report now includes graph size, component frequencies and a small set of strongest nominal edges, while keeping the full graph out of the report artifact to avoid unnecessary size.
 - Unit tests cover full-catalog coverage, family counts, shared-position/lag edges and duplicate-ID rejection.
 - Next validation must compare graph structure against prospective resolved signal series. No synthetic overlap parameter will be interpreted as a measured TRIS correlation; no thresholds are automatically tuned.
+
+
+### Fase 5 — matriz de redundancia y diversidad (2026-11-25)
+- Added `src/research/candidate-redundancy-matrix.ts` to compare every unordered pair in the deterministic 1,095-candidate catalog (599,265 pairs).
+- Structural Jaccard classes are descriptive: highly related >=0.60; partial >=0.25 and <0.60; low overlap >0 and <0.25; disjoint = 0. The report includes family-by-family pair counts, component frequencies, per-candidate nearest neighbors and representative redundant/disjoint pairs.
+- Offline command: `npm run research:overlap`; outputs `reports/candidate-overlap/latest.md` and `latest.json`. No CSV input is required because this report describes candidate configurations only.
+- Tests verify every unordered pair is accounted for, family matrix totals, threshold metadata and candidate neighbor profiles.
+- Critical interpretation: nominally disjoint configurations are not statistically independent; signals can still share draw history, targets and outcome noise. This matrix is not a correlation matrix, does not evaluate hit rates, and must not change candidate weights or betting choices. Empirical dependence requires frozen prospective outcomes.
