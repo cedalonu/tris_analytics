@@ -64,7 +64,7 @@ function summarizeStability(blocks:PortfolioStabilityBlock[],blockSize:number):P
   else{currentPositive=0;currentNegative=0;}
  }
  const validRates=rates.length?rates:[0];
- return{blockSize,blockCount:blocks.length,positiveBlocks:blocks.filter(b=>b.signalDraws&&b.rate>0).length,negativeBlocks:blocks.filter(b=>b.signalDraws&&b.rate===0).length,neutralBlocks:blocks.filter(b=>!b.signalDraws).length,meanRate:avg,minRate:Math.min(...validRates),maxRate:Math.max(...validRates),rateRange:Math.max(...validRates)-Math.min(...validRates),rateStdDev:Math.sqrt(variance),meanDifference:mean(differences),positiveDifferenceBlocks:positive,negativeDifferenceBlocks:negative,longestPositiveStreak:longestPositive,longestNegativeStreak:longestNegative};
+ return{blockSize,blockCount:blocks.length,positiveBlocks:positive,negativeBlocks:negative,neutralBlocks:blocks.filter(b=>!b.signalDraws||b.difference===0).length,meanRate:avg,minRate:Math.min(...validRates),maxRate:Math.max(...validRates),rateRange:Math.max(...validRates)-Math.min(...validRates),rateStdDev:Math.sqrt(variance),meanDifference:mean(differences),positiveDifferenceBlocks:positive,negativeDifferenceBlocks:negative,longestPositiveStreak:longestPositive,longestNegativeStreak:longestNegative};
 }
 export function evaluateCandidatePortfolioWalkForward(draws:Draw[],portfolio:CandidatePortfolio,catalog:IntuitionCandidate[],boundaries:PhaseBoundary[],label:string=portfolio.method,stabilityBlockSize=25):PortfolioWalkForwardReport{
  const byId=new Map(catalog.map(c=>[c.id,c]));
