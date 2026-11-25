@@ -20,3 +20,13 @@
 - Added `runPoolExperimentMatrix`, default 5 positions × 5 methods × 10 sizes × 4 windows = 1,000 parameter combinations (windows 20, 50, 100, 200).
 - Added test coverage for validation and matrix expansion; protocol documents discovery/validation separation.
 - Runtime execution remains unverified.
+
+
+## First historical pool-matrix execution (2026-11-25)
+- Retrieved and audited the current upstream TRIS CSV: 25,960 rows; CONCURSO 11033–36992; dates 2007-09-03–2026-11-24; zero duplicate CONCURSO IDs, gaps, or invalid digits.
+- Snapshot FNV-1a fingerprint (non-cryptographic): cb409306.
+- Ran focused 800-combination walk-forward matrix: five positions × five methods × pool sizes 1–8 × four windows (20/50/100/200), first 100 draws training and 25,860 later draws evaluated.
+- Report and full CSV are saved in branch: `pool-method-matrix-results-2026-11-25.md` and `pool-method-matrix-results-2026-11-25.csv`; fetched again to verify saved content.
+- Discovery suggests long-absence pools are the strongest recurring candidate relative to rolling frequency in some positions, especially position 5, but the differences are small and selection-biased. No candidate is confirmed or suitable for betting based on this.
+- Important duplication found: `frequency` and `recent-frequency` use the same trailing-window digit counts in the current core, so they produce identical pools; keep both names for compatibility but investigate consolidation.
+- Local execution of TS tests remains unverified; this statistical matrix was run directly in the analysis environment using a separate optimized calculation and independently reimplemented method definitions. Results should be reconciled with the TypeScript implementation before treating them as canonical.
