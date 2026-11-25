@@ -56,3 +56,7 @@ Candidate methods: frequency, long-absence, short-absence, balanced, recent-freq
 
 ## Calculation caveat / reproducibility
 The matrix was computed with a separate optimized JavaScript implementation of the documented method definitions, not by executing the TypeScript research module (TypeScript test execution is still unavailable). Reconcile this independent run against the TypeScript module and CI before calling the report canonical. The full per-configuration CSV is included for reproducibility and review.
+
+
+## Code reconciliation notice (2026-11-25 follow-up)
+A code review found that `frequency` and `recent-frequency` were implemented identically in the TypeScript core: both ranked counts from the trailing window. The core has now been corrected so `frequency` ranks counts over all prior history while `recent-frequency` ranks counts over the trailing window. This means the matrix summarized above was calculated using the prior, duplicated definition and is **not reconciled to the corrected implementation**. The shortlist and method summaries must be treated as provisional historical exploratory output; rerun the matrix using the corrected TypeScript implementation (or a verified equivalent) before interpreting or retaining them. Tests for the distinction have been added but are not yet executed.
