@@ -196,3 +196,12 @@ La rama research-core-v1 contiene módulos de análisis, memoria y ciclos. Las p
 - This is strictly a configuration-diversity experiment. It does not evaluate historical TRIS hits, digit coverage, prize return or predictive skill; it does not assign evidence, update weights, or alter forecasts.
 - Tests cover determinism, exact portfolio size, family balance, diversity-vs-redundancy behavior, random repeatability and duplicate-ID rejection.
 - Next gate: validate candidate signals with a genuinely past-only chronological evaluator and compare against random/simple-frequency baselines with equal ticket budget; freeze all settings before validation and use untouched future outcomes prospectively. No APIs or external result retrieval.
+
+
+## Fase 7 — evaluación walk-forward de portafolios (2026-11-25)
+
+Se incorpora `src/research/candidate-portfolio-walk-forward.ts` y su suite de pruebas. Conecta el selector estructural de portafolios con `runIntuitionWalkForward`: cada candidato se puntúa usando exclusivamente sorteos anteriores al objetivo, con 200 sorteos de calentamiento y rechazo de secuencias con huecos. Las fases discovery/validation/holdout se generan cronológicamente y se congelan para todos los portafolios comparados.
+
+Runner offline: `npm run research:portfolio-walk-forward -- ./data/Tris.csv`. Acepta un CSV entregado manualmente; no llama APIs ni descarga datos. Por defecto compara tamaños 10 y 20, métodos family-balanced, max-diversity, redundancy-control y baseline random (10 semillas configurables). Genera JSON y Markdown locales bajo `reports/candidate-portfolio-walk-forward/`.
+
+Métricas descriptivas por fase: señal-sorteos, cobertura, acierto, baseline pareado, diferencia y omisiones. Las observaciones candidato-sorteo no son independientes; no se reportan p-valores agregados ni rentabilidad. Las familias tienen objetivos distintos, por lo que la tasa agregada no equivale a probabilidad de acertar un boleto. Holdout histórico no sustituye confirmación prospectiva. No se modifican pesos, ledger ni pronósticos.
