@@ -37,16 +37,22 @@ function wilson(hits:number,n:number,z=1.96):[number,number]{
  return [Math.max(0,center-half),Math.min(1,center+half)];
 }
 function summary(hits:number,n:number):RateSummary{return {n,hits,rate:n?hits/n:0,wilson95:wilson(hits,n)};}
-function binomPmf(k:number,n:number,p=.5):number{
- if(n===0)return 1;
- let log=0;for(let i=1;i<=k;i++)log+=Math.log(n-i+1)-Math.log(i);
- return Math.exp(log+k*Math.log(p)+(n-k)*Math.log(1-p));
-}
-/** Exact two-sided McNemar p-value, conditional on discordant paired outcomes. */
+/** Exact two-sided McNemar p-value using stable relative binomial weights. */
 function exactMcNemar(a:number,b:number):number{
- const n=a+b;if(!n)return 1;const observed=binomPmf(Math.min(a,b),n);
- let total=0;for(let k=0;k<=n;k++)if(binomPmf(k,n)<=observed+1e-12)total+=binomPmf(k,n);
- return Math.min(1,total);
+ const n=a+b;if(!n)return 1;
+ const observed=Math.min(a,b),mode=Math.floor(n/2);
+ let total=1,lower=observed===mode?1:0,weight=1;
+ for(let k=mode;k>0;k--){
+  weight*=k/(n-k+1);
+  total+=weight;
+  if(k-1<=observed)lower+=weight;
+ }
+ weight=1;
+ for(let k=mode;k<n;k++){
+  weight*=(n-k)/(k+1);
+  total+=weight;
+ }
+ return Math.min(1,2*lower/total);
 }
 function pairedDiffCI(wins:number,losses:number,n:number):[number,number]{
  if(!n)return [-1,1];const d=(wins-losses)/n,variance=Math.max(0,(wins+losses)/n-d*d);
