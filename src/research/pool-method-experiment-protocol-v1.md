@@ -1,29 +1,16 @@
 # Pool-method experiment protocol v1
 
-## Purpose
-Compare position-specific candidate pool strategies using chronological walk-forward evaluation. The module is a discovery instrument, not a forecasting claim.
+## Scope
+Walk-forward comparison of pool construction methods by digit position. Compare candidate pools to uniform inclusion (k/10), a fixed frequency pool from initial training, and rolling frequency pool from the preceding trailing window.
 
 ## Candidate methods
-- frequency
-- long-absence
-- short-absence
-- balanced
-- recent-frequency
+frequency, long-absence, short-absence, balanced, recent-frequency.
 
-## Baselines
-1. Uniform inclusion reference: pool size k has theoretical reference k/10.
-2. Fixed frequency pool: top-k digits by frequency in the initial training segment, ties ascending digit.
-3. Rolling frequency pool: top-k digits by frequency in the immediately preceding window, ties ascending digit.
+## Matrix
+Default exploratory matrix: five positions, five candidate methods, pool sizes 1–10, trailing windows 20, 50, 100, 200; minimum training length 100. This produces 1,000 parameter combinations. Each evaluated draw uses only earlier observations. Inputs must be validated and strictly sorted by draw ID.
 
-## Evaluation
-- Default minimum training history is 100 draws; callers may specify it.
-- Pool candidates are built from prior observations only; no target draw is included.
-- Window defaults to 50 draws.
-- Report hits, hit rate, size-specific uniform reference, lift, fixed-frequency hit rate, rolling-frequency hit rate, and paired per-draw candidate-minus-rolling hit difference.
-- Approximate 95% interval uses normal approximation on paired differences; it does not adjust serial dependence or multiple testing.
-- Test several positions, methods, and pool sizes in discovery, then freeze a small set and evaluate on new chronological validation data. Never promote based on the largest selected exploratory result alone.
+## Reporting
+Report tested count, hits/rate, uniform reference, lift vs uniform, fixed and rolling frequency hit rates, paired mean hit difference vs rolling baseline and simple normal-approximation interval. The interval does not correct serial dependence or multiple testing.
 
-## Limitations
-- This first version does not yet compute block-bootstrap intervals, formal multiplicity correction, or a nested validation schedule.
-- Dataset must be validated and chronological by caller. Input integrity/source provenance is a separate gate.
-- No evidence of advantage is assumed. Negative and neutral results are reportable outcomes.
+## Validation separation
+Matrix is discovery only. Freeze shortlisted position/method/size/window combinations before prospective validation on new draws. Preserve source fingerprint and exact experiment settings. Historical lift is not predictive certainty.
