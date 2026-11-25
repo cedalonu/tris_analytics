@@ -6,6 +6,7 @@ import {importTrisCsv} from "../src/research/data-adapter";
 import {generateIntuitionCandidates} from "../src/research/intuition-candidate-generator";
 import {selectCandidatePortfolio,type CandidatePortfolioMethod} from "../src/research/candidate-portfolio-selector";
 import {buildPortfolioPhaseBoundaries,evaluateCandidatePortfolioWalkForward} from "../src/research/candidate-portfolio-walk-forward";
+import {buildBenchmarkPortfolios} from "../src/research/candidate-portfolio-benchmarks";
 
 const file=process.argv[2];if(!file){console.error("Uso: npm run research:portfolio-walk-forward -- ./data/Tris.csv");process.exit(2);}
 const csv=await readFile(resolve(file),"utf8"),dataset=importTrisCsv(csv);
@@ -18,12 +19,17 @@ const sizes=(process.env.TRIS_PORTFOLIO_SIZES??"10,20").split(",").map(Number);
 const randomReps=Math.max(1,Math.min(100,Number(process.env.TRIS_PORTFOLIO_RANDOM_REPS??10)));
 const methods:CandidatePortfolioMethod[]=["family-balanced","max-diversity","redundancy-control","random"];
 const reports=[];
-for(const size of sizes)for(const method of methods){
+for(const size of sizes){
+ for(const benchmark of buildBenchmarkPortfolios(candidates,size,20261125)){
+  reports.push(evaluateCandidatePortfolioWalkForward(draws,benchmark.portfolio,candidates,boundaries,benchmark.name));
+ }
+ for(const method of methods){
  const seeds=method==="random"?Array.from({length:randomReps},(_,i)=>20261125+i):[20261125];
  for(const seed of seeds){
   const portfolio=selectCandidatePortfolio(method,size,seed,candidates);
   reports.push(evaluateCandidatePortfolioWalkForward(draws,portfolio,candidates,boundaries));
  }
+}
 }
 const generatedAt=new Date().toISOString();
 const output={generatedAt,inputFile:file,source:dataset.provenance,candidateCatalogSize:candidates.length,draws:draws.length,phaseBoundaries:boundaries,portfolioSizes:sizes,randomReplications:randomReps,reports};
@@ -46,7 +52,8 @@ const lines=["# TRIS — evaluación walk-forward de portafolios","",
 "- La fase discovery/validation/holdout se asigna cronológicamente después de 200 sorteos iniciales; el holdout histórico no es evidencia prospectiva.",
 "- Los registros candidato-sorteo están correlacionados. Las tasas agregadas son descriptivas; no se calculan p-valores ingenuos ni se asume independencia.",
 "- Los candidatos cubren distintas familias y objetivos (secuencias, dígitos posicionales y pools); la tasa agregada no es una tasa de acierto de boleto.",
-"- El baseline es el comparador pareado definido por cada candidato; no es necesariamente un baseline uniforme común a todas las familias.",
+"- Se incluyen portafolios de referencia con igual presupuesto: solo frecuencia histórica, solo transiciones y pools de frecuencia reciente. Sus candidatos se muestrean sin usar resultados del periodo evaluado.",
+"- Cada candidato conserva además su baseline pareado interno; ese comparador puede variar entre familias y no debe confundirse con los tres portafolios de referencia.",
 "- No se calcula rentabilidad, premios ni EV. No se generan apuestas ni se modifica el ledger.",
 "- Sin APIs ni descargas: el usuario entrega el CSV localmente. Revisar warnings y continuidad del archivo antes de interpretar.",
 "- Los resultados no demuestran que TRIS sea predecible; confirmar cualquier señal en nuevos sorteos congelados antes de considerarla útil."
