@@ -18,7 +18,7 @@ test("one shifted block followed by baseline-like blocks is transient",()=>{
 test("a later return close to the fixed reference is labelled reverted",()=>{
  const values:Digit[]=[...baseline,...Array.from({length:20},()=>8 as Digit),...Array.from({length:10},(_,i)=>(i%5) as Digit)];
  const p=analyzePersistence(make(3000,values)).features.find(f=>f.feature==="position-0")!;
- assert.equal(p.pattern,"persistent"); // two shifted blocks take precedence over later return
+ assert.equal(p.pattern,"reverted"); // two shifted blocks followed by return to reference
  assert.equal(p.returnBlock,2);
 });
 test("insufficient reference history produces no feature conclusions",()=>{
