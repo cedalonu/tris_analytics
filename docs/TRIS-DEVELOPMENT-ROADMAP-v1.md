@@ -239,3 +239,14 @@ En cada ejecución se resuelven únicamente pronósticos congelados cuyo concurs
 Los bloques son diagnósticos descriptivos, no pruebas independientes ni garantía de rentabilidad. No se calculan p-valores de portafolio, no se promueven señales automáticamente y no se cambia la composición, el ledger ni los pesos según resultados. Se rechazan IDs duplicados, configuraciones alteradas y resultados sin pronóstico congelado coincidente. La operación continúa siendo manual: CSV local, sin APIs, polling ni descargas.
 
 Pruebas: manifiesto inmutable y huellas de configuración, separación entre pronósticos/resultados/pendientes/no pronosticados, cobertura con sorteos omitidos, y rechazo de filas duplicadas o desalineadas.
+
+
+## Fase 11 — concordancia prospectiva entre familias (2026-11-25)
+
+Se incorpora `src/research/prospective-family-concordance.ts` al monitor del portafolio congelado. En cada concurso, el módulo calcula primero por familia el promedio de la diferencia emparejada `candidateHit - baselineHit`; después resume esa serie por familia. Así evita que una familia con más candidatos domine únicamente por volumen de filas.
+
+El reporte `family-concordance.md/json` presenta por familia: número de candidatos, señales resueltas, cobertura, tasa media por concurso, baseline pareado y diferencia media, además de concursos positivos/negativos/neutrales. Para cada par de familias calcula, solo en concursos coincidentes, correlación de Pearson de las diferencias, acuerdo direccional y desacuerdos; si no hay al menos tres concursos comunes o alguna serie es constante, la correlación queda como no disponible.
+
+El análisis no trata señales coincidentes como independientes: las familias comparten sorteos, historial y resultados. Sus objetivos pueden ser distintos, por lo que las tasas brutas no se interpretan como probabilidades comparables. La concordancia es descriptiva, no calcula p-valores, no modifica la composición, no ajusta pesos ni promueve hipótesis. Se añaden pruebas de promediado por concurso, cobertura sin resultados, y rechazo de duplicados/desalineaciones.
+
+Comando: `npm run research:prospective-portfolio -- ./data/Tris.csv`. El reporte de familias se genera junto al seguimiento prospectivo, usando exclusivamente los pronósticos congelados y resultados resueltos del ledger local. CSV manual, sin APIs, polling ni descargas. No se ha ejecutado con CSV real ni se afirma ventaja predictiva.
