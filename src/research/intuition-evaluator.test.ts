@@ -11,7 +11,7 @@ test("insufficient sample never promotes",()=>{
 test("paired evaluation exposes baseline and exact comparison",()=>{
  const r=evaluateHypothesis(rows("validation",200,140,100),"validation",{minimumN:100,testCount:10});
  assert.equal(r.candidate.rate,.7);assert.equal(r.baseline.rate,.5);
- assert.equal(r.difference,.2);assert.equal(r.adjustedAlpha,.005);assert.equal(r.periodsWithData,2);
+ assert.ok(Math.abs(r.difference-.2)<1e-12);assert.equal(r.adjustedAlpha,.005);assert.equal(r.periodsWithData,2);
  assert.equal(r.decision,"continue-research");
 });
 test("holdout and prospective phases are evaluated independently",()=>{
