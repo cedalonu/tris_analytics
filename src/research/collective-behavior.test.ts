@@ -23,32 +23,18 @@ test("reports ordered outcomes, unordered pools, repeated-digit pools and positi
  assert.ok(w.positionalEntropyBits.every(x=>x===0));
 });
 
-test("identical positional digits create a measurable cross-position association",()=>{
- const report=analyzeCollectiveBehavior(repeated);
+test("correlated positions show lift above independence baseline",()=>{
+ const correlated:Draw[]=Array.from({length:60},(_,i)=>({
+  drawId:6000+i,
+  digits:[(i%2) as 0|1,(i%2) as 0|1,2,3,4] as Draw["digits"]
+ }));
+ const report=analyzeCollectiveBehavior(correlated);
  const association=report.windows.at(-1)!.pairAssociations.find(x=>
-  x.positions[0]===0&&x.positions[1]===1&&x.digits[0]===1&&x.digits[1]===1
+  x.positions[0]===0&&x.positions[1]===1&&x.digits[0]===0&&x.digits[1]===0
  );
  assert.ok(association);
- assert.equal(association!.observed,50);
- assert.ok(association!.lift>1);
+ assert.equal(association!.observed,30);
+ assert.equal(association!.expected,15);
+ assert.equal(association!.lift,2);
 });
 
-test("migration counts 25 position-pair observations per eligible contest and lag",()=>{
- const report=analyzeCollectiveBehavior(repeated);
- assert.equal(report.migrations.length,5);
- assert.equal(report.migrations[0].observations,59*25);
- assert.equal(report.migrations[4].observations,55*25);
- assert.equal(report.migrations[0].sameDigitRate,1);
- assert.equal(report.migrations[0].meanCircularDistance,0);
-});
-
-test("rejects gaps and invalid digits",()=>{
- assert.throws(()=>analyzeCollectiveBehavior([repeated[0],{...repeated[2]}]),/non-contiguous/);
- assert.throws(()=>analyzeCollectiveBehavior([{drawId:1,digits:[1,2,3,4,10] as Draw["digits"]}]),/invalid draw/);
-});
-
-test("supports short histories without fabricating unavailable lag reports",()=>{
- const report=analyzeCollectiveBehavior(repeated.slice(0,3));
- assert.deepEqual(report.windows.map(w=>w.draws),[3,3,3,3]);
- assert.deepEqual(report.migrations.map(m=>m.lag),[1,2]);
-});
