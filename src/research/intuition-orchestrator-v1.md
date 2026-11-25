@@ -5,11 +5,12 @@ The orchestrator creates a reproducible research plan from the candidate catalog
 ## Default plan
 - Catalog: 1,073 templates (transition, position mutation, absence-return, pool ranking).
 - Budget: 100 candidates.
-- Allocation: round-robin, 25 per family by default.
+- Allocation: round-robin over available candidates. With the current family sizes (18 transition, 15 position mutation, 40 absence-return, 1,000 pool-ranking), a 100-item budget selects 18, 15, 34, and 33 respectively. The selector does not fabricate candidates to force equal quotas.
 - Each selected item includes a frozen configuration, priority score/reasons, and an evidence-empty ledger record.
 - Stable JSON serialization supports committing the plan as an audit artifact.
 
 ## Evaluation interface
+Discovery is strictly descriptive: even a large apparent advantage returns `insufficient-data` and cannot confirm or promote a hypothesis. The floating-point rate comparisons in tests use numerical tolerances.
 evaluatePlannedHypothesis accepts one planned ID, paired observations, and one explicit phase. It rejects observations from other phases. By default the family-wide planned test count (selectedCount) is passed to Bonferroni adjustment unless caller supplies a predeclared testCount.
 
 ## Runner contract (next integration)
