@@ -15,6 +15,9 @@ Cada serie se aísla por posición R1–R5, familia, configuración congelada ex
 6. Usar los bloques anteriores a los dos más recientes como referencia. Umbral direccional: máximo entre 2 puntos porcentuales y 1.96 errores estándar combinados.
 7. Mostrar intervalo aproximado de 95% para el último bloque.
 
+## Detección específica de recuperación v1.2
+La recuperación se evalúa con tres fases explícitas cuando hay al menos seis bloques: referencia inicial, valle de dos bloques y rebote de dos bloques. Ambos bloques del valle deben quedar por debajo de la referencia inicial y ambos bloques finales deben rebotar por encima del valle, usando umbrales que combinan el piso de 2 pp y errores estándar descriptivos. Se permite recuperación parcial: no exige haber regresado completamente al nivel inicial. Un pico aislado no basta. Esta regla reduce la dependencia de una referencia contaminada por el propio valle, pero sigue siendo descriptiva y requiere calibración nula específica.
+
 ## Estados
 - `insufficient-data`: menos de dos bloques de referencia y dos recientes.
 - `stable`: ambos bloques recientes dentro de la zona neutral.
