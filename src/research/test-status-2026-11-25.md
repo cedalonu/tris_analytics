@@ -43,3 +43,10 @@
 ## CI dependency issue and fix (2026-11-25)
 - GitHub Actions failed before TypeScript/tests: npm ERESOLVE, because Vite 8.3.8 requires optional peer esbuild `^0.27 || ^0.28`, while project declared `^0.25.0`.
 - Updated `package.json` devDependency esbuild to `^0.28.2` to align peer requirement. Awaiting the new workflow run to confirm installation, typecheck, and tests.
+
+
+## CI follow-up: type-check findings and fixes (2026-11-25)
+- After aligning esbuild, dependency installation succeeded in Actions.
+- Type-check then exposed two issues: (1) the UI Gemini SDK constructor lacked required config, and (2) test fixture prize-mode literals widened to `string`.
+- Updated App.tsx to configure `GoogleGenAI` using `import.meta.env.VITE_API_KEY`, documented that variable in `.env.example`, and narrowed fixture mode literals with `as const`.
+- These fixes have triggered another CI run; awaiting its result. Note: client-side VITE API keys are exposed in browser bundles; this is appropriate only if key restrictions are configured, otherwise a server-side proxy is safer.
