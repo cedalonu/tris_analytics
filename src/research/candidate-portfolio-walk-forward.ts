@@ -14,7 +14,7 @@ export interface PortfolioPhaseSummary {
  coverage:number; skipped:number;
 }
 export interface PortfolioWalkForwardReport {
- method:CandidatePortfolio["method"]; seed:number; candidateIds:string[];
+ method:string; seed:number; candidateIds:string[];
  phases:PortfolioPhaseSummary[]; warnings:string[];
 }
 const PHASES:EvaluationPhase[]=["discovery","validation","holdout","prospective"];
@@ -30,7 +30,7 @@ export function buildPortfolioPhaseBoundaries(draws:Draw[],fractions:{discovery?
  if(draws.length>validationEnd)bounds.push({phase:"holdout",firstDrawId:draws[validationEnd].drawId,lastDrawId:draws.at(-1)!.drawId});
  return bounds;
 }
-export function evaluateCandidatePortfolioWalkForward(draws:Draw[],portfolio:CandidatePortfolio,catalog:IntuitionCandidate[],boundaries:PhaseBoundary[]):PortfolioWalkForwardReport{
+export function evaluateCandidatePortfolioWalkForward(draws:Draw[],portfolio:CandidatePortfolio,catalog:IntuitionCandidate[],boundaries:PhaseBoundary[],label=portfolio.method):PortfolioWalkForwardReport{
  const byId=new Map(catalog.map(c=>[c.id,c]));
  const candidates=portfolio.candidateIds.map(id=>{const c=byId.get(id);if(!c)throw new Error("portfolio references unknown candidate: "+id);return c;});
  if(new Set(portfolio.candidateIds).size!==portfolio.candidateIds.length)throw new Error("portfolio candidate IDs must be unique");
@@ -43,7 +43,7 @@ export function evaluateCandidatePortfolioWalkForward(draws:Draw[],portfolio:Can
   const possible=candidates.length*boundaries.filter(b=>b.phase===phase).reduce((n,b)=>n+b.lastDrawId-b.firstDrawId+1,0);
   return{phase,candidateCount:candidates.length,signalDraws:rows.length,distinctDraws:targetIds.size,hits,baselineHits,rate:rows.length?hits/rows.length:0,baselineRate:rows.length?baselineHits/rows.length:0,difference:rows.length?(hits-baselineHits)/rows.length:0,coverage:possible?rows.length/possible:0,skipped};
  });
- return{method:portfolio.method,seed:portfolio.seed,candidateIds:[...portfolio.candidateIds],phases,warnings:[
+ return{method:label,seed:portfolio.seed,candidateIds:[...portfolio.candidateIds],phases,warnings:[
   "Every candidate is scored strictly from draws preceding the target; the first 200 draws are warm-up history.",
   "All portfolios use the same draw sequence, phase boundaries and candidate-level paired baselines.",
   "Aggregated candidate-by-draw rows are dependent; rates are descriptive and no naive p-value is reported.",
