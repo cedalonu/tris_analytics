@@ -50,3 +50,10 @@
 - Type-check then exposed two issues: (1) the UI Gemini SDK constructor lacked required config, and (2) test fixture prize-mode literals widened to `string`.
 - Updated App.tsx to configure `GoogleGenAI` using `import.meta.env.VITE_API_KEY`, documented that variable in `.env.example`, and narrowed fixture mode literals with `as const`.
 - These fixes have triggered another CI run; awaiting its result. Note: client-side VITE API keys are exposed in browser bundles; this is appropriate only if key restrictions are configured, otherwise a server-side proxy is safer.
+
+
+## CI green confirmation (2026-11-25)
+- GitHub Actions run #26 on commit `a2b704db46acb2dc459f4ae96550365583cbcdbd` completed successfully.
+- Dependency install, `npm run lint` (TypeScript check), and `npm run test:research` all passed.
+- Run link: https://github.com/cedalonu/tris_analytics/actions/runs/45674463767
+- This verifies the current branch commit tested in that run. The corrected matrix itself still needs canonical rerun/reconciliation and prospective validation.
