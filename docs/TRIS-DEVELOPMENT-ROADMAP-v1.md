@@ -217,14 +217,3 @@ Se amplía el runner `research:portfolio-walk-forward` con tres portafolios de r
 Cada benchmark contiene exactamente el mismo número de candidatos que el portafolio comparado; el muestreo es determinista y usa una semilla congelada. Se mantienen los cuatro métodos estructurales (family-balanced, max-diversity, redundancy-control y random), y el baseline pareado interno de cada candidato sigue reportándose por separado.
 
 Los benchmarks son familias/configuraciones de señales, no estrategias de boleto ni sistemas probabilísticos calibrados. Aunque comparten presupuesto y periodos, su elegibilidad y cobertura pueden diferir; la cobertura se reporta junto con las tasas y no se deben comparar tasas sin revisar denominadores y omisiones. Las observaciones candidato-sorteo siguen siendo dependientes. No se agregan p-valores ingenuos, EV ni rentabilidad. Tests verifican tamaño igual, composición, determinismo y límites del catálogo. Sin APIs ni descarga; requiere CSV local manual.
-
-
-## Fase 9 — estabilidad temporal de portafolios en holdout (2026-11-25)
-
-Se incorpora una lectura de estabilidad que divide el intervalo holdout en bloques cronológicos consecutivos de tamaño fijo (25 concursos por defecto; configurable con `TRIS_STABILITY_BLOCK_SIZE`). Cada bloque comparte exactamente los mismos límites para todos los portafolios. El bloque final parcial se etiqueta; si contiene menos de 10 concursos se marca como insuficiente.
-
-Por bloque se reportan candidatos, señal-sorteos elegibles, concursos distintos, aciertos, baseline pareado, diferencia, cobertura y omisiones. El denominador de la tasa de acierto son las observaciones elegibles; la cobertura se calcula sobre todos los pares candidato-concurso posibles. El resumen añade diferencia media frente al baseline, cantidad de bloques positivos/negativos, dispersión de tasas entre bloques y rachas consecutivas.
-
-Esta etapa es exclusivamente diagnóstica: no selecciona ni reajusta candidatos con base en los bloques, no calcula p-valores ingenuos y no interpreta la desviación entre bloques como intervalo de confianza. Los bloques pueden tener dependencia temporal y las observaciones de candidatos pueden compartir sorteos. Un bloque corto o con baja cobertura no tiene el mismo peso informativo que uno completo.
-
-Pruebas añadidas: cobertura exacta del intervalo, límites sin solapamiento, identificación de bloque parcial pequeño, denominadores/cobertura, y aislamiento frente a cambios futuros de resultados. La ejecución requiere CSV local manual; no se utilizan APIs, descargas ni datos inventados.
