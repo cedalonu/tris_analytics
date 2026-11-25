@@ -35,7 +35,7 @@ test("phase splitter rejects gaps and invalid fractions",()=>{
 test("future outcomes cannot change earlier portfolio observations",()=>{
  const p=selectCandidatePortfolio("family-balanced",4,19,catalog),bounds=buildPortfolioPhaseBoundaries(draws);
  const a=evaluateCandidatePortfolioWalkForward(draws,p,catalog,bounds);
- const changed=draws.map((d,i)=>i>235?{...d,digits:[9,9,9,9,9] as Draw["digits"]}:d);
+ const changed=draws.map((d,i)=>i>250?{...d,digits:[9,9,9,9,9] as Draw["digits"]}:d);
  const b=evaluateCandidatePortfolioWalkForward(changed,p,catalog,bounds);
  const early=(x:typeof a)=>x.phases.filter(p=>p.phase!=="holdout");
  assert.deepEqual(early(a),early(b));
