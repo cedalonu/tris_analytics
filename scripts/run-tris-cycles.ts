@@ -46,8 +46,9 @@ const nextTarget=latest.drawId+1,alreadyFrozen=cycles.some(c=>c.targetDrawId===n
 let newCycle:FrozenLearningCycle|null=null;
 if(!alreadyFrozen){
  const plan=createResearchPlan({createdAt:stamp,prioritizerOptions:{maxCandidates:100}});
- const selected=plan.hypotheses.map(h=>({candidate:h.candidate,priorityScore:h.priorityScore,priorityReasons:h.priorityReasons}));
- newCycle=freezeLearningCycle(draws,selected,nextTarget,stamp,plan.selectedCount);
+ const retiredIds=new Set(lifecycle.filter(x=>x.status==="retired").map(x=>x.candidateId));
+ const selected=plan.hypotheses.filter(h=>!retiredIds.has(h.candidate.id)).map(h=>({candidate:h.candidate,priorityScore:h.priorityScore,priorityReasons:h.priorityReasons}));
+ newCycle=freezeLearningCycle(draws,selected,nextTarget,stamp,selected.length);
  if(newCycle.frozenCount)await appendFile(cyclesPath,JSON.stringify(newCycle)+"\n","utf8");
 }
 const allOutcomes=[...outcomes,...newOutcomes],lifecycle=assessCycleSignalLifecycle(allOutcomes);
@@ -65,7 +66,8 @@ const report=[
  "- Initial bootstrap: "+(initialized?"yes":"no"),
  "- Previously frozen signal outcomes resolved: "+newOutcomes.length,
  "- New cycle target: "+(newCycle?String(newCycle.targetDrawId):"already frozen / no new cycle"),
- "- Signals selected: "+(newCycle?.selectedCount??0),
+ "- Signals selected after retired-signal filter: "+(newCycle?.selectedCount??0),
+ "- Previously retired signals excluded from new cycles: "+lifecycle.filter(x=>x.status==="retired").length,
  "- Signals successfully frozen: "+(newCycle?.frozenCount??0),
  "- Contest IDs passed without a frozen cycle (not backfilled): "+missed,"",
  "## Accumulated evidence",
