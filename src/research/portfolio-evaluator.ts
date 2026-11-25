@@ -23,7 +23,7 @@ export interface PortfolioReport { draws:number; tickets:number; invalidTickets:
 const rule=(m:TicketMode)=>PRIZE_RULES.find(r=>r.mode===m)!;
 const asString=(digits:Digit[])=>digits.join("");
 export function ticketTarget(result:string,mode:TicketMode):string{switch(rule(mode).target){case "full":return result;case "last4":return result.slice(-4);case "last3":return result.slice(-3);case "first2":return result.slice(0,2);case "last2":return result.slice(-2);case "first1":return result.slice(0,1);case "last1":return result.slice(-1);}}
-export function ticketValid(ticket:Ticket):boolean{const r=rule(ticket.mode);return typeof ticket.proposal==='string'&&ticket.proposal.length===r.matchLength&&/^\d+$/.test(ticket.proposal);}
+export function ticketValid(ticket:Ticket):boolean{const r=PRIZE_RULES.find(x=>x.mode===ticket.mode);return !!r&&typeof ticket.proposal==='string'&&ticket.proposal.length===r.matchLength&&/^\d+$/.test(ticket.proposal);}
 export function isWinner(ticket:Ticket,result:string):boolean{return ticketValid(ticket)&&ticket.proposal===ticketTarget(result,ticket.mode);}
 export function evaluatePortfolio(draws:Draw[],portfolio:DrawPortfolio[]):PortfolioReport{
  const warnings:string[]=[],byId=new Map<number,string>();
