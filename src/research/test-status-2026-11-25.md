@@ -30,3 +30,11 @@
 - Discovery suggests long-absence pools are the strongest recurring candidate relative to rolling frequency in some positions, especially position 5, but the differences are small and selection-biased. No candidate is confirmed or suitable for betting based on this.
 - Important duplication found: `frequency` and `recent-frequency` use the same trailing-window digit counts in the current core, so they produce identical pools; keep both names for compatibility but investigate consolidation.
 - Local execution of TS tests remains unverified; this statistical matrix was run directly in the analysis environment using a separate optimized calculation and independently reimplemented method definitions. Results should be reconciled with the TypeScript implementation before treating them as canonical.
+
+
+## Follow-up code review correction (2026-11-25)
+- Found a conceptual duplicate: `frequency` and `recent-frequency` previously both ranked counts from the trailing window.
+- Corrected `src/research-core.ts`: `frequency` now uses all prior history; `recent-frequency` uses the configured trailing window. Absence/balanced methods continue to use their existing windowed statistics.
+- Added a unit test asserting distinct pools on a constructed history.
+- Prior pool matrix/report is explicitly marked pre-correction and requires a fresh rerun to reconcile. The prior shortlist is provisional and should not be used as validated evidence.
+- Test execution is still unverified; GitHub Actions and local TS runtime were not confirmed.
