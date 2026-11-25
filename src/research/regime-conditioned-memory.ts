@@ -59,7 +59,7 @@ function classifyRegime(draws:Draw[],targetIndex:number):RegimeKey|null {
  for(const d of prior)for(let p=0;p<5;p++)for(let q=p+1;q<5;q++){totalPairs++;if(d.digits[p]===d.digits[q])duplicatePairs++;}
  const pool:PoolRegime=meanDistinct<=3?"compact":meanDistinct>=4?"broad":"mixed";
  const duplicates:DuplicateRegime=duplicatePairs/totalPairs>=.20?"many-duplicates":"few-duplicates";
- return pool+"|"+duplicates;
+ return (pool+"|"+duplicates) as RegimeKey;
 }
 function scoreBlock(rows:InteractionObservation[],features:InteractionFeatureId[],phase:"validation"|"holdout",regime:RegimeKey):RegimeBlock|null {
  if(rows.length<MIN_ROWS)return null;
