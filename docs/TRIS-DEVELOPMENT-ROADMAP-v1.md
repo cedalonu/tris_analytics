@@ -64,9 +64,9 @@ Propósito: detectar cambios persistentes de una señal en una posición concret
 
 Trabajo previsto e implementado parcialmente:
 1. Mantener series separadas por posición × familia × configuración exacta × contexto previo, usando solo outcomes prospectivos resueltos.
-2. Comparar bloques recientes con una referencia anterior no solapada; medir diferencia de cobertura frente al baseline y su variabilidad.
+2. Comparar bloques recientes con una referencia anterior no solapada; medir diferencia de cobertura frente al baseline, variabilidad entre concursos y error estándar descriptivo.
 3. Identificar estados tentativos: estable, mejora, deterioro, cambio persistente, recuperación y evidencia insuficiente.
-4. Exigir soporte mínimo, varios bloques consecutivos e histéresis/zona neutral para reducir falsas alarmas.
+4. Exigir soporte mínimo, varios bloques consecutivos y zona neutral ajustada por variabilidad (mínimo 2 puntos porcentuales más un umbral de error estándar) para reducir falsas alarmas.
 5. Señalar si el cambio afecta una posición o varias; nunca trasladar evidencia de R1 a R2–R5.
 6. Probar escenarios sintéticos estables, ruidosos, abruptos, graduales y de recuperación; evaluar después en walk-forward.
 7. Inicialmente será observacional: no cambiará predicciones congeladas, pesos, selección ni estado de hipótesis. Cualquier acción adaptativa exigirá validación prospectiva independiente.
@@ -109,3 +109,11 @@ La rama research-core-v1 contiene módulos de análisis, memoria y ciclos. Las p
 - Bloques de 25 concursos únicos, parcial mínimo 10; referencia anterior no solapada y dos bloques recientes.
 - Zona neutral ±2 puntos porcentuales; estados descriptivos sin efecto sobre el motor.
 - Pruebas sintéticas añadidas; no se consideran aprobadas hasta ejecutarse en CI.
+
+
+### Refuerzo de validación — Fase 5
+- El detector valida JSON de configuración, coincidencia de familia/posición, identidad estable de candidato y unicidad de forecastId y resultado por candidato/concurso.
+- Añade desviación estándar entre concursos, error estándar por bloque e intervalo aproximado del 95% para el último bloque.
+- El umbral direccional es el máximo entre 2 pp y 1.96 errores estándar combinados; los intervalos son descriptivos y no corrigen autocorrelación ni multiplicidad.
+- Pruebas sintéticas ampliadas: estable, abrupto, gradual, pico aislado, recuperación, insuficiencia, separación posicional/configuración y rechazo de duplicados/inconsistencias.
+- Estado: implementación ampliada; falta ejecutar pruebas/TypeScript en CI y medir falsas alarmas con simulaciones nulas y datos prospectivos.
