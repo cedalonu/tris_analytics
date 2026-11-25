@@ -228,3 +228,14 @@ Por bloque se reportan candidatos, señal-sorteos elegibles, concursos distintos
 Esta etapa es exclusivamente diagnóstica: no selecciona ni reajusta candidatos con base en los bloques, no calcula p-valores ingenuos y no interpreta la desviación entre bloques como intervalo de confianza. Los bloques pueden tener dependencia temporal y las observaciones de candidatos pueden compartir sorteos. Un bloque corto o con baja cobertura no tiene el mismo peso informativo que uno completo.
 
 Pruebas añadidas: cobertura exacta del intervalo, límites sin solapamiento, identificación de bloque parcial pequeño, denominadores/cobertura, y aislamiento frente a cambios futuros de resultados. La ejecución requiere CSV local manual; no se utilizan APIs, descargas ni datos inventados.
+
+
+## Fase 10 — seguimiento prospectivo de un portafolio congelado (2026-11-25)
+
+Se incorpora `src/research/prospective-portfolio-monitor.ts` y el comando offline `npm run research:prospective-portfolio -- ./data/Tris.csv`. En la primera ejecución crea `portfolio-manifest.json`, que fija método, semilla, composición, huellas de configuración, primer concurso objetivo y tamaño de bloque. El tamaño por defecto es 20 candidatos, selección `family-balanced`, semilla fija y bloques de 25 concursos; las variables `TRIS_PROSPECTIVE_PORTFOLIO_SIZE`, `TRIS_PROSPECTIVE_PORTFOLIO_METHOD`, `TRIS_PROSPECTIVE_PORTFOLIO_SEED` y `TRIS_PROSPECTIVE_BLOCK_SIZE` solo se leen al crear el manifiesto. Después, la composición no se cambia al cambiar variables de entorno; una modificación requiere iniciar explícitamente otro ledger separado.
+
+En cada ejecución se resuelven únicamente pronósticos congelados cuyo concurso exacto ya aparece en el CSV y se congelan pronósticos para el siguiente concurso consecutivo. No se reconstruyen pronósticos para sorteos pasados que se omitieron. El reporte separa pronósticos congelados, resultados resueltos, pendientes y oportunidades no pronosticadas; la cobertura se calcula sobre todos los pares candidato-concurso desde el inicio del portafolio. Por bloque se compara la tasa de acierto con el baseline pareado de cada candidato.
+
+Los bloques son diagnósticos descriptivos, no pruebas independientes ni garantía de rentabilidad. No se calculan p-valores de portafolio, no se promueven señales automáticamente y no se cambia la composición, el ledger ni los pesos según resultados. Se rechazan IDs duplicados, configuraciones alteradas y resultados sin pronóstico congelado coincidente. La operación continúa siendo manual: CSV local, sin APIs, polling ni descargas.
+
+Pruebas: manifiesto inmutable y huellas de configuración, separación entre pronósticos/resultados/pendientes/no pronosticados, cobertura con sorteos omitidos, y rechazo de filas duplicadas o desalineadas.
