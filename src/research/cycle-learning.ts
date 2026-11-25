@@ -97,7 +97,7 @@ export function freezeLearningCycle(
  const previousRepeatedPositions=5-previousPoolSize;
  const context:PreDrawContext={
   previousPoolSize,previousDuplicatePairs,previousRepeatedPositions,
-  poolRegime:previousPoolSize<=3?"compact":previousPoolSize>=4?"broad":"mixed",
+  poolRegime:previousPoolSize<=3?"compact":previousPoolSize===4?"mixed":"broad",
   duplicateRegime:previousDuplicatePairs/10>=.20?"many-duplicates":"few-duplicates"
  };
  for(const item of selected){
