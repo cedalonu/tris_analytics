@@ -6,7 +6,8 @@ import {createHash} from "node:crypto";
 import {importTrisCsv} from "../src/research/data-adapter";
 import {generateIntuitionCandidates} from "../src/research/intuition-candidate-generator";
 import {freezeProspectiveForecast,resolveProspectiveForecast,type FrozenForecast,type ResolvedForecast} from "../src/research/intuition-prospective";
-import {createProspectivePortfolioManifest,validateProspectivePortfolioManifest,summarizeProspectivePortfolio,type ProspectivePortfolioManifest} from "../src/research/prospective-portfolio-monitor";\nimport {summarizeProspectiveFamilyConcordance} from "../src/research/prospective-family-concordance";
+import {createProspectivePortfolioManifest,validateProspectivePortfolioManifest,summarizeProspectivePortfolio,type ProspectivePortfolioManifest} from "../src/research/prospective-portfolio-monitor";
+import {summarizeProspectiveFamilyConcordance} from "../src/research/prospective-family-concordance";
 
 const input=process.argv[2];
 if(!input){console.error("Uso: npm run research:prospective-portfolio -- ./data/Tris.csv [directorio-ledger]");process.exit(2);}
@@ -49,7 +50,8 @@ for(const candidateId of manifest.candidateIds){
 }
 if(newForecasts.length)await appendFile(forecastsPath,newForecasts.map(f=>JSON.stringify(f)).join("\n")+"\n","utf8");
 const allForecasts=[...forecasts,...newForecasts];
-const summary=summarizeProspectivePortfolio(manifest,allForecasts,allResults,draws.at(-1)!.drawId);\nconst familyConcordance=summarizeProspectiveFamilyConcordance(manifest,candidates,allForecasts,allResults,draws.at(-1)!.drawId);
+const summary=summarizeProspectivePortfolio(manifest,allForecasts,allResults,draws.at(-1)!.drawId);
+const familyConcordance=summarizeProspectiveFamilyConcordance(manifest,candidates,allForecasts,allResults,draws.at(-1)!.drawId);
 const sha256=createHash("sha256").update(csv,"utf8").digest("hex");
 const report=[
  "# TRIS — seguimiento prospectivo de portafolio congelado","",
@@ -96,6 +98,26 @@ const report=[
  "- Sin APIs, polling ni descargas: el CSV se proporciona manualmente."
 ].join("\n")+"\n";
 await writeFile(resolve(ledgerDir,"latest-report.md"),report,"utf8");
-await writeFile(resolve(ledgerDir,"latest-summary.json"),JSON.stringify({generatedAt:stamp,csvSha256:sha256,manifest,summary,newForecasts:newForecasts.length,newResults:newResults.length},null,2)+"\n","utf8");
+const familyLines=[
+ "# TRIS — concordancia prospectiva entre familias","",
+ "- Portafolio: "+manifest.portfolioId,
+ "- Intervalo observado: "+manifest.firstTargetDrawId+"–"+draws.at(-1)!.drawId,"",
+ "## Resumen por familia",
+ "| Familia | Candidatos | Señales resueltas | Concursos cubiertos | Cobertura | Acierto medio por concurso | Baseline medio | Diferencia media | + / − / 0 concursos |",
+ "|---|---:|---:|---:|---:|---:|---:|---:|---:|",
+ ...familyConcordance.families.map(f=>"| "+f.family+" | "+f.candidateCount+" | "+f.resolvedSignals+" / "+f.expectedSignals+" | "+f.coveredDraws+" | "+(100*f.coverage).toFixed(1)+"% | "+(100*f.meanDrawHitRate).toFixed(2)+"% | "+(100*f.meanDrawBaselineRate).toFixed(2)+"% | "+(100*f.meanDrawDifference).toFixed(2)+" pp | "+f.positiveDraws+" / "+f.negativeDraws+" / "+f.neutralDraws+" |"),
+ "",
+ "## Concordancia por pares",
+ "| Familia A | Familia B | Concursos comunes | Correlación de diferencias | Mismo sentido | Sentido opuesto | Neutral | Acuerdo direccional |",
+ "|---|---|---:|---:|---:|---:|---:|---:|",
+ ...familyConcordance.pairs.map(p=>"| "+p.familyA+" | "+p.familyB+" | "+p.commonDraws+" | "+(p.pearsonCorrelation===null?"n/d":p.pearsonCorrelation.toFixed(3))+" | "+p.sameDirectionDraws+" | "+p.oppositeDirectionDraws+" | "+p.neutralPairDraws+" | "+(p.directionAgreement===null?"n/d":(100*p.directionAgreement).toFixed(1)+"%")+" |"),
+ "",
+ "## Interpretación y límites",...familyConcordance.interpretation.map(x=>"- "+x),
+ "- Correlación no disponible cuando hay menos de tres concursos comunes o alguna serie no varía.",
+ "- No se calcula significancia estadística ni se corrige por multiplicidad; los resultados requieren acumulación prospectiva."
+].join("\n")+"\n";
+await writeFile(resolve(ledgerDir,"family-concordance.md"),familyLines,"utf8");
+await writeFile(resolve(ledgerDir,"family-concordance.json"),JSON.stringify(familyConcordance,null,2)+"\n","utf8");
+await writeFile(resolve(ledgerDir,"latest-summary.json")await writeFile(resolve(ledgerDir,"latest-summary.json"),JSON.stringify({generatedAt:stamp,csvSha256:sha256,manifest,summary,newForecasts:newForecasts.length,newResults:newResults.length},null,2)+"\n","utf8");
 console.log(report);
 console.log("Nuevos pronósticos congelados: "+newForecasts.length+"; nuevos resultados resueltos: "+newResults.length);
