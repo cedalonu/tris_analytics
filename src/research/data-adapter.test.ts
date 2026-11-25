@@ -34,3 +34,14 @@ test("flags duplicate contest IDs and gaps instead of silently hiding them",()=>
  assert.ok(result.validation.warnings.some(e=>e.includes("draw gap 1001")));
  assert.equal(result.validation.valid.length,2);
 });
+
+test("uses CONCURSO as contest key and ignores ID even when blank or nonnumeric",()=>{
+ const csv=[header,
+  "36993,,8,7,0,2,8,2026-11-25,2,1",
+  "36994,not-used,1,0,9,7,0,2026-11-25,1,0"
+ ].join("\n");
+ const result=importTrisCsv(csv);
+ assert.deepEqual(result.validation.errors,[]);
+ assert.deepEqual(result.validation.valid.map(d=>d.drawId),[36993,36994]);
+ assert.deepEqual(result.validation.valid.map(d=>d.digits),[[8,7,0,2,8],[1,0,9,7,0]]);
+});
