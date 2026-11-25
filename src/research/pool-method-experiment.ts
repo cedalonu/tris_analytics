@@ -2,7 +2,7 @@
  * Descriptive research only; callers must supply validated, chronologically sorted draws.
  */
 import type { Draw, Digit, Pos, PoolMethod } from '../research-core';
-import { buildPool } from '../research-core';
+
 
 export interface PoolExperimentRow {
   position:Pos; method:PoolMethod; poolSize:number; window:number; tested:number;
@@ -47,19 +47,37 @@ export function runPoolMethodExperiment(draws:Draw[],position:Pos,methods:PoolMe
  validateInputs(draws,position,methods,sizes,minTrain,window);
  const out:PoolExperimentRow[]=[];
  const fixedHistory=draws.slice(0,minTrain).map(d=>d.digits[position]);
- const fixedPools=new Map<number,Digit[]>([...new Set(sizes)].map(k=>[k,topFrequency(fixedHistory,k)]));
  const uniqueSizes=[...new Set(sizes)].sort((a,b)=>a-b);
  // Cache all pool rankings at size 10 once per target; smaller pools are prefixes.
  const fixedRank=topFrequency(fixedHistory,10);
  const accum=new Map<string,{hits:number;fixed:number;rolling:number;deltas:number[];tested:number}>();
  for(const method of methods)for(const k of uniqueSizes)accum.set(`${method}:${k}`,{hits:0,fixed:0,rolling:0,deltas:[],tested:0});
- for(let i=minTrain;i<draws.length;i++){
-  const prior=draws.slice(0,i).map(d=>d.digits[position]),target=draws[i].digits[position],recent=prior.slice(-window);
-  const methodRankings=new Map<PoolMethod,Digit[]>();
-  for(const method of methods)methodRankings.set(method,buildPool(prior,method,10,window));
-  const rollingRank=topFrequency(recent,10);
+ const globalCounts=Array(10).fill(0),rollingCounts=Array(10).fill(0),lastSeen=Array(10).fill(-1);
+ const historyDigits=draws.map(d=>d.digits[position]);
+ for(let i=0;i<draws.length;i++){
+  if(i>0){const added=historyDigits[i-1];globalCounts[added]++;lastSeen[added]=i-1;
+   if(i-1>=window){const removed=historyDigits[i-1-window];rollingCounts[removed]--;}
+   rollingCounts[added]++;}
+  if(i<minTrain)continue;
+  const target=historyDigits[i],recentLength=Math.min(i,window);
+  const ranking=(method:PoolMethod):Digit[]=>DIGITS.slice().sort((a,b)=>{
+   const absenceA=lastSeen[a]<i-window?recentLength:Math.max(0,i-1-lastSeen[a]);
+   const absenceB=lastSeen[b]<i-window?recentLength:Math.max(0,i-1-lastSeen[b]);
+   const recentRateA=rollingCounts[a]/Math.max(1,recentLength),recentRateB=rollingCounts[b]/Math.max(1,recentLength);
+   let scoreA=0,scoreB=0;
+   switch(method){
+    case 'frequency':scoreA=globalCounts[a];scoreB=globalCounts[b];break;
+    case 'long-absence':scoreA=absenceA;scoreB=absenceB;break;
+    case 'short-absence':scoreA=-absenceA;scoreB=-absenceB;break;
+    case 'recent-frequency':scoreA=rollingCounts[a];scoreB=rollingCounts[b];break;
+    case 'balanced':scoreA=recentRateA+absenceA/Math.max(1,i);scoreB=recentRateB+absenceB/Math.max(1,i);break;
+   }
+   return scoreA===scoreB?a-b:scoreB-scoreA;
+  });
+  const ranks=new Map<PoolMethod,Digit[]>();for(const m of methods)ranks.set(m,ranking(m));
+  const rollingRank=ranking('recent-frequency');
   for(const method of methods)for(const k of uniqueSizes){
-   const pool=methodRankings.get(method)!.slice(0,k),fixedPool=fixedRank.slice(0,k),rollingPool=rollingRank.slice(0,k);
+   const pool=ranks.get(method)!.slice(0,k),fixedPool=fixedRank.slice(0,k),rollingPool=rollingRank.slice(0,k);
    const a=accum.get(`${method}:${k}`)!;const h=pool.includes(target)?1:0,fh=fixedPool.includes(target)?1:0,rh=rollingPool.includes(target)?1:0;
    a.hits+=h;a.fixed+=fh;a.rolling+=rh;a.deltas.push(h-rh);a.tested++;
   }
@@ -70,7 +88,7 @@ export function runPoolMethodExperiment(draws:Draw[],position:Pos,methods:PoolMe
    fixedFrequencyHits:a.fixed,fixedFrequencyRate:fr,rollingFrequencyHits:a.rolling,rollingFrequencyRate:rr,
    pairedDiffVsRolling:tested?a.deltas.reduce((s,x)=>s+x,0)/tested:0,pairedDiffCI95:pairedCI(a.deltas),
    warnings:['Walk-forward pools use only preceding draws; baseline pools use the same prior history for each evaluated draw.',
-    'Pool rankings are computed once per target draw at size 10 and reused as prefixes for smaller pool sizes.',
+    'Rankings use incremental global/rolling counts and last-seen state; sizes are prefixes of a full ranking.',
     'Paired CI is a simple normal approximation and does not account for serial dependence or multiple comparisons.',
     'Candidate method/size/window selection creates optimism; treat this as discovery, then freeze candidates for new validation data.']});
  }
