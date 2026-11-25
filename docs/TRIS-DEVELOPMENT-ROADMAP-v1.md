@@ -141,3 +141,13 @@ La rama research-core-v1 contiene módulos de análisis, memoria y ciclos. Las p
 - Por defecto: 300 réplicas por escenario, ocho bloques de 25 concursos, baseline 20% y efecto máximo 15 puntos porcentuales.
 - La alternativa usa flujos Bernoulli independientes y sin autocorrelación; por tanto, esta etapa mide sensibilidad en escenarios controlados, no generalización al TRIS.
 - La calibración nula y la sensibilidad se reportan juntas, pero no se usan para ajustar automáticamente umbrales.
+
+
+### Fase 5 — estrés de dependencia entre señales (nueva calibración)
+- La simulación nula incorpora clústeres de señales con dependencia perfecta intraclúster: todas las series del mismo clúster comparten la misma secuencia candidata; los clústeres distintos tienen secuencias independientes.
+- Se combinan tamaños de clúster 1, 5 y 10 con tasas marginales, autocorrelación Markov y dependencia emparejada candidato-baseline.
+- El tamaño 1 sirve como referencia independiente entre candidatas; los tamaños mayores son escenarios deliberadamente extremos para observar cómo cambia la probabilidad familiar cuando muchas señales repiten la misma trayectoria.
+- El informe distingue la tasa familiar observada en las réplicas de la proyección matemática bajo independencia. No extrapola el escenario de clúster a las 1,095 hipótesis ni afirma que la estructura real del TRIS sea de dependencia perfecta.
+- Limitación: esta primera aproximación cubre dependencia por clúster completo, no correlaciones parciales ni redes de solapamiento entre familias, posiciones, ventanas y concursos. La siguiente calibración deberá explorar dependencias parciales/solapadas y contrastarlas con datos prospectivos reales.
+- Variables: `TRIS_NULL_CLUSTER_SIZES` controla los tamaños; cada tamaño debe ser menor o igual a `TRIS_NULL_SERIES`.
+- No se ajustan automáticamente umbrales ni se consulta ningún API o CSV real.
