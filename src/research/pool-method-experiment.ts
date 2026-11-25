@@ -48,24 +48,30 @@ export function runPoolMethodExperiment(draws:Draw[],position:Pos,methods:PoolMe
  const out:PoolExperimentRow[]=[];
  const fixedHistory=draws.slice(0,minTrain).map(d=>d.digits[position]);
  const fixedPools=new Map<number,Digit[]>([...new Set(sizes)].map(k=>[k,topFrequency(fixedHistory,k)]));
- for(const method of methods)for(const k of [...new Set(sizes)]){
-  let hits=0,fixedHits=0,rollingHits=0,tested=0;const deltas:number[]=[];
-  for(let i=minTrain;i<draws.length;i++){
-   const prior=draws.slice(0,i).map(d=>d.digits[position]),target=draws[i].digits[position];
-   const recent=prior.slice(-window);
-   const pool=buildPool(prior,method,k,window);
-   const fixedPool=fixedPools.get(k)!;
-   const rollingPool=topFrequency(recent,k);
-   const h=pool.includes(target)?1:0,fh=fixedPool.includes(target)?1:0,rh=rollingPool.includes(target)?1:0;
-   hits+=h;fixedHits+=fh;rollingHits+=rh;deltas.push(h-rh);tested++;
+ const uniqueSizes=[...new Set(sizes)].sort((a,b)=>a-b);
+ // Cache all pool rankings at size 10 once per target; smaller pools are prefixes.
+ const accum=new Map<string,{hits:number;fixed:number;rolling:number;deltas:number[];tested:number}>();
+ for(const method of methods)for(const k of uniqueSizes)accum.set(`${method}:${k}`,{hits:0,fixed:0,rolling:0,deltas:[],tested:0});
+ for(let i=minTrain;i<draws.length;i++){
+  const prior=draws.slice(0,i).map(d=>d.digits[position]),target=draws[i].digits[position],recent=prior.slice(-window);
+  const methodRankings=new Map<PoolMethod,Digit[]>();
+  for(const method of methods)methodRankings.set(method,buildPool(prior,method,10,window));
+  const fixedRank=topFrequency(fixedHistory,10),rollingRank=topFrequency(recent,10);
+  for(const method of methods)for(const k of uniqueSizes){
+   const pool=methodRankings.get(method)!.slice(0,k),fixedPool=fixedRank.slice(0,k),rollingPool=rollingRank.slice(0,k);
+   const a=accum.get(`${method}:${k}`)!;const h=pool.includes(target)?1:0,fh=fixedPool.includes(target)?1:0,rh=rollingPool.includes(target)?1:0;
+   a.hits+=h;a.fixed+=fh;a.rolling+=rh;a.deltas.push(h-rh);a.tested++;
   }
-  const rate=tested?hits/tested:0,fr=tested?fixedHits/tested:0,rr=tested?rollingHits/tested:0;
-  out.push({position,method,poolSize:k,window,tested,hits,hitRate:rate,uniformRate:k/10,liftVsUniform:rate/(k/10),
-    fixedFrequencyHits:fixedHits,fixedFrequencyRate:fr,rollingFrequencyHits:rollingHits,rollingFrequencyRate:rr,
-    pairedDiffVsRolling:tested?deltas.reduce((s,x)=>s+x,0)/tested:0,pairedDiffCI95:pairedCI(deltas),
-    warnings:['Walk-forward pools use only preceding draws; baseline pools use the same prior history for each evaluated draw.',
-      'Paired CI is a simple normal approximation and does not account for serial dependence or multiple comparisons.',
-      'Candidate method/size/window selection creates optimism; treat this as discovery, then freeze candidates for new validation data.']});
+ }
+ for(const method of methods)for(const k of uniqueSizes){
+  const a=accum.get(`${method}:${k}`)!,tested=a.tested,rate=tested?a.hits/tested:0,fr=tested?a.fixed/tested:0,rr=tested?a.rolling/tested:0;
+  out.push({position,method,poolSize:k,window,tested,hits:a.hits,hitRate:rate,uniformRate:k/10,liftVsUniform:rate/(k/10),
+   fixedFrequencyHits:a.fixed,fixedFrequencyRate:fr,rollingFrequencyHits:a.rolling,rollingFrequencyRate:rr,
+   pairedDiffVsRolling:tested?a.deltas.reduce((s,x)=>s+x,0)/tested:0,pairedDiffCI95:pairedCI(a.deltas),
+   warnings:['Walk-forward pools use only preceding draws; baseline pools use the same prior history for each evaluated draw.',
+    'Pool rankings are computed once per target draw at size 10 and reused as prefixes for smaller pool sizes.',
+    'Paired CI is a simple normal approximation and does not account for serial dependence or multiple comparisons.',
+    'Candidate method/size/window selection creates optimism; treat this as discovery, then freeze candidates for new validation data.']});
  }
  return out;
 }
