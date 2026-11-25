@@ -194,18 +194,17 @@ function incrementalScorer(draws:Draw[],candidate:IntuitionCandidate):(targetInd
     break;
    }
    case "absence-return":{
-    const misses=DIGITS.map(d=>d===lastSeen.indexOf(-1)?0:targetIndex-1-lastSeen[d]);
     const pool=DIGITS.filter(d=>targetIndex-1-lastSeen[d]===c.priorMisses!);
     if(pool.length){
      const baseline=DIGITS.slice().sort((a,b)=>globalCounts[b]-globalCounts[a]||a-b).slice(0,pool.length);
      result={hit:pool.includes(target.digits[position!]),baselineHit:baseline.includes(target.digits[position!])};
     }
-    void misses;
     break;
    }
    case "pool-ranking":{
     const k=Math.max(1,Math.min(10,Math.floor(c.poolSize!))),method=c.method as string;
-    const stats=DIGITS.map(d=>({digit:d,count:windowCounts[d],currentAbsence:targetIndex-1-lastSeen[d]}));
+    const currentWindowLength=Math.min(targetIndex,windowSize);
+    const stats=DIGITS.map(d=>({digit:d,count:windowCounts[d],currentAbsence:Math.min(currentWindowLength,targetIndex-1-lastSeen[d])}));
     const ranked=[...DIGITS].sort((a,b)=>{
      const A=stats[a],B=stats[b];let sa=0,sb=0;
      switch(method){
