@@ -16,7 +16,8 @@
     "research:sync": "tsx scripts/run-tris-sync.ts",
     "research:prospective": "tsx scripts/run-tris-prospective.ts",
     "research:validate": "tsx scripts/run-tris-validation.ts",
-    "research:collective": "tsx scripts/run-tris-collective.ts"
+    "research:collective": "tsx scripts/run-tris-collective.ts",
+    "research:regime": "tsx scripts/run-tris-regime.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
