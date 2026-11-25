@@ -34,10 +34,11 @@ export function selectDiversePortfolio(candidates:ScoredTicketCandidate[],config
  if(rawOverlap!==maxOverlap)notes.push('maxPositionOverlap was outside [0,1] or non-finite; normalized to a safe value.');
  const globalSelectedByMode=new Map<TicketMode,Set<string>>();
  for(const q of config.quotas){
-  const list=candidates.filter(c=>c.mode===q.mode).slice().sort((a,b)=>b.score-a.score||b.support-a.support||a.proposal.localeCompare(b.proposal));
+  const requested=Math.max(0,Number.isFinite(q.count)?Math.floor(q.count):0);
+  const list=candidates.filter(c=>c.mode===q.mode&&typeof c.proposal==='string'&&Number.isFinite(c.score)&&Number.isFinite(c.support)).slice().sort((a,b)=>b.score-a.score||b.support-a.support||a.proposal.localeCompare(b.proposal));
   const selected:ScoredTicketCandidate[]=[];let invalid=0,duplicate=0,overlap=0; const globalSeen=globalSelectedByMode.get(q.mode)||new Set<string>();
   for(const c of list){
-   if(selected.length>=Math.max(0,Math.floor(q.count)))break;
+   if(selected.length>=requested)break;
    if(!ticketValid(c)||!Number.isFinite(c.score)||!Number.isFinite(c.support)){invalid++;continue;}
    if(dedupe&&(selected.some(s=>s.proposal===c.proposal)||globalSeen.has(c.proposal))){duplicate++;continue;}
    if(selected.some(s=>positionalOverlap(s.proposal,c.proposal)>maxOverlap)){overlap++;continue;}
@@ -45,7 +46,7 @@ export function selectDiversePortfolio(candidates:ScoredTicketCandidate[],config
   }
   globalSelectedByMode.set(q.mode,globalSeen);
   tickets.push(...selected.map(c=>({mode:c.mode,proposal:c.proposal})));
-  audits.push({mode:q.mode,requested:Math.max(0,Math.floor(q.count)),selected:selected.length,candidateCount:list.length,rejectedInvalid:invalid,rejectedDuplicate:duplicate,rejectedOverlap:overlap,selectedTickets:selected});
+  audits.push({mode:q.mode,requested,selected:selected.length,candidateCount:list.length,rejectedInvalid:invalid,rejectedDuplicate:duplicate,rejectedOverlap:overlap,selectedTickets:selected});
  }
  return {tickets,audit:audits,totalRequested:config.quotas.reduce((s,q)=>s+Math.max(0,Number.isFinite(q.count)?Math.floor(q.count):0),0),totalSelected:tickets.length,notes:[...notes,
   "Candidate score is used for ranking only; it is not a calibrated probability or proof of advantage.",
