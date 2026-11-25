@@ -24,7 +24,7 @@ test("detects a deterministic lag-one positional dependency descriptively",()=>{
   assert.ok(pair.mutualInformationBits>0.5);
   assert.ok(pair.strongestTransitions.length>0);
   assert.equal(pair.strongestTransitions[0].conditionalRate,1);
-  assert.equal(pair.strongestTransitions[0].liftVsTargetMarginal,1);
+  assert.equal(pair.strongestTransitions[0].liftVsTargetMarginal,10);
 });
 
 test("recent scopes are bounded and preserve the correct contest range",()=>{
