@@ -6,6 +6,7 @@ import {createHash} from "node:crypto";
 import {importTrisCsv} from "../src/research/data-adapter";
 import {createResearchPlan} from "../src/research/intuition-orchestrator";
 import {freezeLearningCycle,resolveLearningCycleSignal,assessCycleSignalLifecycle,fingerprintCycleHistory,type FrozenLearningCycle,type ResolvedCycleSignal} from "../src/research/cycle-learning";
+import {analyzePositionContextMemory} from "../src/research/position-context-memory";
 
 const input=process.argv[2];
 if(!input){console.error("Usage: npm run research:cycles -- <local-path-to-Tris.csv> [ledger-directory]");process.exit(2);}
@@ -53,6 +54,8 @@ if(!alreadyFrozen){
  if(newCycle.frozenCount)await appendFile(cyclesPath,JSON.stringify(newCycle)+"\n","utf8");
 }
 await writeFile(resolve(ledgerDir,"lifecycle.json"),JSON.stringify({generatedAt:stamp,source:basename(csvPath),signals:lifecycle},null,2)+"\n","utf8");
+const positionMemory=analyzePositionContextMemory(allOutcomes);
+await writeFile(resolve(ledgerDir,"position-context-memory.json"),JSON.stringify({generatedAt:stamp,source:basename(csvPath),...positionMemory},null,2)+"\n","utf8");
 const csvSha=createHash("sha256").update(csv,"utf8").digest("hex");
 const previousId=state?.processedThroughDrawId??null;
 const missed=previousId===null?0:Math.max(0,latest.drawId-previousId-new Set(cycles.filter(c=>c.targetDrawId>previousId&&c.targetDrawId<=latest.drawId).map(c=>c.targetDrawId)).size);
@@ -70,6 +73,15 @@ const report=[
  "- Previously retired signals excluded from new cycles: "+lifecycle.filter(x=>x.status==="retired").length,
  "- Signals successfully frozen: "+(newCycle?.frozenCount??0),
  "- Contest IDs passed without a frozen cycle (not backfilled): "+missed,"",
+ "## Position and pre-draw context memory",
+ "- Position-specific resolved trials: "+positionMemory.positionSpecificTrials,
+ "- Full-result transition trials kept separate: "+positionMemory.modeLevelTrials,
+ "- Position/context strata: "+positionMemory.positions.length,
+ "- Mode-level scopes: "+positionMemory.modeScopes.length,"",
+ "| Position | Family | Previous pool | Previous duplicates | Draws | Candidate coverage | Baseline | Difference |",
+ "|---:|---|---|---|---:|---:|---:|---:|",
+ ...positionMemory.positions.map(x=>"| R"+(x.position+1)+" | "+x.family+" | "+x.poolRegime+" | "+x.duplicateRegime+" | "+x.draws+" | "+(100*x.meanCandidateHitRate).toFixed(1)+"% | "+(100*x.meanBaselineHitRate).toFixed(1)+"% | "+(100*x.difference).toFixed(1)+" pp |"),
+ "",
  "## Accumulated evidence",
  "- Frozen cycles: "+(cycles.length+(newCycle?1:0)),
  "- Resolved signal outcomes: "+allOutcomes.length,
@@ -90,7 +102,7 @@ const report=[
  "- Hit rates are binary pool/outcome coverage, not calibrated probabilities.",
  "- Lifecycle labels are descriptive; they do not promote hypotheses or change candidate weights.",
  "- No APIs, network calls, polling or automatic downloads are used.","",
- "## Local files","- "+cyclesPath,"- "+outcomesPath,"- "+statePath,"- "+resolve(ledgerDir,"lifecycle.json")
+ "## Local files","- "+cyclesPath,"- "+outcomesPath,"- "+statePath,"- "+resolve(ledgerDir,"lifecycle.json"),"- "+resolve(ledgerDir,"position-context-memory.json")
 ].join("\n")+"\n";
 await writeFile(resolve(ledgerDir,"latest-report.md"),report,"utf8");
 const nextState:State={schemaVersion:1,processedThroughDrawId:latest.drawId,processedDrawCount:draws.length,processedPrefixSha256:fingerprintCycleHistory(draws),updatedAt:stamp};
