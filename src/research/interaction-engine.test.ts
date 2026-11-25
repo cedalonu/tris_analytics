@@ -15,6 +15,7 @@ test("interaction engine creates chronological split and bounded candidates",()=
  assert.equal(report.featureCount,8);
  assert.equal(report.combinationsTested,50*84);
  assert.ok(report.selected.length<=60);
+ for(let i=1;i<report.selected.length;i++)assert.ok(report.selected[i-1].discovery.incrementalVsBestSingle>=report.selected[i].discovery.incrementalVsBestSingle);
  for(const candidate of report.selected){
   assert.ok(candidate.features.length===2||candidate.features.length===3);
   assert.ok(candidate.discovery.observations>candidate.validation.observations);
