@@ -1,0 +1,1 @@
+source_snapshot,source_fingerprint,prediction_timestamp_utc,draw_id,draw_date,position,method,pool_size,window,pool_digits,rolling_frequency_pool,observed_digit,pool_hit,rolling_frequency_hit,paired_difference,notes
