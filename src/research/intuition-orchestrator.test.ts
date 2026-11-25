@@ -3,10 +3,10 @@ import assert from "node:assert/strict";
 import {createResearchPlan,evaluatePlannedHypothesis,serializeResearchPlan} from "./intuition-orchestrator";
 import type {Observation} from "./intuition-evaluator";
 const createdAt="2026-11-25T12:00:00.000Z";
-test("default plan creates balanced, evidence-free 100 candidate budget",()=>{
+test("default plan respects available candidates and fills 100 budget",()=>{
  const p=createResearchPlan({createdAt});
  assert.equal(p.catalogSize,1073);assert.equal(p.selectedCount,100);
- assert.deepEqual(p.familyCounts,{transition:25,"position-mutation":25,"absence-return":25,"pool-ranking":25});
+ assert.deepEqual(p.familyCounts,{transition:18,"position-mutation":15,"absence-return":34,"pool-ranking":33});
  assert.ok(p.hypotheses.every(h=>h.ledgerRecord.status==="hypothesis"&&h.ledgerRecord.evidence.length===0));
 });
 test("plan is deterministic and export stable",()=>{
