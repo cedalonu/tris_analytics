@@ -59,7 +59,7 @@ function pairedEvidencePass(rows:SignalEvidence[]):boolean{
  const n=rows.reduce((s,e)=>s+e.n,0);
  const testCount=Math.max(1,...rows.map(e=>e.testCount??1));
  const adjustedP=Math.min(1,exactMcNemar(wins,losses)*testCount);
- return pairedLower(wins,losses,n)>0&&adjustedP<=.05/testCount;
+ return pairedLower(wins,losses,n)>0&&adjustedP<=.05;
 }
 /** Assessment is deliberately conservative. Exploration alone cannot promote a signal. */
 export function assessSignal(record:SignalRecord):SignalAssessment {
