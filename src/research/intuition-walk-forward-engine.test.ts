@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { runIntuitionWalkForward, type PhaseBoundary } from "./intuition-walk-forward-engine";
 import type { IntuitionCandidate } from "./intuition-candidate-generator";
-import type { Draw } from "../research-core";
+import { buildPool, type Draw } from "../research-core";
 
 const draws:Draw[]=Array.from({length:240},(_,i)=>{
   let x=(i*7919+17)%100000;
