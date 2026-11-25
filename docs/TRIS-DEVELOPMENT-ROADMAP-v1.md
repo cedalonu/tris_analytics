@@ -117,3 +117,12 @@ La rama research-core-v1 contiene módulos de análisis, memoria y ciclos. Las p
 - El umbral direccional es el máximo entre 2 pp y 1.96 errores estándar combinados; los intervalos son descriptivos y no corrigen autocorrelación ni multiplicidad.
 - Pruebas sintéticas ampliadas: estable, abrupto, gradual, pico aislado, recuperación, insuficiencia, separación posicional/configuración y rechazo de duplicados/inconsistencias.
 - Estado: implementación ampliada; falta ejecutar pruebas/TypeScript en CI y medir falsas alarmas con simulaciones nulas y datos prospectivos.
+
+
+### Calibración nula de Fase 5 — primera herramienta incorporada
+- Módulo reproducible: `src/research/position-change-null-simulation.ts`.
+- Runner offline: `npm run research:position-null --`.
+- Ejecuta por defecto 500 réplicas × 25 series × tres tasas marginales idénticas candidato/baseline (0.1, 0.2 y 0.5): 37,500 series sintéticas.
+- Reporta falsas alertas por serie, alertas persistentes, probabilidad familiar de al menos una alerta por réplica e intervalo Wilson Monte Carlo.
+- Semilla determinista y pruebas de reproducibilidad/validación añadidas.
+- Límite: supuesto nulo independiente entre acierto candidato y baseline; no simula autocorrelación ni la dependencia real. Los resultados no se interpretan como tasa real del TRIS y no ajustan automáticamente umbrales.
