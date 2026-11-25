@@ -58,6 +58,7 @@ test('incremental pool rankings match buildPool for seeded varied history',()=>{
  let state=123456789;
  const next=()=>{state=(1664525*state+1013904223)>>>0;return state%10;};
  const varied:Draw[]=Array.from({length:240},(_,i)=>({drawId:i+1,digits:Array.from({length:5},next) as Draw['digits']}));
+ const methods=['frequency','long-absence','short-absence','balanced','recent-frequency'] as const;
  for(const position of [0,2,4] as const)for(const window of [20,50,100]){
   const rows=runPoolMethodExperiment(varied,position,[...methods],[1,2,5,8,10],30,window);
   // Directly compare aggregated results for each candidate setting.
