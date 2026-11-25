@@ -5,7 +5,7 @@ import type {Observation} from "./intuition-evaluator";
 const createdAt="2026-11-25T12:00:00.000Z";
 test("default plan respects available candidates and fills 100 budget",()=>{
  const p=createResearchPlan({createdAt});
- assert.equal(p.catalogSize,1073);assert.equal(p.selectedCount,100);
+ assert.equal(p.catalogSize,1095);assert.equal(p.selectedCount,100);
  assert.deepEqual(p.familyCounts,{transition:18,"position-mutation":15,"absence-return":34,"pool-ranking":33});
  assert.ok(p.hypotheses.every(h=>h.ledgerRecord.status==="hypothesis"&&h.ledgerRecord.evidence.length===0));
 });
