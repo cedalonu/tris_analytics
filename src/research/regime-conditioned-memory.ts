@@ -8,7 +8,7 @@ import {analyzeSignalInteractions,buildInteractionObservations,type InteractionF
 
 export type PoolRegime="compact"|"mixed"|"broad";
 export type DuplicateRegime="few-duplicates"|"many-duplicates";
-export type RegimeKey=PoolRegime+"|"+DuplicateRegime;
+export type RegimeKey=`${PoolRegime}|${DuplicateRegime}`;
 export interface RegimeBlock {
  phase:"validation"|"holdout";
  regime:RegimeKey;
