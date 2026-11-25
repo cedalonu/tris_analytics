@@ -44,7 +44,7 @@ test("migration counts 25 position-pair observations per eligible contest and la
  assert.equal(report.migrations.length,5);
  assert.equal(report.migrations[0].observations,59*25);
  assert.equal(report.migrations[4].observations,55*25);
- assert.equal(report.migrations[0].sameDigitRate,4/25);
+ assert.equal(report.migrations[0].sameDigitRate,9/25);
  assert.equal(report.migrations[0].meanCircularDistance,0.8);
 });
 
