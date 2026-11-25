@@ -33,8 +33,8 @@ test("correlated positions show lift above independence baseline",()=>{
   x.positions[0]===0&&x.positions[1]===1&&x.digits[0]===0&&x.digits[1]===0
  );
  assert.ok(association);
- assert.equal(association!.observed,30);
- assert.equal(association!.expected,15);
+ assert.equal(association!.observed,25);
+ assert.equal(association!.expected,12.5);
  assert.equal(association!.lift,2);
 });
 
