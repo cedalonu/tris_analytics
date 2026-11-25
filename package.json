@@ -28,7 +28,8 @@
     "research:cycles": "tsx scripts/run-tris-cycles.ts",
     "research:position-memory": "tsx scripts/run-tris-position-memory.ts",
     "research:position-change": "tsx scripts/run-tris-position-change.ts",
-    "research:position-null": "tsx scripts/run-tris-position-null.ts"
+    "research:position-null": "tsx scripts/run-tris-position-null.ts",
+    "research:overlap": "tsx scripts/run-tris-overlap.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
