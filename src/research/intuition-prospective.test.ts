@@ -56,3 +56,12 @@ test("insufficient conditional transition context is not recorded as a forecast"
  const frozen=freezeProspectiveForecast(constant,c,10220,"2026-11-25T10:00:00.000Z");
  assert.equal(frozen,null);
 });
+
+test("refuses to resolve if the pre-result history has changed",()=>{
+ const c=candidate("pool-ranking",{position:2,method:"frequency",poolSize:4,window:50});
+ const frozen=freezeProspectiveForecast(history,c,9220,"2026-11-25T10:00:00.000Z");
+ assert.ok(frozen);
+ const changed=history.map(d=>({...d,digits:[...d.digits] as Draw["digits"]}));
+ changed[10].digits=[9,9,9,9,9];
+ assert.throws(()=>resolveProspectiveForecast(frozen!,{drawId:9220,digits:[1,2,3,4,5]},changed,"2026-11-25T10:01:00.000Z"),/history differs/);
+});
