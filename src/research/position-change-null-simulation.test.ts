@@ -19,3 +19,6 @@ test("independent family-wise projection rejects invalid inputs",()=>{assert.thr
 
 test("perfectly shared candidate clusters collapse to one family event when baseline is paired identically",()=>{const r=simulatePositionChangeNull({replications:30,seriesPerReplication:4,correlationClusterSize:4,pairedDependence:1,seed:20261125});assert.equal(r.correlationClusterSize,4);assert.equal(r.familyWiseFalseAlertRate,r.falseAlertRate)});
 test("cluster size must fit the simulated family",()=>assert.throws(()=>simulatePositionChangeNull({seriesPerReplication:3,correlationClusterSize:4}),/invalid null simulation options/));
+
+test("partial shared-signal overlap is deterministic and reported",()=>{const a=simulatePositionChangeNull({replications:12,seriesPerReplication:6,correlationClusterSize:3,sharedSignalOverlap:.5,seed:20261125}),b=simulatePositionChangeNull({replications:12,seriesPerReplication:6,correlationClusterSize:3,sharedSignalOverlap:.5,seed:20261125});assert.deepEqual(a,b);assert.equal(a.sharedSignalOverlap,.5)});
+test("shared-signal overlap is bounded",()=>{assert.throws(()=>simulatePositionChangeNull({sharedSignalOverlap:-.01}),/invalid null simulation options/);assert.throws(()=>simulatePositionChangeNull({sharedSignalOverlap:1.01}),/invalid null simulation options/)});
