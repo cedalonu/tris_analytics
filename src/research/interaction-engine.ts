@@ -64,7 +64,6 @@ function makeObservation(draws:Draw[],i:number,position:Pos,digit:Digit):Interac
  const prior=draws.slice(0,i),last=prior[prior.length-1],recent3=prior.slice(-3),recent5=prior.slice(-5);
  const previousPoolSize=new Set(last.digits).size;
  const neighborPositions=[position>0?position-1:-1,position<4?position+1:-1].filter(p=>p>=0);
- const historyAtPosition=prior.map(d=>d.digits[position]);
  const features:Record<InteractionFeatureId,boolean>={
   "digit-absent-3":recent3.every(d=>d.digits[position]!==digit),
   "digit-absent-5":recent5.every(d=>d.digits[position]!==digit),
@@ -75,7 +74,6 @@ function makeObservation(draws:Draw[],i:number,position:Pos,digit:Digit):Interac
   "previous-pool-large":previousPoolSize>=4,
   "previous-has-duplicates":new Set(last.digits).size<5
  };
- void historyAtPosition;
  return {drawId:draws[i].drawId,position,digit,hit:draws[i].digits[position]===digit,features};
 }
 function score(rows:InteractionObservation[],start:number,end:number,features:InteractionFeatureId[]):PhaseScore {
@@ -86,7 +84,7 @@ function score(rows:InteractionObservation[],start:number,end:number,features:In
  }
  const observations=end-start,baselineRate=observations?totalHits/observations:0,rate=active?hits/active:0;
  let bestSingleRate=0;
- for(const f of FEATURE_IDS){
+ for(const f of features){
   let n=0,h=0;for(let i=start;i<end;i++)if(rows[i].features[f]){n++;if(rows[i].hit)h++;}
   if(n>=MIN_ACTIVE)bestSingleRate=Math.max(bestSingleRate,h/n);
  }
