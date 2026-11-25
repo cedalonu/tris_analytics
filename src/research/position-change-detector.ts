@@ -33,12 +33,21 @@ function classify(blocks:PositionChangeBlock[]){
  const d1=direction(recent[0]),d2=direction(recent[1]),consecutive=d1!==0&&d1===d2?2:0;
  const latest=recent[1],change=latest.advantage-reference,interval:[number,number]=[latest.advantage-1.96*latest.standardError,latest.advantage+1.96*latest.standardError];
  let state:"stable"|"improvement"|"deterioration"|"persistent-change"|"recovery"="stable",interpretation="Los bloques recientes permanecen dentro de la zona neutral ajustada por variabilidad.";
- if(consecutive===2){
-  const early=referenceBlocks.slice(0,-2),prior=referenceBlocks.slice(-2);
-  const priorBelow=early.length>=2&&prior.every(b=>b.advantage-mean(early.map(x=>x.advantage))<=-Math.max(DELTA,1.96*Math.sqrt(sampleSd(early.map(x=>x.advantage))**2/early.length+b.standardError**2)));
-  if(d2>0&&priorBelow){state="recovery";interpretation="Dos bloques recientes favorables después de dos bloques de referencia deteriorados respecto a la referencia anterior."}
-  else{state="persistent-change";interpretation="Dos bloques recientes consecutivos muestran un cambio en la misma dirección frente a la referencia."}
- }else if(d2>0){state="improvement";interpretation="El último bloque mejora frente a la referencia; falta persistencia."}
+ // Recovery is a three-phase contrast: an early reference, a two-block trough, then a two-block rebound.
+ // This avoids comparing the rebound only with a reference already diluted by the trough.
+ let recoveryDetected=false;
+ if(blocks.length>=6){
+  const early=blocks.slice(0,-4),trough=blocks.slice(-4,-2),rebound=blocks.slice(-2);
+  const average=(items:PositionChangeBlock[])=>mean(items.map(b=>b.advantage));
+  const meanSE=(items:PositionChangeBlock[])=>Math.sqrt(sampleSd(items.map(b=>b.advantage))**2/items.length+items.reduce((s,b)=>s+b.standardError**2,0)/(items.length**2));
+  const earlyMean=average(early),troughMean=average(trough),reboundMean=average(rebound);
+  const declineThreshold=Math.max(DELTA,1.96*Math.sqrt(meanSE(early)**2+meanSE(trough)**2));
+  const reboundThreshold=Math.max(DELTA,1.96*Math.sqrt(meanSE(trough)**2+meanSE(rebound)**2));
+  recoveryDetected=troughMean<=earlyMean-declineThreshold&&reboundMean>=troughMean+reboundThreshold;
+ }
+ if(recoveryDetected){state="recovery";interpretation="Los dos bloques del valle se deterioran frente a la referencia inicial y los dos bloques finales rebotan frente al valle. La recuperación puede ser parcial; se informa como cambio de fase, no como retorno garantizado al nivel inicial."}
+ else if(consecutive===2){state="persistent-change";interpretation="Dos bloques recientes consecutivos muestran un cambio en la misma dirección frente a la referencia."}
+ else if(d2>0){state="improvement";interpretation="El último bloque mejora frente a la referencia; falta persistencia."}
  else if(d2<0){state="deterioration";interpretation="El último bloque se deteriora frente a la referencia; falta persistencia."}
  return{referenceAdvantage:reference,referenceStandardError:refSE,referenceVariability:refVariability,latestAdvantage:latest.advantage,latestStandardError:latest.standardError,latestInterval95:interval,change,state,consecutiveDirectionalBlocks:consecutive,interpretation};
 }
