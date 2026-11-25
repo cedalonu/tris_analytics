@@ -50,13 +50,14 @@ export function runPoolMethodExperiment(draws:Draw[],position:Pos,methods:PoolMe
  const fixedPools=new Map<number,Digit[]>([...new Set(sizes)].map(k=>[k,topFrequency(fixedHistory,k)]));
  const uniqueSizes=[...new Set(sizes)].sort((a,b)=>a-b);
  // Cache all pool rankings at size 10 once per target; smaller pools are prefixes.
+ const fixedRank=topFrequency(fixedHistory,10);
  const accum=new Map<string,{hits:number;fixed:number;rolling:number;deltas:number[];tested:number}>();
  for(const method of methods)for(const k of uniqueSizes)accum.set(`${method}:${k}`,{hits:0,fixed:0,rolling:0,deltas:[],tested:0});
  for(let i=minTrain;i<draws.length;i++){
   const prior=draws.slice(0,i).map(d=>d.digits[position]),target=draws[i].digits[position],recent=prior.slice(-window);
   const methodRankings=new Map<PoolMethod,Digit[]>();
   for(const method of methods)methodRankings.set(method,buildPool(prior,method,10,window));
-  const fixedRank=topFrequency(fixedHistory,10),rollingRank=topFrequency(recent,10);
+  const rollingRank=topFrequency(recent,10);
   for(const method of methods)for(const k of uniqueSizes){
    const pool=methodRankings.get(method)!.slice(0,k),fixedPool=fixedRank.slice(0,k),rollingPool=rollingRank.slice(0,k);
    const a=accum.get(`${method}:${k}`)!;const h=pool.includes(target)?1:0,fh=fixedPool.includes(target)?1:0,rh=rollingPool.includes(target)?1:0;
