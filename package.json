@@ -32,7 +32,7 @@
     "research:overlap": "tsx scripts/run-tris-overlap.ts",
     "research:candidate-portfolios": "tsx scripts/run-tris-candidate-portfolios.ts",
     "research:portfolio-walk-forward": "tsx scripts/run-tris-portfolio-walk-forward.ts",
-    "research:prospective-portfolio": "tsx scripts/run-tris-prospective-portfolio.ts"
+    "research:prospective-portfolio": "tsx scripts/run-tris-prospective-portfolio.ts",\n    "research:family-concordance": "tsx scripts/run-tris-prospective-portfolio.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
