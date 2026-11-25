@@ -51,10 +51,11 @@ export function simulatePositionChangeAlternative(options:AlternativeSimulationO
  for(let completed=4;completed<=blocks;completed++){const prefix=rows.slice(0,completed*blockSize),state=detectPositionBehaviorChanges(prefix,blockSize).series[0]?.state??"insufficient-data";
  if(firstDetection===null&&((expected==="improvement"&&(state==="improvement"||state==="persistent-change"))||(expected==="deterioration"&&(state==="deterioration"||state==="persistent-change"))||(expected==="recovery"&&state==="recovery")))firstDetection=completed;
  }
- const state=detectPositionBehaviorChanges(rows,blockSize).series[0]?.state??"insufficient-data";counts[state]++;
+ const finalSeries=detectPositionBehaviorChanges(rows,blockSize).series[0],state=finalSeries?.state??"insufficient-data";counts[state]++;
  if(state!=="stable"&&state!=="insufficient-data")detected++;
- if(state===expected||((expected==="improvement"||expected==="deterioration")&&state==="persistent-change"))correct++;
- if(firstDetection!==null)latencies.push(firstDetection-(blocks-2)+1);
+ const correctFinal=expected==="recovery"?state==="recovery":expected==="improvement"?(state==="improvement"||(state==="persistent-change"&&(finalSeries?.change??0)>0)):state==="deterioration"||(state==="persistent-change"&&(finalSeries?.change??0)<0);
+ if(correctFinal)correct++;
+ if(firstDetection!==null)latencies.push(firstDetection-(blocks-2));
  }
  const latencyDistribution:Record<string,number>={};for(const n of latencies){const k=String(n);latencyDistribution[k]=(latencyDistribution[k]??0)+1}
  const sorted=latencies.slice().sort((a,b)=>a-b),median=sorted.length?sorted[Math.floor((sorted.length-1)/2)]:null;
