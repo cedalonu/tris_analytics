@@ -20,7 +20,7 @@ const FAMILIES:CandidateFamily[]=["transition","position-mutation","absence-retu
 /** Scheduling score: prefer lower-complexity/easier-to-interpret tests; never reads draw outcomes. */
 export function scoreIntuitionCandidate(c:IntuitionCandidate):CandidatePriority{
  const cfg=c.config,reasons:string[]=[];let score=50;
- if(cfg.lag!==undefined){score+=cfg.lag===1?12:cfg.lag===2?7:2;reasons.push(cfg.lag===1?"lag 1 is simplest temporal comparison":cfg.lag===2?"lag 2 prioritized after lag 1":"lag 3 reserved for broader exploratory testing");}
+ if(cfg.lag!==undefined){score+=cfg.lag===1?12:cfg.lag===2?7:cfg.lag===3?4:cfg.lag===4?2:1;reasons.push(cfg.lag===1?"lag 1 is simplest temporal comparison":cfg.lag===2?"lag 2 prioritized after lag 1":cfg.lag===3?"lag 3 is exploratory":cfg.lag===4?"lag 4 is lower-priority extended memory":"lag 5 is the longest initial lag and lowest priority");}
  if(cfg.position!==undefined){score+=2;reasons.push("position-specific design");}
  if(cfg.priorMisses!==undefined){score+=cfg.priorMisses<=3?8:cfg.priorMisses<=8?4:0;reasons.push(cfg.priorMisses<=3?"short absence strata prioritized to reduce sparse samples":"long absence strata are lower priority due to sparse conditioning");}
  if(cfg.poolSize!==undefined){score+=cfg.poolSize<=3?9:cfg.poolSize<=5?5:cfg.poolSize<=7?2:0;reasons.push(cfg.poolSize<=3?"small pools are easier to interpret":"larger pools are lower priority in the initial budget");}
