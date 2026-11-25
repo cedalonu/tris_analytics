@@ -119,8 +119,12 @@ export function freezeProspectiveForecast(
 }
 /** Resolve only after the exact target draw is present. Never rewrites the frozen prediction. */
 export function resolveProspectiveForecast(
- forecast:FrozenForecast,actualDraw:Draw,resolvedAt:string
+ forecast:FrozenForecast,actualDraw:Draw,priorHistory:Draw[],resolvedAt:string
 ):ResolvedForecast{
+ validateHistory(priorHistory);
+ if(priorHistory.at(-1)!.drawId!==forecast.historyThroughDrawId || historyHash(priorHistory)!==forecast.historySha256)
+  throw new Error("pre-result history differs from the frozen forecast fingerprint");
+ if(priorHistory.at(-1)!.drawId+1!==forecast.targetDrawId)throw new Error("frozen forecast target is not next after its history");
  if(actualDraw.drawId!==forecast.targetDrawId)throw new Error("actual draw ID does not match frozen forecast target");
  if(actualDraw.digits.length!==5||actualDraw.digits.some(d=>!Number.isInteger(d)||d<0||d>9))throw new Error("invalid actual draw");
  if(!Number.isFinite(Date.parse(resolvedAt)))throw new Error("valid resolvedAt timestamp required");
