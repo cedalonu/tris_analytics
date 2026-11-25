@@ -16,7 +16,7 @@ const report=analyzeContextualMemory(data.validation.valid),sha=createHash("sha2
 await mkdir(out,{recursive:true});
 await writeFile(resolve(out,"context-memory.json"),JSON.stringify({source:basename(source),sourceSha256:sha,report},null,2)+"\n");
 const lines=["# TRIS context-conditioned temporal memory","",
- "Source: "+basename(source),"SHA-256: "+sha,"Contests: "+report.drawCount+" ("+report.firstDrawId+"–"+report.lastDrawId),"",
+ "Source: "+basename(source),"SHA-256: "+sha,"Contests: "+report.drawCount+" ("+report.firstDrawId+"–"+report.lastDrawId+")","",
  ...report.scopes.flatMap(s=>{
   const ranked=[...s.comparisons].sort((a,b)=>b.contextMutualInformationBits-a.contextMutualInformationBits);
   return ["## "+s.scope+" ("+s.draws+" contests)","",
