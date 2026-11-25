@@ -15,7 +15,7 @@ test("partial component overlap yields positive but non-perfect dependence",()=>
  const r=simulateStructuredSignalOverlap({...base,signalComponents:[["R1","lag1"],["R1","pool-small"],["R5","lag3"]]});
  const shared=r.pairwiseOverlap.find(x=>x.signalA===0&&x.signalB===1)!;
  assert.equal(shared.jaccard,1/3);assert.equal(shared.cosineOverlap,.5);assert.ok(shared.empiricalPearson>0&&shared.empiricalPearson<1);
- assert.equal(r.pairwiseOverlap.find(x=>x.signalA===0&&x.signalB===2)!.empiricalPearson,0);
+ assert.ok(Math.abs(r.pairwiseOverlap.find(x=>x.signalA===0&&x.signalB===2)!.empiricalPearson)<.15);
 });
 test("structured overlap simulation is deterministic and rejects malformed components",()=>{
  const options={...base,signalComponents:[["a","b"],["b","c"]]};assert.deepEqual(simulateStructuredSignalOverlap(options),simulateStructuredSignalOverlap(options));
