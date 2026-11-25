@@ -46,19 +46,19 @@ function validate(draws:Draw[]):void {
  }
 }
 function distribution(rows:Draw[],feature:string):number[] {
- const counts:number[]=[];
- const add=(index:number,size:number)=>{while(counts.length<size)counts.push(0);counts[index]++;};
+ let counts:number[]=[];
+ const add=(index:number,size:number)=>{if(!counts.length)counts=Array(size).fill(0);counts[index]++;};
  if(feature.startsWith("position-")){
-  const p=Number(feature.slice(9));rows.forEach(d=>add(d.digits[p],10));
+  const p=Number(feature.slice(9));counts=Array(10).fill(0);rows.forEach(d=>add(d.digits[p],10));
  } else if(feature==="pool-size"||feature==="distinct-digits"){
-  rows.forEach(d=>add(new Set(d.digits).size-1,5));
+  counts=Array(5).fill(0);rows.forEach(d=>add(new Set(d.digits).size-1,5));
  } else if(feature==="duplicate-pair"){
   let duplicates=0,total=0;
   rows.forEach(d=>{for(let p=0;p<5;p++)for(let q=p+1;q<5;q++){total++;if(d.digits[p]===d.digits[q])duplicates++;}});
   return total?[duplicates,total-duplicates]:[0,0];
  } else if(feature.startsWith("joint-")){
   const [,ps,qs]=feature.split("-"),p=Number(ps),q=Number(qs);
-  rows.forEach(d=>add(d.digits[p]*10+d.digits[q],100));
+  counts=Array(100).fill(0);rows.forEach(d=>add(d.digits[p]*10+d.digits[q],100));
  } else throw new Error("unknown feature "+feature);
  return counts;
 }
