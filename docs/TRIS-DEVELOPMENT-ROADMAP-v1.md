@@ -205,3 +205,15 @@ Se incorpora `src/research/candidate-portfolio-walk-forward.ts` y su suite de pr
 Runner offline: `npm run research:portfolio-walk-forward -- ./data/Tris.csv`. Acepta un CSV entregado manualmente; no llama APIs ni descarga datos. Por defecto compara tamaños 10 y 20, métodos family-balanced, max-diversity, redundancy-control y baseline random (10 semillas configurables). Genera JSON y Markdown locales bajo `reports/candidate-portfolio-walk-forward/`.
 
 Métricas descriptivas por fase: señal-sorteos, cobertura, acierto, baseline pareado, diferencia y omisiones. Las observaciones candidato-sorteo no son independientes; no se reportan p-valores agregados ni rentabilidad. Las familias tienen objetivos distintos, por lo que la tasa agregada no equivale a probabilidad de acertar un boleto. Holdout histórico no sustituye confirmación prospectiva. No se modifican pesos, ledger ni pronósticos.
+
+
+## Fase 8 — benchmarks con presupuesto equivalente (2026-11-25)
+
+Se amplía el runner `research:portfolio-walk-forward` con tres portafolios de referencia construidos sin consultar resultados de evaluación:
+- `baseline-frequency-only`: candidatos de pool-ranking cuyo método es frecuencia histórica global.
+- `baseline-transition-only`: candidatos de la familia de transiciones.
+- `baseline-recent-pool`: candidatos pool-ranking de frecuencia reciente.
+
+Cada benchmark contiene exactamente el mismo número de candidatos que el portafolio comparado; el muestreo es determinista y usa una semilla congelada. Se mantienen los cuatro métodos estructurales (family-balanced, max-diversity, redundancy-control y random), y el baseline pareado interno de cada candidato sigue reportándose por separado.
+
+Los benchmarks son familias/configuraciones de señales, no estrategias de boleto ni sistemas probabilísticos calibrados. Aunque comparten presupuesto y periodos, su elegibilidad y cobertura pueden diferir; la cobertura se reporta junto con las tasas y no se deben comparar tasas sin revisar denominadores y omisiones. Las observaciones candidato-sorteo siguen siendo dependientes. No se agregan p-valores ingenuos, EV ni rentabilidad. Tests verifican tamaño igual, composición, determinismo y límites del catálogo. Sin APIs ni descarga; requiere CSV local manual.
