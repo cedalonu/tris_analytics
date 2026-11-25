@@ -24,3 +24,10 @@ test("empty/zero budget returns no selection",()=>{
  const candidates=generateIntuitionCandidates({includePools:false});
  assert.equal(selectIntuitionCandidates(candidates,{maxCandidates:0}).selected.length,0);
 });
+
+test("default allocation round-robins families instead of filling pool family first",()=>{
+ const candidates=generateIntuitionCandidates();
+ const selected=selectIntuitionCandidates(candidates,{maxCandidates:40});
+ assert.deepEqual(selected.familyCounts,{transition:10,"position-mutation":10,"absence-return":10,"pool-ranking":10});
+ assert.equal(selected.selected.length,40);
+});
