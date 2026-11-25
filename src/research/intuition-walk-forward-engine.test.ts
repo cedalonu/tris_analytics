@@ -51,7 +51,7 @@ test("future outcomes cannot alter earlier candidate observations",()=>{
 
 test("absence candidate skips empty pools rather than counting misses",()=>{
  const constant:Draw[]=Array.from({length:240},(_,i)=>({drawId:2000+i,digits:[1,1,1,1,1] as Draw["digits"]}));
- const result=runIntuitionWalkForward(constant,candidate("absence-return",{family:"absence-return",position:0,priorMisses:0}),[
+ const result=runIntuitionWalkForward(constant,candidate("absence-return",{family:"absence-return",position:0,priorMisses:1}),[
   {phase:"validation",firstDrawId:2220,lastDrawId:2239}
  ]);
  assert.equal(result.observations.length,0);
