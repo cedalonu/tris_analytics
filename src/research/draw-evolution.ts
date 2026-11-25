@@ -37,7 +37,7 @@ export function positionMutations(draws:Draw[]):PositionMutation[]{
  }return out;
 }
 export function evolutionReport(draws:Draw[]):EvolutionReport{
- const transitions={} as Record<Lag,TransitionCount[]>;for(const lag of [1,2,3] as Lag[])transitions[lag]=countModeTransitions(draws,"full5",lag);
+ const transitions={} as Record<Lag,TransitionCount[]>;for(const lag of [1,2,3,4,5] as Lag[])transitions[lag]=countModeTransitions(draws,"full5",lag);
  const modeTransitionCounts={} as Record<GameMode,TransitionCount[]>;for(const m of MODES)modeTransitionCounts[m.mode]=countModeTransitions(draws,m.mode,1);
  return {transitions,mutations:positionMutations(draws),modeTransitionCounts,warnings:["Transition counts are descriptive and may be sparse for full 5-digit outcomes.","Do not infer a digit is due from absence or transition frequency.","All predictive evaluations must be chronological walk-forward and compared to empirical/chance baselines.","Use adequate sample sizes, uncertainty intervals, and multiple-testing correction."]};
 }
