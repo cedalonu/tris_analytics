@@ -1,0 +1,24 @@
+name: TRIS research validation
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [research-core-v1]
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: TypeScript check
+        run: npm run lint
+      - name: Research unit tests
+        run: npm run test:research
