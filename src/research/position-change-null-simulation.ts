@@ -61,3 +61,10 @@ export function simulatePositionChangeAlternative(options:AlternativeSimulationO
  const sorted=latencies.slice().sort((a,b)=>a-b),median=sorted.length?sorted[Math.floor((sorted.length-1)/2)]:null;
  return{shape,replications,drawsPerBlock,blocks,baselineRate,effectSize,seed,detectionRate:detected/replications,correctDirectionRate:correct/replications,medianDetectionLatencyBlocks:median,latencyObservations:latencies.length,latencyDistribution,stateCounts:counts,wilson95:wilson(correct,replications),interpretation:"Alternativa sintética: la probabilidad del candidato cambia según el escenario y la baseline permanece fija. La detección mide el estado correcto al final; la latencia cuenta bloques desde el inicio del cambio hasta la primera alerta direccional. Los flujos se generan independientemente y sin autocorrelación."};
 }
+
+export interface IndependentFamilyWiseProjection{familySize:number;rate:number;wilson95:[number,number]}
+export function projectIndependentFamilyWiseRate(perSeriesRate:number,familySize:number,perSeriesWilson95:[number,number]=[perSeriesRate,perSeriesRate]):IndependentFamilyWiseProjection{
+ if(!Number.isFinite(perSeriesRate)||perSeriesRate<0||perSeriesRate>1||!Number.isInteger(familySize)||familySize<1||perSeriesWilson95.length!==2||perSeriesWilson95[0]<0||perSeriesWilson95[1]>1||perSeriesWilson95[0]>perSeriesWilson95[1])throw new Error("invalid family-wise projection options");
+ const project=(p:number)=>1-Math.pow(1-p,familySize);
+ return{familySize,rate:project(perSeriesRate),wilson95:[project(perSeriesWilson95[0]),project(perSeriesWilson95[1])]};
+}
