@@ -127,8 +127,9 @@ export function analyzeSignalInteractions(draws:Draw[]):InteractionReport {
   selected.push(...scanStream(rows,position,digit));
  }
  selected.sort((a,b)=>b.discovery.incrementalVsBestSingle-a.discovery.incrementalVsBestSingle||
-  b.validation.incrementalVsBestSingle-a.validation.incrementalVsBestSingle||
-  b.holdout.incrementalVsBestSingle-a.holdout.incrementalVsBestSingle);
+  b.discovery.liftVsBaseline-a.discovery.liftVsBaseline||
+  b.discovery.active-a.discovery.active||a.position-b.position||a.digit-b.digit||
+  a.features.join("|").localeCompare(b.features.join("|")));
  return {
   drawCount:draws.length,firstDrawId:draws[0].drawId,lastDrawId:draws[draws.length-1].drawId,
   warmupDraws:WARMUP,split:{discovery:60,validation:20,holdout:20},featureCount:FEATURE_IDS.length,
