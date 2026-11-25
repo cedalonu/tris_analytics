@@ -40,7 +40,7 @@ export function buildPortfolioPhaseBoundaries(draws:Draw[],fractions:{discovery?
  if(draws.length>validationEnd)bounds.push({phase:"holdout",firstDrawId:draws[validationEnd].drawId,lastDrawId:draws.at(-1)!.drawId});
  return bounds;
 }
-export function buildHoldoutStabilityBlocks(boundaries:PhaseBoundary[],blockSize=25,minPartialSize=10):Array<{phase:"holdout";firstDrawId:number;lastDrawId:number;partial:boolean;underpowered:boolean}>{
+export function buildHoldoutStabilityBlocks(boundaries:PhaseBoundary[],blockSize=25,minPartialSize=Math.min(10,blockSize)):Array<{phase:"holdout";firstDrawId:number;lastDrawId:number;partial:boolean;underpowered:boolean}>{
  if(!Number.isInteger(blockSize)||blockSize<2)throw new Error("block size must be an integer >= 2");
  if(!Number.isInteger(minPartialSize)||minPartialSize<1||minPartialSize>blockSize)throw new Error("minimum partial block size must be between 1 and block size");
  const holdout=boundaries.find(b=>b.phase==="holdout");
