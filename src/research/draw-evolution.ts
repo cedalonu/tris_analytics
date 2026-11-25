@@ -15,7 +15,7 @@ export const MODES:ModeSpec[]=[
  {mode:"last2",positions:[3,4],label:"Last 2"},
  {mode:"firstLast",positions:[0,4],label:"First + last"},
 ];
-export type Lag=1|2|3;
+export type Lag=1|2|3|4|5;
 export interface TransitionCount { from:string; to:string; count:number; rate:number; n:number; }
 export interface PositionMutation { position:Pos; lag:Lag; same:number; plus1mod10:number; minus1mod10:number; meanAbsoluteChange:number; changeHistogram:number[]; n:number; }
 export interface EvolutionReport { transitions:Record<Lag,TransitionCount[]>; mutations:PositionMutation[]; modeTransitionCounts:Record<GameMode,TransitionCount[]>; warnings:string[]; }
@@ -28,10 +28,10 @@ export function countModeTransitions(draws:Draw[],mode:GameMode,lag:Lag=1):Trans
  for(let i=lag;i<draws.length;i++){const a=key(draws[i-lag].digits,positions),b=key(draws[i].digits,positions),k=a+"→"+b;counts.set(k,(counts.get(k)||0)+1);fromCounts.set(a,(fromCounts.get(a)||0)+1);}
  return [...counts.entries()].map(([k,count])=>{const [from,to]=k.split("→");return {from,to,count,rate:rate(count,fromCounts.get(from)||0),n:fromCounts.get(from)||0};}).sort((a,b)=>b.count-a.count||a.from.localeCompare(b.from)||a.to.localeCompare(b.to));
 }
-/** Position mutation descriptors for lags -1/-2/-3; modulo movement is separately flagged. */
+/** Position mutation descriptors for lags -1/-2/-3/-4/-5; modulo movement is separately flagged. */
 export function positionMutations(draws:Draw[]):PositionMutation[]{
  const out:PositionMutation[]=[];
- for(let p=0;p<5;p++)for(const lag of [1,2,3] as Lag[]){let same=0,plus=0,minus=0,total=0,sumAbs=0;const hist=Array(10).fill(0);
+ for(let p=0;p<5;p++)for(const lag of [1,2,3,4,5] as Lag[]){let same=0,plus=0,minus=0,total=0,sumAbs=0;const hist=Array(10).fill(0);
   for(let i=lag;i<draws.length;i++){const a=draws[i-lag].digits[p],b=draws[i].digits[p],delta=(b-a+10)%10;total++;hist[delta]++;sumAbs+=Math.min(delta,10-delta);if(a===b)same++;if(delta===1)plus++;if(delta===9)minus++;}
   out.push({position:p as Pos,lag,same,plus1mod10:plus,minus1mod10:minus,meanAbsoluteChange:total?sumAbs/total:0,changeHistogram:hist,n:total});
  }return out;
