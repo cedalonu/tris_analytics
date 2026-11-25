@@ -13,7 +13,7 @@ Separar dos preguntas: ¿cuántas falsas alertas aparecen cuando no hay ventaja?
 ## B. Alternativas con cambio verdadero
 - Cuatro formas: mejora abrupta, deterioro abrupto, mejora gradual y recuperación.
 - El runner evalúa por defecto tamaños de efecto de 0.10, 0.15, 0.25 y 0.35; cada tamaño se cruza con las cuatro formas.
-- Por defecto: 300 réplicas por escenario, ocho bloques de 25 concursos, baseline marginal 0.20 y efecto máximo 0.15.
+- Por defecto: 300 réplicas por escenario, ocho bloques de 25 concursos y baseline marginal 0.20. La cuadrícula completa produce 4 tamaños × 4 formas × 300 réplicas = 4,800 series alternativas.
 - La probabilidad de acierto del candidato cambia según el escenario; la baseline permanece constante.
 - Se reporta detección final, dirección correcta, distribución de estados e intervalo Wilson.
 - Latencia: número de bloques desde el inicio de cada forma de cambio hasta la primera alerta en la dirección correcta. Para mejora gradual, el inicio es el cuarto bloque final; para recuperación, el inicio es el penúltimo tramo favorable.
