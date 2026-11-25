@@ -67,15 +67,6 @@ function blockScore(rows:InteractionObservation[],features:InteractionFeatureId[
   observations:rows.length,active:activeRows.length,hits,rate,baselineRate,bestComponentRate,
   deltaVsBaseline,deltaVsBestComponent,signal};
 }
-function makeBlocks(rows:InteractionObservation[],phase:"validation"|"holdout"):AdaptiveBlock[] {
- const out:AdaptiveBlock[]=[];
- for(let i=0;i<rows.length;i+=BLOCK_SIZE){
-  const block=blockScore(rows.slice(i,i+BLOCK_SIZE),[],phase);
-  // The candidate's component list is applied by the caller; this branch is intentionally unused.
-  if(block)out.push(block);
- }
- return out;
-}
 function evaluateBlocks(rows:InteractionObservation[],features:InteractionFeatureId[],phase:"validation"|"holdout"):AdaptiveBlock[] {
  const out:AdaptiveBlock[]=[];
  for(let i=0;i<rows.length;i+=BLOCK_SIZE){
@@ -119,9 +110,8 @@ export function analyzeAdaptiveSignalMemory(draws:Draw[]):AdaptiveMemoryReport {
    status:state.status,positiveBlocks:state.positive,negativeBlocks:state.negative,longestPositiveRun:state.longest,
    latestDelta:last?last.deltaVsBaseline:null,interpretation:state.interpretation};
  });
- signals.sort((a,b)=>({strengthening:0,persistent:1,emerging:2,weakening:3,unstable:4,dormant:5,unobserved:6,unobserved2:7} as Record<string,number>)[a.status]-
-  ({strengthening:0,persistent:1,emerging:2,weakening:3,unstable:4,dormant:5,unobserved:6} as Record<string,number>)[b.status]||
-  (b.latestDelta??-1)-(a.latestDelta??-1));
+ const rank:Record<AdaptiveMemoryStatus,number>={strengthening:0,persistent:1,emerging:2,weakening:3,unstable:4,dormant:5,unobserved:6};
+ signals.sort((a,b)=>rank[a.status]-rank[b.status]||(b.latestDelta??-1)-(a.latestDelta??-1));
  return {drawCount:draws.length,firstDrawId:draws[0].drawId,lastDrawId:draws[draws.length-1].drawId,
   discoveryDraws:discoveryEnd,validationDraws:validationEnd-discoveryEnd,holdoutDraws:n-validationEnd,
   blockSize:BLOCK_SIZE,monitoredCandidates:signals.length,signals,
