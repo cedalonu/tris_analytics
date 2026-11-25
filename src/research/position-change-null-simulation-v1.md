@@ -1,4 +1,4 @@
-# TRIS — calibración nula y sensibilidad del detector v1.4
+# TRIS — calibración nula y sensibilidad del detector v1.5
 
 ## Objetivo
 Separar dos preguntas: ¿cuántas falsas alertas aparecen cuando no hay ventaja? y ¿con qué frecuencia se detectan cambios verdaderos definidos de antemano?
@@ -34,3 +34,9 @@ Los nulos prueban algunos niveles de dependencia y autocorrelación; las alterna
 
 ## Lectura de sensibilidad observada en CI
 La primera ejecución con efecto 0.15 mostró detección final baja y, en particular, una tasa de clasificación correcta de recuperación muy baja. Por eso el runner amplía el análisis a una cuadrícula de tamaños de efecto. Estos valores siguen siendo sintéticos; no se usan para reajustar automáticamente los umbrales ni para afirmar que el TRIS tenga memoria.
+
+
+## Resultado tras separar valle y rebote (CI 2026-11-25)
+Con la nueva regla de recuperación, la clasificación explícita `recovery` fue 1.67%, 5.67%, 20.00% y 24.67% para tamaños de efecto 0.10, 0.15, 0.25 y 0.35, respectivamente (300 réplicas por escenario). La regla detecta más recuperaciones que la versión anterior, pero sigue clasificando erróneamente muchas como mejora o cambio persistente; no se considera resuelto el problema.
+
+En los escenarios nulos con p=0.20, la tasa de falsas alertas por serie fue 5.63%, 9.50% y 14.80% con autocorrelación 0, 0.3 y 0.6. La probabilidad de al menos una alerta entre 10 series fue 42.00%, 64.00% y 80.67%. Esto confirma que el detector no debe usarse para seleccionar automáticamente señales sin una calibración de multiplicidad y dependencia más completa.
