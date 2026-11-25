@@ -4,8 +4,7 @@ import {analyzeContextualMemory} from "./contextual-memory";
 import type {Draw} from "../research-core";
 
 const rows=(n:number):Draw[]=>Array.from({length:n},(_,i)=>{
- const pool=i%2===0?[0,1,2,3,4]:[5,6,7,8,9];
- const digits=[...pool] as Draw["digits"];
+ const digits=[i%2,0,0,0,0] as Draw["digits"];
  return {drawId:7000+i,digits};
 });
 
