@@ -38,15 +38,21 @@ export function wilsonLower(hits:number,n:number,z=1.96):number {
  const p=hits/n,z2=z*z,den=1+z2/n;
  return (p+z2/(2*n)-z*Math.sqrt((p*(1-p)+z2/(4*n))/n))/den;
 }
-function binomPmf(k:number,n:number):number{
- let log=0;for(let i=1;i<=k;i++)log+=Math.log(n-i+1)-Math.log(i);
- return Math.exp(log-n*Math.log(2));
-}
 function exactMcNemar(a:number,b:number):number{
  const n=a+b;if(!n)return 1;
- const observed=binomPmf(Math.min(a,b),n);let p=0;
- for(let k=0;k<=n;k++)if(binomPmf(k,n)<=observed+1e-12)p+=binomPmf(k,n);
- return Math.min(1,p);
+ const observed=Math.min(a,b),mode=Math.floor(n/2);
+ let total=1,lower=observed===mode?1:0,weight=1;
+ for(let k=mode;k>0;k--){
+  weight*=k/(n-k+1);
+  total+=weight;
+  if(k-1<=observed)lower+=weight;
+ }
+ weight=1;
+ for(let k=mode;k<n;k++){
+  weight*=(n-k)/(k+1);
+  total+=weight;
+ }
+ return Math.min(1,2*lower/total);
 }
 function pairedLower(wins:number,losses:number,n:number):number{
  if(!n)return -1;
