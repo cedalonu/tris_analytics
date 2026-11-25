@@ -156,7 +156,7 @@ La rama research-core-v1 contiene módulos de análisis, memoria y ciclos. Las p
 ### Fase 5 — dependencia parcial y solapamiento de señales
 - Se amplía la simulación nula: dentro de cada clúster, cada serie toma en cada concurso la secuencia candidata compartida con una fracción configurable y su propia secuencia Markov en el resto.
 - Parámetro `sharedSignalOverlap` ∈ [0,1]: 0 usa trayectorias idiosincráticas; 0.5 mezcla mitad decisiones compartidas/mitad propias; 1 reproduce la secuencia común completa. No es un coeficiente de correlación empírica.
-- Runner compara por defecto solapamientos 0, 0.5 y 1, junto con clústeres 1, 5 y 10, tasas marginales y autocorrelación. Reporta falsas alertas por serie y probabilidad familiar observada.
-- Se añadieron pruebas de determinismo y validación de límites del parámetro.
+- Runner compara por defecto solapamientos 0, 0.5 y 1, junto con clústeres 1, 5 y 10, tasas marginales y autocorrelación. Reporta falsas alertas por serie, probabilidad familiar observada y correlación de Pearson empírica media entre secuencias candidatas del mismo clúster.
+- Se añadieron pruebas de determinismo y validación de límites del parámetro; el caso de solapamiento 1 debe medir correlación empírica 1 y el caso parcial debe medir correlación positiva no perfecta.
 - Límite: la mezcla puede alterar la autocorrelación temporal efectiva de cada serie; los resultados son escenarios de estrés sintéticos y no estiman dependencias reales entre señales TRIS. No ajusta umbrales automáticamente, no usa CSV real y no llama APIs.
 - Siguiente validación: comprobar CI y revisar que la escala de escenarios sea computacionalmente viable; después estudiar solapamiento parcial por subconjuntos de posiciones/ventanas y contrastar con series prospectivas.
