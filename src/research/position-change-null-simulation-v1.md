@@ -1,4 +1,4 @@
-# TRIS — calibración nula y sensibilidad del detector v1.2
+# TRIS — calibración nula y sensibilidad del detector v1.3
 
 ## Objetivo
 Separar dos preguntas: ¿cuántas falsas alertas aparecen cuando no hay ventaja? y ¿con qué frecuencia se detectan cambios verdaderos definidos de antemano?
@@ -6,7 +6,7 @@ Separar dos preguntas: ¿cuántas falsas alertas aparecen cuando no hay ventaja?
 ## A. Escenarios nulos
 - Tasas marginales p: 0.1, 0.2 y 0.5.
 - Autocorrelación estacionaria Markov: 0, 0.3 y 0.6.
-- Dependencia emparejada candidato-baseline configurable (por defecto 0.5 de resultados idénticos).
+- Dependencia emparejada candidato-baseline configurable (por defecto 0.5 de resultados idénticos). El acoplamiento puede alterar la autocorrelación observada de la baseline; los parámetros describen escenarios de estrés, no una calibración exacta del proceso conjunto.
 - Por defecto: 300 réplicas × 10 series × 9 escenarios = 27,000 series.
 - Reporta falsas alertas por serie, persistentes, probabilidad familiar de alerta e intervalo Wilson Monte Carlo.
 
@@ -15,8 +15,11 @@ Separar dos preguntas: ¿cuántas falsas alertas aparecen cuando no hay ventaja?
 - Por defecto: 300 réplicas por escenario, ocho bloques de 25 concursos, baseline marginal 0.20 y efecto máximo 0.15.
 - La probabilidad de acierto del candidato cambia según el escenario; la baseline permanece constante.
 - Se reporta detección final, dirección correcta, distribución de estados e intervalo Wilson.
-- Latencia: número de bloques desde el primer bloque afectado hasta la primera alerta en la dirección correcta. La recuperación solo cuenta si el estado es `recovery`.
+- Latencia: número de bloques desde el inicio de cada forma de cambio hasta la primera alerta en la dirección correcta. Para mejora gradual, el inicio es el cuarto bloque final; para recuperación, el inicio es el penúltimo tramo favorable.
+- Se informa `latencyObservations`: número de réplicas que sí generaron una alerta direccional correcta y entraron al cálculo de la mediana. La mediana no incluye réplicas sin detección correcta.
+- `detectionRate` cuenta cualquier alerta final (incluida una dirección equivocada); `correctDirectionRate` cuenta únicamente el estado/dirección final esperado. No deben confundirse.
 - Los escenarios alternativos se generan con flujos Bernoulli independientes y sin autocorrelación; son un primer banco de sensibilidad, no un modelo real del sorteo.
+- `drawsPerBlock` y `blockSize` deben coincidir; el simulador rechaza configuraciones inconsistentes para que el número de bloques simulado sea el que evalúa el detector.
 
 ## Ejecución offline
 `npm run research:position-null --`
