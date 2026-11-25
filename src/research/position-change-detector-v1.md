@@ -1,31 +1,34 @@
-# TRIS — detector de cambios por posición v1
+# TRIS — detector de cambios por posición v1.1
 
-## Alcance
-Analiza exclusivamente outcomes prospectivos resueltos. No reconstruye resultados históricos, no genera pronósticos y no modifica selección ni pesos.
+## Fuente y controles de integridad
+El detector consume exclusivamente `ResolvedCycleSignal` de `outcomes.jsonl`. Valida el JSON de configuración congelada, correspondencia familia/posición, identidad estable de cada candidato, campos booleanos de acierto e identificadores únicos de resultado y pronóstico. Los registros de transición de resultado completo se excluyen del análisis posicional.
 
 ## Unidad de análisis
-Cada serie se aísla por posición R1–R5, familia, configuración exacta congelada, régimen de pool previo y régimen de duplicados previo. Las señales transition de resultado completo se excluyen.
+Cada serie se aísla por posición R1–R5, familia, configuración congelada exacta, régimen de pool del sorteo anterior y régimen de duplicados del sorteo anterior. No se comparte evidencia entre estratos.
 
 ## Método
-1. Promediar aciertos candidatos y baseline dentro de cada concurso.
-2. Formar bloques cronológicos no solapados de 25 concursos; bloque final solo con al menos 10.
-3. Calcular ventaja = cobertura candidata menos cobertura baseline.
-4. Usar todos los bloques anteriores a los dos más recientes como referencia.
-5. Comparar los dos bloques recientes con esa referencia; zona neutral ±2 puntos porcentuales.
+1. Ordenar por número de concurso objetivo.
+2. Promediar los resultados de los candidatos dentro de cada concurso, para que cada concurso tenga el mismo peso.
+3. Formar bloques cronológicos no solapados de 25 concursos observados; aceptar el último bloque solo con al menos 10.
+4. Calcular ventaja emparejada = tasa de acierto de candidatos − tasa de acierto de baseline.
+5. Calcular desviación estándar entre concursos y error estándar por bloque.
+6. Usar los bloques anteriores a los dos más recientes como referencia. Umbral direccional: máximo entre 2 puntos porcentuales y 1.96 errores estándar combinados.
+7. Mostrar intervalo aproximado de 95% para el último bloque.
 
 ## Estados
-- insufficient-data: menos de dos bloques de referencia y dos recientes.
-- stable: los dos bloques recientes permanecen en zona neutral.
-- improvement / deterioration: solo el último bloque rebasa la zona neutral.
-- persistent-change: los dos bloques recientes rebasan la zona neutral en la misma dirección.
-- recovery: dos bloques recientes favorables tras dos bloques de referencia desfavorables.
+- `insufficient-data`: menos de dos bloques de referencia y dos recientes.
+- `stable`: ambos bloques recientes dentro de la zona neutral.
+- `improvement` / `deterioration`: solo el último bloque rebasa el umbral.
+- `persistent-change`: dos bloques recientes rebasan el umbral en la misma dirección.
+- `recovery`: dos bloques recientes favorables tras dos bloques de referencia consecutivos deteriorados frente a una referencia previa.
 
-Son alertas descriptivas, no pruebas de significación ni evidencia de rentabilidad. La tasa de falsas alarmas aún no está estimada.
+## Pruebas sintéticas añadidas
+Estabilidad, cambio abrupto persistente, mejora aislada, evolución gradual, pico ruidoso, recuperación, historia insuficiente, aislamiento de posición/configuración y rechazo de duplicados/inconsistencias.
 
 ## Ejecución offline
-npm run research:position-change -- data/cycles
+`npm run research:position-change -- data/cycles`
 
-Lee outcomes.jsonl y genera position-change.json y position-change.md. Sin APIs, red, polling ni mutación del journal.
+Lee `outcomes.jsonl` y genera `position-change.json` y `position-change.md`. No usa APIs, red, polling ni muta el journal.
 
-## Límites
-No se transfiere evidencia entre posiciones, familias, configuraciones o contextos. No modifica pronósticos congelados, pesos, selección, ciclo de vida ni registro de hipótesis. Requiere evaluación walk-forward y prospectiva antes de cualquier uso adaptativo.
+## Límites estadísticos
+Los intervalos y errores estándar son descriptivos: no corrigen autocorrelación, dependencia entre candidatos ni multiplicidad de comparaciones. No son pruebas confirmatorias ni evidencia de rentabilidad. La tasa de falsas alarmas debe medirse con simulaciones nulas y seguimiento prospectivo. Ninguna alerta modifica pronósticos, pesos, selección, ciclo de vida o registro de hipótesis.
