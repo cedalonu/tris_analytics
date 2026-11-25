@@ -40,7 +40,7 @@ function classify(blocks:PositionChangeBlock[]){
   const early=blocks.slice(0,-4),trough=blocks.slice(-4,-2),rebound=blocks.slice(-2);
   const average=(items:PositionChangeBlock[])=>mean(items.map(b=>b.advantage));
   const meanSE=(items:PositionChangeBlock[])=>Math.sqrt(sampleSd(items.map(b=>b.advantage))**2/items.length+items.reduce((s,b)=>s+b.standardError**2,0)/(items.length**2));
-  const earlyMean=average(early),troughMean=average(trough),reboundMean=average(rebound);
+  const earlyMean=average(early),troughMean=average(trough);
   const declineThreshold=Math.max(DELTA,1.96*Math.sqrt(meanSE(early)**2+meanSE(trough)**2));
   const reboundThreshold=Math.max(DELTA,1.96*Math.sqrt(meanSE(trough)**2+meanSE(rebound)**2));
   recoveryDetected=trough.every(b=>b.advantage<=earlyMean-declineThreshold)&&rebound.every(b=>b.advantage>=troughMean+reboundThreshold);
