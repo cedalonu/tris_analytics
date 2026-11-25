@@ -33,3 +33,9 @@ test("does not call a small partial block persistent",()=>{
  for(let i=0;i<9;i++)rows.push({schemaVersion:1,forecastId:"x"+i,candidateId:"small",family:"pool-ranking",frozenConfig:"{}",targetDrawId:7000+i,generatedAt:stamp,historyThroughDrawId:6999+i,historySha256:"h",prediction:["1"],baseline:["0"],resolvedAt:stamp,actual:"1",candidateHit:true,baselineHit:false,cycleId:"c"+i,modelVersion:"tris-cycle-learning-v1"});
  assert.equal(assessCycleSignalLifecycle(rows)[0].status,"dormant");
 });
+
+test("retires a signal after three consecutive negative blocks",()=>{
+ const rows:ResolvedCycleSignal[]=[];
+ for(let i=0;i<75;i++)rows.push({schemaVersion:1,forecastId:"r"+i,candidateId:"retire-me",family:"pool-ranking",frozenConfig:"{}",targetDrawId:8000+i,generatedAt:stamp,historyThroughDrawId:7999+i,historySha256:"h",prediction:["1"],baseline:["0"],resolvedAt:stamp,actual:"0",candidateHit:false,baselineHit:true,cycleId:"rc"+i,modelVersion:"tris-cycle-learning-v1"});
+ assert.equal(assessCycleSignalLifecycle(rows)[0].status,"retired");
+});
