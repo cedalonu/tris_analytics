@@ -11,6 +11,7 @@ const stamp="2026-11-25T12:00:00.000Z";
 test("freezes the next contest from one pre-result history fingerprint",()=>{
  const h=history(),cycle=freezeLearningCycle(h,[{candidate,priorityScore:55,priorityReasons:["test"]}],h.at(-1)!.drawId+1,stamp);
  assert.equal(cycle.targetDrawId,5220);assert.equal(cycle.historySha256,fingerprintCycleHistory(h));assert.equal(cycle.frozenCount,1);
+ assert.equal(cycle.signals[0].position,0);assert.equal(cycle.signals[0].context.previousPoolSize,5);assert.equal(cycle.signals[0].context.poolRegime,"broad");
  assert.throws(()=>freezeLearningCycle(h,[{candidate,priorityScore:1,priorityReasons:[]}],5222,stamp),/next consecutive/);
 });
 test("resolves only the exact frozen target and preserves the prediction",()=>{
