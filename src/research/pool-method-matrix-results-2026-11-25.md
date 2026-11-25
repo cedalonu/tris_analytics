@@ -53,3 +53,6 @@ Candidate methods: frequency, long-absence, short-absence, balanced, recent-freq
 - Top hit rates at large pool sizes mostly reflect coverage (e.g., k=8 expected 80%); small percentage lifts are fragile.
 - Historical data has already been explored in prior analyses; do not call any historical segment a pristine holdout.
 - Next: shortlist a small number of configurations, freeze them and track prospective draws without retuning; compare with uniform and rolling-frequency baselines. No betting recommendation is made from these results.
+
+## Calculation caveat / reproducibility
+The matrix was computed with a separate optimized JavaScript implementation of the documented method definitions, not by executing the TypeScript research module (TypeScript test execution is still unavailable). Reconcile this independent run against the TypeScript module and CI before calling the report canonical. The full per-configuration CSV is included for reproducibility and review.
