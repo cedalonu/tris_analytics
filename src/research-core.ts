@@ -38,12 +38,12 @@ export function digitStats(history:Digit[],windowSize?:number):Stats[]{
 
 /** Select pool membership using only supplied prior history. */
 export function buildPool(history:Digit[],method:PoolMethod,size:number,window=50):Digit[]{
- const k=Math.max(1,Math.min(10,Math.floor(size))),stats=digitStats(history,window),recent=history.slice(-window);
+ const k=Math.max(1,Math.min(10,Math.floor(size))),stats=digitStats(history,window),globalStats=digitStats(history),recent=history.slice(-window);
  const recentCount=new Map<Digit,number>(DIGITS.map(d=>[d,0]));recent.forEach(d=>recentCount.set(d,(recentCount.get(d)||0)+1));
  const ranked=[...DIGITS].sort((a,b)=>{
   const A=stats[a],B=stats[b];let sa=0,sb=0;
   switch(method){
-   case "frequency":sa=A.count;sb=B.count;break;
+   case "frequency":sa=globalStats[a].count;sb=globalStats[b].count;break;
    case "long-absence":sa=A.currentAbsence;sb=B.currentAbsence;break;
    case "short-absence":sa=-A.currentAbsence;sb=-B.currentAbsence;break;
    case "recent-frequency":sa=recentCount.get(a)||0;sb=recentCount.get(b)||0;break;
