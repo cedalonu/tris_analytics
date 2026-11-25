@@ -82,7 +82,7 @@ export function evaluateHypothesis(rows:Observation[],phase:EvaluationPhase,opti
   decision="insufficient-data";
  } else if(n>=minimumN){
   if(phase==="validation"&&difference>0&&pairedCI[0]>0&&adjustedP<=alpha)decision="continue-research";
-  else if(phase==="holdout"&&difference>0&&pairedCI[0]>0&&adjustedP<=adjustedAlpha)decision="holdout-confirmed";
+  else if(phase==="holdout"&&difference>0&&pairedCI[0]>0&&adjustedP<=alpha)decision="holdout-confirmed";
   else if(phase==="prospective"&&difference>0&&pairedCI[0]>0&&adjustedP<=adjustedAlpha)decision="prospective-replicated";
   else decision="no-evidence";
  }
