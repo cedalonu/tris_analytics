@@ -14,7 +14,8 @@
     "test:research": "tsx --test src/research/*.test.ts",
     "research:pools": "tsx scripts/run-pool-matrix.ts",
     "research:sync": "tsx scripts/run-tris-sync.ts",
-    "research:prospective": "tsx scripts/run-tris-prospective.ts"
+    "research:prospective": "tsx scripts/run-tris-prospective.ts",
+    "research:validate": "tsx scripts/run-tris-validation.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
