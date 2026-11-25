@@ -118,6 +118,6 @@ const familyLines=[
 ].join("\n")+"\n";
 await writeFile(resolve(ledgerDir,"family-concordance.md"),familyLines,"utf8");
 await writeFile(resolve(ledgerDir,"family-concordance.json"),JSON.stringify(familyConcordance,null,2)+"\n","utf8");
-await writeFile(resolve(ledgerDir,"latest-summary.json")await writeFile(resolve(ledgerDir,"latest-summary.json"),JSON.stringify({generatedAt:stamp,csvSha256:sha256,manifest,summary,newForecasts:newForecasts.length,newResults:newResults.length},null,2)+"\n","utf8");
+await writeFile(resolve(ledgerDir,"latest-summary.json"),JSON.stringify({generatedAt:stamp,csvSha256:sha256,manifest,summary,newForecasts:newForecasts.length,newResults:newResults.length},null,2)+"\n","utf8");
 console.log(report);
 console.log("Nuevos pronósticos congelados: "+newForecasts.length+"; nuevos resultados resueltos: "+newResults.length);
