@@ -16,27 +16,27 @@ const draws=dataset.validation.valid;
 const candidates=generateIntuitionCandidates();
 const boundaries=buildPortfolioPhaseBoundaries(draws);
 const sizes=(process.env.TRIS_PORTFOLIO_SIZES??"10,20").split(",").map(Number);
-const randomReps=Math.max(1,Math.min(100,Number(process.env.TRIS_PORTFOLIO_RANDOM_REPS??10)));
+const randomReps=Math.max(1,Math.min(100,Number(process.env.TRIS_PORTFOLIO_RANDOM_REPS??10)));\nconst stabilityBlockSize=Math.max(2,Math.floor(Number(process.env.TRIS_STABILITY_BLOCK_SIZE??25)));
 const methods:CandidatePortfolioMethod[]=["family-balanced","max-diversity","redundancy-control","random"];
 const reports=[];
 for(const size of sizes){
  for(const benchmark of buildBenchmarkPortfolios(candidates,size,20261125)){
-  reports.push(evaluateCandidatePortfolioWalkForward(draws,benchmark.portfolio,candidates,boundaries,benchmark.name));
+  reports.push(evaluateCandidatePortfolioWalkForward(draws,benchmark.portfolio,candidates,boundaries,benchmark.name,stabilityBlockSize));
  }
  for(const method of methods){
  const seeds=method==="random"?Array.from({length:randomReps},(_,i)=>20261125+i):[20261125];
  for(const seed of seeds){
   const portfolio=selectCandidatePortfolio(method,size,seed,candidates);
-  reports.push(evaluateCandidatePortfolioWalkForward(draws,portfolio,candidates,boundaries));
+  reports.push(evaluateCandidatePortfolioWalkForward(draws,portfolio,candidates,boundaries,portfolio.method,stabilityBlockSize));
  }
 }
 }
 const generatedAt=new Date().toISOString();
-const output={generatedAt,inputFile:file,source:dataset.provenance,candidateCatalogSize:candidates.length,draws:draws.length,phaseBoundaries:boundaries,portfolioSizes:sizes,randomReplications:randomReps,reports};
+const output={generatedAt,inputFile:file,source:dataset.provenance,candidateCatalogSize:candidates.length,draws:draws.length,phaseBoundaries:boundaries,portfolioSizes:sizes,randomReplications:randomReps,stabilityBlockSize,reports};
 const dir=resolve(process.env.TRIS_PORTFOLIO_WF_OUT??"reports/candidate-portfolio-walk-forward");
 await mkdir(dir,{recursive:true});
 await writeFile(resolve(dir,"latest.json"),JSON.stringify(output,null,2)+"\n","utf8");
-const rows=reports.flatMap(r=>r.phases.map(p=>({method:r.method,seed:r.seed,...p})));
+const rows=reports.flatMap(r=>r.phases.map(p=>({method:r.method,seed:r.seed,...p})));\nconst blockRows=reports.flatMap(r=>r.stabilityBlocks.map(b=>({method:r.method,seed:r.seed,...b})));\nconst summaryRows=reports.filter(r=>r.stability).map(r=>({method:r.method,seed:r.seed,...r.stability!}));
 const lines=["# TRIS — evaluación walk-forward de portafolios","",
 "- Generado: "+generatedAt,
 "- Archivo local: "+file,
@@ -50,7 +50,7 @@ const lines=["# TRIS — evaluación walk-forward de portafolios","",
 "",
 "## Advertencias",
 "- La fase discovery/validation/holdout se asigna cronológicamente después de 200 sorteos iniciales; el holdout histórico no es evidencia prospectiva.",
-"- Los registros candidato-sorteo están correlacionados. Las tasas agregadas son descriptivas; no se calculan p-valores ingenuos ni se asume independencia.",
+"- Los registros candidato-sorteo están correlacionados. Las tasas agregadas y por bloque son descriptivas; no se calculan p-valores ingenuos ni se asume independencia.",\n"- La estabilidad se evalúa solo dentro del holdout y no permite reajustar o seleccionar retrospectivamente candidatos. La desviación entre bloques no es un intervalo de confianza.",\n"- Las diferencias por bloque comparan cada candidato con su baseline pareado en los mismos sorteos elegibles; los bloques no garantizan independencia temporal.",
 "- Los candidatos cubren distintas familias y objetivos (secuencias, dígitos posicionales y pools); la tasa agregada no es una tasa de acierto de boleto.",
 "- Se incluyen portafolios de referencia con igual presupuesto: solo frecuencia histórica, solo transiciones y pools de frecuencia reciente. Sus candidatos se muestrean sin usar resultados del periodo evaluado.",
 "- Cada candidato conserva además su baseline pareado interno; ese comparador puede variar entre familias y no debe confundirse con los tres portafolios de referencia.",
