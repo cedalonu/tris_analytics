@@ -87,7 +87,7 @@ for(const [candidateId,rows] of newByCandidate){
   status:"hypothesis" as const,evidence:[],createdAt:first.generatedAt,updatedAt:first.generatedAt,
   frozenConfig:first.frozenConfig
  };
- const evidenceId=createHash("sha256").update(rows.map(r=>r.forecastId).sort().join("\\n")).digest("hex");
+ const evidenceId=createHash("sha256").update(rows.map(r=>r.forecastId).sort().join("\n")).digest("hex");
  const evidence={
   id:evidenceId,phase:"prospective" as const,evaluatedAt:stamp,
   n:rows.length,hits:rows.filter(r=>r.candidateHit).length,
@@ -103,7 +103,7 @@ for(const [candidateId,rows] of newByCandidate){
  signalMap.set(candidateId,{...updated,status:assessment.status});
 }
 const signalRecords=[...signalMap.values()].sort((a,b)=>a.id.localeCompare(b.id));
-await writeFile(signalsPath,JSON.stringify(signalRecords,null,2)+"\\n","utf8");
+await writeFile(signalsPath,JSON.stringify(signalRecords,null,2)+"\n","utf8");
 const evaluations=[...new Map(allResults.map(r=>[r.candidateId,r])).entries()].map(([candidateId])=>{
  const rows=allResults.filter(r=>r.candidateId===candidateId);
  const observations:Observation[]=rows.map(r=>({drawId:r.targetDrawId,phase:"prospective",hit:r.candidateHit,baselineHit:r.baselineHit,period:String(r.targetDrawId)}));
@@ -111,7 +111,7 @@ const evaluations=[...new Map(allResults.map(r=>[r.candidateId,r])).entries()].m
  const signal=signalMap.get(candidateId)!;
  return {candidateId,status:signal.status,evaluation};
 });
-await writeFile(evaluationsPath,JSON.stringify(evaluations,null,2)+"\\n","utf8");
+await writeFile(evaluationsPath,JSON.stringify(evaluations,null,2)+"\n","utf8");
 const candidateWins=allResults.filter(r=>r.candidateHit&&!r.baselineHit).length;
 const baselineWins=allResults.filter(r=>!r.candidateHit&&r.baselineHit).length;
 const ties=allResults.length-candidateWins-baselineWins;
