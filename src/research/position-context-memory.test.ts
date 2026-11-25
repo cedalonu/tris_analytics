@@ -18,6 +18,12 @@ test("groups positional forecasts by position, family and frozen pre-draw contex
  assert.equal(report.positions[0].poolRegime,"compact");assert.equal(report.positions[0].duplicateRegime,"many-duplicates");
  assert.equal(report.positions[0].blocks.length,1);
 });
+test("keeps different candidate configurations separate within the same position and context",()=>{
+ const a=make(0,1,"pool-ranking"),b={...make(1,1,"pool-ranking"),candidateId:"candidate-other",frozenConfig:JSON.stringify({family:"pool-ranking",position:1,method:"frequency",poolSize:5,window:50})};
+ const report=analyzePositionContextMemory([a,b]);
+ assert.equal(report.positions.length,2);
+ assert.notEqual(report.positions[0].configuration,report.positions[1].configuration);
+});
 test("keeps full-result transition modes separate from R1-R5 position summaries",()=>{
  const rows=Array.from({length:12},(_,i)=>make(i,null,"transition","last4"));
  const report=analyzePositionContextMemory(rows);
