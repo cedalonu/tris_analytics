@@ -187,3 +187,12 @@ La rama research-core-v1 contiene módulos de análisis, memoria y ciclos. Las p
 - Offline command: `npm run research:overlap`; outputs `reports/candidate-overlap/latest.md` and `latest.json`. No CSV input is required because this report describes candidate configurations only.
 - Tests verify every unordered pair is accounted for, family matrix totals, threshold metadata and candidate neighbor profiles.
 - Critical interpretation: nominally disjoint configurations are not statistically independent; signals can still share draw history, targets and outcome noise. This matrix is not a correlation matrix, does not evaluate hit rates, and must not change candidate weights or betting choices. Empirical dependence requires frozen prospective outcomes.
+
+
+### Fase 6 — carteras estructurales de hipótesis (2026-11-25)
+- Added `src/research/candidate-portfolio-selector.ts` with four reproducible methods: family-balanced round-robin, greedy max-diversity, deliberately redundant control, and seeded random baseline.
+- Portfolio sizes default to 10/20/50. The offline runner compares mean pairwise Jaccard/cosine, maximum pairwise Jaccard and unique component coverage; random portfolios use 100 fixed seeds by default.
+- Command: `npm run research:candidate-portfolios`; outputs local Markdown/JSON under `reports/candidate-portfolios/`.
+- This is strictly a configuration-diversity experiment. It does not evaluate historical TRIS hits, digit coverage, prize return or predictive skill; it does not assign evidence, update weights, or alter forecasts.
+- Tests cover determinism, exact portfolio size, family balance, diversity-vs-redundancy behavior, random repeatability and duplicate-ID rejection.
+- Next gate: validate candidate signals with a genuinely past-only chronological evaluator and compare against random/simple-frequency baselines with equal ticket budget; freeze all settings before validation and use untouched future outcomes prospectively. No APIs or external result retrieval.
