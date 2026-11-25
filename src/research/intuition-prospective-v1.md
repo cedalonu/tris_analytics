@@ -56,3 +56,29 @@ These files are ignored by Git because they are local operational state. Back th
 The runner selects up to 100 hypotheses with the outcome-blind prioritizer. This is a research budget, not 100 validated signals. A forecast being recorded is not evidence of predictive advantage. Aggregate wins/losses are descriptive; use the frozen chronological evaluation, minimum sample requirements, paired tests, and multiplicity correction before any status promotion.
 
 Run after every draw update. If several contests arrive between runs, only forecasts previously frozen for those target IDs can be resolved; the runner does not invent retrospective predictions for missed contests.
+
+
+## Frozen historical validation and evidence ledger
+
+Before beginning the prospective series, run the one-time chronological experiment:
+
+```bash
+npm run research:validate -- ./data/Tris.csv
+```
+
+The runner reserves the first 200 draws as warmup, then freezes chronological discovery (50%), validation (25%), and holdout (25%) partitions. At least 100 validation and 100 holdout target contests are required. It selects up to 100 candidates without reading outcomes and writes `experiment-manifest.json`; this manifest locks the exact history prefix, candidate configs, and partition boundaries.
+
+Re-running validation uses the same manifest and same original history prefix. If a previously processed historical row changes or disappears, execution stops. New rows appended later are excluded from this frozen experiment and belong to the prospective stream.
+
+Validation evidence is appended once per candidate and manifest. The evidence ledger now requires:
+- minimum 100 eligible observations;
+- candidate rate above the paired baseline;
+- Wilson lower bound above the baseline rate;
+- positive paired-difference lower bound;
+- exact McNemar test with Bonferroni correction across the frozen candidate budget.
+
+Holdout results are reported separately and are not used to tune the candidate catalog or appended as validation evidence.
+
+The prospective runner appends resolved batches to the same `signals.json` ledger, stores paired evaluations in `evaluations.json`, and uses the same 100-candidate multiplicity budget. A candidate cannot become active without passing both the frozen validation and the separate prospective gates.
+
+The walk-forward scorer uses incremental counters for transitions, mutations, absences, and rolling pools. This avoids rescanning the entire prior history for every target contest while preserving the same pre-target information boundary. Regression tests compare incremental pool and mutation outputs with direct reference calculations.
