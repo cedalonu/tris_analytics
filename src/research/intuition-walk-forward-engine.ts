@@ -128,6 +128,104 @@ function scoreCandidate(draws:Draw[], targetIndex:number, candidate:IntuitionCan
     case "pool-ranking": return scorePool(draws,targetIndex,candidate.config);
   }
 }
+function incrementalScorer(draws:Draw[],candidate:IntuitionCandidate):(targetIndex:number)=>{hit:boolean;baselineHit:boolean}|null {
+ const c=candidate.config,lag=c.lag??0;
+ const position=c.position;
+ const positions=candidate.family==="transition"?modePositions(c.mode!):[];
+ const modeHistory=new Map<string,number>(),transitionCounts=new Map<string,Map<string,number>>();
+ const mutationCounts=Array.from({length:10},()=>Array(10).fill(0));
+ const globalCounts=Array(10).fill(0),lastSeen=Array(10).fill(-1);
+ const windowSize=candidate.family==="pool-ranking"?c.window!:50;
+ const windowQueue:Digit[]=[],windowCounts=Array(10).fill(0);
+ const addMode=(value:string)=>modeHistory.set(value,(modeHistory.get(value)??0)+1);
+ const addTransition=(source:string,target:string)=>{
+  const counts=transitionCounts.get(source)??new Map<string,number>();
+  counts.set(target,(counts.get(target)??0)+1);transitionCounts.set(source,counts);
+ };
+ const addPosition=(digit:Digit,index:number)=>{
+  globalCounts[digit]++;lastSeen[digit]=index;
+  windowQueue.push(digit);windowCounts[digit]++;
+  if(windowQueue.length>windowSize){const removed=windowQueue.shift()!;windowCounts[removed]--;}
+ };
+ const addHistoryDraw=(index:number)=>{
+  const draw=draws[index];
+  if(candidate.family==="transition"){
+   addMode(modeValue(draw,positions));
+   if(index>=lag)addTransition(modeValue(draws[index-lag],positions),modeValue(draw,positions));
+  } else if(position!==undefined){
+   const digit=draw.digits[position];
+   addPosition(digit,index);
+   if(candidate.family==="position-mutation"&&index>=lag){
+    const source=draws[index-lag].digits[position];
+    mutationCounts[source][(digit-source+10)%10]++;
+   }
+  }
+ };
+ for(let i=0;i<MIN_HISTORY;i++)addHistoryDraw(i);
+ const topFromMap=(counts:Map<string,number>):string|null=>{
+  if(!counts.size)return null;
+  return [...counts].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))[0][0];
+ };
+ const topFromArray=(counts:number[]):Digit|null=>{
+  if(!counts.some(n=>n>0))return null;
+  return DIGITS.slice().sort((a,b)=>counts[b]-counts[a]||a-b)[0];
+ };
+ return (targetIndex:number)=>{
+  const target=draws[targetIndex];
+  let result:{hit:boolean;baselineHit:boolean}|null=null;
+  switch(candidate.family){
+   case "transition":{
+    const context=modeValue(draws[targetIndex-lag],positions);
+    const outcomes=transitionCounts.get(context);
+    if(outcomes&&[...outcomes.values()].reduce((a,b)=>a+b,0)>=5){
+     const prediction=topFromMap(outcomes),baseline=topFromMap(modeHistory),actual=modeValue(target,positions);
+     if(prediction!==null&&baseline!==null)result={hit:actual===prediction,baselineHit:actual===baseline};
+    }
+    break;
+   }
+   case "position-mutation":{
+    const source=draws[targetIndex-lag].digits[position!],counts=mutationCounts[source];
+    const n=counts.reduce((a,b)=>a+b,0);
+    if(n>=5){
+     const change=DIGITS.slice().sort((a,b)=>counts[b]-counts[a]||a-b)[0];
+     const prediction=(source+change)%10,baseline=topFromArray(globalCounts);
+     if(baseline!==null)result={hit:target.digits[position!]===prediction,baselineHit:target.digits[position!]===baseline};
+    }
+    break;
+   }
+   case "absence-return":{
+    const misses=DIGITS.map(d=>d===lastSeen.indexOf(-1)?0:targetIndex-1-lastSeen[d]);
+    const pool=DIGITS.filter(d=>targetIndex-1-lastSeen[d]===c.priorMisses!);
+    if(pool.length){
+     const baseline=DIGITS.slice().sort((a,b)=>globalCounts[b]-globalCounts[a]||a-b).slice(0,pool.length);
+     result={hit:pool.includes(target.digits[position!]),baselineHit:baseline.includes(target.digits[position!])};
+    }
+    void misses;
+    break;
+   }
+   case "pool-ranking":{
+    const k=Math.max(1,Math.min(10,Math.floor(c.poolSize!))),method=c.method as string;
+    const stats=DIGITS.map(d=>({digit:d,count:windowCounts[d],currentAbsence:targetIndex-1-lastSeen[d]}));
+    const ranked=[...DIGITS].sort((a,b)=>{
+     const A=stats[a],B=stats[b];let sa=0,sb=0;
+     switch(method){
+      case "frequency":sa=globalCounts[a];sb=globalCounts[b];break;
+      case "long-absence":sa=A.currentAbsence;sb=B.currentAbsence;break;
+      case "short-absence":sa=-A.currentAbsence;sb=-B.currentAbsence;break;
+      case "recent-frequency":sa=windowCounts[a];sb=windowCounts[b];break;
+      case "balanced":sa=A.count/Math.min(targetIndex,windowSize)+A.currentAbsence/Math.max(1,targetIndex);sb=B.count/Math.min(targetIndex,windowSize)+B.currentAbsence/Math.max(1,targetIndex);break;
+     }
+     return sa===sb?a-b:sb-sa;
+    }).slice(0,k);
+    const baseline=[...DIGITS].sort((a,b)=>windowCounts[b]-windowCounts[a]||a-b).slice(0,k);
+    result={hit:ranked.includes(target.digits[position!]),baselineHit:baseline.includes(target.digits[position!])};
+    break;
+   }
+  }
+  addHistoryDraw(targetIndex);
+  return result;
+ };
+}
 /** Score one frozen candidate. The full input must be contiguous and chronological. */
 export function runIntuitionWalkForward(
   draws:Draw[], candidate:IntuitionCandidate, boundaries:PhaseBoundary[]
@@ -136,10 +234,11 @@ export function runIntuitionWalkForward(
   validateBoundaries(boundaries,draws[0].drawId,draws[draws.length-1].drawId);
   const observations:Observation[]=[], skipped:SkippedTarget[]=[];
   const firstTarget=MIN_HISTORY;
+  const score=incrementalScorer(draws,candidate);
   for(let i=firstTarget;i<draws.length;i++) {
     const target=draws[i],phase=phaseFor(target.drawId,boundaries);
+    const result=score(i);
     if(!phase)continue;
-    const result=scoreCandidate(draws,i,candidate);
     if(!result) { skipped.push({drawId:target.drawId,reason:candidate.family==="absence-return"?"empty exact-absence pool or insufficient prior history":"insufficient matching context/history"}); continue; }
     observations.push({drawId:target.drawId,phase,hit:result.hit,baselineHit:result.baselineHit,period:target.date?.slice(0,7)});
   }
