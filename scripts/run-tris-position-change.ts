@@ -11,8 +11,8 @@ await writeFile(resolve(dir,"position-change.json"),JSON.stringify({generatedAt:
 const pct=(n:number|null)=>n===null?"—":(100*n).toFixed(1)+"%";
 const lines=["# TRIS — detector de cambios por posición","", "- Generado: "+stamp,"- Outcomes: "+report.sourceOutcomes,"- Series: "+report.seriesCount,"",
 "| Posición | Familia | Configuración | Pool | Duplicados | Concursos | Bloques | Referencia | Último | Cambio | Estado |",
-"|---|---|---|---|---|---:|---:|---:|---:|---:|---|",
-...report.series.map(s=>"| R"+(s.position+1)+" | "+s.family+" | "+s.configuration+" | "+s.poolRegime+" | "+s.duplicateRegime+" | "+s.totalDraws+" | "+s.blocks.length+" | "+pct(s.referenceAdvantage)+" | "+pct(s.latestAdvantage)+" | "+pct(s.change)+" | "+s.state+" |"),
+"|---|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|",
+...report.series.map(s=>"| R"+(s.position+1)+" | "+s.family+" | "+s.configuration+" | "+s.poolRegime+" | "+s.duplicateRegime+" | "+s.totalDraws+" | "+s.blocks.length+" | "+pct(s.referenceAdvantage)+" | "+pct(s.latestAdvantage)+" | "+pct(s.change)+" | "+pct(s.blocks.at(-1)?.drawAdvantageStdDev??null)+" | "+pct(s.latestStandardError)+" | "+(s.latestInterval95?s.latestInterval95.map(pct).join(" to "):"—")+" | "+s.state+" |"),
 "","## Interpretación",...report.series.map(s=>"- R"+(s.position+1)+" / "+s.family+" / "+s.state+": "+s.interpretation),"","## Advertencias",...report.warnings.map(x=>"- "+x),"","Fuente: outcomes.jsonl local; sin APIs ni descargas."].join("\n")+"\n";
 await writeFile(resolve(dir,"position-change.md"),lines,"utf8");
 console.log("Detector posicional actualizado: "+report.seriesCount+" series.");
