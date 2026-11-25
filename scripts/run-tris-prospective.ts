@@ -106,7 +106,7 @@ const signalRecords=[...signalMap.values()].sort((a,b)=>a.id.localeCompare(b.id)
 await writeFile(signalsPath,JSON.stringify(signalRecords,null,2)+"\n","utf8");
 const evaluations=[...new Map(allResults.map(r=>[r.candidateId,r])).entries()].map(([candidateId])=>{
  const rows=allResults.filter(r=>r.candidateId===candidateId);
- const observations:Observation[]=rows.map(r=>({drawId:r.targetDrawId,phase:"prospective",hit:r.candidateHit,baselineHit:r.baselineHit,period:String(r.targetDrawId)}));
+ const observations:Observation[]=rows.map(r=>({drawId:r.targetDrawId,phase:"prospective",hit:r.candidateHit,baselineHit:r.baselineHit,period:r.actualDate?.slice(0,7)}));
  const evaluation=evaluateHypothesis(observations,"prospective",{minimumN:100,testCount:100});
  const signal=signalMap.get(candidateId)!;
  return {candidateId,status:signal.status,evaluation};
