@@ -66,9 +66,9 @@ const report=[
  "## Integridad",
  "- El prefijo ya procesado debe permanecer idéntico; cualquier modificación detiene la sincronización.",
  "- Los identificadores deben ser consecutivos; no se rellenan huecos.",
- "- CONCURSO es la clave del sorteo; la columna ID se ignora.
-- El CSV se actualiza aproximadamente una hora después de cada sorteo individual: 13:00, 15:00, 17:00, 19:00 y 21:00 hora CDMX. Ejecutar después de cada actualización, no una sola vez al final del día.
-- Se conservan todos los sorteos nuevos en orden de CONCURSO; no se inventan horarios ni se descartan lotes atípicos.",
+ "- CONCURSO es la clave del sorteo; la columna ID se ignora.",
+ "- El CSV se actualiza aproximadamente una hora después de cada sorteo individual: 13:00, 15:00, 17:00, 19:00 y 21:00 hora CDMX. Ejecutar después de cada actualización, no una sola vez al final del día.",
+ "- Se conservan todos los sorteos nuevos en orden de CONCURSO; no se inventan horarios ni se descartan lotes atípicos.",
  "- Este proceso detecta y registra novedades; no descarga el CSV ni genera por sí solo pronósticos."
 ].join("\n")+"\n";
 await writeFile(resolve(reportDir,"latest.md"),report,"utf8");
