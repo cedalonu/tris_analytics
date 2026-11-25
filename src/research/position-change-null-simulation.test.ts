@@ -16,3 +16,6 @@ test("alternative detection latency is never negative and only counts detected s
 
 test("independent family-wise projection is monotonic and bounded",()=>{const a=projectIndependentFamilyWiseRate(.05,10,[.03,.07]),b=projectIndependentFamilyWiseRate(.05,100,[.03,.07]);assert.ok(b.rate>a.rate);assert.ok(b.wilson95[0]<=b.rate&&b.wilson95[1]>=b.rate);assert.ok(b.wilson95[1]<=1)});
 test("independent family-wise projection rejects invalid inputs",()=>{assert.throws(()=>projectIndependentFamilyWiseRate(1.1,10),/invalid family-wise projection/);assert.throws(()=>projectIndependentFamilyWiseRate(.05,0),/invalid family-wise projection/)});
+
+test("perfectly shared candidate clusters collapse to one family event when baseline is paired identically",()=>{const r=simulatePositionChangeNull({replications:30,seriesPerReplication:4,correlationClusterSize:4,pairedDependence:1,seed:20261125});assert.equal(r.correlationClusterSize,4);assert.equal(r.familyWiseFalseAlertRate,r.falseAlertRate)});
+test("cluster size must fit the simulated family",()=>assert.throws(()=>simulatePositionChangeNull({seriesPerReplication:3,correlationClusterSize:4}),/invalid null simulation options/));
