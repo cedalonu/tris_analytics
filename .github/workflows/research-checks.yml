@@ -1,0 +1,32 @@
+name: Research core checks
+on:
+  push:
+    branches: [research-core-v1]
+    paths:
+      - 'src/research/**'
+      - 'package.json'
+      - 'tsconfig.json'
+      - '.github/workflows/research-checks.yml'
+  pull_request:
+    branches: [research-core-v1]
+    paths:
+      - 'src/research/**'
+      - 'package.json'
+      - 'tsconfig.json'
+      - '.github/workflows/research-checks.yml'
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm install
+      - name: Type check
+        run: npm run lint
+      - name: Research tests
+        run: npm run test:research
