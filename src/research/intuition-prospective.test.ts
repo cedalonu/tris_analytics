@@ -30,9 +30,9 @@ test("freezes an exact next-contest prediction and resolves without changing it"
  assert.equal(frozen!.targetDrawId,9220);
  assert.equal(frozen!.historyThroughDrawId,9219);
  const prediction=[...frozen!.prediction];
- const actual:Draw={drawId:9220,digits:[9,1,2,3,4]};
+ const actual:Draw={drawId:9220,digits:[9,0,1,2,3]};
  const resolved=resolveProspectiveForecast(frozen!,actual,"2026-11-25T10:05:00.000Z");
- assert.equal(resolved.actual,"91234");
+ assert.equal(resolved.actual,"90123");
  assert.deepEqual(frozen!.prediction,prediction);
  assert.equal(resolved.candidateHit,true);
 });
