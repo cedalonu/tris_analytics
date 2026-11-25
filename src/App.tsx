@@ -5848,7 +5848,7 @@ ${breakdownRows30.slice(20).join('\n')}
         setAssistantInput('');
 
         try {
-            const ai = new GoogleGenAI();
+            const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
             const algorithmicContext = getAssistantExpertResponse(text);
             const prompt = `Consulta del usuario: "${text}"\n\nContexto algorítmico y datos estadísticos de Tris V4 ML para respaldar la respuesta:\n${algorithmicContext}`;
 
