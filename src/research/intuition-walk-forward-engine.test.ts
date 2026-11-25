@@ -69,3 +69,38 @@ test("top-1 transition preserves leading zeroes in mode outcomes",()=>{
  assert.equal(result.observations.length,20);
  assert.ok(result.observations.every(row=>row.hit));
 });
+
+test("incremental pools match the reference pool builder for every method",()=>{
+ const {buildPool}=require("../research-core") as typeof import("../research-core");
+ for(const method of ["frequency","long-absence","short-absence","balanced","recent-frequency"] as const){
+  const c=candidate("pool-ranking",{family:"pool-ranking",position:3,method,poolSize:4,window:20});
+  const result=runIntuitionWalkForward(draws,c,boundaries);
+  const expected=[];
+  for(let i=200;i<draws.length;i++){
+   const phase=boundaries.find(b=>draws[i].drawId>=b.firstDrawId&&draws[i].drawId<=b.lastDrawId)?.phase;
+   if(!phase)continue;
+   const prior=draws.slice(0,i).map(d=>d.digits[3]);
+   const pool=buildPool(prior,method,4,20),baseline=buildPool(prior,"recent-frequency",4,20);
+   expected.push({drawId:draws[i].drawId,phase,hit:pool.includes(draws[i].digits[3]),baselineHit:baseline.includes(draws[i].digits[3])});
+  }
+  assert.deepEqual(result.observations.map(({drawId,phase,hit,baselineHit})=>({drawId,phase,hit,baselineHit})),expected);
+ }
+});
+
+test("incremental mutation counts preserve the lagged source digit comparison",()=>{
+ const c=candidate("position-mutation",{family:"position-mutation",position:1,lag:3});
+ const result=runIntuitionWalkForward(draws,c,boundaries);
+ const expected=[];
+ for(let i=200;i<draws.length;i++){
+  const phase=boundaries.find(b=>draws[i].drawId>=b.firstDrawId&&draws[i].drawId<=b.lastDrawId)?.phase;
+  if(!phase)continue;
+  const source=draws[i-3].digits[1],counts=Array(10).fill(0);let n=0;
+  for(let j=3;j<i;j++)if(draws[j-3].digits[1]===source){counts[(draws[j].digits[1]-source+10)%10]++;n++;}
+  if(n<5)continue;
+  const change=counts.indexOf(Math.max(...counts)),prediction=(source+change)%10;
+  const history=draws.slice(0,i).map(d=>d.digits[1]),freq=Array(10).fill(0);history.forEach(d=>freq[d]++);
+  const baseline=freq.indexOf(Math.max(...freq));
+  expected.push({drawId:draws[i].drawId,phase,hit:draws[i].digits[1]===prediction,baselineHit:draws[i].digits[1]===baseline});
+ }
+ assert.deepEqual(result.observations.map(({drawId,phase,hit,baselineHit})=>({drawId,phase,hit,baselineHit})),expected);
+});
