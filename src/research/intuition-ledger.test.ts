@@ -14,6 +14,6 @@ test('validation cannot become provisional without paired significance metadata'
  assert.notEqual(assessSignal(r).status,'provisional');
 });
 test('multiple-testing correction blocks weak paired evidence',()=>{
- const r={...base,evidence:[{id:'v1',phase:'validation' as const,evaluatedAt:'2026-01-02',n:200,hits:140,baselineN:200,baselineHits:100,discordantCandidateWins:60,discordantBaselineWins:20,testCount:1000}]};
+ const r={...base,evidence:[{id:'v1',phase:'validation' as const,evaluatedAt:'2026-01-02',n:2000,hits:1100,baselineN:2000,baselineHits:1000,discordantCandidateWins:550,discordantBaselineWins:450,testCount:1000}]};
  assert.notEqual(assessSignal(r).status,'provisional');
 });
