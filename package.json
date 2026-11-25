@@ -18,7 +18,8 @@
     "research:validate": "tsx scripts/run-tris-validation.ts",
     "research:collective": "tsx scripts/run-tris-collective.ts",
     "research:regime": "tsx scripts/run-tris-regime.ts",
-    "research:persistence": "tsx scripts/run-tris-persistence.ts"
+    "research:persistence": "tsx scripts/run-tris-persistence.ts",
+    "research:memory": "tsx scripts/run-tris-memory.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
