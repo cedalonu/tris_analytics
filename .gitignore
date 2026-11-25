@@ -6,3 +6,6 @@ server.js
 !.env.example
 *.log
 .DS_Store
+
+# Offline research outputs (generated locally)
+reports/pool-matrix/
