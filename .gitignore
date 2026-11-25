@@ -9,3 +9,8 @@ server.js
 
 # Offline research outputs (generated locally)
 reports/pool-matrix/
+
+# Local prospective forecasts, outcomes, and sync checkpoints
+data/prospective/
+data/tris-sync-checkpoint.json
+reports/tris-sync/
