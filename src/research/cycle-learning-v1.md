@@ -47,3 +47,7 @@ Lifecycle labels are descriptive monitoring states, not hypothesis confirmations
 `npm run research:cycles -- ./data/Tris.csv`
 
 Default local directory: `data/cycles/` (ignored/local data). Outputs include `cycles.jsonl`, `outcomes.jsonl`, `state.json`, `lifecycle.json` and `latest-report.md`.
+
+
+## Configuration-level separation
+Position/context summaries are now separated by the frozen candidate configuration as well as position, family and prior-draw regime. Position-mutation lags, absence thresholds, and pool method/size/window combinations are not pooled into one family-level rate. Transition modes remain in their own mode-level summary. This reduces masking between materially different candidate rules; it does not remove dependence or multiple-testing concerns.
