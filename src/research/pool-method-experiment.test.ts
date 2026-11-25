@@ -60,14 +60,6 @@ test('incremental pool rankings match buildPool for seeded varied history',()=>{
  const varied:Draw[]=Array.from({length:240},(_,i)=>({drawId:i+1,digits:Array.from({length:5},next) as Draw['digits']}));
  for(const position of [0,2,4] as const)for(const window of [20,50,100]){
   const rows=runPoolMethodExperiment(varied,position,[...methods],[1,2,5,8,10],30,window);
-  for(const row of rows)for(let i=30;i<varied.length;i++){
-   const history=varied.slice(0,i).map(d=>d.digits[position]);
-   const actual=buildPool(history,row.method,row.poolSize,window);
-   const target=varied[i].digits[position];
-   // Per-row hit totals must match the direct, non-optimized builder.
-   const directHits=actual.includes(target)?1:0;
-   assert.ok(directHits===0||directHits===1);
-  }
   // Directly compare aggregated results for each candidate setting.
   for(const row of rows){
    let hitCount=0;
