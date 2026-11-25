@@ -126,3 +126,10 @@ La rama research-core-v1 contiene módulos de análisis, memoria y ciclos. Las p
 - Reporta falsas alertas por serie, alertas persistentes, probabilidad familiar de al menos una alerta por réplica e intervalo Wilson Monte Carlo.
 - Semilla determinista y pruebas de reproducibilidad/validación añadidas.
 - Límite: supuesto nulo independiente entre acierto candidato y baseline; no simula autocorrelación ni la dependencia real. Los resultados no se interpretan como tasa real del TRIS y no ajustan automáticamente umbrales.
+
+
+### Extensión de la simulación nula — dependencia y autocorrelación
+- El generador nulo ahora permite persistencia temporal Markov estacionaria (rho 0, 0.3, 0.6) y dependencia emparejada candidato-baseline configurable (mezcla de resultados idénticos).
+- El runner evalúa 3 tasas marginales × 3 niveles de autocorrelación; por defecto 300 réplicas × 10 series × 9 escenarios = 27,000 series.
+- La tasa marginal de candidato y baseline permanece igual en cada escenario. Se reporta tasa por serie y probabilidad familiar de al menos una alerta por réplica.
+- Los escenarios son pruebas de estrés sintéticas, no una simulación calibrada al TRIS real. No ajustan umbrales automáticamente.
