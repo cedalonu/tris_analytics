@@ -30,7 +30,7 @@ export function buildPortfolioPhaseBoundaries(draws:Draw[],fractions:{discovery?
  if(draws.length>validationEnd)bounds.push({phase:"holdout",firstDrawId:draws[validationEnd].drawId,lastDrawId:draws.at(-1)!.drawId});
  return bounds;
 }
-export function evaluateCandidatePortfolioWalkForward(draws:Draw[],portfolio:CandidatePortfolio,catalog:IntuitionCandidate[],boundaries:PhaseBoundary[],label=portfolio.method):PortfolioWalkForwardReport{
+export function evaluateCandidatePortfolioWalkForward(draws:Draw[],portfolio:CandidatePortfolio,catalog:IntuitionCandidate[],boundaries:PhaseBoundary[],label:string=portfolio.method):PortfolioWalkForwardReport{
  const byId=new Map(catalog.map(c=>[c.id,c]));
  const candidates=portfolio.candidateIds.map(id=>{const c=byId.get(id);if(!c)throw new Error("portfolio references unknown candidate: "+id);return c;});
  if(new Set(portfolio.candidateIds).size!==portfolio.candidateIds.length)throw new Error("portfolio candidate IDs must be unique");
