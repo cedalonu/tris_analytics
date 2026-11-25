@@ -25,6 +25,7 @@ export interface FrozenForecast {
 export interface ResolvedForecast extends FrozenForecast {
   resolvedAt:string;
   actual:string;
+  actualDate?:string;
   candidateHit:boolean;
   baselineHit:boolean;
 }
@@ -140,7 +141,7 @@ export function resolveProspectiveForecast(
   outcome=String(actualDraw.digits[config.position!]);
  }
  return {
-  ...forecast,resolvedAt,actual,
+  ...forecast,resolvedAt,actual,actualDate:actualDraw.date,
   candidateHit:forecast.prediction.includes(outcome),
   baselineHit:forecast.baseline.includes(outcome)
  };
