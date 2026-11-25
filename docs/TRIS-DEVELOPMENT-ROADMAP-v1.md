@@ -160,3 +160,13 @@ La rama research-core-v1 contiene módulos de análisis, memoria y ciclos. Las p
 - Se añadieron pruebas de determinismo y validación de límites del parámetro; el caso de solapamiento 1 debe medir correlación empírica 1 y el caso parcial debe medir correlación positiva no perfecta.
 - Límite: la mezcla puede alterar la autocorrelación temporal efectiva de cada serie; los resultados son escenarios de estrés sintéticos y no estiman dependencias reales entre señales TRIS. No ajusta umbrales automáticamente, no usa CSV real y no llama APIs.
 - Siguiente validación: comprobar CI y revisar que la escala de escenarios sea computacionalmente viable; después estudiar solapamiento parcial por subconjuntos de posiciones/ventanas y contrastar con series prospectivas.
+
+
+### Fase 5 — solapamiento estructurado por componentes
+- Nuevo módulo offline: `src/research/structured-signal-overlap.ts`; runner de calibración: `npm run research:position-null --`.
+- Cada señal se define mediante un conjunto explícito de componentes (por ejemplo posición, rezago, ventana y contexto). Los componentes compartidos reutilizan trayectorias latentes; los componentes disjuntos no comparten esas trayectorias.
+- Para cada par se reportan componentes compartidos, Jaccard, coseno de solapamiento y correlación de Pearson empírica. También se mide la tasa de falsas alertas por señal y la probabilidad familiar observada.
+- El runner incluye una pequeña familia de señales sintéticas de ejemplo y contrasta tres tasas marginales y tres niveles de autocorrelación.
+- Pruebas cubren componentes disjuntos, componente singleton idéntico (dependencia perfecta), solapamiento parcial, reproducibilidad y entradas inválidas.
+- Límite importante: cada señal selecciona un componente latente por sorteo; por ello la estructura de componentes controla dependencia transversal, pero puede modificar la autocorrelación temporal efectiva. Jaccard/coseno son descriptores de diseño, no correlaciones; Pearson es la dependencia medida en la simulación.
+- Esta matriz no afirma que las hipótesis TRIS reales compartan componentes ni estima su dependencia real. Para ello se necesitarán series prospectivas congeladas y resultados resueltos. No usa CSV real, APIs, descargas ni ajuste automático de umbrales.
