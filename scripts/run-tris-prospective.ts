@@ -56,7 +56,7 @@ for(const forecast of forecasts) {
  if(resolvedIds.has(forecast.forecastId))continue;
  const actual=drawById.get(forecast.targetDrawId);
  if(!actual)continue;
- newResults.push(resolveProspectiveForecast(forecast,actual,stamp));
+ newResults.push(resolveProspectiveForecast(forecast,actual,draws.filter(d=>d.drawId<forecast.targetDrawId),stamp));
 }
 if(newResults.length)await appendFile(resultsPath,newResults.map(r=>JSON.stringify(r)).join("\n")+"\n","utf8");
 
