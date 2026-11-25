@@ -59,10 +59,10 @@ Estado: análisis incorporado; separación por configuración incorporada; verif
 Criterio de salida: evidencia prospectiva suficiente por estrato; soporte bajo se etiqueta insuficiente.
 
 ### Fase 5 — Detector de cambios de comportamiento por posición (NUEVA ETAPA)
-Estado: planificado; todavía no implementado.
+Estado: primera implementación observacional incorporada; ejecución y pruebas automatizadas pendientes.
 Propósito: detectar cambios persistentes de una señal en una posición concreta, sin confundir rachas cortas con cambios reales ni transferir evidencia entre R1–R5.
 
-Trabajo previsto:
+Trabajo previsto e implementado parcialmente:
 1. Mantener series separadas por posición × familia × configuración exacta × contexto previo, usando solo outcomes prospectivos resueltos.
 2. Comparar bloques recientes con una referencia anterior no solapada; medir diferencia de cobertura frente al baseline y su variabilidad.
 3. Identificar estados tentativos: estable, mejora, deterioro, cambio persistente, recuperación y evidencia insuficiente.
@@ -99,3 +99,13 @@ npm run research:cycles -- ./data/Tris.csv
 
 ## Estado general
 La rama research-core-v1 contiene módulos de análisis, memoria y ciclos. Las pruebas automatizadas y la ejecución integral siguen pendientes de verificación. Esta actualización no analiza resultados reales nuevos ni afirma ventaja predictiva.
+
+
+### Implementación inicial de Fase 5
+- Módulo: `src/research/position-change-detector.ts`.
+- Runner offline: `npm run research:position-change -- data/cycles`.
+- Fuente exclusiva: `outcomes.jsonl` con resultados prospectivos resueltos.
+- Series aisladas por posición, familia, configuración exacta y contexto previo.
+- Bloques de 25 concursos únicos, parcial mínimo 10; referencia anterior no solapada y dos bloques recientes.
+- Zona neutral ±2 puntos porcentuales; estados descriptivos sin efecto sobre el motor.
+- Pruebas sintéticas añadidas; no se consideran aprobadas hasta ejecutarse en CI.
