@@ -69,7 +69,6 @@ export function summarizeProspectivePortfolio(manifest:ProspectivePortfolioManif
   const expectedSignals=(last-first+1)*manifest.candidateIds.length,pendingSignals=forecastedSignals-resolvedSignals,unforecastedSignals=expectedSignals-forecastedSignals;
   blocks.push({firstDrawId:first,lastDrawId:last,partial,expectedSignals,forecastedSignals,resolvedSignals,pendingSignals,unforecastedSignals,hits,baselineHits,rate:resolvedSignals?hits/resolvedSignals:0,baselineRate:resolvedSignals?baselineHits/resolvedSignals:0,difference:resolvedSignals?(hits-baselineHits)/resolvedSignals:0,coverage:expectedSignals?resolvedSignals/expectedSignals:0});
  }
- const all=blocks.flatMap(b=>Array.from({length:b.resolvedSignals},()=>0));void all;
  const resolvedSignals=blocks.reduce((n,b)=>n+b.resolvedSignals,0),forecastedSignals=blocks.reduce((n,b)=>n+b.forecastedSignals,0),pendingSignals=blocks.reduce((n,b)=>n+b.pendingSignals,0),unforecastedSignals=blocks.reduce((n,b)=>n+b.unforecastedSignals,0),hits=blocks.reduce((n,b)=>n+b.hits,0),baselineHits=blocks.reduce((n,b)=>n+b.baselineHits,0);
  const rates=blocks.filter(b=>b.resolvedSignals>0).map(b=>b.rate),mean=rates.length?rates.reduce((a,b)=>a+b,0)/rates.length:0;
  const rateStdDev=rates.length?Math.sqrt(rates.reduce((n,x)=>n+(x-mean)**2,0)/rates.length):0;
