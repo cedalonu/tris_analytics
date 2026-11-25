@@ -1,6 +1,7 @@
 /**
  * Local CSV update tracker for TRIS. No APIs, polling, or network access.
  * It detects appended contests while protecting the already processed prefix.
+ * CONCURSO is the contest key; the CSV ID column is not imported or consulted.
  */
 import { createHash } from "node:crypto";
 import type { Draw } from "../research-core";
@@ -64,7 +65,7 @@ export function syncTrisCsvSnapshot(
   }
   const warnings:string[]=[];
   for(const [day,count] of Object.entries(counts)) if(count>5)
-    warnings.push(day+" contains "+count+" new contests; expected schedule reference is five daily draws.");
+    warnings.push(day+" contains "+count+" new contests; expected schedule reference is five daily draws (CDMX scheduled times 13:00, 15:00, 17:00, 19:00 and 21:00; CSV refresh is about one hour after each draw).");
   if(newDraws.length>5)
     warnings.push("More than five new contests arrived in one sync; all are retained and processed in contest-ID order.");
   const checkpoint:TrisSyncCheckpoint={
