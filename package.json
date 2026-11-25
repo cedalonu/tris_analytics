@@ -26,7 +26,8 @@
     "research:regime-memory": "tsx scripts/run-tris-regime-memory.ts",
     "research:concordance": "tsx scripts/run-tris-concordance.ts",
     "research:cycles": "tsx scripts/run-tris-cycles.ts",
-    "research:position-memory": "tsx scripts/run-tris-position-memory.ts"
+    "research:position-memory": "tsx scripts/run-tris-position-memory.ts",
+    "research:position-change": "tsx scripts/run-tris-position-change.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
