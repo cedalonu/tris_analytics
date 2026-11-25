@@ -14,7 +14,7 @@ The CSV is refreshed approximately one hour after each individual draw, not once
 3. Resolve only previously frozen forecasts whose exact target contest is now present. Resolution uses the precise pre-result history snapshot stored by that forecast.
 4. Append immutable resolution rows to the JSONL journal.
 5. Freeze the next contest only, from the latest available history. Never backfill missed contests.
-6. Recompute descriptive lifecycle summaries from the append-only outcomes.
+6. Recompute lifecycle summaries from append-only outcomes; candidates meeting the retired rule are excluded from subsequent cycle selections.
 
 ## Signal outcomes
 A transition candidate is scored against its configured TRIS outcome mode. Position, mutation, absence and pool candidates are scored as a hit when the target-position digit belongs to the frozen prediction set. Every outcome is paired with the baseline frozen at the same time. These are binary coverage events, not calibrated probabilities; no Brier score or log loss is reported.
@@ -27,7 +27,7 @@ Resolved outcomes are grouped in chronological, non-overlapping blocks of 25 (a 
 - weakening: a negative latest block after earlier positive evidence;
 - unstable: earlier positive evidence is not maintained;
 - dormant: fewer than 10 outcomes are available for a block;
-- retired: three consecutive negative blocks. Retired means remove from active monitoring, not erase history or prove permanent failure.
+- retired: three consecutive negative blocks. Retired means exclude the candidate from future cycle selections while preserving all historical records. It is a monitoring decision under this frozen v1 rule, not proof of permanent failure. The runner does not change the independent hypothesis evidence ledger or model weights.
 
 Lifecycle labels are descriptive monitoring states, not hypothesis confirmations or betting advice. They do not modify the separate evidence ledger or candidate weights.
 
