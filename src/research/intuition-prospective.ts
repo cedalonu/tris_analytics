@@ -98,6 +98,7 @@ function predict(candidate:IntuitionCandidate,history:Draw[]):{prediction:string
    return {prediction:buildPool(values,method,size,window).map(String),baseline:buildPool(values,"recent-frequency",size,window).map(String)};
   }
  }
+ return null;
 }
 export function freezeProspectiveForecast(
  history:Draw[],candidate:IntuitionCandidate,targetDrawId:number,generatedAt:string
@@ -124,10 +125,16 @@ export function resolveProspectiveForecast(
  if(actualDraw.digits.length!==5||actualDraw.digits.some(d=>!Number.isInteger(d)||d<0||d>9))throw new Error("invalid actual draw");
  if(!Number.isFinite(Date.parse(resolvedAt)))throw new Error("valid resolvedAt timestamp required");
  const actual=actualDraw.digits.join("");
- const config=JSON.parse(forecast.frozenConfig) as CandidateConfig;
+ let config:CandidateConfig;
+ try { config=JSON.parse(forecast.frozenConfig) as CandidateConfig; }
+ catch { throw new Error("frozen forecast config is not valid JSON"); }
+ if(config.family!==forecast.family)throw new Error("frozen forecast family does not match its config");
  let outcome:string;
  if(forecast.family==="transition") outcome=outcomeForMode(actualDraw.digits,config.mode as Parameters<typeof outcomeForMode>[1]);
- else outcome=String(actualDraw.digits[config.position!]);
+ else {
+  if(!Number.isInteger(config.position)||config.position!<0||config.position!>4)throw new Error("frozen forecast position is invalid");
+  outcome=String(actualDraw.digits[config.position!]);
+ }
  return {
   ...forecast,resolvedAt,actual,
   candidateHit:forecast.prediction.includes(outcome),
