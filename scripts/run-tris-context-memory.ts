@@ -27,7 +27,7 @@ const lines=["# TRIS context-conditioned temporal memory","",
    ...ranked.slice(0,10).map(x=>{
     const b=[...x.buckets].sort((a,c)=>c.totalVariationVsMarginal-a.totalVariationVsMarginal)[0];
     return b?"- "+x.context+", lag -"+x.lag+", R"+(x.sourcePosition+1)+"→R"+(x.targetPosition+1)+", context "+b.contextValue+": n="+b.observations+", TV="+b.totalVariationVsMarginal.toFixed(3)+", strongest target="+(b.strongestTargetDigits[0]?.digit??"none"):"";
-   }),"";
+   }),""];
  }),
  "## Safeguards",...report.warnings.map(w=>"- "+w),
  "","Descriptive only. No predictive advantage is claimed."
