@@ -43,7 +43,7 @@ function classify(blocks:PositionChangeBlock[]){
   const earlyMean=average(early),troughMean=average(trough),reboundMean=average(rebound);
   const declineThreshold=Math.max(DELTA,1.96*Math.sqrt(meanSE(early)**2+meanSE(trough)**2));
   const reboundThreshold=Math.max(DELTA,1.96*Math.sqrt(meanSE(trough)**2+meanSE(rebound)**2));
-  recoveryDetected=troughMean<=earlyMean-declineThreshold&&reboundMean>=troughMean+reboundThreshold;
+  recoveryDetected=trough.every(b=>b.advantage<=earlyMean-declineThreshold)&&rebound.every(b=>b.advantage>=troughMean+reboundThreshold);
  }
  if(recoveryDetected){state="recovery";interpretation="Los dos bloques del valle se deterioran frente a la referencia inicial y los dos bloques finales rebotan frente al valle. La recuperación puede ser parcial; se informa como cambio de fase, no como retorno garantizado al nivel inicial."}
  else if(consecutive===2){state="persistent-change";interpretation="Dos bloques recientes consecutivos muestran un cambio en la misma dirección frente a la referencia."}
