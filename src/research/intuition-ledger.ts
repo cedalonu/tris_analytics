@@ -51,7 +51,7 @@ export function assessSignal(record:SignalRecord):SignalAssessment {
  if(prospective.length){
   const pn=prospective.reduce((s,e)=>s+e.n,0),ph=prospective.reduce((s,e)=>s+e.hits,0);
   const pbn=prospective.reduce((s,e)=>s+e.baselineN,0),pbh=prospective.reduce((s,e)=>s+e.baselineHits,0);
-  if(status==='provisional'&&pn>=100&&pbn>0&&ph/pn>pbh/pn&&wilsonLower(ph,pn)>pbh/pn)status='active';
+  if(status==='provisional'&&pn>=100&&pbn>0&&ph/pn>pbh/pbn&&wilsonLower(ph,pn)>pbh/pbn)status='active';
   else if(status==='provisional')status='weakening';
   reasons.push('Prospective evidence evaluated separately from historical validation.');
  }
