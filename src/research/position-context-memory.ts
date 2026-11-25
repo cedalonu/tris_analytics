@@ -19,6 +19,7 @@ export interface PositionContextBlock {
 export interface PositionContextMemory {
  position:number;
  family:PositionFamily;
+ configuration:string;
  poolRegime:PreDrawContext["poolRegime"];
  duplicateRegime:PreDrawContext["duplicateRegime"];
  draws:number;
@@ -51,7 +52,7 @@ export interface PositionContextReport {
  modeScopes:PositionModeMemory[];
  warnings:string[];
 }
-type Trial={drawId:number;candidateId:string;candidateHit:boolean;baselineHit:boolean;position:number;family:PositionFamily;poolRegime:PreDrawContext["poolRegime"];duplicateRegime:PreDrawContext["duplicateRegime"]};
+type Trial={drawId:number;candidateId:string;candidateHit:boolean;baselineHit:boolean;position:number;family:PositionFamily;configuration:string;poolRegime:PreDrawContext["poolRegime"];duplicateRegime:PreDrawContext["duplicateRegime"]};
 const BLOCK=25,MIN_BLOCK=10,MIN_SUMMARY=10;
 function mean(values:number[]):number{return values.length?values.reduce((a,b)=>a+b,0)/values.length:0;}
 function makeBlocks(trials:Trial[]):PositionContextBlock[]{
@@ -79,14 +80,16 @@ export function analyzePositionContextMemory(rows:ResolvedCycleSignal[]):Positio
   if(row.family==="transition"){
    modeLevelTrials++;
    const mode=config.mode??"unknown",list=modeGroups.get(mode)??[];
-   list.push({drawId:row.targetDrawId,candidateId:row.candidateId,candidateHit:row.candidateHit,baselineHit:row.baselineHit,position:-1,family:"pool-ranking",poolRegime:row.context.poolRegime,duplicateRegime:row.context.duplicateRegime});
+   list.push({drawId:row.targetDrawId,candidateId:row.candidateId,candidateHit:row.candidateHit,baselineHit:row.baselineHit,position:-1,family:"pool-ranking",configuration:mode,poolRegime:row.context.poolRegime,duplicateRegime:row.context.duplicateRegime});
    modeGroups.set(mode,list);continue;
   }
   if(row.position===null||row.position<0||row.position>4)continue;
   positionSpecificTrials++;
+  const cfg=JSON.parse(row.frozenConfig) as {lag?:number;priorMisses?:number;method?:string;poolSize?:number;window?:number};
+  const configuration=JSON.stringify({lag:cfg.lag??null,priorMisses:cfg.priorMisses??null,method:cfg.method??null,poolSize:cfg.poolSize??null,window:cfg.window??null});
   const trial:Trial={drawId:row.targetDrawId,candidateId:row.candidateId,candidateHit:row.candidateHit,baselineHit:row.baselineHit,
-   position:row.position,family:row.family as PositionFamily,poolRegime:row.context.poolRegime,duplicateRegime:row.context.duplicateRegime};
-  const key=[trial.position,trial.family,trial.poolRegime,trial.duplicateRegime].join("|");
+   position:row.position,family:row.family as PositionFamily,configuration,poolRegime:row.context.poolRegime,duplicateRegime:row.context.duplicateRegime};
+  const key=[trial.position,trial.family,trial.configuration,trial.poolRegime,trial.duplicateRegime].join("|");
   const list=groups.get(key)??[];list.push(trial);groups.set(key,list);
  }
  const positions:PositionContextMemory[]=[];
@@ -98,7 +101,7 @@ export function analyzePositionContextMemory(rows:ResolvedCycleSignal[]):Positio
   const baselineRates=drawGroups.map(a=>mean(a.map(x=>Number(x.baselineHit))));
   const candidateRate=mean(candidateRates),baselineRate=mean(baselineRates),difference=candidateRate-baselineRate;
   const blocks=makeBlocks(ordered),latest=blocks.at(-1)??null;
-  positions.push({position:first.position,family:first.family,poolRegime:first.poolRegime,duplicateRegime:first.duplicateRegime,
+  positions.push({position:first.position,family:first.family,configuration:first.configuration,poolRegime:first.poolRegime,duplicateRegime:first.duplicateRegime,
    draws:drawGroups.length,candidateTrials:ordered.length,distinctCandidates:new Set(ordered.map(x=>x.candidateId)).size,
    meanCandidateHitRate:candidateRate,meanBaselineHitRate:baselineRate,difference,
    positiveBlocks:blocks.filter(b=>b.state==="favorable").length,negativeBlocks:blocks.filter(b=>b.state==="unfavorable").length,
