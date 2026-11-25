@@ -4,7 +4,7 @@ export interface SplitConfig { discoveryFraction?:number; validationFraction?:nu
 export interface ChronologicalSplit<T> { discovery:T[]; validation:T[]; holdout:T[]; boundaries:{discoveryEnd:number;validationEnd:number;total:number}; warnings:string[]; }
 /** Preserve input order. Caller must provide validated, unique, chronological draws. */
 export function splitChronologically<T>(rows:T[],config:SplitConfig={}):ChronologicalSplit<T>{
- const d=config.discoveryFraction??0.6,v=config.validationFraction??0.2,warnings:string[]=[];
+ const d=config.discoveryFraction??0.6,v=config.validationFraction??0.2;
  if(!Number.isFinite(d)||!Number.isFinite(v)||d<=0||v<=0||d+v>=1)throw new Error('Split fractions must be finite, positive, and sum to less than 1.');
  const discoveryEnd=Math.floor(rows.length*d),validationEnd=Math.floor(rows.length*(d+v));
  return {discovery:rows.slice(0,discoveryEnd),validation:rows.slice(discoveryEnd,validationEnd),holdout:rows.slice(validationEnd),boundaries:{discoveryEnd,validationEnd,total:rows.length},warnings:['Historical holdout must be used only once after configuration freeze.','Prior exploratory test data are not untouched holdout.']};
