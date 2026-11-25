@@ -55,7 +55,7 @@ export function summarizeProspectiveFamilyConcordance(
   if(f.targetDrawId<manifest.firstTargetDrawId||f.targetDrawId>lastObservedDrawId+1)throw new Error("forecast target outside prospective range");
   if(f.frozenConfig!==manifest.candidateConfigs[f.candidateId]||f.family!==familyById.get(f.candidateId))throw new Error("forecast differs from frozen candidate identity");
   if(forecastById.has(f.forecastId))throw new Error("duplicate forecast ID");
-  forecastById.set(f.forecastId,f);
+  forecastById.set(f.forecastId,f);\n  forecastByKey.set(f.targetDrawId+"|"+f.candidateId,f);
  }
  for(const r of results){
   if(!memberIds.has(r.candidateId))continue;
@@ -75,7 +75,7 @@ export function summarizeProspectiveFamilyConcordance(
   for(let drawId=manifest.firstTargetDrawId;drawId<=lastObservedDrawId;drawId++){
    let n=0,hits=0,baselineHits=0;
    for(const id of ids){
-    const f=[...forecastById.values()].find(x=>x.candidateId===id&&x.targetDrawId===drawId);
+    const f=forecastByKey.get(drawId+"|"+id);
     if(!f)continue;
     const r=resultById.get(f.forecastId);if(!r)continue;
     n++;if(r.candidateHit)hits++;if(r.baselineHit)baselineHits++;
