@@ -23,19 +23,19 @@ test("resolves only the exact frozen target and preserves the prediction",()=>{
 });
 test("lifecycle uses chronological blocks and detects persistence and decay",()=>{
  const rows:ResolvedCycleSignal[]=[];
- for(let i=0;i<75;i++)rows.push({schemaVersion:1,forecastId:"f"+i,candidateId:"c",family:"pool-ranking",frozenConfig:"{}",targetDrawId:6000+i,generatedAt:stamp,historyThroughDrawId:5999+i,historySha256:"h",prediction:["1"],baseline:["0"],resolvedAt:stamp,actual:"1",candidateHit:i<50,baselineHit:i>=50,cycleId:"cycle"+i,modelVersion:"tris-cycle-learning-v1"});
+ for(let i=0;i<75;i++)rows.push({schemaVersion:1,forecastId:"f"+i,candidateId:"c",family:"pool-ranking",frozenConfig:"{}",targetDrawId:6000+i,generatedAt:stamp,historyThroughDrawId:5999+i,historySha256:"h",prediction:["1"],baseline:["0"],resolvedAt:stamp,actual:"1",candidateHit:i<50,baselineHit:i>=50,cycleId:"cycle"+i,modelVersion:"tris-cycle-learning-v1",position:0,context:{previousPoolSize:3,previousDuplicatePairs:2,previousRepeatedPositions:2,poolRegime:"compact",duplicateRegime:"many-duplicates"}});
  const state=assessCycleSignalLifecycle(rows)[0];
  assert.equal(state.positiveBlocks,2);assert.equal(state.negativeBlocks,1);assert.equal(state.status,"weakening");
  assert.equal(state.blocks.length,3);
 });
 test("does not call a small partial block persistent",()=>{
  const rows:ResolvedCycleSignal[]=[];
- for(let i=0;i<9;i++)rows.push({schemaVersion:1,forecastId:"x"+i,candidateId:"small",family:"pool-ranking",frozenConfig:"{}",targetDrawId:7000+i,generatedAt:stamp,historyThroughDrawId:6999+i,historySha256:"h",prediction:["1"],baseline:["0"],resolvedAt:stamp,actual:"1",candidateHit:true,baselineHit:false,cycleId:"c"+i,modelVersion:"tris-cycle-learning-v1"});
+ for(let i=0;i<9;i++)rows.push({schemaVersion:1,forecastId:"x"+i,candidateId:"small",family:"pool-ranking",frozenConfig:"{}",targetDrawId:7000+i,generatedAt:stamp,historyThroughDrawId:6999+i,historySha256:"h",prediction:["1"],baseline:["0"],resolvedAt:stamp,actual:"1",candidateHit:true,baselineHit:false,cycleId:"c"+i,modelVersion:"tris-cycle-learning-v1",position:0,context:{previousPoolSize:3,previousDuplicatePairs:2,previousRepeatedPositions:2,poolRegime:"compact",duplicateRegime:"many-duplicates"}});
  assert.equal(assessCycleSignalLifecycle(rows)[0].status,"dormant");
 });
 
 test("retires a signal after three consecutive negative blocks",()=>{
  const rows:ResolvedCycleSignal[]=[];
- for(let i=0;i<75;i++)rows.push({schemaVersion:1,forecastId:"r"+i,candidateId:"retire-me",family:"pool-ranking",frozenConfig:"{}",targetDrawId:8000+i,generatedAt:stamp,historyThroughDrawId:7999+i,historySha256:"h",prediction:["1"],baseline:["0"],resolvedAt:stamp,actual:"0",candidateHit:false,baselineHit:true,cycleId:"rc"+i,modelVersion:"tris-cycle-learning-v1"});
+ for(let i=0;i<75;i++)rows.push({schemaVersion:1,forecastId:"r"+i,candidateId:"retire-me",family:"pool-ranking",frozenConfig:"{}",targetDrawId:8000+i,generatedAt:stamp,historyThroughDrawId:7999+i,historySha256:"h",prediction:["1"],baseline:["0"],resolvedAt:stamp,actual:"0",candidateHit:false,baselineHit:true,cycleId:"rc"+i,modelVersion:"tris-cycle-learning-v1",position:0,context:{previousPoolSize:3,previousDuplicatePairs:2,previousRepeatedPositions:2,poolRegime:"compact",duplicateRegime:"many-duplicates"}});
  assert.equal(assessCycleSignalLifecycle(rows)[0].status,"retired");
 });
