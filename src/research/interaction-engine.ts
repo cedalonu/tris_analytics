@@ -84,9 +84,10 @@ function score(rows:InteractionObservation[],start:number,end:number,features:In
  }
  const observations=end-start,baselineRate=observations?totalHits/observations:0,rate=active?hits/active:0;
  let bestSingleRate=0;
+ const singleSupportFloor=Math.max(5,Math.ceil(observations*.05));
  for(const f of features){
   let n=0,h=0;for(let i=start;i<end;i++)if(rows[i].features[f]){n++;if(rows[i].hit)h++;}
-  if(n>=MIN_ACTIVE)bestSingleRate=Math.max(bestSingleRate,h/n);
+  if(n>=singleSupportFloor)bestSingleRate=Math.max(bestSingleRate,h/n);
  }
  return {observations,active,hits,rate,baselineRate,liftVsBaseline:baselineRate?rate/baselineRate:0,
   bestSingleRate,incrementalVsBestSingle:rate-bestSingleRate};
