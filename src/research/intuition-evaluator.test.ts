@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {evaluateHypothesis} from "./intuition-evaluator";
-const rows=(phase:"validation"|"holdout"|"prospective",n:number,hits:number,baseHits:number,periods=2)=>{
+const rows=(phase:"discovery"|"validation"|"holdout"|"prospective",n:number,hits:number,baseHits:number,periods=2)=>{
  const out=[];for(let i=0;i<n;i++){const hit=i<hits,baselineHit=i<baseHits;out.push({drawId:i+1,phase,hit,baselineHit,period:"P"+(i%periods+1)});}return out;
 };
 test("insufficient sample never promotes",()=>{
