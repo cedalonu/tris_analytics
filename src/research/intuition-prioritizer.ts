@@ -28,19 +28,31 @@ export function scoreIntuitionCandidate(c:IntuitionCandidate):CandidatePriority{
  if(cfg.method==="frequency"){score+=3;reasons.push("simple frequency method is an interpretable benchmark candidate");}
  return {candidateId:c.id,score,family:c.family,reasons};
 }
-/** Greedy deterministic budget allocation with family caps and candidate-ID tie breaking. */
+/** Score within each family, then round-robin families to prevent pool candidates monopolizing budget. */
 export function selectIntuitionCandidates(candidates:IntuitionCandidate[],options:PrioritizerOptions={}):CandidateSelection{
  const budget=Math.max(0,Math.floor(options.maxCandidates??100));
- const caps:Record<CandidateFamily,number>={transition:budget, "position-mutation":budget,"absence-return":budget,"pool-ranking":budget,...options.familyCaps};
+ const caps:Record<CandidateFamily,number>={transition:budget,"position-mutation":budget,"absence-return":budget,"pool-ranking":budget,...options.familyCaps};
  const familyOrder=options.familyOrder??FAMILIES;
  const ranking=candidates.map(scoreIntuitionCandidate).sort((a,b)=>b.score-a.score||familyOrder.indexOf(a.family)-familyOrder.indexOf(b.family)||a.candidateId.localeCompare(b.candidateId));
  const byId=new Map(candidates.map(c=>[c.id,c]));
+ const groups=new Map<CandidateFamily,CandidatePriority[]>();
+ for(const family of familyOrder)groups.set(family,ranking.filter(r=>r.family===family));
  const counts:Record<CandidateFamily,number>={transition:0,"position-mutation":0,"absence-return":0,"pool-ranking":0};
- const selected:IntuitionCandidate[]=[];const skipped:IntuitionCandidate[]=[];
- for(const p of ranking){const c=byId.get(p.candidateId)!;if(selected.length>=budget||counts[p.family]>=Math.max(0,caps[p.family])){skipped.push(c);continue;}selected.push(c);counts[p.family]++;}
+ const selected:IntuitionCandidate[]=[],selectedIds=new Set<string>();
+ let progressed=true;
+ while(selected.length<budget&&progressed){progressed=false;
+  for(const family of familyOrder){if(selected.length>=budget)break;
+   const cap=Math.max(0,Math.floor(caps[family]??budget));if(counts[family]>=cap)continue;
+   const next=(groups.get(family)||[]).find(p=>!selectedIds.has(p.candidateId));if(!next)continue;
+   const c=byId.get(next.candidateId);if(!c)continue;
+   selected.push(c);selectedIds.add(c.id);counts[family]++;progressed=true;
+  }
+ }
+ const skipped=candidates.filter(c=>!selectedIds.has(c.id));
  return {selected,ranking,skipped,budget,familyCounts:counts,warnings:[
   "Priority scores are research-scheduling heuristics, not predictive scores or calibrated probabilities.",
   "Candidate priority does not use historical outcomes; evidence is only added after a separate evaluation.",
+  "Families are round-robin allocated to avoid a large pool catalog monopolizing the initial budget.",
   "Family caps and budgets are applied before any results are known; do not retrospectively change them to favor winners."
  ]};
 }
