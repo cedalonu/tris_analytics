@@ -52,7 +52,7 @@ test("resolves digit-pool forecasts against the correct position",()=>{
 
 test("insufficient conditional transition context is not recorded as a forecast",()=>{
  const c=candidate("transition",{mode:"full5",lag:5});
- const constant:Draw[]=Array.from({length:220},(_,i)=>({drawId:10000+i,digits:[i%10,1,2,3,4] as Draw["digits"]}));
+ const constant:Draw[]=Array.from({length:220},(_,i)=>({drawId:10000+i,digits:[i%10,Math.floor(i/10)%10,Math.floor(i/100)%10,Math.floor(i/1000)%10,Math.floor(i/10000)%10] as Draw["digits"]}));
  const frozen=freezeProspectiveForecast(constant,c,10220,"2026-11-25T10:00:00.000Z");
  assert.equal(frozen,null);
 });
