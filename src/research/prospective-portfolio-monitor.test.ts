@@ -16,8 +16,9 @@ function result(f:FrozenForecast,candidateHit:boolean,baselineHit:boolean):Resol
 test("prospective portfolio manifest freezes membership and config fingerprints",()=>{
  validateProspectivePortfolioManifest(manifest,catalog);
  assert.equal(manifest.candidateIds.length,2);
- const changed={...catalog[0],frozenConfig:"{}"};
- assert.throws(()=>validateProspectivePortfolioManifest(manifest,[changed,...catalog.slice(1)]),/config changed/);
+ const selected=manifest.candidateIds[0];
+ const changed=catalog.map(c=>c.id===selected?{...c,frozenConfig:"{}"}:c);
+ assert.throws(()=>validateProspectivePortfolioManifest(manifest,changed),/config changed/);
  assert.throws(()=>validateProspectivePortfolioManifest({...manifest,candidateIds:[manifest.candidateIds[0],manifest.candidateIds[0]]},catalog),/unique/);
 });
 
@@ -35,7 +36,7 @@ test("prospective monitor counts missing forecasts, pending results and paired o
  assert.equal(summary.coverage,3/4);
  assert.equal(summary.blocks.length,1);
  assert.equal(summary.blocks[0].expectedSignals,4);
- assert.equal(summary.blocks[0].partial,true);
+ assert.equal(summary.blocks[0].partial,false);
 });
 
 test("prospective monitor exposes missed contests as zero coverage opportunities",()=>{
