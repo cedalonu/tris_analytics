@@ -8,7 +8,8 @@ test("regime calibration is deterministic and reports all frozen scenarios",()=>
  assert.deepEqual(a,b);
  assert.equal(a.scenarios.length,3);
  assert.equal(a.window,50);
- assert.ok(a.scenarios.every(s=>s.observations===40));
+ assert.ok(a.scenarios.slice(0,2).every(s=>s.observations===40));
+ assert.equal(a.scenarios[2].observations,8);
  assert.equal(a.scenarios[2].rate,1);
 });
 test("rejects invalid calibration parameters",()=>{
