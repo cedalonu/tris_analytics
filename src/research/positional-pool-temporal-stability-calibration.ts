@@ -15,9 +15,10 @@ function makeRows(scenario:PositionalPoolCalibrationScenario,n:number,random:()=
  for(let i=0;i<n;i++){
   const x=clamp(.2+.6*random()),segment=Math.floor(i/5)%2;
   const sign=scenario==="persistent-positive"?1:scenario==="persistent-negative"?-1:scenario==="alternating-sign"?(segment===0?1:-1):scenario==="weak-positive"?.25:0;
-  const y=clamp(.5+sign*(x-.5)*1.5+noise(random));
-  const z=clamp(.5+sign*(x-.5)*1.4+noise(random));
-  const w=clamp(.5+sign*(x-.5)*1.3+noise(random));
+  const noiseScale=scenario==="persistent-positive"||scenario==="persistent-negative"?.1:1;
+  const y=clamp(.5+sign*(x-.5)*1.5+noise(random)*noiseScale);
+  const z=clamp(.5+sign*(x-.5)*1.4+noise(random)*noiseScale);
+  const w=clamp(.5+sign*(x-.5)*1.3+noise(random)*noiseScale);
   rows.push({regimeId:"SYN-"+rep,position:0,method:"frequency" as PoolMethod,poolSize:5,blockIndex:i,startDrawId:rep*100000+i*100+1,endDrawId:rep*100000+i*100+100,partial:false,
    positionalDominantDigit:(i%10) as Digit,positionalDominantShare:x,tested:100,poolHits:Math.round(w*100),poolHitRate:w,uniformReference:.5,
    dominantDigitPoolInclusionRate:y,meanPoolJaccard:1-z,poolTurnover:z,dominantChangedFromPreviousBlock:i===0?null:x>.5});
