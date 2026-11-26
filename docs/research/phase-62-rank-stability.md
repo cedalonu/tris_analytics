@@ -1,0 +1,3 @@
+# Phase 62 — Rank sensitivity and stability
+Ranks candidates independently for each quality/revision threshold configuration, then summarizes average rank, min/max/range, standard deviation, stability score, and top-quartile/top-half frequency. Pairwise Spearman correlations summarize configuration agreement.
+Stability score is descriptive: 100 indicates no rank variation, lower scores indicate sensitivity. Correlations are computed on the same candidate universe; no candidates are excluded based on predictive outcomes. Fixed 25-setting grid is sensitivity analysis, not optimization. This does not imply lottery prediction or advantage.
