@@ -7,7 +7,7 @@ import {analyzePositionalPoolConcordance} from "./positional-pool-concordance";
 import type {ProspectiveRegimeLabel} from "./prospective-regime-persistence";
 
 const draws:Draw[]=Array.from({length:71},(_,i)=>({drawId:100+i,digits:[i<35?1:(i%2?8:2),2,3,4,5]}));
-const labels:ProspectiveRegimeLabel[]=draws.slice(1).map(d=>({drawId:d.drawId,regimeId:"A",method:"fixture",sourceStartDrawId:d.drawId-1,sourceEndDrawId:d.drawId-1}));
+const labels:ProspectiveRegimeLabel[]=draws.slice(1).map(d=>({drawId:d.drawId,regimeId:"pool-stable|dup-stable|distinct-stable|entropy-stable",method:"fixture",sourceStartDrawId:d.drawId-1,sourceEndDrawId:d.drawId-1}));
 test("compares past-only pools with positional dominance by fixed block",()=>{
  const stability=summarizePositionalRegimeStability(draws,labels,{blockSize:10,minimumDrawSupport:5});
  const report=analyzePositionalPoolConcordance(draws,labels,stability,{methods:["frequency","long-absence"],poolSizes:[3],minimumHistory:10});

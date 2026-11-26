@@ -34,13 +34,13 @@ export function analyzePositionalPoolTemporalStability(report:PositionalPoolConc
  const windowBlocks=options.windowBlocks??5,stepBlocks=options.stepBlocks??1,minimumPairs=options.minimumPairs??3,nearZero=options.nearZeroThreshold??.1,consistency=options.consistencyThreshold??.7;
  if(!Number.isInteger(windowBlocks)||windowBlocks<3||!Number.isInteger(stepBlocks)||stepBlocks<1||!Number.isInteger(minimumPairs)||minimumPairs<3)throw new Error("invalid temporal window configuration");
  if(nearZero<0||nearZero>=1||consistency<=.5||consistency>1)throw new Error("invalid stability thresholds");
- const keys=[...new Set(report.blocks.map(x=>[x.regimeId,x.position,x.method,x.poolSize].join("|")))],windows:PositionalPoolTemporalWindow[]=[];
+ const groupKey=(x:{regimeId:string;position:number;method:string;poolSize:number})=>JSON.stringify([x.regimeId,x.position,x.method,x.poolSize]),keys=[...new Set(report.blocks.map(groupKey))],windows:PositionalPoolTemporalWindow[]=[];
  for(const key of keys){
-  const rows=report.blocks.filter(x=>[x.regimeId,x.position,x.method,x.poolSize].join("|")===key).sort((a,b)=>a.blockIndex-b.blockIndex);
+  const rows=report.blocks.filter(x=>groupKey(x)===key).sort((a,b)=>a.blockIndex-b.blockIndex);
   for(let start=0;start+windowBlocks<=rows.length;start+=stepBlocks){
    const part=rows.slice(start,start+windowBlocks),indices=part.map(x=>x.blockIndex);
    if(indices.some((v,i)=>i>0&&v!==indices[i-1]+1))continue;
-   const [regimeId,position,method,size]=key.split("|");
+   const [regimeId,position,method,size]=JSON.parse(key) as [string,number,string,number];
    windows.push({regimeId,position:Number(position),method,poolSize:Number(size),windowIndex:Math.floor(start/stepBlocks),
     firstBlockIndex:part[0].blockIndex,lastBlockIndex:part.at(-1)!.blockIndex,blocks:part.length,
     dominantShareVsPoolInclusion:corr(pairsFor(part,0),minimumPairs),
@@ -50,7 +50,7 @@ export function analyzePositionalPoolTemporalStability(report:PositionalPoolConc
  }
  const groups:PositionalPoolTemporalStabilityGroup[]=[];
  for(const key of keys){
-  const rows=windows.filter(x=>[x.regimeId,x.position,x.method,x.poolSize].join("|")===key);
+  const rows=windows.filter(x=>groupKey(x)===key);
   const values=rows.flatMap(x=>[x.dominantShareVsPoolInclusion,x.dominantTransitionVsTurnover,x.dominantInclusionVsHitRate].filter((v):v is number=>v!==null));
   const positive=values.filter(x=>x>nearZero).length,negative=values.filter(x=>x< -nearZero).length,zero=values.length-positive-negative;
   const signConsistency=values.length?Math.max(positive,negative)/values.length:null;
@@ -58,7 +58,7 @@ export function analyzePositionalPoolTemporalStability(report:PositionalPoolConc
   const classification:PositionalPoolTemporalStabilityGroup["classification"]=values.length<3?"insufficient":
    signConsistency!>=consistency&&positive>negative?"temporally-consistent-positive":
    signConsistency!>=consistency&&negative>positive?"temporally-consistent-negative":"unstable";
-  const [regimeId,position,method,size]=key.split("|");
+  const [regimeId,position,method,size]=JSON.parse(key) as [string,number,string,number];
   groups.push({regimeId,position:Number(position),method,poolSize:Number(size),windows:rows.length,positiveWindows:positive,negativeWindows:negative,nearZeroWindows:zero,signConsistency,meanAbsoluteCorrelation,classification});
  }
  return{method:"rolling-positional-pool-concordance-stability-v1",windowBlocks,stepBlocks,minimumPairs,windows,groups,

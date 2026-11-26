@@ -130,16 +130,17 @@ export function analyzePositionalPoolConcordance(
   }
  }
  const groups:PositionalPoolConcordanceGroup[]=[];
- const keys=[...new Set(blocks.map(b=>[b.regimeId,b.position,b.method,b.poolSize].join("|")))];
+ const groupKey=(x:{regimeId:string;position:number;method:string;poolSize:number})=>JSON.stringify([x.regimeId,x.position,x.method,x.poolSize]);
+ const keys=[...new Set(blocks.map(groupKey))];
  for(const key of keys){
-  const rows=blocks.filter(b=>[b.regimeId,b.position,b.method,b.poolSize].join("|")===key);
+  const rows=blocks.filter(b=>groupKey(b)===key);
   const inclusion=pearson(rows.filter(b=>b.positionalDominantShare!==null&&b.dominantDigitPoolInclusionRate!==null).map(b=>[b.positionalDominantShare!,b.dominantDigitPoolInclusionRate!] as [number,number]));
   const transition=pearson(rows.filter(b=>b.dominantChangedFromPreviousBlock!==null&&b.poolTurnover!==null).map(b=>[b.dominantChangedFromPreviousBlock?1:0,b.poolTurnover!] as [number,number]));
   const hit=pearson(rows.filter(b=>b.dominantDigitPoolInclusionRate!==null&&b.poolHitRate!==null).map(b=>[b.dominantDigitPoolInclusionRate!,b.poolHitRate!] as [number,number]));
   const values=[inclusion,transition,hit].filter((x):x is number=>x!==null);
   const interpretation:PositionalPoolConcordanceGroup["interpretation"]=rows.length<3||values.length===0?"insufficient":
    values.every(x=>x>=.3)?"concordant-descriptive":values.every(x=>x<=-.3)?"distinct-descriptive":"mixed-descriptive";
-  const [regimeId,pos,method,size]=key.split("|");
+  const [regimeId,pos,method,size]=JSON.parse(key) as [string,number,PoolMethod,number];
   groups.push({regimeId,position:Number(pos) as Pos,method:method as PoolMethod,poolSize:Number(size),blocks:rows.length,
    dominantShareVsPoolInclusionCorrelation:inclusion,dominantTransitionVsPoolTurnoverCorrelation:transition,
    dominantInclusionVsHitRateCorrelation:hit,interpretation});

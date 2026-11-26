@@ -30,11 +30,11 @@ function shuffle<T>(values:T[],random:()=>number):T[]{const out=[...values];for(
 export function analyzePositionalPoolNullControls(report:PositionalPoolConcordanceReport,options:{replications?:number;minimumPairs?:number;seed?:number}={}):PositionalPoolNullControlReport{
  const replications=options.replications??999,minimumPairs=options.minimumPairs??3,seed=options.seed??20261202;
  if(!Number.isInteger(replications)||replications<1||!Number.isInteger(minimumPairs)||minimumPairs<3||!Number.isInteger(seed))throw new Error("invalid positional pool null-control options");
- const metrics:PositionalPoolNullMetric[]=["dominant-share-inclusion","dominant-transition-turnover","inclusion-hit-rate"],keys=[...new Set(report.blocks.map(r=>[r.regimeId,r.position,r.method,r.poolSize].join("|")))],groups:PositionalPoolNullGroupResult[]=[];
+ const metrics:PositionalPoolNullMetric[]=["dominant-share-inclusion","dominant-transition-turnover","inclusion-hit-rate"],groupKey=(r:PositionalPoolBlockRow)=>JSON.stringify([r.regimeId,r.position,r.method,r.poolSize]),keys=[...new Set(report.blocks.map(groupKey))],groups:PositionalPoolNullGroupResult[]=[];
  let groupIndex=0;
  for(const key of keys){
-  const rows=report.blocks.filter(r=>[r.regimeId,r.position,r.method,r.poolSize].join("|")===key).sort((a,b)=>a.blockIndex-b.blockIndex);
-  const [regimeId,pos,method,size]=key.split("|"),metricResults:PositionalPoolNullMetricResult[]=[];
+  const rows=report.blocks.filter(r=>groupKey(r)===key).sort((a,b)=>a.blockIndex-b.blockIndex);
+  const [regimeId,pos,method,size]=JSON.parse(key) as [string,number,string,number],metricResults:PositionalPoolNullMetricResult[]=[];
   for(const metric of metrics){
    const [x,y]=pairs(rows,metric),observedCorrelation=x.length>=minimumPairs?corr(x,y):null;
    const nullValues:number[]=[],random=rng((seed+groupIndex*1000003+metrics.indexOf(metric)*7919)>>>0);

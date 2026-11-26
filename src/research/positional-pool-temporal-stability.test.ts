@@ -4,7 +4,7 @@ import {analyzePositionalPoolTemporalStability} from "./positional-pool-temporal
 import type {PositionalPoolConcordanceReport} from "./positional-pool-concordance";
 
 const fixture:PositionalPoolConcordanceReport={method:"fixture",minimumHistory:10,poolMethods:["frequency"],poolSizes:[3],
- blocks:Array.from({length:9},(_,i)=>({regimeId:"A",position:0 as const,method:"frequency" as const,poolSize:3,blockIndex:i,startDrawId:i*10,endDrawId:i*10+9,partial:false,
+ blocks:Array.from({length:9},(_,i)=>({regimeId:"pool-stable|dup-stable|distinct-stable|entropy-stable",position:0 as const,method:"frequency" as const,poolSize:3,blockIndex:i,startDrawId:i*10,endDrawId:i*10+9,partial:false,
  positionalDominantDigit:(i%10) as never,positionalDominantShare:.1+i*.08,tested:10,poolHits:3,poolHitRate:.3,uniformReference:.3,
  dominantDigitPoolInclusionRate:.1+i*.08,meanPoolJaccard:.6,poolTurnover:.4,dominantChangedFromPreviousBlock:i%2===0})),
  groups:[],limitations:[]};

@@ -30,11 +30,11 @@ export function analyzePositionalPoolCircularShiftControls(report:PositionalPool
  const replications=options.replications??999,minimumPairs=options.minimumPairs??5,seed=options.seed??20261203;
  if(!Number.isInteger(replications)||replications<1||!Number.isInteger(minimumPairs)||minimumPairs<3||!Number.isInteger(seed))throw new Error("invalid circular-shift options");
  const metrics:PositionalPoolNullMetric[]=["dominant-share-inclusion","dominant-transition-turnover","inclusion-hit-rate"];
- const keys=[...new Set(report.blocks.map(r=>[r.regimeId,r.position,r.method,r.poolSize].join("|")))],groups:PositionalPoolCircularShiftGroupResult[]=[];
+ const groupKey=(r:PositionalPoolBlockRow)=>JSON.stringify([r.regimeId,r.position,r.method,r.poolSize]),keys=[...new Set(report.blocks.map(groupKey))],groups:PositionalPoolCircularShiftGroupResult[]=[];
  let groupIndex=0;
  for(const key of keys){
-  const rows=report.blocks.filter(r=>[r.regimeId,r.position,r.method,r.poolSize].join("|")===key).sort((a,b)=>a.blockIndex-b.blockIndex);
-  const [regimeId,pos,method,size]=key.split("|"),results:PositionalPoolCircularShiftMetricResult[]=[];
+  const rows=report.blocks.filter(r=>groupKey(r)===key).sort((a,b)=>a.blockIndex-b.blockIndex);
+  const [regimeId,pos,method,size]=JSON.parse(key) as [string,number,string,number],results:PositionalPoolCircularShiftMetricResult[]=[];
   for(const metric of metrics){
    const {x,y,indices}=values(rows,metric),contiguous=indices.every((v,i)=>i===0||v===indices[i-1]+1);
    const observed=contiguous&&x.length>=minimumPairs?corr(x,y):null,random=rng((seed+groupIndex*1000003+metrics.indexOf(metric)*7919)>>>0),nulls:number[]=[];
