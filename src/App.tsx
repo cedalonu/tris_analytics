@@ -1523,7 +1523,9 @@ export default function App() {
         try {
             const csvText = await file.text();
             const parsed = parseCSV(csvText);
-            localStorage.setItem('tris_csv_cache', csvText);
+            // La persistencia es opcional: si el navegador bloquea o agota el almacenamiento,
+            // la sesión actual debe poder usar el CSV ya validado.
+            try { localStorage.setItem('tris_csv_cache', csvText); } catch { /* conservar datos en memoria */ }
             setAllDraws(parsed);
             setSorteos(parsed.slice(-20));
             const last = parsed[parsed.length - 1];
