@@ -5,7 +5,7 @@ import type {Draw} from "../research-core";
 import type {ProspectiveRegimeLabel} from "./prospective-regime-persistence";
 function fixture(n=180):{draws:Draw[];labels:ProspectiveRegimeLabel[]}{
  const draws:Draw[]=[],labels:ProspectiveRegimeLabel[]=[];
- for(let i=0;i<n;i++){const digits=[0,1,2,3,4].map(p=>(i*(p+3)+Math.floor(i/(p+2))+p)%10) as Draw["digits"];const drawId=i+1;draws.push({drawId,digits});labels.push({drawId,regimeId:"A",method:"test-past-only",sourceStartDrawId:Math.max(1,drawId-30),sourceEndDrawId:drawId-1});}
+ for(let i=0;i<n;i++){const digits=[0,1,2,3,4].map(p=>(i*(p+3)+Math.floor(i/(p+2))+p)%10) as Draw["digits"];const drawId=i+31;draws.push({drawId,digits});labels.push({drawId,regimeId:"A",method:"test-past-only",sourceStartDrawId:drawId-30,sourceEndDrawId:drawId-1});}
  return{draws,labels};
 }
 test("rebuilds all declared block scales and is deterministic",()=>{const{draws,labels}=fixture();const opts={blockSizes:[10,20],minimumDrawSupport:5,minimumHistory:10,methods:["frequency" as const],poolSizes:[3]};const a=analyzePositionalPoolScaleSensitivity(draws,labels,opts);assert.deepEqual(a,analyzePositionalPoolScaleSensitivity(draws,labels,opts));assert.deepEqual(a.blockSizes,[10,20]);assert.ok(a.groups.length>0);assert.ok(a.groups.every(g=>g.scales.length===2));});
