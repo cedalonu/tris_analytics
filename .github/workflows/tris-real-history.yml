@@ -1,0 +1,78 @@
+name: TRIS real-history integration validation
+
+on:
+  push:
+    branches: [research-core-v1]
+
+permissions:
+  contents: read
+
+jobs:
+  real-history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Check out research branch
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm install
+      - name: TypeScript check
+        run: npm run lint
+      - name: Research unit tests
+        run: npm run test:research
+      - name: Build application
+        run: npm run build
+      - name: Validate and checkpoint the exact CSV snapshot
+        run: npm run research:sync -- data/source-snapshots/Tris-2026-11-25.csv data/tris-sync-checkpoint.json
+      - name: Run frozen chronological hypothesis validation
+        run: npm run research:validate -- data/source-snapshots/Tris-2026-11-25.csv data/prospective
+      - name: Run historical regime analysis
+        run: npm run research:regime -- data/source-snapshots/Tris-2026-11-25.csv
+      - name: Run temporal memory
+        run: npm run research:memory -- data/source-snapshots/Tris-2026-11-25.csv
+      - name: Run contextual memory
+        run: npm run research:context-memory -- data/source-snapshots/Tris-2026-11-25.csv
+      - name: Run adaptive signal memory
+        run: npm run research:adaptive-memory -- data/source-snapshots/Tris-2026-11-25.csv
+      - name: Run regime-conditioned memory
+        run: npm run research:regime-memory -- data/source-snapshots/Tris-2026-11-25.csv
+      - name: Run cross-family concordance
+        run: npm run research:concordance -- data/source-snapshots/Tris-2026-11-25.csv
+      - name: Run signal interactions
+        run: npm run research:interactions -- data/source-snapshots/Tris-2026-11-25.csv
+      - name: Run collective behavior
+        run: npm run research:collective -- data/source-snapshots/Tris-2026-11-25.csv
+      - name: Run persistence analysis
+        run: npm run research:persistence -- data/source-snapshots/Tris-2026-11-25.csv
+      - name: Run portfolio walk-forward benchmarks
+        env:
+          TRIS_PORTFOLIO_SIZES: "10"
+          TRIS_PORTFOLIO_RANDOM_REPS: "5"
+        run: npm run research:portfolio-walk-forward -- data/source-snapshots/Tris-2026-11-25.csv
+      - name: Freeze next-draw prospective hypotheses
+        run: npm run research:prospective -- data/source-snapshots/Tris-2026-11-25.csv data/prospective
+      - name: Audit prospective ledger integrity
+        run: npm run research:prospective-audit -- data/prospective
+      - name: Audit prospective coverage
+        run: npm run research:prospective-coverage -- data/source-snapshots/Tris-2026-11-25.csv data/prospective
+      - name: Report prospective performance
+        run: npm run research:prospective-performance -- data/prospective
+      - name: Report prospective temporal stability
+        run: npm run research:prospective-performance-stability -- data/prospective
+      - name: Report prospective parameter sensitivity
+        run: npm run research:prospective-performance-sensitivity -- data/prospective
+      - name: Upload real-history reports and frozen ledgers
+        uses: actions/upload-artifact@v4
+        with:
+          name: tris-real-history-validation
+          path: |
+            reports/**
+            data/prospective/**
+            data/tris-sync-checkpoint.json
+          if-no-files-found: error
+          retention-days: 90
