@@ -32,7 +32,8 @@ export function summarizePositionalRegimeStability(
 ):PositionalRegimeStabilityReport {
  const blockSize=options.blockSize??25,blockOffset=options.blockOffset??0,minimum=options.minimumDrawSupport??10;
  if(!Number.isInteger(blockSize)||blockSize<2)throw new Error("blockSize must be an integer >= 2");
- if(!Number.isInteger(blockOffset)||blockOffset<0||blockOffset>=blockSize)throw new Error("blockOffset must be an integer from 0 to blockSize - 1");\n if(!Number.isInteger(minimum)||minimum<1||minimum>blockSize)throw new Error("minimumDrawSupport must be between 1 and blockSize");
+ if(!Number.isInteger(blockOffset)||blockOffset<0||blockOffset>=blockSize)throw new Error("blockOffset must be an integer from 0 to blockSize - 1");
+ if(!Number.isInteger(minimum)||minimum<1||minimum>blockSize)throw new Error("minimumDrawSupport must be between 1 and blockSize");
  if(!labels.length)throw new Error("labels are required");
  // Reuse the profile module's validation: chronological, contiguous draws and strictly past-only labels.
  const profile=analyzePositionalRegimeProfiles(draws,labels,{minimumSupport:minimum});
@@ -50,7 +51,8 @@ export function summarizePositionalRegimeStability(
    const overallDominant=regimeLabels.length?overallCounts.indexOf(overallMax):null;
    const blocks:PositionalStabilityBlock[]=[];
    for(let i=0;i<blockCount;i++){
-    const nominalStart=first+i*blockSize-blockOffset;\n    const start=Math.max(first,nominalStart),end=Math.min(last,nominalStart+blockSize-1);
+    const nominalStart=first+i*blockSize-blockOffset;
+    const start=Math.max(first,nominalStart),end=Math.min(last,nominalStart+blockSize-1);
     const rows=regimeLabels.filter(x=>x.drawId>=start&&x.drawId<=end).map(x=>drawById.get(x.drawId)!);
     const counts=Array(10).fill(0) as number[];
     for(const row of rows)counts[row.digits[p]]++;
