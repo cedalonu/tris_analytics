@@ -56,7 +56,8 @@
     "research:positional-pool-scale-sensitivity": "tsx scripts/run-tris-regime-analysis.ts",
     "research:prospective-audit": "tsx scripts/run-tris-prospective-audit.ts",
     "research:prospective-coverage": "tsx scripts/run-tris-prospective-coverage.ts",
-    "research:prospective-performance": "tsx scripts/run-tris-prospective-performance.ts"
+    "research:prospective-performance": "tsx scripts/run-tris-prospective-performance.ts",
+    "research:prospective-performance-stability": "tsx scripts/run-tris-prospective-performance-stability.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
