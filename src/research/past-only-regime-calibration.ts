@@ -32,9 +32,9 @@ export function calibratePastOnlyRegimeClassifier(options:RegimeCalibrationOptio
  let detected=0,observations=0;
  for(let r=0;r<replications;r++){
   const rows=drawRows(random,"pool-shift",r),result=classifyPastOnlyRegimes(rows,rows[75].drawId,rows[75+targetsPerReplication-1].drawId);
-  for(const label of result.labels){observations++;if(label.regimeId.includes("pool-shift"))detected++;}
+  const firstPostChangeLabel=result.labels[0];if(firstPostChangeLabel){observations++;if(firstPostChangeLabel.regimeId.includes("pool-shift"))detected++;}
  }
- scenarios.push({name:"abrupt-pool-shift",replications,observations,alertCount:detected,rate:detected/observations,wilson95:wilson(detected,observations),description:"Cambio sintético en el concurso 51: la ventana reciente pasa a cinco dígitos iguales por concurso; se mide la detección de pool-shift."});
+ scenarios.push({name:"abrupt-pool-shift",replications,observations,alertCount:detected,rate:detected/observations,wilson95:wilson(detected,observations),description:"Cambio sintético en el concurso 51: para el primer objetivo posterior al cambio, la ventana reciente contiene 25 concursos concentrados; se mide la detección inicial de pool-shift."});
  return{seed,replications,targetsPerReplication,window:50,scenarios,limitations:[
   "Calibración sintética reproducible; no estima la frecuencia de regímenes ni cambios reales del TRIS.",
   "Los escenarios estacionarios miden etiquetas no estables en procesos independientes con distribución fija; la dependencia temporal real podría cambiar estos resultados.",
