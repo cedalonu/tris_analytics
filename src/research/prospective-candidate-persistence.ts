@@ -49,9 +49,9 @@ export function summarizeProspectiveCandidatePersistence(
   forecastByKey.set(key,f);forecastById.set(f.forecastId,f);
  }
  for(const r of results){
-  if(!members.has(r.candidateId))continue;
   const f=forecastById.get(r.forecastId);
-  if(!f||f.candidateId!==r.candidateId||f.targetDrawId!==r.targetDrawId)throw new Error("resolved result has no matching frozen forecast");
+  if(!f){if(members.has(r.candidateId))throw new Error("resolved result has no matching frozen forecast");continue;}
+  if(f.candidateId!==r.candidateId||f.targetDrawId!==r.targetDrawId)throw new Error("resolved result identity differs from frozen forecast");
   if(resultById.has(r.forecastId))throw new Error("duplicate resolved result");
   resultById.set(r.forecastId,r);
  }
