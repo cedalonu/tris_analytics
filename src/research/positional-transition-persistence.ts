@@ -21,9 +21,10 @@ export interface PositionalTransitionSeries {
  meanEpisodeBlocks:number|null;medianEpisodeBlocks:number|null;maxEpisodeBlocks:number;
  meanEpisodeDraws:number|null;meanSustainedEpisodeBlocks:number|null;
 }
+export interface PositionalTransitionThresholdSummary {minimumConsecutiveBlocks:number;episodes:number;transientEpisodes:number;sustainedEpisodes:number;transitions:number;transientTransitions:number;sustainedTransitions:number;returns:number;returnRate:number|null}
 export interface PositionalTransitionPersistenceReport {
  method:string;minimumConsecutiveBlocksForSustained:number;
- sensitivityThresholds:number[];series:PositionalTransitionSeries[];
+ sensitivityThresholds:number[];sensitivityByThreshold:PositionalTransitionThresholdSummary[];series:PositionalTransitionSeries[];
  summaryByPosition:{position:number;regimeCount:number;transitions:number;transient:number;sustained:number;returns:number;returnRate:number|null}[];
  limitations:string[];
 }
@@ -57,8 +58,9 @@ export function analyzePositionalTransitionPersistence(report:PositionalRegimeSt
  if(!Number.isInteger(minimum)||minimum<1)throw new Error("minimumConsecutiveBlocksForSustained must be a positive integer");
  if(!thresholds.length||thresholds.some(x=>!Number.isInteger(x)||x<1)||new Set(thresholds).size!==thresholds.length)throw new Error("sensitivityThresholds must be unique positive integers");
  const series=report.regimes.map(s=>auditSeries(s,minimum));
+ const sensitivityByThreshold=thresholds.map(minConsecutiveBlocks=>{const rows=report.regimes.map(s=>auditSeries(s,minConsecutiveBlocks));const episodes=rows.flatMap(x=>x.episodes),transitions=rows.flatMap(x=>x.transitions),returns=transitions.filter(x=>x.returnsToEarlierDigit).length;return{minimumConsecutiveBlocks,episodes:episodes.length,transientEpisodes:episodes.filter(x=>x.status==="transient").length,sustainedEpisodes:episodes.filter(x=>x.status==="sustained").length,transitions:transitions.length,transientTransitions:transitions.filter(x=>x.status==="transient").length,sustainedTransitions:transitions.filter(x=>x.status==="sustained").length,returns,returnRate:transitions.length?returns/transitions.length:null};});
  const summaryByPosition=Array.from({length:5},(_,i)=>{const xs=series.filter(x=>x.position===i+1),transitions=xs.reduce((n,x)=>n+x.transitionCount,0),returns=xs.reduce((n,x)=>n+x.returnsToEarlierDigit,0);return{position:i+1,regimeCount:xs.length,transitions,transient:xs.reduce((n,x)=>n+x.transientTransitions,0),sustained:xs.reduce((n,x)=>n+x.sustainedTransitions,0),returns,returnRate:transitions?returns/transitions:null};});
- return{method:"block-dominance-transition-persistence-v1",minimumConsecutiveBlocksForSustained:minimum,sensitivityThresholds:thresholds,series,summaryByPosition,limitations:[
+ return{method:"block-dominance-transition-persistence-v1",minimumConsecutiveBlocksForSustained:minimum,sensitivityThresholds:thresholds,sensitivityByThreshold,series,summaryByPosition,limitations:[
   "La unidad de observación es el bloque no solapado de la fase 24, no cada sorteo; un cambio dentro de un bloque puede quedar oculto.",
   "Un bloque insuficiente rompe la secuencia; no se conectan episodios a través de huecos de soporte.",
   "transient y sustained dependen del umbral explícito de bloques consecutivos; la tabla de sensibilidad no selecciona un umbral óptimo.",
