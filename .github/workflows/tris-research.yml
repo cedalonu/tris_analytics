@@ -28,6 +28,8 @@ jobs:
         run: npm run research:positional-stability-calibration
       - name: Run positional transition persistence calibration
         run: npm run research:positional-transition-calibration
+      - name: Run positional-pool temporal stability calibration
+        run: npm run research:positional-pool-stability-calibration
       - name: Run synthetic detector calibration
         run: npm run research:position-null
       - name: Upload synthetic calibration report
@@ -43,5 +45,7 @@ jobs:
             reports/positional-stability-calibration/latest.md
             reports/positional-transition-calibration/latest.json
             reports/positional-transition-calibration/latest.md
+            reports/positional-pool-temporal-stability-calibration/latest.json
+            reports/positional-pool-temporal-stability-calibration/latest.md
           if-no-files-found: error
           retention-days: 14
