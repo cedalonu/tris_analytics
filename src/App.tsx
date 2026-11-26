@@ -1127,21 +1127,29 @@ interface Draw {
 }
 
 function parseCSV(text: string): Draw[] {
-    const lines = text.trim().split('\n');
-    const draws: Draw[] = [];
-    for (let i = 1; i < lines.length; i++) {
-        const cols = lines[i].split(',');
-        if (cols.length >= 8) {
-            const digits = [parseInt(cols[2]), parseInt(cols[3]), parseInt(cols[4]), parseInt(cols[5]), parseInt(cols[6])];
-            if (digits.some(d => Number.isNaN(d))) continue;
-            draws.push({
-                num: parseInt(cols[0]),
-                win: digits,
-                digits,
-                date: cols[7]
-            });
-        }
+    const lines = text.replace(/^\\uFEFF/, '').trim().split(/\\r?\\n/);
+    if (lines.length < 2) throw new Error('El CSV no contiene sorteos.');
+    const header = lines[0].split(',').map(value => value.trim().toUpperCase());
+    const required = ['CONCURSO', 'ID', 'R1', 'R2', 'R3', 'R4', 'R5', 'FECHA'];
+    if (required.some((name, index) => header[index] !== name)) {
+        throw new Error('Encabezado inválido. Se espera CONCURSO,ID,R1,R2,R3,R4,R5,FECHA.');
     }
+    const draws: Draw[] = [];
+    const seen = new Set<number>();
+    for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const cols = lines[i].split(',');
+        const num = Number.parseInt(cols[0]?.trim() ?? '', 10);
+        const digits = [2, 3, 4, 5, 6].map(index => Number.parseInt(cols[index]?.trim() ?? '', 10));
+        const date = (cols[7] ?? '').trim();
+        if (!Number.isInteger(num) || num <= 0 || digits.length !== 5 || digits.some(d => !Number.isInteger(d) || d < 0 || d > 9) || !date) {
+            throw new Error(`Fila ${i + 1}: concurso, cinco dígitos o fecha inválidos.`);
+        }
+        if (seen.has(num)) throw new Error(`Fila ${i + 1}: concurso duplicado (${num}).`);
+        seen.add(num);
+        draws.push({ num, win: digits, digits, date });
+    }
+    if (!draws.length) throw new Error('No se encontraron sorteos válidos.');
     return draws.sort((a, b) => a.num - b.num);
 }
 
@@ -1531,10 +1539,33 @@ export default function App() {
     });
 
     const [toastMsg, setToastMsg] = useState<string | null>(null);
+    const [csvImportError, setCsvImportError] = useState<string | null>(null);
 
     function showToast(msg: string) {
         setToastMsg(msg);
         setTimeout(() => setToastMsg(null), 2400);
+    }
+
+    async function handleCsvImport(file?: File) {
+        if (!file) return;
+        try {
+            const csvText = await file.text();
+            const parsed = parseCSV(csvText);
+            localStorage.setItem('tris_csv_cache', csvText);
+            setAllDraws(parsed);
+            setSorteos(parsed.slice(-20));
+            const last = parsed[parsed.length - 1];
+            setLastDrawInfo(last);
+            setNextNum(last.num + 1);
+            setDrawTime(getNextDrawTime(parsed));
+            predCacheMap.clear();
+            const livePools = getPoolsForDrawAllPos(parsed, null, poolSize);
+            buildPoolsList(livePools, poolSize);
+            setCsvImportError(null);
+            showToast(`CSV validado: ${parsed.length.toLocaleString('es-MX')} sorteos cargados.`);
+        } catch (error) {
+            setCsvImportError(error instanceof Error ? error.message : 'No se pudo importar el CSV.');
+        }
     }
 
     useEffect(() => {
@@ -1547,67 +1578,30 @@ export default function App() {
                         if (k && k.startsWith('tris_pred_') && !k.startsWith('tris_pred_v7_')) localStorage.removeItem(k);
                     }
                 } catch (e) { /* ignorar */ }
-                let csvText = localStorage.getItem('tris_csv_cache');
+                const csvText = localStorage.getItem('tris_csv_cache');
                 if (csvText) {
                     const parsed = parseCSV(csvText);
                     setAllDraws(parsed);
                     setSorteos(parsed.slice(-20));
                     const last = parsed[parsed.length - 1];
                     setLastDrawInfo(last);
-                    const nNum = last.num + 1;
-                    setNextNum(nNum);
-                    const dTime = getNextDrawTime(parsed);
-                    setDrawTime(dTime);
-
-                    const lastRealizedNum = parsed[parsed.length - 1].num;
+                    setNextNum(last.num + 1);
+                    setDrawTime(getNextDrawTime(parsed));
+                    const lastRealizedNum = last.num;
                     for (let i = localStorage.length - 1; i >= 0; i--) {
                         const k = localStorage.key(i);
                         if (k && k.startsWith('tris_pred_v7_sz_')) {
                             const parts = k.split('_');
                             const drawNum = parseInt(parts[parts.length - 1], 10);
-                            if (drawNum > lastRealizedNum) {
-                                localStorage.removeItem(k);
-                            }
+                            if (drawNum > lastRealizedNum) localStorage.removeItem(k);
                         }
                     }
                     predCacheMap.clear();
-
                     const livePools = getPoolsForDrawAllPos(parsed, null, poolSize);
                     buildPoolsList(livePools, poolSize);
-                    setLoading(false);
                 }
-
-                const response = await fetch('https://raw.githubusercontent.com/pakinja/pakin/refs/heads/master/Tris.csv');
-                const freshCsv = await response.text();
-                if (freshCsv) {
-                    safeLSSet('tris_csv_cache', freshCsv);
-                    const parsed = parseCSV(freshCsv);
-                    setAllDraws(parsed);
-                    setSorteos(parsed.slice(-20));
-                    const last = parsed[parsed.length - 1];
-                    setLastDrawInfo(last);
-                    const nNum = last.num + 1;
-                    setNextNum(nNum);
-                    const dTime = getNextDrawTime(parsed);
-                    setDrawTime(dTime);
-
-                    const lastRealizedNum2 = parsed[parsed.length - 1].num;
-                    for (let i = localStorage.length - 1; i >= 0; i--) {
-                        const k = localStorage.key(i);
-                        if (k && k.startsWith('tris_pred_v7_sz_')) {
-                            const parts = k.split('_');
-                            const drawNum = parseInt(parts[parts.length - 1], 10);
-                            if (drawNum > lastRealizedNum2) {
-                                localStorage.removeItem(k);
-                            }
-                        }
-                    }
-                    predCacheMap.clear();
-
-                    const livePools = getPoolsForDrawAllPos(parsed, null, poolSize);
-                    buildPoolsList(livePools, poolSize);
-                    setLoading(false);
-                }
+                // Sin CSV local, la aplicación espera a que el usuario importe su archivo.
+                setLoading(false);
             } catch (err) {
                 console.error(err);
                 setLoading(false);
@@ -1927,10 +1921,18 @@ export default function App() {
                     <div className="text-[38px] font-black text-center text-[#ffeb3b] drop-shadow-[0_0_12px_rgba(255,235,59,.9)] leading-[0.9]">
                         TRIS PREDICTOR <span className="text-[#00e5ff] drop-shadow-[0_0_12px_rgba(0,229,255,.9)]">V1 ML</span>
                     </div>
-                    <div className="text-center my-3">
-                        <span className="pill inline-flex items-center rounded-full px-3.5 py-1.5 text-[11px] font-bold bg-[rgba(0,229,255,.1)] border border-[rgba(0,229,255,.3)] text-[#00e5ff]">
+                    <div className="text-center my-3 space-y-2">
+                        {allDraws.length > 0 ? <span className="pill inline-flex items-center rounded-full px-3.5 py-1.5 text-[11px] font-bold bg-[rgba(0,229,255,.1)] border border-[rgba(0,229,255,.3)] text-[#00e5ff]">
                             Próximo Sorteo: <b className="ml-1">{nextNum} ({drawTime})</b> • Basado en Sorteo {lastDrawInfo.num} ({lastDrawInfo.date})
-                        </span>
+                        </span> : <span className="inline-flex rounded-full px-3.5 py-1.5 text-[11px] font-bold bg-[rgba(255,193,7,.1)] border border-[rgba(255,193,7,.3)] text-[#ffd54f]">Sin historial cargado · importa tu archivo CSV para comenzar</span>}
+                        <div className="flex flex-wrap justify-center items-center gap-2">
+                            <label className="cursor-pointer border border-[rgba(0,229,255,.4)] bg-[rgba(0,229,255,.15)] text-[#00e5ff] px-3 py-1.5 rounded-full text-[11px] font-extrabold hover:bg-[rgba(0,229,255,.25)]">
+                                Importar Tris.csv
+                                <input type="file" accept=".csv,text/csv" className="hidden" onChange={e => { void handleCsvImport(e.target.files?.[0]); e.currentTarget.value = ''; }} />
+                            </label>
+                            <span className="text-[10px] text-[#777]">Carga manual · sin descargas automáticas</span>
+                        </div>
+                        {csvImportError && <p role="alert" className="text-[11px] text-red-400">{csvImportError}</p>}
                     </div>
 
                     <div className="mt-4 bg-[#121212] border border-[#2a2a2a] rounded-xl p-3">
