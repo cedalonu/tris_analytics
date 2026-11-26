@@ -194,3 +194,26 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Configuración: `TRIS_POSITIONAL_POOL_ORIGIN_BLOCK_SIZE` (25) y `TRIS_POSITIONAL_POOL_BLOCK_OFFSETS` (0,6,12,18). Reutiliza historia mínima y soporte mínimo de las fases anteriores.
 - Los offsets se solapan sustancialmente y no son réplicas independientes. No hay p-valores ni corrección por comparaciones múltiples. La estabilidad no implica predictibilidad.
 - No modifica forecasts, candidatos, pesos, portafolios ni ledger. CSV local manual; sin APIs, polling ni descargas.
+
+
+## Fase 38 — robustez conjunta de tamaño y origen
+- Cruza los grupos comparables de las fases 36 y 37 por régimen, posición, método, tamaño de pool y métrica.
+- Solo clasifica robustez positiva/negativa cuando la dirección se conserva en todas las escalas y todos los offsets predeclarados.
+- Distingue conflicto de dirección entre dimensiones, sensibilidad a escala/origen y soporte insuficiente; no imputa claves ausentes.
+- Se integra en `research:regime-analysis`, con resumen y detalle en JSON/Markdown.
+- Las configuraciones reutilizan los mismos sorteos y bloques solapados; no son réplicas independientes ni evidencia inferencial. No combina p-valores ni corrige multiplicidad.
+- No cambia pronósticos, candidatos, pesos, portafolios o ledger; CSV local manual, sin APIs, polling ni descargas.
+
+## Fase 39 — sensibilidad a ventanas temporales
+- Recalcula la estabilidad temporal de fase 30 para ventanas predeclaradas de 5, 8 y 10 bloques; el paso es la mitad de cada ventana (mínimo 1).
+- Reporta conteos de grupos positivos, negativos, inestables e insuficientes por configuración; no selecciona la ventana con más resultados positivos.
+- Configuración: `TRIS_POSITIONAL_POOL_WINDOW_SIZES` (5,8,10) y `TRIS_POSITIONAL_POOL_WINDOW_MIN_PAIRS` (3).
+- Las ventanas se solapan y comparten observaciones; los conteos son descriptivos, no tasas de error reales ni validación prospectiva.
+- No modifica pronósticos, candidatos, pesos, portafolios o ledger; sin APIs, polling ni descargas.
+
+## Fase 40 — sensibilidad a historia y soporte mínimo
+- Recalcula la concordancia de fase 29 en una cuadrícula de historia previa mínima (20, 30, 50 sorteos) y soporte mínimo de bloque (5, 10, 15).
+- Informa por combinación cuántas correlaciones se calculan, sus signos y cuántas quedan no calculables; no rellena ni interpola.
+- Configuración: `TRIS_POSITIONAL_POOL_MIN_HISTORIES` (20,30,50), `TRIS_POSITIONAL_POOL_MIN_SUPPORT_GRID` (5,10,15), tamaño fijo `TRIS_POSITIONAL_POOL_ORIGIN_BLOCK_SIZE` (25).
+- Los cambios de umbral alteran la cobertura y no crean muestras independientes. La estabilidad de signo no implica inferencia ni capacidad predictiva.
+- No modifica pronósticos, candidatos, pesos, portafolios o ledger; CSV local manual, sin APIs, polling ni descargas.
