@@ -40,3 +40,11 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Semilla, réplicas y número de objetivos configurables; umbrales del clasificador permanecen congelados.
 - Comando offline: `npm run research:regime-calibration`; reporte en `reports/regime-calibration/latest.md` y `.json`.
 - No usa CSV real, APIs, polling ni descargas; no estima capacidad predictiva ni ajusta parámetros automáticamente.
+
+## Phase 20 — flujo integrado de análisis prospectivo por régimen
+- Añade `npm run research:regime-analysis -- <local-Tris.csv> [ledger-directory]` para validar CSV local, generar etiquetas past-only y ejecutar el auditor de persistencia condicionado por régimen en un solo paso.
+- El flujo verifica errores, huecos, identidad del manifiesto y resumen del portafolio; bloquea si no hay suficiente historia o resultados prospectivos resueltos.
+- Regenera `regime-labels.jsonl` y diagnósticos desde el mismo CSV cuyo SHA-256 queda registrado en el reporte integral `regime-analysis/latest.md` y `.json`.
+- Mantiene pronósticos y resultados congelados; pendientes y oportunidades sin pronóstico siguen separados. No reconstruye concursos omitidos.
+- Umbral de soporte mediante `TRIS_REGIME_PERSISTENCE_MIN_DRAWS`; los umbrales del clasificador permanecen congelados.
+- No hace llamadas de red, APIs, polling ni descargas. Requiere CSV proporcionado manualmente y ledger prospectivo local.
