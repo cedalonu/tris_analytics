@@ -34,3 +34,15 @@ La fase 42 requiere el CSV local validado y el directorio del ledger. Las demás
 - Los informes deben provenir del mismo conjunto de datos y periodo de análisis si se van a comparar entre sí.
 - La selección de archivos se realiza manualmente. No hay APIs, descargas automáticas, polling ni transmisión de archivos.
 - El panel no guarda los informes entre sesiones; vuelve a importarlos cuando abras la interfaz de nuevo.
+
+
+## Diseño visual preliminar
+
+La cabecera del laboratorio identifica el proyecto como **INTUICIÓN ARTIFICIAL · TRIS** y presenta cinco accesos directos, uno por cada fase 41–45. Cada tarjeta indica si su informe ya fue importado o si sigue pendiente; seleccionar una tarjeta abre el detalle correspondiente.
+
+La lectura de cada fase conserva tres niveles:
+- **Disponibilidad:** si el informe local fue cargado.
+- **Métrica:** valores que el propio JSON contiene, sin completar datos faltantes.
+- **Interpretación:** estados y limitaciones calculados por el análisis de origen.
+
+La navegación no implica que una fase tenga evidencia suficiente. En particular, integridad, cobertura, rendimiento, estabilidad y sensibilidad son dimensiones distintas y no deben confundirse con una demostración de capacidad predictiva.
