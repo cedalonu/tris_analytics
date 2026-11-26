@@ -8,3 +8,7 @@ Split the observed prospective horizon into fixed consecutive contest blocks (de
 
 ## Phase 15 — rolling-window prospective concordance
 Add overlapping, full-length chronological windows to expose short-term changes that can be hidden by fixed non-overlapping blocks. Window size, step, and minimum common support are configurable. Incomplete trailing windows are omitted; missing family observations are not imputed. Overlapping windows are explicitly treated as dependent descriptive summaries, not independent trials or inferential evidence. No p-values, promotion, or portfolio/forecast changes. Local prospective ledger only; no APIs.
+
+ 
+## Phase 16 — persistence of individual prospective signals
+Evaluate each frozen candidate against its own paired baseline across consecutive, non-overlapping prospective blocks. Report resolved coverage, hit and baseline counts, block differences, positive/negative/neutral/underpowered blocks, directional runs, and a descriptive consistency label. Missed forecasts are not reconstructed; pending and unforecasted opportunities remain separate. Minimum block support is configurable. No p-values, automatic selection, promotion, or weight/portfolio changes. Local prospective ledger only; no APIs.
