@@ -26,7 +26,7 @@ test("incremental rankings match the direct buildPool reference",()=>{
   const profile=stability.regimes.find(x=>x.regimeId===row.regimeId&&x.position===row.position+1)!;
   const block=profile.blocks.find(x=>x.blockIndex===row.blockIndex)!;
   const targets=draws.filter(d=>d.drawId>=block.startDrawId&&d.drawId<=block.endDrawId&&labels.some(l=>l.drawId===d.drawId&&l.regimeId===row.regimeId));
-  let hits=0,included=0,jaccard=0,jaccardN=0,previous:Set<number>|null=null,tested=0;
+  let hits=0,included=0,jaccard=0,jaccardN=0,previous:Set<Draw["digits"][number]>|null=null,tested=0;
   for(const target of targets){
    const index=draws.findIndex(d=>d.drawId===target.drawId);
    if(index<10)continue;
