@@ -35,7 +35,8 @@
     "research:prospective-portfolio": "tsx scripts/run-tris-prospective-portfolio.ts",
     "research:family-concordance-null": "tsx scripts/run-tris-family-concordance-null.ts",
     "research:family-concordance-audit": "tsx scripts/run-tris-family-concordance-audit.ts",
-    "research:family-concordance-stability": "tsx scripts/run-tris-family-concordance-stability.ts"
+    "research:family-concordance-stability": "tsx scripts/run-tris-family-concordance-stability.ts",
+    "research:family-concordance-rolling": "tsx scripts/run-tris-family-concordance-rolling.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
