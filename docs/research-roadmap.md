@@ -249,3 +249,15 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Los intervalos y diferencias son descriptivos: no corrigen dependencia temporal ni multiplicidad, no prueban predictibilidad y no promueven candidatos.
 - Comando local: `npm run research:prospective-performance -- [directorio-ledger]`; lee `forecasts.jsonl` y `results.jsonl` (por defecto `data/prospective`) y escribe `reports/prospective-performance/latest.json` y `.md`.
 - Sin APIs, consultas externas, descargas, polling, reconstrucción retroactiva ni cambios al ledger.
+
+
+## Fase 44 — estabilidad temporal del desempeño prospectivo
+- Se agrega `src/research/prospective-performance-stability.ts`, pruebas y `scripts/run-tris-prospective-performance-stability.ts`.
+- Evalúa ventanas cronológicas fijas de 20 concursos, ancladas al primer concurso objetivo presente en el ledger; conserva también ventanas sin resoluciones.
+- Mantiene grupos separados por familia y configuración congelada exactas.
+- Por ventana calcula soporte, tasas de acierto, victorias pareadas exclusivas, empates y diferencia pareada candidato menos línea base.
+- Clasifica cada configuración como desempeño consistentemente positivo/negativo, dirección mixta, sin ventaja direccional o evidencia insuficiente; requiere al menos 5 resoluciones por ventana y 3 ventanas evaluables por defecto.
+- No interpola sorteos, no rellena ventanas, no selecciona periodos por resultados y no altera pronósticos ni resoluciones.
+- Comando local: `npm run research:prospective-performance-stability -- [directorio-ledger]`; escribe `reports/prospective-performance-stability/latest.json` y `.md`.
+- La estabilidad es descriptiva, no prueba predictibilidad; no corrige multiplicidad ni dependencia temporal.
+- Sin APIs, descargas, polling ni acceso a fuentes externas.
