@@ -9,6 +9,7 @@ Describir cómo se distribuyen los dígitos R1–R5 dentro de cada régimen asig
 - Para cada régimen y posición calcula frecuencias de 0–9, entropía de Shannon, entropía normalizada, número efectivo de dígitos (`2^H`) y dígito dominante.
 - Para cada uno de los diez pares de posiciones calcula coincidencia observada, referente marginal `sum(P(Rp=d) × P(Rq=d))` y exceso descriptivo respecto a ese referente.
 - Calcula cambios del dígito por posición frente al sorteo inmediatamente anterior: repetición, movimiento +1/-1 módulo 10 y distancia circular media.
+- Mide sincronía entre posiciones: si dos posiciones comparten el mismo cambio módulo 10 en un concurso, comparado con un referente construido con sus distribuciones marginales de cambios.
 - Marca como soporte limitado los regímenes con menos de 30 concursos por defecto. El umbral se cambia con `TRIS_REGIME_POSITION_MIN_SUPPORT`.
 
 ## Ejecución
