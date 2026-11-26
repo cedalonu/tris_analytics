@@ -124,3 +124,4 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Predeterminados: ventana 5 bloques, paso 1, mínimo 3 pares; clasificación consistente exige 70% del signo dominante y al menos 3 correlaciones válidas.
 - Integrado en `research:regime-analysis`; añade `positionalPoolTemporalStability` al JSON y Markdown. Variables `TRIS_POSITIONAL_POOL_STABILITY_WINDOW`, `TRIS_POSITIONAL_POOL_STABILITY_STEP`, `TRIS_POSITIONAL_POOL_STABILITY_MIN_PAIRS`.
 - Ventanas solapadas no independientes; consistencia de signo no es inferencia ni pronóstico. No modifica ledger, pesos, candidatos ni portafolios. Offline, sin APIs.
+- Calibración sintética añadida: escenarios nulo, positivo/negativo persistente, alternante y débil; 500 réplicas predeterminadas. Se integra en CI y publica artefactos JSON/Markdown. Las cifras miden el comportamiento del detector bajo escenarios artificiales, no el azar real de TRIS.
