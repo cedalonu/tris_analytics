@@ -49,7 +49,7 @@ export function summarizeProspectiveFamilyConcordance(
   if(!c||manifest.candidateConfigs[id]!==c.frozenConfig)throw new Error("manifest candidate/config does not match catalog: "+id);
   familyById.set(id,c.family);
  }
- const memberIds=new Set(manifest.candidateIds),forecastById=new Map<string,FrozenForecast>(),resultById=new Map<string,ResolvedForecast>();
+ const memberIds=new Set(manifest.candidateIds),forecastById=new Map<string,FrozenForecast>(),forecastByKey=new Map<string,FrozenForecast>(),resultById=new Map<string,ResolvedForecast>();
  for(const f of forecasts){
   if(!memberIds.has(f.candidateId))continue;
   if(f.targetDrawId<manifest.firstTargetDrawId||f.targetDrawId>lastObservedDrawId+1)throw new Error("forecast target outside prospective range");
