@@ -42,6 +42,7 @@
     "research:regime-labels": "tsx scripts/run-tris-regime-labels.ts",
     "research:regime-calibration": "tsx scripts/run-tris-regime-calibration.ts",
     "research:regime-analysis": "tsx scripts/run-tris-regime-analysis.ts",
+    "research:historical-regime-analysis": "tsx scripts/run-tris-historical-regime-analysis.ts",
     "research:regime-stability": "tsx scripts/run-tris-regime-stability.ts",
     "research:regime-position-profile": "tsx scripts/run-tris-regime-analysis.ts",
     "research:positional-stability-calibration": "tsx scripts/run-tris-positional-stability-calibration.ts",
