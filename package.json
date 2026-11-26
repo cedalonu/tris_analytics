@@ -57,7 +57,8 @@
     "research:prospective-audit": "tsx scripts/run-tris-prospective-audit.ts",
     "research:prospective-coverage": "tsx scripts/run-tris-prospective-coverage.ts",
     "research:prospective-performance": "tsx scripts/run-tris-prospective-performance.ts",
-    "research:prospective-performance-stability": "tsx scripts/run-tris-prospective-performance-stability.ts"
+    "research:prospective-performance-stability": "tsx scripts/run-tris-prospective-performance-stability.ts",
+    "research:prospective-performance-sensitivity": "tsx scripts/run-tris-prospective-performance-sensitivity.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
