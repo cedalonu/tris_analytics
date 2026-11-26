@@ -15,6 +15,7 @@ import {analyzeRegimeTransitionDynamics} from "../src/research/regime-transition
 import {analyzePositionalRegimeProfiles} from "../src/research/positional-regime-profile";
 import {summarizePositionalRegimeStability} from "../src/research/positional-regime-stability";
 import {comparePositionalRegimes} from "../src/research/positional-regime-contrast";
+import {analyzePositionalTransitionPersistence} from "../src/research/positional-transition-persistence";
 import {summarizeProspectiveRegimePersistence} from "../src/research/prospective-regime-persistence";
 
 const input=process.argv[2],dir=resolve(process.argv[3]??"data/prospective-portfolio");
@@ -40,13 +41,14 @@ const dynamics=analyzeRegimeTransitionDynamics(classifier.labels);
 const positionalProfiles=analyzePositionalRegimeProfiles(imported.validation.valid,stability.auditLabels,{minimumSupport:Number(process.env.TRIS_REGIME_POSITION_MIN_SUPPORT??30)});
 const positionalStability=summarizePositionalRegimeStability(imported.validation.valid,stability.auditLabels,{blockSize:Number(process.env.TRIS_REGIME_POSITION_BLOCK_SIZE??25),minimumDrawSupport:Number(process.env.TRIS_REGIME_POSITION_BLOCK_MIN_SUPPORT??10)});
 const positionalContrasts=comparePositionalRegimes(positionalProfiles,positionalStability,{minimumRegimeSupport:Number(process.env.TRIS_REGIME_CONTRAST_MIN_SUPPORT??30),jensenShannonDistanceThreshold:Number(process.env.TRIS_REGIME_CONTRAST_JS_THRESHOLD??0.10),entropyDifferenceThresholdBits:Number(process.env.TRIS_REGIME_CONTRAST_ENTROPY_BITS??0.25)});
+const positionalTransitions=analyzePositionalTransitionPersistence(positionalStability,{minimumConsecutiveBlocksForSustained:Number(process.env.TRIS_POSITIONAL_TRANSITION_MIN_BLOCKS??2)});
 const report=summarizeProspectiveRegimePersistence(manifest,forecasts,results,stability.auditLabels,last,{minimumResolvedDraws:Number(process.env.TRIS_REGIME_PERSISTENCE_MIN_DRAWS??10)});
 const sourceSha256=createHash("sha256").update(csv,"utf8").digest("hex");
 const out=resolve(dir,"regime-analysis");await mkdir(out,{recursive:true});
 const generatedAt=new Date().toISOString();
 await writeFile(resolve(dir,"regime-labels.jsonl"),classifier.labels.map(x=>JSON.stringify(x)).join("\n")+"\n","utf8");
-await writeFile(resolve(dir,"regime-labels-diagnostics.json"),JSON.stringify({source:basename(resolve(input)),sourceSha256,method:classifier.method,warmupDraws:classifier.warmupDraws,labels:classifier.labels.length,regimeCounts:classifier.labels.reduce((a,x)=>({...a,[x.regimeId]:(a[x.regimeId]??0)+1}),{} as Record<string,number>),diagnostics:classifier.diagnostics,stability,dynamics,positionalProfiles,positionalStability,positionalContrasts,limitations:classifier.limitations},null,2)+"\n","utf8");
-const full={generatedAt,source:basename(resolve(input)),sourceSha256,classifierMethod:classifier.method,stability,dynamics,positionalProfiles,positionalStability,positionalContrasts,report};
+await writeFile(resolve(dir,"regime-labels-diagnostics.json"),JSON.stringify({source:basename(resolve(input)),sourceSha256,method:classifier.method,warmupDraws:classifier.warmupDraws,labels:classifier.labels.length,regimeCounts:classifier.labels.reduce((a,x)=>({...a,[x.regimeId]:(a[x.regimeId]??0)+1}),{} as Record<string,number>),diagnostics:classifier.diagnostics,stability,dynamics,positionalProfiles,positionalStability,positionalContrasts,positionalTransitions,limitations:classifier.limitations},null,2)+"\n","utf8");
+const full={generatedAt,source:basename(resolve(input)),sourceSha256,classifierMethod:classifier.method,stability,dynamics,positionalProfiles,positionalStability,positionalContrasts,positionalTransitions,report};
 await writeFile(resolve(out,"latest.json"),JSON.stringify(full,null,2)+"\n","utf8");
 const pct=(x:number|null)=>x===null?"n/d":(100*x).toFixed(1)+"%";
 const md=["# TRIS — análisis integral de persistencia por régimen","","- Fuente CSV: "+basename(resolve(input)),"- SHA-256 CSV: "+sourceSha256,"- Método de clasificación: "+classifier.method,"- Portafolio: "+report.portfolioId,"- Concursos observados: "+report.firstTargetDrawId+"–"+report.lastObservedDrawId,"- Etiquetas generadas: "+classifier.labels.length,"- Confirmación mínima de régimen: "+stability.minConsecutive+" etiquetas consecutivas","- Transiciones observadas: "+stability.transitions,"- Transiciones confirmadas: "+stability.confirmedTransitions,"- Episodios transitorios: "+stability.transientEpisodes,"","## Episodios de régimen", "| Episodio | Régimen | Inicio | Fin | Concursos | Clasificación | Confirmación |","|---:|---|---:|---:|---:|---|---:|",...stability.episodes.map(e=>"| "+e.episodeIndex+" | "+e.regimeId+" | "+e.startDrawId+" | "+e.endDrawId+" | "+e.length+" | "+e.status+" | "+(e.confirmedAtDrawId??"n/d")+" |"),"","## Sensibilidad a la regla de confirmación","| Racha mínima | Episodios | Persistentes | Transitorios | Transiciones confirmadas | Concursos en observación | % observación | Retraso medio |","|---:|---:|---:|---:|---:|---:|---:|---:|",...dynamics.thresholdSensitivity.map(x=>"| "+x.minConsecutive+" | "+x.episodes+" | "+x.persistentEpisodes+" | "+x.transientEpisodes+" | "+x.confirmedTransitions+" | "+x.watchDraws+" | "+(100*x.watchShare).toFixed(1)+"% | "+(x.meanConfirmationDelay??"n/d")+" |"),"","## Reglas de transición",...stability.limitations.map(x=>"- "+x),"","| Régimen | Candidato | Familia | Resueltos / esperados | Pendientes | Sin pronóstico | Aciertos | Baseline | Diferencia | Cobertura | Estado |","|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|",...report.summaries.map(s=>"| "+s.regimeId+" | "+s.candidateId+" | "+s.family+" | "+s.resolvedDraws+" / "+s.expectedDraws+" | "+s.pendingDraws+" | "+s.unforecastedDraws+" | "+s.hits+" | "+s.baselineHits+" | "+pct(s.difference)+" | "+pct(s.coverage)+" | "+s.status+" |"),"","## Perfil posicional por régimen",
@@ -76,6 +78,19 @@ const md=["# TRIS — análisis integral de persistencia por régimen","","- Fue
 "| Régimen | Posición | Bloques válidos | Consistencia dominante | Rango frecuencia dominante | Rango entropía | Interpretación |",
 "|---|---:|---:|---:|---:|---:|---|",
 ...positionalStability.regimes.map(x=>"| "+x.regimeId+" | R"+x.position+" | "+x.supportedBlocks+" | "+(x.dominantConsistency===null?"n/d":(100*x.dominantConsistency).toFixed(1)+"%")+" | "+(x.dominantShareRange===null?"n/d":(100*x.dominantShareRange).toFixed(1)+" pp")+" | "+(x.entropyRange===null?"n/d":x.entropyRange.toFixed(3))+" | "+x.interpretation+" |"),
+"",
+"## Persistencia de transiciones posicionales",
+"- Umbral de episodio sostenido: "+positionalTransitions.minimumConsecutiveBlocksForSustained+" bloques consecutivos",
+"",
+"| Régimen | Posición | Bloques elegibles | Episodios | Transiciones | Transitorias | Sostenidas | Retornos a dominante anterior | Tasa de retorno | Duración media (bloques) |",
+"|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+...positionalTransitions.series.map(x=>"| "+x.regimeId+" | R"+x.position+" | "+x.eligibleBlocks+" | "+x.episodes.length+" | "+x.transitionCount+" | "+x.transientTransitions+" | "+x.sustainedTransitions+" | "+x.returnsToEarlierDigit+" | "+pct(x.returnRate)+" | "+(x.meanEpisodeBlocks===null?"n/d":x.meanEpisodeBlocks.toFixed(2))+" |"),
+"",
+"| Posición | Regímenes | Transiciones | Transitorias | Sostenidas | Retornos | Tasa de retorno |",
+"|---:|---:|---:|---:|---:|---:|---:|",
+...positionalTransitions.summaryByPosition.map(x=>"| R"+x.position+" | "+x.regimeCount+" | "+x.transitions+" | "+x.transient+" | "+x.sustained+" | "+x.returns+" | "+pct(x.returnRate)+" |"),
+"",
+...positionalTransitions.limitations.map(x=>"- "+x),
 "",
 "## Contraste de perfiles posicionales entre regímenes",
 "- Soporte mínimo por régimen: "+positionalContrasts.minimumRegimeSupport,
