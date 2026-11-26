@@ -217,3 +217,12 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Configuración: `TRIS_POSITIONAL_POOL_MIN_HISTORIES` (20,30,50), `TRIS_POSITIONAL_POOL_MIN_SUPPORT_GRID` (5,10,15), tamaño fijo `TRIS_POSITIONAL_POOL_ORIGIN_BLOCK_SIZE` (25).
 - Los cambios de umbral alteran la cobertura y no crean muestras independientes. La estabilidad de signo no implica inferencia ni capacidad predictiva.
 - No modifica pronósticos, candidatos, pesos, portafolios o ledger; CSV local manual, sin APIs, polling ni descargas.
+
+
+## Fase 41 — auditoría estructural del ledger prospectivo
+- Añade una auditoría de solo lectura para los archivos locales `forecasts.jsonl` y `results.jsonl`; nunca reescribe ni repara registros.
+- Comprueba identidades duplicadas, más de un pronóstico por candidato/concurso, secuencia objetivo = historial + 1, huellas SHA-256, pools de dígitos, resoluciones huérfanas o duplicadas y conservación exacta de todos los campos congelados al resolver.
+- Comprueba formato de resultado real y cronología de timestamps generación/resolución. Resume cobertura, concursos pendientes y resolución por concurso; separa advertencias de errores estructurales.
+- Comando offline: `npm run research:prospective-audit -- [directorio-ledger]`; predeterminado `data/prospective`. Reportes de solo lectura en `reports/prospective-ledger-audit/latest.json` y `latest.md`.
+- No reconstruye pronósticos omitidos, no recalcula aciertos desde configuraciones históricas, no altera el ledger, no selecciona señales ni modifica pesos/portafolios. Si el CSV solo contiene fecha sin hora oficial, no puede certificar que el pronóstico se generó antes del sorteo.
+- No usa APIs, polling, descargas ni fuentes externas.
