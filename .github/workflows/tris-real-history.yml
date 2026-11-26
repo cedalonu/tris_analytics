@@ -120,6 +120,8 @@ jobs:
         run: npm run research:prospective-performance-stability -- data/prospective
       - name: Report prospective parameter sensitivity
         run: npm run research:prospective-performance-sensitivity -- data/prospective
+      - name: Aggregate research report pack
+        run: npm run research:report-pack
       - name: Upload real-history reports and frozen ledgers
         uses: actions/upload-artifact@v4
         with:
