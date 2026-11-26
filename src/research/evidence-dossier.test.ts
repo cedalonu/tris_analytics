@@ -1,0 +1,6 @@
+import {test} from "node:test";import {strict as assert} from "node:assert";
+import {appendEvidenceSnapshot,createSnapshot} from "./evidence-dossier";
+const decision={key:"A",classification:"insufficient" as const,resolved:3,reasons:["few"],limitations:["descriptive only"]};
+test("dossier appends chronological snapshots and retains earlier states",()=>{const a=createSnapshot("A",decision,"report-v2","2026-01-01T00:00:00Z");const b=createSnapshot("A",{...decision,classification:"neutral",resolved:31},"report-v2","2026-01-02T00:00:00Z");const d=appendEvidenceSnapshot(appendEvidenceSnapshot(null,a),b);assert.equal(d.history.length,2);assert.equal(d.history[0].classification,"insufficient");assert.equal(d.current?.classification,"neutral");});
+test("duplicate snapshots are not added",()=>{const a=createSnapshot("A",decision,"report-v2","2026-01-01T00:00:00Z");const d=appendEvidenceSnapshot(appendEvidenceSnapshot(null,a),a);assert.equal(d.history.length,1);assert.equal(d.integrity,"duplicate-snapshot");});
+test("candidate key mismatch is flagged",()=>{const a=createSnapshot("A",decision,"report-v2","2026-01-01T00:00:00Z");const d=appendEvidenceSnapshot(appendEvidenceSnapshot(null,a),createSnapshot("B",{...decision,key:"B"},"report-v2","2026-01-02T00:00:00Z"));assert.equal(d.integrity,"candidate-mismatch");});
