@@ -226,3 +226,15 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Comando offline: `npm run research:prospective-audit -- [directorio-ledger]`; predeterminado `data/prospective`. Reportes de solo lectura en `reports/prospective-ledger-audit/latest.json` y `latest.md`.
 - No reconstruye pronósticos omitidos, no recalcula aciertos desde configuraciones históricas, no altera el ledger, no selecciona señales ni modifica pesos/portafolios. Si el CSV solo contiene fecha sin hora oficial, no puede certificar que el pronóstico se generó antes del sorteo.
 - No usa APIs, polling, descargas ni fuentes externas.
+
+
+## Phase 42 — auditoría de cobertura prospectiva por concurso
+
+- Nuevo módulo `src/research/prospective-coverage-audit.ts`, pruebas y runner `scripts/run-tris-prospective-coverage.ts`.
+- Comando: `npm run research:prospective-coverage -- ./data/Tris.csv [directorio-ledger]`.
+- Usa únicamente el CSV local que el usuario suministra manualmente y los ledgers locales `forecasts.jsonl` / `results.jsonl`; no consulta APIs, no descarga datos y no realiza polling.
+- Audita todos los concursos desde el primer objetivo congelado hasta el último concurso observado (incluye objetivos futuros que ya tengan pronóstico).
+- Distingue: concurso sin registro de pronóstico, pronóstico pendiente, resultado presente sin resolución, concurso resuelto y objetivo todavía no observado.
+- Calcula cobertura por concursos observados, cantidad de huecos, pendientes y resolución incompleta. Los huecos no se rellenan ni se les atribuye una causa.
+- Es una auditoría de presencia/cobertura, no una métrica de precisión ni evidencia de predictibilidad. Es de solo lectura y no modifica el ledger ni crea pronósticos retrospectivos.
+- Reportes: `reports/prospective-coverage/latest.json` y `latest.md` (locales, ignorados por Git).
