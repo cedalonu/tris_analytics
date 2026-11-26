@@ -261,3 +261,14 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Comando local: `npm run research:prospective-performance-stability -- [directorio-ledger]`; escribe `reports/prospective-performance-stability/latest.json` y `.md`.
 - La estabilidad es descriptiva, no prueba predictibilidad; no corrige multiplicidad ni dependencia temporal.
 - Sin APIs, descargas, polling ni acceso a fuentes externas.
+
+
+## Fase 45 — sensibilidad temporal del desempeño prospectivo
+- Añade `src/research/prospective-performance-sensitivity.ts`, pruebas y runner local `scripts/run-tris-prospective-performance-sensitivity.ts`.
+- Evalúa una cuadrícula predefinida de ventanas de 10, 20, 30 y 40 concursos; soportes mínimos de 3, 5 y 10 resoluciones por ventana; y desplazamientos del origen de 0%, 25% y 50% de cada ventana.
+- Cada combinación vuelve a evaluar las mismas previsiones congeladas y sus resoluciones válidas; conserva ventanas vacías y soportes insuficientes. No imputa, no reconstruye ni altera el ledger.
+- Extiende la fase 44 para desplazar el origen sin descartar concursos iniciales; los intervalos previos al nuevo origen se conservan como ventanas parciales de la misma longitud.
+- Una conclusión robusta positiva/negativa/sin ventaja exige acuerdo en todas las combinaciones con soporte suficiente; cualquier desacuerdo o soporte parcial se marca sensible a parámetros. Sin soporte se marca evidencia insuficiente.
+- Comando offline: `npm run research:prospective-performance-sensitivity -- [directorio-ledger]`; lee `forecasts.jsonl` y `results.jsonl`, por defecto `data/prospective`.
+- Reportes locales: `reports/prospective-performance-sensitivity/latest.json` y `latest.md`.
+- Las configuraciones resegmentan los mismos sorteos y no son muestras independientes. Es un análisis descriptivo, no prueba predictibilidad ni corrige multiplicidad/dependencia temporal. Sin APIs, polling, descargas o fuentes externas.
