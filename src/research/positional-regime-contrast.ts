@@ -17,7 +17,7 @@ export interface PositionalRegimePairContrast {
  classification:PositionalRegimeContrastClass;
 }
 export interface PositionalRegimeContrastReport {
- method:string;minimumRegimeSupport:number;jsDistanceThreshold:number;entropyDifferenceThresholdBits:number;
+ method:string;minimumRegimeSupport:number;jensenShannonDistanceThreshold:number;entropyDifferenceThresholdBits:number;
  contrasts:PositionalRegimePairContrast[];limitations:string[];
 }
 function jsDistance(a:number[],b:number[]):number {
