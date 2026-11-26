@@ -1,11 +1,35 @@
 import React,{useMemo,useState} from "react";
 import type {Draw} from "./tris-csv";
 import {assessSignal,type SignalRecord,type SignalStatus} from "./research/intuition-ledger";
+import type {ResearchPlan,PlannedHypothesis} from "./research/intuition-orchestrator";
 
 type Props={draws:Draw[];onBack:()=>void};
 type Tab="overview"|"memory"|"hypotheses"|"positions";
 const digits=Array.from({length:10},(_,i)=>i);
 const statusLabels:Record<SignalStatus,string>={hypothesis:"Hipótesis",testing:"En prueba",provisional:"Provisional",active:"Activa",weakening:"Debilitándose",retired:"Retirada"};
+
+function parseResearchPlan(value:unknown):ResearchPlan{
+ if(!value||typeof value!=="object")throw new Error("El plan debe ser un objeto JSON.");
+ const p=value as Record<string,unknown>;
+ if(p.schemaVersion!=="1.0"||typeof p.createdAt!=="string"||!Number.isFinite(Date.parse(p.createdAt))||!Number.isInteger(p.catalogSize)||!Number.isInteger(p.selectedCount)||!Number.isInteger(p.budget)||!Array.isArray(p.hypotheses)||!Array.isArray(p.warnings)||!p.familyCounts||typeof p.familyCounts!=="object")throw new Error("El archivo no cumple el esquema ResearchPlan 1.0.");
+ if(p.hypotheses.length!==p.selectedCount||Number(p.selectedCount)>Number(p.budget)||Number(p.selectedCount)>Number(p.catalogSize))throw new Error("Las cantidades declaradas no coinciden con las hipótesis del plan.");
+ const ids=new Set<string>();
+ const hypotheses=p.hypotheses.map((raw,index)=>{
+  if(!raw||typeof raw!=="object")throw new Error("Hipótesis "+(index+1)+": registro inválido.");
+  const h=raw as Record<string,unknown>,candidate=h.candidate as Record<string,unknown>|undefined;
+  if(!candidate||typeof candidate.id!=="string"||!candidate.id||typeof candidate.title!=="string"||typeof candidate.description!=="string"||!candidate.config||typeof candidate.config!=="object"||typeof candidate.frozenConfig!=="string"||typeof h.frozenConfig!=="string"||h.frozenConfig!==candidate.frozenConfig||typeof h.priorityScore!=="number"||!Number.isFinite(h.priorityScore)||!Array.isArray(h.priorityReasons)||!h.priorityReasons.every(x=>typeof x==="string"))throw new Error("Hipótesis "+(index+1)+": campos o configuración congelada inválidos.");
+  if(ids.has(candidate.id))throw new Error("ID de hipótesis duplicado: "+candidate.id);ids.add(candidate.id);
+  if(!h.ledgerRecord||typeof h.ledgerRecord!=="object")throw new Error("Hipótesis "+candidate.id+": falta ledgerRecord.");
+  const record=h.ledgerRecord as Record<string,unknown>;
+  if(record.id!==candidate.id||!Array.isArray(record.evidence)||record.evidence.length!==0||record.status!=="hypothesis")throw new Error("Hipótesis "+candidate.id+": el registro inicial debe ser una hipótesis sin evidencia.");
+  if(!["transition","position-mutation","absence-return","pool-ranking"].includes(String(candidate.family)))throw new Error("Hipótesis "+candidate.id+": familia desconocida.");
+  return h as unknown as PlannedHypothesis;
+ });
+ const counts=p.familyCounts as Record<string,unknown>;
+ for(const family of ["transition","position-mutation","absence-return","pool-ranking"])if(!Number.isInteger(counts[family])||Number(counts[family])<0)throw new Error("familyCounts inválido: "+family);
+ if(hypotheses.reduce((sum,h)=>sum+1,0)!==Number(p.selectedCount))throw new Error("Conteo de selección inconsistente.");
+ return {...p,hypotheses} as unknown as ResearchPlan;
+}
 function parseLedgerPayload(value:unknown):SignalRecord[]{
  const rows=Array.isArray(value)?value:(value&&typeof value==="object"&&Array.isArray((value as {signals?:unknown}).signals)?(value as {signals:unknown[]}).signals:value&&typeof value==="object"&&Array.isArray((value as {records?:unknown}).records)?(value as {records:unknown[]}).records:null);
  if(!rows)throw new Error("El JSON debe ser un arreglo de señales o contener signals[] / records[].");
@@ -44,6 +68,12 @@ export default function IntuitionDashboard({draws,onBack}:Props){
  const [ledgerError,setLedgerError]=useState("");
  const [selectedSignal,setSelectedSignal]=useState<string>("");
  const [statusFilter,setStatusFilter]=useState<SignalStatus|"all">("all");
+ const [researchPlan,setResearchPlan]=useState<ResearchPlan|null>(null);
+ const [planName,setPlanName]=useState("");
+ const [planError,setPlanError]=useState("");
+ const [selectedHypothesis,setSelectedHypothesis]=useState("");
+ const [familyFilter,setFamilyFilter]=useState("all");
+ const [hypothesisSearch,setHypothesisSearch]=useState("");
  const sorted=useMemo(()=>[...draws].sort((a,b)=>a.num-b.num),[draws]);
  const last20=sorted.slice(-20),last50=sorted.slice(-50);
  const matrix=useMemo(()=>Array.from({length:5},(_,pos)=>digits.map(d=>last20.filter(x=>x.digits[pos]===d).length)),[last20]);
@@ -58,6 +88,16 @@ export default function IntuitionDashboard({draws,onBack}:Props){
  const filteredLedger=ledgerRows.filter(row=>statusFilter==="all"||row.assessment.status===statusFilter);
  const ledgerEvidence=ledger.reduce((acc,row)=>acc+row.evidence.length,0);
  const selectedLedger=ledgerRows.find(row=>row.record.id===selectedSignal);
+
+ const planFamilies=["transition","position-mutation","absence-return","pool-ranking"] as const;
+ const familyLabels:Record<string,string>={"transition":"Transiciones","position-mutation":"Mutación posicional","absence-return":"Ausencia y retorno","pool-ranking":"Ranking de pools"};
+ const visibleHypotheses=researchPlan?.hypotheses.filter(h=>(familyFilter==="all"||h.candidate.family===familyFilter)&&(!hypothesisSearch||[h.candidate.id,h.candidate.title,h.candidate.description].join(" ").toLowerCase().includes(hypothesisSearch.toLowerCase())))??[];
+ const chosenHypothesis=researchPlan?.hypotheses.find(h=>h.candidate.id===selectedHypothesis);
+ const importPlan=async(file?:File)=>{
+  if(!file)return;
+  try{const parsed=parseResearchPlan(JSON.parse(await file.text()));setResearchPlan(parsed);setPlanName(file.name);setPlanError("");setSelectedHypothesis(parsed.hypotheses[0]?.candidate.id??"");setFamilyFilter("all");setHypothesisSearch("");}
+  catch(error){setPlanError(error instanceof Error?error.message:"No fue posible leer el plan.");}
+ };
  const importLedger=async(file?:File)=>{
   if(!file)return;
   try{const parsed=parseLedgerPayload(JSON.parse(await file.text()));const ids=new Set<string>();for(const row of parsed){if(ids.has(row.id))throw new Error("ID de señal duplicado: "+row.id);ids.add(row.id);}
@@ -100,7 +140,25 @@ export default function IntuitionDashboard({draws,onBack}:Props){
     </div>}
     <Panel title="Estados del ciclo de vida" sub="La interfaz presenta el estado recalculado; no promueve ni altera registros"><div className="grid grid-cols-2 gap-2 md:grid-cols-3">{Object.entries(statusLabels).map(([a,b])=><div key={a} className="rounded-lg border border-slate-800 bg-slate-950/60 p-3"><b className="text-xs text-violet-200">{b}</b><p className="mt-1 text-[10px] text-slate-500">{a==="hypothesis"?"Idea pendiente de prueba":a==="testing"?"Evaluación en curso":a==="provisional"?"Validación separada superada":a==="active"?"Confirmación prospectiva superada":a==="weakening"?"No mantiene la ventaja validada":"Antecedente conservado"}</p></div>)}</div></Panel>
    </div>}
-   {tab==="hypotheses"&&<div className="space-y-4"><Panel title="Catálogo de hipótesis" sub="La generación de candidatos y su priorización se ejecutan mediante los scripts de investigación"><div className="grid gap-3 md:grid-cols-3"><Stat label="Catálogo teórico" value="1,095" detail="Candidatos del generador actual"/><Stat label="Plan importado" value="0" detail="No se ha cargado un plan congelado"/><Stat label="Evaluaciones mostradas" value="0" detail="Sin resultados vinculados"/></div><div className="mt-4 rounded-xl border border-dashed border-slate-700 p-6 text-center"><b className="text-sm">Sin plan de hipótesis cargado</b><p className="mx-auto mt-2 max-w-xl text-xs text-slate-400">El tamaño del catálogo procede del diseño del generador; no significa que las 1,095 hipótesis hayan sido evaluadas. La tabla de hipótesis aparecerá cuando se conecte el plan y sus informes de evaluación.</p></div></Panel><Panel title="Puertas de validación"><ol className="list-decimal space-y-2 pl-5 text-xs text-slate-300"><li>Congelar catálogo, presupuesto, configuración y línea base.</li><li>Separar descubrimiento, validación y holdout cronológico.</li><li>Exigir soporte mínimo y pruebas pareadas con corrección por multiplicidad.</li><li>Confirmar la ventaja en observaciones prospectivas independientes.</li></ol></Panel></div>}
+   {tab==="hypotheses"&&<div className="space-y-4">
+    <Panel title="Catálogo y plan congelado" sub="Carga un plan exportado por createResearchPlan(); la interfaz no genera ni reordena hipótesis automáticamente">
+     <div className="flex flex-wrap items-center gap-3"><label className="cursor-pointer rounded-lg border border-violet-700 bg-violet-950/40 px-4 py-2 text-xs font-bold text-violet-200 hover:bg-violet-900/50">Importar plan JSON<input type="file" accept=".json,application/json" className="hidden" onChange={e=>{void importPlan(e.target.files?.[0]);e.currentTarget.value="";}}/></label><span className="text-xs text-slate-400">{planName||"Ningún plan importado"}</span><span className="text-[10px] text-slate-500">Solo lectura · configuración congelada</span></div>
+     {planError&&<div role="alert" className="mt-3 rounded-lg border border-rose-800 bg-rose-950/30 p-3 text-xs text-rose-200">{planError}</div>}
+     <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4"><Stat label="Catálogo completo" value={researchPlan?researchPlan.catalogSize:"1,095"} detail="Candidatos generados por el motor"/><Stat label="Selección congelada" value={researchPlan?researchPlan.selectedCount:"—"} detail={researchPlan?"Presupuesto "+researchPlan.budget:"Pendiente de plan"}/><Stat label="Fecha del plan" value={researchPlan?researchPlan.createdAt.slice(0,10):"—"} detail="Marca temporal de creación"/><Stat label="Evaluaciones vinculadas" value="0" detail="No se importaron informes de resultados"/></div>
+     {!researchPlan&&<div className="mt-4 rounded-xl border border-dashed border-slate-700 p-6 text-center"><b className="text-sm">Plan de hipótesis pendiente</b><p className="mx-auto mt-2 max-w-xl text-xs text-slate-400">Importa el JSON generado por el orquestador de investigación. La pantalla verificará esquema, IDs, familias y huellas de configuración. El catálogo de 1,095 es un tamaño teórico: no implica evaluación ni evidencia.</p></div>}
+     {researchPlan&&<><div className="mt-4 grid grid-cols-2 gap-2 md:grid-cols-4">{planFamilies.map(f=><div key={f} className="rounded-lg border border-slate-800 bg-slate-950/60 p-3"><div className="text-[10px] text-slate-500">{familyLabels[f]}</div><div className="mt-1 text-xl font-black">{researchPlan.familyCounts[f]}</div><div className="text-[10px] text-slate-500">seleccionadas</div></div>)}</div><div className="mt-3 rounded-lg border border-slate-800 bg-slate-950/50 p-3"><b className="text-xs">Advertencias del plan</b><ul className="mt-2 space-y-1 text-[10px] text-slate-400">{researchPlan.warnings.map((w,i)=><li key={i}>• {w}</li>)}</ul></div></>}
+    </Panel>
+    {researchPlan&&<div className="grid gap-4 xl:grid-cols-[1.15fr_.85fr]">
+     <Panel title="Hipótesis seleccionadas" sub="Prioridad es una heurística de planificación, no una puntuación predictiva">
+      <div className="mb-3 grid gap-2 sm:grid-cols-[1fr_auto]"><input value={hypothesisSearch} onChange={e=>setHypothesisSearch(e.target.value)} placeholder="Buscar por ID, título o descripción" className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-200"/><select value={familyFilter} onChange={e=>setFamilyFilter(e.target.value)} className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs"><option value="all">Todas las familias</option>{planFamilies.map(f=><option key={f} value={f}>{familyLabels[f]}</option>)}</select></div>
+      <div className="mb-2 text-[10px] text-slate-500">Mostrando {visibleHypotheses.length} de {researchPlan.hypotheses.length}</div>
+      <div className="max-h-[520px] space-y-2 overflow-y-auto">{visibleHypotheses.map(h=><button key={h.candidate.id} onClick={()=>setSelectedHypothesis(h.candidate.id)} className={`w-full rounded-lg border p-3 text-left ${selectedHypothesis===h.candidate.id?"border-violet-500 bg-violet-950/30":"border-slate-800 bg-slate-950/50 hover:border-slate-600"}`}><div className="flex flex-wrap items-center justify-between gap-2"><b className="text-xs text-slate-100">{h.candidate.title}</b><span className="rounded-full border border-slate-700 px-2 py-1 text-[10px] text-cyan-200">Prioridad {h.priorityScore}</span></div><div className="mt-1 text-[10px] text-slate-500">{h.candidate.id} · {familyLabels[h.candidate.family]}</div><p className="mt-2 text-xs text-slate-400">{h.candidate.description}</p></button>)}</div>
+     </Panel>
+     <Panel title="Configuración congelada" sub="Ficha del candidato seleccionado; no se recalcula ni se modifica">{chosenHypothesis?<div className="space-y-3"><div><div className="text-[10px] uppercase tracking-widest text-slate-500">ID</div><b className="break-all text-xs">{chosenHypothesis.candidate.id}</b><p className="mt-1 text-xs text-slate-400">{chosenHypothesis.candidate.description}</p></div><div className="grid grid-cols-2 gap-2"><Stat label="Familia" value={<span className="text-sm">{familyLabels[chosenHypothesis.candidate.family]}</span>} detail="Familia del generador"/><Stat label="Prioridad" value={chosenHypothesis.priorityScore} detail="Heurística de ordenamiento"/></div><div className="rounded-lg border border-slate-800 p-3"><b className="text-xs">Parámetros</b><pre className="mt-2 overflow-x-auto whitespace-pre-wrap break-words text-[10px] text-cyan-200">{JSON.stringify(chosenHypothesis.candidate.config,null,2)}</pre></div><div className="rounded-lg border border-slate-800 p-3"><b className="text-xs">Huella congelada</b><pre className="mt-2 overflow-x-auto whitespace-pre-wrap break-all text-[10px] text-slate-400">{chosenHypothesis.frozenConfig}</pre></div><div className="rounded-lg border border-slate-800 p-3"><b className="text-xs">Razones de prioridad</b><ul className="mt-2 space-y-1 text-[10px] text-slate-400">{chosenHypothesis.priorityReasons.map((reason,i)=><li key={i}>• {reason}</li>)}</ul></div><div className="rounded-lg border border-amber-900/60 bg-amber-950/20 p-3 text-[10px] text-amber-200">Estado inicial: hipótesis sin evidencia. Este plan no contiene evaluaciones ni resultados de sorteos.</div></div>:<p className="text-xs text-slate-500">No hay hipótesis en el plan.</p>}</Panel>
+    </div>}
+    <Panel title="Puertas de validación" sub="No se permite mezclar fases ni reinterpretar resultados pasados"><ol className="list-decimal space-y-2 pl-5 text-xs text-slate-300"><li>Congelar catálogo, presupuesto, configuración y línea base.</li><li>Separar descubrimiento, validación y holdout cronológico.</li><li>Exigir soporte mínimo y pruebas pareadas con corrección por multiplicidad.</li><li>Confirmar la ventaja en observaciones prospectivas independientes.</li></ol></Panel>
+   </div>}
+}
    {tab==="positions"&&<div className="space-y-4"><Panel title="Concordancia descriptiva por posición" sub={`Frecuencia observada en los últimos ${last20.length} sorteos; cada columna corresponde a una posición`}><div className="overflow-x-auto"><table className="w-full min-w-[620px] border-separate border-spacing-1 text-center text-xs"><thead><tr><th className="p-2 text-left text-slate-500">Dígito</th>{[1,2,3,4,5].map(p=><th key={p} className="p-2 text-cyan-300">Pos. {p}</th>)}</tr></thead><tbody>{digits.map(d=><tr key={d}><th className="p-2 text-left font-mono text-slate-300">{d}</th>{matrix.map((row,pos)=><td key={pos} className="rounded-md p-2 font-bold" style={{background:available?`rgba(34,211,238,${.07+.55*(row[d]/maxCount)})`:"#172033",color:row[d]?"#e2e8f0":"#64748b"}}>{available?row[d]:"—"}</td>)}</tr>)}</tbody></table></div><p className="mt-3 text-[10px] text-slate-500">La intensidad visual representa conteos, no probabilidad ni recomendación de selección.</p></Panel>
     <div className="grid gap-4 lg:grid-cols-2"><Panel title="Top 3 observado por posición" sub="Ordenado por frecuencia en la ventana corta"><div className="space-y-3">{topByPosition.map((row,pos)=><div key={pos} className="flex items-center gap-3"><span className="w-14 text-xs font-bold text-cyan-300">Pos. {pos+1}</span><div className="flex flex-1 gap-2">{row.map(d=><span key={d} className="flex-1 rounded-lg border border-slate-700 bg-slate-950 p-2 text-center text-sm font-black">{available?d:"—"}<small className="mt-1 block text-[9px] font-normal text-slate-500">{available?matrix[pos][d]+" apar.":"sin datos"}</small></span>)}</div></div>)}</div></Panel>
      <Panel title="Coincidencias entre posiciones" sub="Dígitos presentes en el top 3 de más de una posición"><div className="flex flex-wrap gap-2">{overlap.length?overlap.map(([d,n])=><span key={d} className="rounded-lg border border-violet-700/70 bg-violet-950/40 px-3 py-2 text-sm font-bold text-violet-200">Dígito {d} · {n} posiciones</span>):<span className="text-xs text-slate-500">{available?"No hay coincidencias en esta ventana.":"Pendiente de historial."}</span>}</div><p className="mt-3 text-[10px] text-slate-500">Coincidencia descriptiva entre rankings marginales; no implica dependencia ni ventaja estadística.</p></Panel></div>
