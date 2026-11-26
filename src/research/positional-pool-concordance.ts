@@ -1,9 +1,9 @@
 /**
  * Phase 29: descriptive concordance between positional dominance and past-only pool dynamics.
  * Pools for target draw t are built exclusively from draws with drawId < t.
+ * Rankings are precomputed incrementally so long histories remain tractable.
  */
 import type {Draw,Digit,Pos,PoolMethod} from "../research-core";
-import {buildPool} from "../research-core";
 import type {ProspectiveRegimeLabel} from "./prospective-regime-persistence";
 import type {PositionalRegimeStabilityReport} from "./positional-regime-stability";
 
@@ -28,6 +28,8 @@ export interface PositionalPoolConcordanceReport {
  limitations:string[];
 }
 const METHODS:PoolMethod[]=["frequency","long-absence","short-absence","balanced","recent-frequency"];
+const DIGITS:Digit[]=[0,1,2,3,4,5,6,7,8,9];
+const POOL_WINDOW=50;
 const pearson=(pairs:Array<[number,number]>):number|null=>{
  if(pairs.length<3)return null;
  const mx=pairs.reduce((s,p)=>s+p[0],0)/pairs.length,my=pairs.reduce((s,p)=>s+p[1],0)/pairs.length;
@@ -35,6 +37,43 @@ const pearson=(pairs:Array<[number,number]>):number|null=>{
  if(xx===0||yy===0)return null;
  return pairs.reduce((s,p)=>s+(p[0]-mx)*(p[1]-my),0)/Math.sqrt(xx*yy);
 };
+function lowerBound(draws:Draw[],drawId:number):number{
+ let lo=0,hi=draws.length;
+ while(lo<hi){const mid=(lo+hi)>>>1;if(draws[mid].drawId<drawId)lo=mid+1;else hi=mid;}
+ return lo;
+}
+/** Build the same rankings as buildPool(history, method, 10, 50), but update counts once per target. */
+function precomputeRanks(draws:Draw[],position:Pos,methods:PoolMethod[]):Map<PoolMethod,Uint8Array>{
+ const n=draws.length,global=Array(10).fill(0) as number[],recent=Array(10).fill(0) as number[],lastSeen=Array(10).fill(-1) as number[];
+ const result=new Map<PoolMethod,Uint8Array>(methods.map(m=>[m,new Uint8Array(n*10)]));
+ for(let i=0;i<n;i++){
+  if(i>0){
+   const added=draws[i-1].digits[position];global[added]++;recent[added]++;lastSeen[added]=i-1;
+   if(i-1>=POOL_WINDOW){const removed=draws[i-1-POOL_WINDOW].digits[position];recent[removed]--;}
+  }
+  const recentLength=Math.min(i,POOL_WINDOW);
+  for(const method of methods){
+   const ranking=[...DIGITS].sort((a,b)=>{
+    const absenceA=recent[a]>0?i-1-lastSeen[a]:recentLength;
+    const absenceB=recent[b]>0?i-1-lastSeen[b]:recentLength;
+    const rateA=recentLength?recent[a]/recentLength:0;
+    const rateB=recentLength?recent[b]/recentLength:0;
+    let scoreA=0,scoreB=0;
+    switch(method){
+     case "frequency":scoreA=global[a];scoreB=global[b];break;
+     case "long-absence":scoreA=absenceA;scoreB=absenceB;break;
+     case "short-absence":scoreA=-absenceA;scoreB=-absenceB;break;
+     case "recent-frequency":scoreA=recent[a];scoreB=recent[b];break;
+     case "balanced":scoreA=rateA+absenceA/Math.max(1,i);scoreB=rateB+absenceB/Math.max(1,i);break;
+    }
+    return scoreA===scoreB?a-b:scoreB-scoreA;
+   });
+   const ranks=result.get(method)!;
+   ranking.forEach((digit,rank)=>{ranks[i*10+digit]=rank;});
+  }
+ }
+ return result;
+}
 export function analyzePositionalPoolConcordance(
  draws:Draw[],labels:ProspectiveRegimeLabel[],stability:PositionalRegimeStabilityReport,
  options:{methods?:PoolMethod[];poolSizes?:number[];minimumHistory?:number}={}
@@ -44,39 +83,49 @@ export function analyzePositionalPoolConcordance(
  if(!methods.length||methods.some(m=>!METHODS.includes(m))||new Set(methods).size!==methods.length)throw new Error("methods must be unique valid pool methods");
  if(!sizes.length||sizes.some(k=>!Number.isInteger(k)||k<1||k>10)||new Set(sizes).size!==sizes.length)throw new Error("poolSizes must be unique integers from 1 to 10");
  for(let i=1;i<draws.length;i++)if(draws[i].drawId<=draws[i-1].drawId)throw new Error("draws must be strictly chronological");
- const drawIndex=new Map(draws.map((d,i)=>[d.drawId,i])),labelByDraw=new Map<number,ProspectiveRegimeLabel>();
+ const labelByDraw=new Map<number,ProspectiveRegimeLabel>();
  for(const label of labels){
   if(labelByDraw.has(label.drawId))throw new Error("duplicate regime label");
   if(label.sourceEndDrawId>=label.drawId)throw new Error("regime label must be strictly past-only");
   labelByDraw.set(label.drawId,label);
  }
+ const ranksByPosition=new Map<Pos,Map<PoolMethod,Uint8Array>>();
+ for(let p=0;p<5;p++)ranksByPosition.set(p as Pos,precomputeRanks(draws,p as Pos,methods));
  const blocks:PositionalPoolBlockRow[]=[];
  for(const profile of stability.regimes){
-  const position=(profile.position-1) as Pos;
+  const position=(profile.position-1) as Pos,positionRanks=ranksByPosition.get(position)!;
+  const previousByBlock=new Map(profile.blocks.map(b=>[b.blockIndex,b]));
   for(const block of profile.blocks){
    if(block.status!=="supported"||block.dominantDigit===null)continue;
    const dominantDigit=block.dominantDigit as Digit;
-   const targetRows=draws.filter(d=>d.drawId>=block.startDrawId&&d.drawId<=block.endDrawId&&labelByDraw.get(d.drawId)?.regimeId===profile.regimeId);
-   for(const method of methods)for(const poolSize of sizes){
-    let tested=0,hits=0,dominantIncluded=0,jaccardTotal=0,jaccardN=0,previousPool:Set<Digit>|null=null;
-    for(const target of targetRows){
-     const index=drawIndex.get(target.drawId)!;
-     if(index<minimumHistory)continue;
-     const prior=draws.slice(0,index).map(d=>d.digits[position] as Digit);
-     const pool=buildPool(prior,method,poolSize);
-     tested++;
-     if(pool.includes(target.digits[position]))hits++;
-     if(pool.includes(dominantDigit))dominantIncluded++;
-     const current=new Set(pool);
-     if(previousPool){const union=new Set([...previousPool,...current]),intersection=[...previousPool].filter(d=>current.has(d)).length;jaccardTotal+=union.size?intersection/union.size:1;jaccardN++;}
-     previousPool=current;
+   const first=lowerBound(draws,block.startDrawId),last=lowerBound(draws,block.endDrawId+1);
+   const targetIndices:number[]=[];
+   for(let i=first;i<last;i++)if(labelByDraw.get(draws[i].drawId)?.regimeId===profile.regimeId)targetIndices.push(i);
+   for(const method of methods){
+    const ranks=positionRanks.get(method)!;
+    for(const poolSize of sizes){
+     let tested=0,hits=0,dominantIncluded=0,jaccardTotal=0,jaccardN=0,previousIndex=-1;
+     for(const index of targetIndices){
+      if(index<minimumHistory)continue;
+      const offset=index*10;
+      tested++;
+      if(ranks[offset+draws[index].digits[position]]<poolSize)hits++;
+      if(ranks[offset+dominantDigit]<poolSize)dominantIncluded++;
+      if(previousIndex>=0){
+       const previousOffset=previousIndex*10;let intersection=0;
+       for(const digit of DIGITS)if(ranks[previousOffset+digit]<poolSize&&ranks[offset+digit]<poolSize)intersection++;
+       const union=2*poolSize-intersection;
+       jaccardTotal+=union?intersection/union:1;jaccardN++;
+      }
+      previousIndex=index;
+     }
+     const previousSupported=previousByBlock.get(block.blockIndex-1);
+     blocks.push({regimeId:profile.regimeId,position,method,poolSize,blockIndex:block.blockIndex,startDrawId:block.startDrawId,endDrawId:block.endDrawId,partial:block.partial,
+      positionalDominantDigit:dominantDigit,positionalDominantShare:block.dominantShare,tested,poolHits:hits,poolHitRate:tested?hits/tested:null,
+      uniformReference:poolSize/10,dominantDigitPoolInclusionRate:tested?dominantIncluded/tested:null,
+      meanPoolJaccard:jaccardN?jaccardTotal/jaccardN:null,poolTurnover:jaccardN?1-jaccardTotal/jaccardN:null,
+      dominantChangedFromPreviousBlock:previousSupported?.status==="supported"&&previousSupported.dominantDigit!==null?previousSupported.dominantDigit!==block.dominantDigit:null});
     }
-    const previousSupported=profile.blocks.find(b=>b.blockIndex===block.blockIndex-1&&b.status==="supported");
-    blocks.push({regimeId:profile.regimeId,position,method,poolSize,blockIndex:block.blockIndex,startDrawId:block.startDrawId,endDrawId:block.endDrawId,partial:block.partial,
-     positionalDominantDigit:dominantDigit,positionalDominantShare:block.dominantShare,tested,poolHits:hits,poolHitRate:tested?hits/tested:null,
-     uniformReference:poolSize/10,dominantDigitPoolInclusionRate:tested?dominantIncluded/tested:null,
-     meanPoolJaccard:jaccardN?jaccardTotal/jaccardN:null,poolTurnover:jaccardN?1-jaccardTotal/jaccardN:null,
-     dominantChangedFromPreviousBlock:previousSupported?.dominantDigit===undefined?null:previousSupported.dominantDigit!==block.dominantDigit});
    }
   }
  }
