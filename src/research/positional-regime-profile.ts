@@ -16,7 +16,8 @@ export interface PositionalPairProfile {
   sameDigitCount:number; sameDigitRate:number|null;
   independentExpectedRate:number|null; excessSameDigitRate:number|null;
 }
-export interface PositionChangeSynchronyPair {firstPosition:number;secondPosition:number;n:number;sameDeltaCount:number;sameDeltaRate:number|null;independentExpectedRate:number|null;excessSameDeltaRate:number|null}\nexport interface PositionChangeProfile {
+export interface PositionChangeSynchronyPair {firstPosition:number;secondPosition:number;n:number;sameDeltaCount:number;sameDeltaRate:number|null;independentExpectedRate:number|null;excessSameDeltaRate:number|null}
+export interface PositionChangeProfile {
   position:number; n:number; sameDigitRate:number|null;
   plusOneModuloRate:number|null; minusOneModuloRate:number|null;
   meanCircularDistance:number|null; deltaCounts:number[];
@@ -86,7 +87,8 @@ function profile(regimeId:string, rows:Draw[], previousById:Map<number,Draw>, mi
     limitations:[
       "Las frecuencias describen los dígitos observados dentro del régimen; no son probabilidades futuras.",
       "La tasa esperada de coincidencia entre posiciones es un referente marginal de independencia, no una prueba estadística.",
-      "Los cambios comparan cada objetivo con el sorteo inmediatamente anterior, que puede pertenecer a otro régimen.",\n      "La sincronía de cambios compara deltas módulo 10 entre posiciones; el referente es marginal y descriptivo, no una prueba de independencia.",
+      "Los cambios comparan cada objetivo con el sorteo inmediatamente anterior, que puede pertenecer a otro régimen.",
+      "La sincronía de cambios compara deltas módulo 10 entre posiciones; el referente es marginal y descriptivo, no una prueba de independencia.",
       "El soporte se marca como limitado cuando hay menos de "+minSupport+" sorteos."
     ]};
 }
