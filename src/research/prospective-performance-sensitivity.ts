@@ -10,8 +10,9 @@ export interface ProspectiveSensitivityReport {method:"prospective-performance-s
 
 export function auditProspectivePerformanceSensitivity(forecasts:FrozenForecast[],resolutions:ResolvedForecast[],options:{windowSizes?:number[];minimumResolvedValues?:number[];offsetFractions?:number[];minimumWindows?:number}={}):ProspectiveSensitivityReport{
  const windowSizes=options.windowSizes??[10,20,30,40],minimumResolvedValues=options.minimumResolvedValues??[3,5,10],offsetFractions=options.offsetFractions??[0,0.25,0.5],minimumWindows=options.minimumWindows??3;
- const validList=(xs:number[],min:number,max?:number)=>xs.length>0&&xs.every(x=>Number.isInteger(x)&&x>=min&&(max===undefined||x<max));
- if(!validList(windowSizes,2)||!validList(minimumResolvedValues,1)||!validList(offsetFractions,0,1)||!Number.isInteger(minimumWindows)||minimumWindows<2)throw new Error("invalid prospective sensitivity settings");
+ const validIntegers=(xs:number[],min:number)=>xs.length>0&&xs.every(x=>Number.isInteger(x)&&x>=min);
+ const validFractions=offsetFractions.length>0&&offsetFractions.every(x=>Number.isFinite(x)&&x>=0&&x<1);
+ if(!validIntegers(windowSizes,2)||!validIntegers(minimumResolvedValues,1)||!validFractions||!Number.isInteger(minimumWindows)||minimumWindows<2)throw new Error("invalid prospective sensitivity settings");
  const settings:SensitivitySetting[]=[];
  for(const windowDraws of [...new Set(windowSizes)].sort((a,b)=>a-b))for(const minimumResolvedPerWindow of [...new Set(minimumResolvedValues)].sort((a,b)=>a-b))for(const fraction of [...new Set(offsetFractions)].sort((a,b)=>a-b)){
   const originOffsetDraws=Math.floor(windowDraws*fraction);
