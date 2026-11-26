@@ -30,5 +30,5 @@ test("keeps underpowered blocks separate and validates input",()=>{
  const report=summarizePositionalRegimeStability(draws,labels,{blockSize:25,minimumDrawSupport:20});
  assert.ok(report.regimes.some(x=>x.underpoweredBlocks>0));
  assert.throws(()=>summarizePositionalRegimeStability(draws,labels,{blockSize:2,minimumDrawSupport:3}),/minimumDrawSupport/);
- assert.throws(()=>summarizePositionalRegimeStability(draws,labels.slice(1),{blockSize:10,minimumDrawSupport:3}),/strictly pre-target/);
+ assert.throws(()=>summarizePositionalRegimeStability(draws,[{...labels[0],sourceEndDrawId:labels[0].drawId}],{blockSize:10,minimumDrawSupport:3}),/strictly pre-target/);
 });
