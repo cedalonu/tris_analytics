@@ -4,7 +4,7 @@ El predictor incorpora el acceso **🔬 Investigación**. Abre un panel independ
 
 ## Carga del historial CSV en el predictor
 
-Al abrir la aplicación, no se consulta GitHub ni se descarga el CSV automáticamente. Usa **Importar Tris.csv** y selecciona el archivo local. El importador valida el encabezado esperado, los cinco dígitos por concurso, las fechas y los concursos duplicados antes de actualizar el historial. Una copia queda en el almacenamiento local del navegador para la siguiente sesión; no se transmite a ningún servidor. Para actualizar el historial, vuelve a importar manualmente el CSV actualizado.
+Al abrir la aplicación, no se consulta GitHub ni se descarga el CSV automáticamente. Usa **Importar Tris.csv** y selecciona el archivo local. El importador valida el encabezado esperado, los cinco dígitos por concurso, las fechas y los concursos duplicados antes de actualizar el historial. Una copia queda en el almacenamiento local del navegador para la siguiente sesión; no se transmite a ningún servidor. Para actualizar el historial, vuelve a importar manualmente el CSV actualizado. Los horarios del siguiente turno son referencias en hora de Ciudad de México: Medio Día 13:00, De las Tres 15:00, Extra 17:00, De las Siete 19:00 y Clásico 21:00. Como el CSV no identifica el tipo de sorteo, la interfaz estima el turno por la cantidad de concursos registrados en la misma fecha; no confunde la hora de actualización del archivo con la hora del sorteo.
 
 ## Uso
 
