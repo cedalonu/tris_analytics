@@ -71,6 +71,7 @@ export function summarizeProspectiveFamilyConcordance(
  const valueByFamily=new Map<CandidateFamily,Map<number,number>>();
  const summaries:FamilyConcordanceSummary[]=[];
  for(const family of FAMILIES){
+  valueByFamily.set(family,new Map<number,number>());
   const ids=manifest.candidateIds.filter(id=>familyById.get(id)===family);
   if(!ids.length)continue;
   let resolvedSignals=0,coveredDraws=0;
