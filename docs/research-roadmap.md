@@ -73,3 +73,12 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - El análisis se integra en `npm run research:regime-analysis -- <local-Tris.csv> [ledger-directory]`; agrega `positionalStability` al JSON y una tabla al Markdown.
 - La consistencia contra el perfil agregado no es validación fuera de muestra; no se calculan p-valores ni se asume independencia entre sorteos.
 - No cambia pronósticos congelados, candidatos, pesos, portafolios ni estados del ledger. Sin APIs, polling ni descargas.
+
+## Phase 25 — calibración sintética de estabilidad posicional
+- Cinco escenarios: uniforme estacionario, concentración estacionaria, cambio abrupto, cambio gradual y pulso transitorio con retorno.
+- Las etiquetas de régimen son exógenas; no se confunden con salidas del clasificador past-only.
+- Reporta conteos por posición, tasas por réplica e intervalos Wilson descriptivos para criterios agregados de al menos 4 de 5 posiciones estables o variables.
+- Réplicas, longitud, semilla, tamaño de bloque y soporte mínimo configurables; umbrales congelados.
+- Comando offline: npm run research:positional-stability-calibration; reportes en reports/positional-stability-calibration/latest.md y .json.
+- La consistencia compara con el perfil agregado y no es validación fuera de muestra; posiciones y bloques pueden depender. Pulsos breves pueden pasar inadvertidos.
+- No usa CSV real, APIs, polling ni descargas; no modifica candidatos, pronósticos, pesos, portafolios o ledger.
