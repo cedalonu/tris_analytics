@@ -26,6 +26,7 @@ export interface RegimePositionProfile {
   regimeId:string; n:number; support:"adequate"|"limited";
   positions:PositionalDigitProfile[];
   positionPairs:PositionalPairProfile[];
+  changeSynchronyPairs:PositionChangeSynchronyPair[];
   changesFromPreviousDraw:PositionChangeProfile[];
   meanDistinctDigits:number|null;
   limitations:string[];
@@ -107,7 +108,10 @@ export function analyzePositionalRegimeProfiles(
     byId.set(d.drawId,d);
   }
   const seen=new Set<number>();
+  let previousLabelDrawId=0;
   for(const label of labels){
+    if(label.drawId<=previousLabelDrawId)throw new Error("regime labels must be strictly chronological");
+    previousLabelDrawId=label.drawId;
     if(seen.has(label.drawId))throw new Error("duplicate regime label for draw "+label.drawId);
     seen.add(label.drawId);
     if(!label.regimeId.trim()||!label.method.trim())throw new Error("regime label requires regimeId and method");
