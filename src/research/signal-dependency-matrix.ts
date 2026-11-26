@@ -1,7 +1,8 @@
 /**
  * Conservative empirical dependency matrix for alert streams.
- * Structural overlap is descriptive; empirical alert correlation uses matched IDs
- * and a permutation null. No predictive claims or automatic weighting are made.
+ * Structural overlap is descriptive; empirical alert correlation uses matched IDs,
+ * permutation nulls, and Benjamini-Hochberg adjustment across eligible pairs.
+ * No predictive claims or automatic weighting are made.
  */
 export interface DependencySignal {
  id:string; family:string; components:string[]; sharedInputs:string[];
@@ -10,13 +11,13 @@ export interface DependencySignal {
 export interface DependencyPair {
  a:string;b:string;matchedN:number;coAlerts:number;coAlertRate:number|null;
  phi:number|null;observedAlertOverlap:number|null;structuralJaccard:number;
- sharedComponents:string[];sharedInputs:string[];permutationP:number|null;
+ sharedComponents:string[];sharedInputs:string[];permutationP:number|null;adjustedQ:number|null;
  temporalBlocks:number;blockPhi:Array<number|null>;directionConsistency:number|null;
  classification:"insufficient"|"structural-only"|"empirical-dependence"|"no-dependence-detected";
 }
 export interface DependencyMatrix {
  signalCount:number;pairCount:number;minMatched:number;permutations:number;
- pairs:DependencyPair[];interpretation:string;
+ adjustmentMethod:"benjamini-hochberg";pairs:DependencyPair[];interpretation:string;
 }
 function phi(a:boolean[],b:boolean[]):number|null {
  const n11=a.filter((x,i)=>x&&b[i]).length,n10=a.filter((x,i)=>x&&!b[i]).length,n01=a.filter((x,i)=>!x&&b[i]).length,n00=a.filter((x,i)=>!x&&!b[i]).length;
@@ -30,10 +31,21 @@ function permP(a:boolean[],b:boolean[],observed:number|null,reps:number,seed:num
  const v=phi(a,shuffled);if(v!==null&&Math.abs(v)>=Math.abs(observed)-1e-12)exceed++}
  return(exceed+1)/(reps+1);
 }
+/** BH adjusted q-values. Null p-values remain null and are excluded from m. */
+export function benjaminiHochberg(pValues:Array<number|null>):Array<number|null>{
+ const eligible=pValues.map((p,index)=>({p,index})).filter((x):x is {p:number,index:number}=>x.p!==null);
+ for(const {p} of eligible)if(!Number.isFinite(p)||p<0||p>1)throw new Error("invalid p-value");
+ const m=eligible.length,out:Array<number|null>=pValues.map(()=>null);
+ eligible.sort((a,b)=>a.p-b.p||a.index-b.index);
+ let running=1;
+ for(let rank=m;rank>=1;rank--){const item=eligible[rank-1],q=Math.min(1,item.p*m/rank);running=Math.min(running,q);out[item.index]=running;}
+ return out;
+}
 export function buildSignalDependencyMatrix(signals:DependencySignal[],options:{minMatched?:number;permutations?:number;seed?:number;phiThreshold?:number;alpha?:number}={}):DependencyMatrix{
  const minMatched=options.minMatched??40,permutations=options.permutations??500,seed=options.seed??20261126,threshold=options.phiThreshold??.3,alpha=options.alpha??.05;
  if(!Array.isArray(signals)||signals.some(s=>!s||!s.id||!s.family||!Array.isArray(s.components)||!Array.isArray(s.sharedInputs)||!Array.isArray(s.matchedAlerts)))throw new Error("invalid dependency signal");
  if(new Set(signals.map(s=>s.id)).size!==signals.length)throw new Error("signal IDs must be unique");
+ for(const s of signals){if(s.matchedAlerts.some(x=>!x||typeof x.targetId!=="string"||typeof x.alert!=="boolean")||new Set(s.matchedAlerts.map(x=>x.targetId)).size!==s.matchedAlerts.length)throw new Error("invalid or duplicate target ID in signal "+s.id)}
  if(!Number.isInteger(minMatched)||minMatched<2||!Number.isInteger(permutations)||permutations<1||!Number.isFinite(threshold)||threshold<=0||threshold>1||!Number.isFinite(alpha)||alpha<=0||alpha>=1)throw new Error("invalid matrix options");
  const pairs:DependencyPair[]=[];
  for(let i=0;i<signals.length;i++)for(let j=i+1;j<signals.length;j++){
@@ -47,9 +59,10 @@ export function buildSignalDependencyMatrix(signals:DependencySignal[],options:{
   for(let start=0;start+blockSize<=ordered.length;start+=blockSize){const block=ordered.slice(start,start+blockSize);blockPhi.push(phi(block.map(x=>x.alert),block.map(x=>mapB.get(x.targetId)!)));}
   const nonzeroBlocks=blockPhi.filter((v):v is number=>v!==null&&v!==0);
   const directionConsistency=cor!==null&&cor!==0&&nonzeroBlocks.length?nonzeroBlocks.filter(v=>Math.sign(v)===Math.sign(cor)).length/nonzeroBlocks.length:null;
-  const cls=n<minMatched?"insufficient":cor!==null&&Math.abs(cor)>=threshold&&p!==null&&p<=alpha?"empirical-dependence":sharedComponents.length||sharedInputs.length?"structural-only":"no-dependence-detected";
   const co=aa.filter((x,k)=>x&&bb[k]).length;
-  pairs.push({a:a.id,b:b.id,matchedN:n,coAlerts:co,coAlertRate:n?co/n:null,phi:cor,observedAlertOverlap:n?co/n:null,structuralJaccard:jaccard(a.components,b.components),sharedComponents,sharedInputs,permutationP:p,temporalBlocks:blockPhi.length,blockPhi,directionConsistency,classification:cls});
+  pairs.push({a:a.id,b:b.id,matchedN:n,coAlerts:co,coAlertRate:n?co/n:null,phi:cor,observedAlertOverlap:n?co/n:null,structuralJaccard:jaccard(a.components,b.components),sharedComponents,sharedInputs,permutationP:p,adjustedQ:null,temporalBlocks:blockPhi.length,blockPhi,directionConsistency,classification:n<minMatched?"insufficient":"no-dependence-detected"});
  }
- return{signalCount:signals.length,pairCount:pairs.length,minMatched,permutations,pairs,interpretation:"Structural overlap and empirical dependence are distinguished. Empirical dependence requires a matched sample, |phi| threshold and permutation p-value; it is not causal or predictive. Temporal block Phi and direction consistency are descriptive; no familywise correction is applied. No automatic signal weighting or elimination."};
+ const qValues=benjaminiHochberg(pairs.map(p=>p.permutationP));
+ pairs.forEach((pair,i)=>{pair.adjustedQ=qValues[i];pair.classification=pair.matchedN<minMatched?"insufficient":pair.phi!==null&&Math.abs(pair.phi)>=threshold&&pair.adjustedQ!==null&&pair.adjustedQ<=alpha?"empirical-dependence":pair.sharedComponents.length||pair.sharedInputs.length?"structural-only":"no-dependence-detected"});
+ return{signalCount:signals.length,pairCount:pairs.length,minMatched,permutations,adjustmentMethod:"benjamini-hochberg",pairs,interpretation:"Structural overlap and empirical dependence are distinguished. Empirical dependence requires matched sample support, |phi| threshold and Benjamini-Hochberg adjusted q-value across eligible pairwise permutation tests. Temporal block Phi and direction consistency are descriptive; dependence is not causal or predictive. BH is exploratory and may not control FDR under arbitrary dependence between tests. No automatic signal weighting or elimination."};
 }
