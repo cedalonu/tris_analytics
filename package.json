@@ -54,7 +54,8 @@
     "research:positional-pool-null-comparison": "tsx scripts/run-tris-positional-pool-null-comparison.ts",
     "research:positional-pool-temporal-split": "tsx scripts/run-tris-positional-pool-temporal-split.ts",
     "research:positional-pool-scale-sensitivity": "tsx scripts/run-tris-regime-analysis.ts",
-    "research:prospective-audit": "tsx scripts/run-tris-prospective-audit.ts"
+    "research:prospective-audit": "tsx scripts/run-tris-prospective-audit.ts",
+    "research:prospective-coverage": "tsx scripts/run-tris-prospective-coverage.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
