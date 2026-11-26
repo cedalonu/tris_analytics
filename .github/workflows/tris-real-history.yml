@@ -3,6 +3,12 @@ name: TRIS real-history integration validation
 on:
   push:
     branches: [research-core-v1]
+  workflow_dispatch:
+    inputs:
+      restore_run_id:
+        description: "Previous successful real-history run ID to restore prospective ledger from (optional)"
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -26,6 +32,25 @@ jobs:
         run: npm run test:research
       - name: Build application
         run: npm run build
+      - name: Restore prior prospective ledger (explicit opt-in)
+        if: github.event_name == 'workflow_dispatch' && inputs.restore_run_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: tris-real-history-validation
+          run-id: ${{ inputs.restore_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          path: restored-artifact
+      - name: Restore only prospective ledger files
+        if: github.event_name == 'workflow_dispatch' && inputs.restore_run_id != ''
+        run: |
+          if [ ! -d restored-artifact/data/prospective ]; then
+            echo "The selected artifact has no data/prospective ledger; refusing restore."
+            exit 1
+          fi
+          mkdir -p data/prospective
+          cp -a restored-artifact/data/prospective/. data/prospective/
+          echo "Restored prior ledger files. Integrity/portfolio checks run in downstream audit steps."
       - name: Validate and checkpoint the exact CSV snapshot
         run: npm run research:sync -- data/source-snapshots/Tris-2026-11-25.csv data/tris-sync-checkpoint.json
       - name: Run frozen chronological hypothesis validation
