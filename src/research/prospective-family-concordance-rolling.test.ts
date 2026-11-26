@@ -18,8 +18,8 @@ test("rolling windows are full, overlap by configured step, and preserve concord
   assert.equal(pair.windows.length,5);
   assert.deepEqual(pair.windows.map(w=>[w.startDrawId,w.endDrawId]),[[1,10],[6,15],[11,20],[16,25],[21,30]]);
   assert.equal(pair.supportedWindows,5);
-  assert.equal(pair.positiveWindows,2);
-  assert.equal(pair.negativeWindows,2);
+  assert.equal(pair.positiveWindows,5);
+  assert.equal(pair.negativeWindows,0);
   assert.equal(pair.meanCorrelation,1);
   assert.equal(pair.meanDirectionAgreement,1);
 });
