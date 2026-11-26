@@ -1139,10 +1139,13 @@ function parseCSV(text: string): Draw[] {
     for (let i = 1; i < lines.length; i++) {
         if (!lines[i].trim()) continue;
         const cols = lines[i].split(',');
-        const num = Number.parseInt(cols[0]?.trim() ?? '', 10);
-        const digits = [2, 3, 4, 5, 6].map(index => Number.parseInt(cols[index]?.trim() ?? '', 10));
+        if (cols.length < 8) throw new Error(`Fila ${i + 1}: faltan columnas obligatorias.`);
+        const numText = (cols[0] ?? '').trim();
+        const digitTexts = [2, 3, 4, 5, 6].map(index => (cols[index] ?? '').trim());
+        const num = /^\\d+$/.test(numText) ? Number(numText) : Number.NaN;
+        const digits = digitTexts.map(value => /^\\d$/.test(value) ? Number(value) : Number.NaN);
         const date = (cols[7] ?? '').trim();
-        if (!Number.isInteger(num) || num <= 0 || digits.length !== 5 || digits.some(d => !Number.isInteger(d) || d < 0 || d > 9) || !date) {
+        if (!Number.isSafeInteger(num) || num <= 0 || digits.some(d => !Number.isInteger(d)) || !date) {
             throw new Error(`Fila ${i + 1}: concurso, cinco dígitos o fecha inválidos.`);
         }
         if (seen.has(num)) throw new Error(`Fila ${i + 1}: concurso duplicado (${num}).`);
