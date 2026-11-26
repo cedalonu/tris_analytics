@@ -122,6 +122,8 @@ jobs:
         run: npm run research:prospective-performance-sensitivity -- data/prospective
       - name: Aggregate research report pack
         run: npm run research:report-pack
+      - name: Generate hypothesis evidence dossiers
+        run: npm run research:evidence-dossiers
       - name: Upload real-history reports and frozen ledgers
         uses: actions/upload-artifact@v4
         with:
