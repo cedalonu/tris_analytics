@@ -5,7 +5,7 @@ const signals=[{signalId:"A",utility:9},{signalId:"B",utility:8},{signalId:"C",u
 const groups={empiricalGroups:[["A","B","C"]],structuralGroups:[["A","B"],["D","E"]]};
 test("diversity selection avoids a same-group lower-utility member when possible",()=>{
  const rank=selectRedundancyAwareSignalPortfolio("utility-ranked",3,signals,groups);
- const diverse=selectRedundancyAwareSignalPortfolio("empirical-diversity",3,signals,groups,7,1);
+ const diverse=selectRedundancyAwareSignalPortfolio("empirical-diversity",3,signals,groups,7,4);
  assert.deepEqual(rank.selectedSignalIds,["A","B","C"]);
  assert.equal(diverse.metrics.empiricalGroupedCount,1);
  assert.ok(diverse.metrics.meanUtility<=rank.metrics.meanUtility);
