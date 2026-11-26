@@ -34,6 +34,13 @@ jobs:
         run: npm run research:positional-pool-stability-calibration
       - name: Run positional-pool sensitivity grid
         run: npm run research:positional-pool-sensitivity
+      - name: Run catalog redundancy and overlap analysis
+        run: npm run research:overlap
+      - name: Compare structural candidate portfolio methods
+        env:
+          TRIS_PORTFOLIO_SIZES: "10,20,50"
+          TRIS_PORTFOLIO_RANDOM_REPS: "100"
+        run: npm run research:candidate-portfolios
       - name: Run synthetic detector calibration
         run: npm run research:position-null
       - name: Upload synthetic calibration report
