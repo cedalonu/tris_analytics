@@ -61,6 +61,10 @@ const md=["# TRIS — análisis integral de persistencia por régimen","","- Fue
 "|---|---|---:|---:|---:|",
 ...positionalProfiles.regimes.flatMap(x=>x.positionPairs.map(p=>"| "+x.regimeId+" | R"+p.firstPosition+"–R"+p.secondPosition+" | "+(p.sameDigitRate===null?"n/d":(100*p.sameDigitRate).toFixed(1)+"%")+" | "+(p.independentExpectedRate===null?"n/d":(100*p.independentExpectedRate).toFixed(1)+"%")+" | "+(p.excessSameDigitRate===null?"n/d":(100*p.excessSameDigitRate).toFixed(1)+" pp")+" |")),
 "",
+"| Régimen | Par de posiciones | Cambios iguales observados | Referente marginal | Exceso descriptivo |",
+"|---|---|---:|---:|---:|",
+...positionalProfiles.regimes.flatMap(x=>x.changeSynchronyPairs.map(p=>"| "+x.regimeId+" | R"+p.firstPosition+"–R"+p.secondPosition+" | "+(p.sameDeltaRate===null?"n/d":(100*p.sameDeltaRate).toFixed(1)+"%")+" | "+(p.independentExpectedRate===null?"n/d":(100*p.independentExpectedRate).toFixed(1)+"%")+" | "+(p.excessSameDeltaRate===null?"n/d":(100*p.excessSameDeltaRate).toFixed(1)+" pp")+" |")),
+"",
 ...positionalProfiles.limitations.map(x=>"- "+x),
 "","## Limitaciones",...report.limitations.map(x=>"- "+x),"","Las etiquetas se recalculan solo con historia anterior a cada objetivo. No se modifican forecasts congelados ni el portafolio. Sin APIs, polling ni descargas."].join("\n")+"\n";
 await writeFile(resolve(out,"latest.md"),md,"utf8");
