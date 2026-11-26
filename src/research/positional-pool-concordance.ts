@@ -70,7 +70,7 @@ export function analyzePositionalPoolConcordance(
      if(previousPool){const union=new Set([...previousPool,...current]),intersection=[...previousPool].filter(d=>current.has(d)).length;jaccardTotal+=union.size?intersection/union.size:1;jaccardN++;}
      previousPool=current;
     }
-    const previousSupported=[...profile.blocks].filter(b=>b.status==="supported"&&b.blockIndex<block.blockIndex).at(-1);
+    const previousSupported=profile.blocks.find(b=>b.blockIndex===block.blockIndex-1&&b.status==="supported");
     blocks.push({regimeId:profile.regimeId,position,method,poolSize,blockIndex:block.blockIndex,startDrawId:block.startDrawId,endDrawId:block.endDrawId,partial:block.partial,
      positionalDominantDigit:block.dominantDigit,positionalDominantShare:block.dominantShare,tested,poolHits:hits,poolHitRate:tested?hits/tested:null,
      uniformReference:poolSize/10,dominantDigitPoolInclusionRate:tested?dominantIncluded/tested:null,
