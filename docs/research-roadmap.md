@@ -238,3 +238,14 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Calcula cobertura por concursos observados, cantidad de huecos, pendientes y resolución incompleta. Los huecos no se rellenan ni se les atribuye una causa.
 - Es una auditoría de presencia/cobertura, no una métrica de precisión ni evidencia de predictibilidad. Es de solo lectura y no modifica el ledger ni crea pronósticos retrospectivos.
 - Reportes: `reports/prospective-coverage/latest.json` y `latest.md` (locales, ignorados por Git).
+
+
+## Fase 43 — desempeño prospectivo por modalidad y configuración
+- Se agrega `src/research/prospective-performance.ts`, pruebas y `scripts/run-tris-prospective-performance.ts`.
+- Resume únicamente pronósticos congelados y sus resoluciones locales; no recalcula ni modifica el ledger.
+- Agrupa por familia y configuración congelada exacta, evitando mezclar posiciones, modalidades, métodos, tamaños de pool o ventanas distintas.
+- Por grupo informa N resuelto/pendiente, aciertos del candidato y de la línea base, intervalos Wilson del 95%, victorias exclusivas del candidato, victorias exclusivas de la base, empates y diferencia pareada.
+- Los IDs duplicados y las resoluciones duplicadas/no coincidentes se reportan; se evita contar dos veces el mismo ID de pronóstico.
+- Los intervalos y diferencias son descriptivos: no corrigen dependencia temporal ni multiplicidad, no prueban predictibilidad y no promueven candidatos.
+- Comando local: `npm run research:prospective-performance -- [directorio-ledger]`; lee `forecasts.jsonl` y `results.jsonl` (por defecto `data/prospective`) y escribe `reports/prospective-performance/latest.json` y `.md`.
+- Sin APIs, consultas externas, descargas, polling, reconstrucción retroactiva ni cambios al ledger.
