@@ -18,11 +18,11 @@ export default function IntuitionDashboard({draws,onBack}:Props){
  const last20=sorted.slice(-20),last50=sorted.slice(-50);
  const matrix=useMemo(()=>Array.from({length:5},(_,pos)=>digits.map(d=>last20.filter(x=>x.digits[pos]===d).length)),[last20]);
  const matrix50=useMemo(()=>Array.from({length:5},(_,pos)=>digits.map(d=>last50.filter(x=>x.digits[pos]===d).length)),[last50]);
- const latest=sorted.at(-1);
+ const latest=sorted.length?sorted[sorted.length-1]:undefined;
  const available=sorted.length>0;
  const maxCount=Math.max(1,...matrix.flat());
  const topByPosition=matrix.map(row=>[...digits].sort((a,b)=>row[b]-row[a]||a-b).slice(0,3));
- const overlap=useMemo(()=>{const counts=new Map<number,number>();topByPosition.flat().forEach(d=>counts.set(d,(counts.get(d)??0)+1));return [...counts.entries()].filter(([,n])=>n>1).sort((a,b)=>b[1]-a[1]||a[0]-b[0]);},[topByPosition]);
+ const overlap=useMemo(()=>{if(!sorted.length)return [];const counts=new Map<number,number>();topByPosition.flat().forEach(d=>counts.set(d,(counts.get(d)??0)+1));return [...counts.entries()].filter(([,n])=>n>1).sort((a,b)=>b[1]-a[1]||a[0]-b[0]);},[topByPosition,sorted.length]);
  const noData=!available;
  return <div className="fixed inset-0 z-[110] overflow-y-auto bg-[#070c17] text-slate-100">
   <div className="mx-auto max-w-7xl px-4 py-5 md:px-7">
