@@ -1127,7 +1127,7 @@ interface Draw {
 }
 
 function parseCSV(text: string): Draw[] {
-    const lines = text.replace(/^\\uFEFF/, '').trim().split(/\\r?\\n/);
+    const lines = text.replace(/^\uFEFF/, '').trim().split(/\r?\n/);
     if (lines.length < 2) throw new Error('El CSV no contiene sorteos.');
     const header = lines[0].split(',').map(value => value.trim().toUpperCase());
     const required = ['CONCURSO', 'ID', 'R1', 'R2', 'R3', 'R4', 'R5', 'FECHA'];
