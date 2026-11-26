@@ -44,7 +44,8 @@
     "research:regime-analysis": "tsx scripts/run-tris-regime-analysis.ts",
     "research:regime-stability": "tsx scripts/run-tris-regime-stability.ts",
     "research:regime-position-profile": "tsx scripts/run-tris-regime-analysis.ts",
-    "research:positional-stability-calibration": "tsx scripts/run-tris-positional-stability-calibration.ts"
+    "research:positional-stability-calibration": "tsx scripts/run-tris-positional-stability-calibration.ts",
+    "research:positional-transitions": "tsx scripts/run-tris-regime-analysis.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
