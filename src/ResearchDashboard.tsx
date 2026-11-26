@@ -74,13 +74,13 @@ export default function ResearchDashboard({onBack,onOpenIntuition}:{onBack:()=>v
     </div>
     <div className="relative mt-5 flex flex-wrap gap-2 text-[10px] font-semibold"><span className="rounded-full border border-emerald-800 bg-emerald-950/50 px-3 py-1.5 text-emerald-300">● Solo análisis local</span><span className="rounded-full border border-slate-700 bg-slate-950/50 px-3 py-1.5 text-slate-300">Sin APIs ni descargas</span><span className="rounded-full border border-slate-700 bg-slate-950/50 px-3 py-1.5 text-slate-300">Sin afirmaciones predictivas no validadas</span></div>
    </div>
-   <section className="mt-5 grid grid-cols-2 gap-2 md:grid-cols-5">
-    {kinds.map((k,i)=><button key={k} onClick={()=>setActive(k)} className={`group rounded-xl border p-3 text-left transition ${active===k?"border-cyan-500/80 bg-cyan-950/40 shadow-[0_0_20px_rgba(34,211,238,.08)]":"border-slate-800 bg-slate-900/60 hover:border-slate-600"}`}>
+   <nav aria-label="Fases del centro de investigación" className="mt-5 grid grid-cols-2 gap-2 md:grid-cols-5">
+    {kinds.map((k,i)=><button key={k} type="button" aria-pressed={active===k} onClick={()=>setActive(k)} className={`group min-h-20 rounded-xl border p-3 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 ${active===k?"border-cyan-500/80 bg-cyan-950/40 shadow-[0_0_20px_rgba(34,211,238,.08)]":"border-slate-800 bg-slate-900/60 hover:border-slate-600"}`}>
      <div className="flex items-center justify-between"><span className="text-[10px] font-black tracking-widest text-slate-500">FASE {41+i}</span><span className={`text-xs ${byKind[k]?"text-emerald-400":"text-slate-600"}`}>{byKind[k]?"●":"○"}</span></div>
      <div className={`mt-2 text-xs font-bold leading-snug ${active===k?"text-cyan-200":"text-slate-300"}`}>{labels[k]}</div>
      <div className="mt-2 text-[10px] text-slate-500">{byKind[k]?"Informe disponible":"Pendiente de importar"}</div>
     </button>)}
-   </section>
+   </nav>
    <section className="my-5 rounded-xl border border-cyan-900/70 bg-cyan-950/20 p-4">
     <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-bold">Cargar informes de investigación</h2><p className="mt-1 text-xs text-slate-400">Selecciona uno o varios archivos latest.json generados por los comandos locales research:prospective-*</p></div><label className="cursor-pointer rounded-lg bg-cyan-500 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-cyan-300">{busy?"Leyendo…":"＋ Importar JSON"}<input type="file" accept=".json,application/json" multiple className="hidden" disabled={busy} onChange={e=>{void importFiles(e.target.files);e.currentTarget.value="";}}/></label></div>
     <div className="mt-3 flex flex-wrap gap-2">{kinds.map(k=><span key={k} className={`rounded-full border px-2.5 py-1 text-[11px] ${byKind[k]?"border-emerald-700 bg-emerald-950/50 text-emerald-300":"border-slate-700 text-slate-500"}`}>{byKind[k]?"✓ ":"○ "}{labels[k]}</span>)}</div>
