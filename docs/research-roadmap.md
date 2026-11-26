@@ -174,3 +174,13 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Variables: `TRIS_POSITIONAL_POOL_SPLIT_MIN_PAIRS` y `TRIS_POSITIONAL_POOL_SPLIT_MIN_CORRELATION`. Reportes en `reports/positional-pool-temporal-split/latest.json` y `.md`.
 - La segunda mitad es temporalmente posterior, pero no es un conjunto externo independiente ni validación prospectiva de pronósticos. Las variables de dominancia del bloque son retrospectivas y no están disponibles al inicio de cada bloque.
 - No calcula p-valores, no corrige multiplicidad, no elige métodos y no modifica pronósticos, candidatos, pesos, portafolios o ledger. Solo usa reportes locales derivados del CSV manual; sin APIs, polling ni descargas.
+
+
+## Phase 36 — sensibilidad de concordancia al tamaño del bloque
+- Reconstruye desde los sorteos y etiquetas originales los bloques no solapados a escalas predefinidas de 10, 15, 25 y 40 concursos; todos quedan anclados al primer concurso etiquetado.
+- Para cada escala vuelve a calcular la dominancia posicional y la concordancia con pools estrictamente past-only; no compara bloques agregados incompatibles ni reutiliza límites de otra escala.
+- Compara las tres correlaciones descriptivas de fases 29–35 por régimen, posición, método y tamaño de pool. Clasifica dirección positiva/negativa común a todas las escalas, dirección mixta, soporte solo parcial o insuficiente.
+- Integrado en `npm run research:regime-analysis -- <local-Tris.csv> [ledger-directory]`; añade `positionalPoolScaleSensitivity` al JSON y una tabla al Markdown.
+- Escalas configurables mediante `TRIS_POSITIONAL_POOL_BLOCK_SIZES` (10,15,25,40); soporte mínimo mediante `TRIS_POSITIONAL_POOL_BLOCK_MIN_SUPPORT` (10). Historia mínima de pool reutiliza `TRIS_POSITIONAL_POOL_MIN_HISTORY`.
+- Las escalas comparten los mismos sorteos y no son réplicas independientes. La concordancia de signo no es inferencia; no hay p-valores ni corrección de multiplicidad y no se selecciona una escala ganadora.
+- No modifica pronósticos, candidatos, pesos, portafolios o ledger. Usa CSV local manual; sin APIs, polling ni descargas.
