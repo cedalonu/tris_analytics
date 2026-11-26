@@ -78,3 +78,26 @@ Design and implement an explicit ledger restore/continuity workflow with safegua
 ### CI coverage update (2026-11-26)
 
 The synthetic-only `research:family-concordance-null` runner is now included in `.github/workflows/tris-research.yml` with 300 replications per scenario, 100 synthetic draws, and a fixed seed. Its JSON/Markdown output is included in the CI artifact. This is calibration-only; it does not read real TRIS outcomes, alter portfolio settings, or count as prospective predictive evidence. Workflow validation is pending for the new commit.
+
+
+## Verificación CI de la cobertura sintética — 2026-11-26
+
+- Research workflow en commit `9d21b866fcfab2c3341b9af40944fa4f868c1b1d`: **success**. TypeScript, build, tests y todas las calibraciones sintéticas finalizaron; artifact `tris-position-null-calibration` generado.
+- Real-history workflow para el mismo commit: aún en ejecución durante esta revisión; no se marca como validado hasta que termine.
+- Family-concordance null: 300 réplicas × 100 sorteos sintéticos, 4 familias × 5 candidatos, semilla base 20261125. Se incluyeron 48 escenarios (probabilidades marginales 0.1/0.2/0.5; dependencia candidato-baseline 0/0.5/1; solapamiento entre familias 0/0.25/0.5/1).
+- Bajo el escenario independiente (p=0.1, dependencias=0, overlap=0), correlación media entre familias −0.003, acuerdo direccional 49.58%, todas positivas 6.33%, alguna positiva 92.33%. Con overlap 0.25, todas positivas 11%; con overlap 0.5, 15%; overlap 1, 31.33%. Esto muestra que resultados positivos simultáneos y concordancia pueden surgir bajo un nulo por dependencia/ruido. No es una estimación de TRIS real ni evidencia predictiva.
+- Artifact del run 588 descargado e inspeccionado; contiene JSON y Markdown del null, y calibraciones sintéticas. No contiene outcomes prospectivos resueltos.
+
+## Requisitos de datos de los runners prospectivos (inspección de entrypoints)
+
+| Runner | Fuente requerida | Estado sin outcomes reales | Nota de seguridad |
+|---|---|---|---|
+| `research:cycles` | CSV local validado + ledger de ciclos/outcomes | Puede crear forecasts congelados y resolver ciclos retrospectivos de validación de ciclo; no reemplazar CSV ni reescribir historia | Append-only; exige ≥200 sorteos y sin gaps |
+| `research:position-memory` / `research:position-change` | `data/cycles/outcomes.jsonl` | No ejecutable si falta ledger; no simular resultados | Descriptivo sobre outcomes existentes |
+| `research:candidate-persistence` | Manifest, forecasts, results, latest-summary del portafolio | Bloqueado si results no tiene registros resueltos | Identidad de portafolio validada |
+| `research:family-concordance-audit/stability/rolling` | Mismo ledger prospectivo (forecasts + results) | Bloqueados sin results; null runner es sintético y separado | No usar históricos como backfill de prospectivo |
+| `research:regime-labels` | CSV manual, manifest y latest-summary | Requiere CSV sin errores/gaps y warmup suficiente | Etiquetas past-only hasta límite observado |
+| `research:regime-persistence` | Forecasts/results + regime-labels ledger | Bloqueado sin resultados resueltos | No promover régimen por historial retrospectivo |
+| `research:regime-stability` | Labels JSONL ya calculadas | Puede describir labels existentes; sin labels no ejecutable | Offline; no convierte etiquetas en señal de predicción |
+
+No se ejecutan estos runners contra datos inventados o históricos reutilizados como si fueran prospectivos. La cobertura futura se añadirá a CI sólo mediante tests sintéticos específicos o cuando exista un ledger prospectivo resuelto y auditable.
