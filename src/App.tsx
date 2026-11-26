@@ -419,6 +419,7 @@ import { RandomForestClassifier } from 'ml-random-forest';
 // Sin soluciones.ts (datos del motor original): el export de Comparativa usa [] en Tris.
 import * as XLSX from 'xlsx';
 import ResearchDashboard from './ResearchDashboard';
+import IntuitionDashboard from './IntuitionDashboard';
 
 
 
