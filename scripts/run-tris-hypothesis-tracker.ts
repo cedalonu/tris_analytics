@@ -1,0 +1,9 @@
+#!/usr/bin/env tsx
+/** Phase 48: read dossier history and create tracking state report. */
+import {readdir,readFile,mkdir,writeFile} from "node:fs/promises";import {resolve} from "node:path";import {trackDossier} from "../src/research/hypothesis-tracker";import type {EvidenceDossier} from "../src/research/evidence-dossier";
+const root=resolve(process.argv[2]??"reports/evidence-dossiers");const out=resolve(process.argv[3]??"reports/hypothesis-tracker");await mkdir(out,{recursive:true});const names=(await readdir(root)).filter(n=>n.endsWith(".json")&&n!=="index.json");const states=[];
+for(const n of names){const dossier=JSON.parse(await readFile(resolve(root,n),"utf8")) as EvidenceDossier;states.push(trackDossier(dossier));}
+const summary={schema:"tris-hypothesis-tracker-v1",createdAt:new Date().toISOString(),count:states.length,integrityIssues:states.filter(s=>s.integrity!=="clean").length,states:states.reduce((acc,s)=>{acc[s.state]=(acc[s.state]??0)+1;return acc;},{} as Record<string,number>),records:states,interpretation:"Descriptive transitions only; no ranking or prediction. A support-count decrease is flagged for review."};
+await writeFile(resolve(out,"latest.json"),JSON.stringify(summary,null,2)+"\n","utf8");
+const md=["# Hypothesis tracking state","", "- Generated: "+summary.createdAt,"- Candidates: "+summary.count,"- Integrity issues: "+summary.integrityIssues,"","| Candidate | State | Resolved delta | Class changed | Integrity | Note |","|---|---|---:|---|---|---|",...states.map(s=>"| "+s.candidateKey+" | "+s.state+" | "+(s.resolvedDelta??"—")+" | "+(s.classificationChanged?"yes":"no")+" | "+s.integrity+" | "+s.note.replace(/\|/g," /")+" |"),"","This is an audit of state transitions, not a forecast or a betting recommendation."];
+await writeFile(resolve(out,"latest.md"),md.join("\n")+"\n","utf8");console.log("Hypothesis tracker states: "+states.length+" records; integrity issues "+summary.integrityIssues);
