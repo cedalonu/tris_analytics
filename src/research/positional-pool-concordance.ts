@@ -55,24 +55,25 @@ export function analyzePositionalPoolConcordance(
   const position=(profile.position-1) as Pos;
   for(const block of profile.blocks){
    if(block.status!=="supported"||block.dominantDigit===null)continue;
+   const dominantDigit=block.dominantDigit as Digit;
    const targetRows=draws.filter(d=>d.drawId>=block.startDrawId&&d.drawId<=block.endDrawId&&labelByDraw.get(d.drawId)?.regimeId===profile.regimeId);
    for(const method of methods)for(const poolSize of sizes){
     let tested=0,hits=0,dominantIncluded=0,jaccardTotal=0,jaccardN=0,previousPool:Set<Digit>|null=null;
     for(const target of targetRows){
      const index=drawIndex.get(target.drawId)!;
      if(index<minimumHistory)continue;
-     const prior=draws.slice(0,index).map(d=>d.digits[position]);
+     const prior=draws.slice(0,index).map(d=>d.digits[position] as Digit);
      const pool=buildPool(prior,method,poolSize);
      tested++;
      if(pool.includes(target.digits[position]))hits++;
-     if(pool.includes(block.dominantDigit))dominantIncluded++;
+     if(pool.includes(dominantDigit))dominantIncluded++;
      const current=new Set(pool);
      if(previousPool){const union=new Set([...previousPool,...current]),intersection=[...previousPool].filter(d=>current.has(d)).length;jaccardTotal+=union.size?intersection/union.size:1;jaccardN++;}
      previousPool=current;
     }
     const previousSupported=profile.blocks.find(b=>b.blockIndex===block.blockIndex-1&&b.status==="supported");
     blocks.push({regimeId:profile.regimeId,position,method,poolSize,blockIndex:block.blockIndex,startDrawId:block.startDrawId,endDrawId:block.endDrawId,partial:block.partial,
-     positionalDominantDigit:block.dominantDigit,positionalDominantShare:block.dominantShare,tested,poolHits:hits,poolHitRate:tested?hits/tested:null,
+     positionalDominantDigit:dominantDigit,positionalDominantShare:block.dominantShare,tested,poolHits:hits,poolHitRate:tested?hits/tested:null,
      uniformReference:poolSize/10,dominantDigitPoolInclusionRate:tested?dominantIncluded/tested:null,
      meanPoolJaccard:jaccardN?jaccardTotal/jaccardN:null,poolTurnover:jaccardN?1-jaccardTotal/jaccardN:null,
      dominantChangedFromPreviousBlock:previousSupported?.dominantDigit===undefined?null:previousSupported.dominantDigit!==block.dominantDigit});
