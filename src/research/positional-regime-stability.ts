@@ -24,8 +24,8 @@ export interface PositionalRegimeBlockSummary {
 export interface PositionalRegimeStabilityReport {
   method:string;firstTargetDrawId:number;lastTargetDrawId:number;
   blockSize:number;blockOffset:number;minimumDrawSupport:number;regimes:PositionalRegimeBlockSummary[];
-  limitations:string[];
 }
+interface BlockCounts {n:number;counts:number[]}
 export function summarizePositionalRegimeStability(
  draws:Draw[],labels:ProspectiveRegimeLabel[],
  options:{blockSize?:number;blockOffset?:number;minimumDrawSupport?:number}={}
@@ -36,32 +36,45 @@ export function summarizePositionalRegimeStability(
  if(!Number.isInteger(minimum)||minimum<1||minimum>blockSize)throw new Error("minimumDrawSupport must be between 1 and blockSize");
  if(!labels.length)throw new Error("labels are required");
  // Reuse the profile module's validation: chronological, contiguous draws and strictly past-only labels.
- const profile=analyzePositionalRegimeProfiles(draws,labels,{minimumSupport:minimum});
+ analyzePositionalRegimeProfiles(draws,labels,{minimumSupport:minimum});
  const drawById=new Map(draws.map(d=>[d.drawId,d]));
  const first=labels[0].drawId,last=labels[labels.length-1].drawId;
  const blockCount=Math.ceil((last-first+1+blockOffset)/blockSize);
  const regimeIds=[...new Set(labels.map(x=>x.regimeId))].sort();
+ const overall=new Map<string,number[][]>(),byBlock=new Map<string,BlockCounts>();
+ for(const regimeId of regimeIds)overall.set(regimeId,Array.from({length:5},()=>Array(10).fill(0) as number[]));
+ for(const label of labels){
+  const draw=drawById.get(label.drawId)!;
+  const blockIndex=Math.floor((label.drawId-first+blockOffset)/blockSize);
+  const countsByPosition=overall.get(label.regimeId)!;
+  for(let p=0;p<5;p++){
+   const digit=draw.digits[p];
+   countsByPosition[p][digit]++;
+   const key=label.regimeId+"|"+p+"|"+blockIndex;
+   let block=byBlock.get(key);
+   if(!block){block={n:0,counts:Array(10).fill(0) as number[]};byBlock.set(key,block);}
+   block.n++;block.counts[digit]++;
+  }
+ }
  const summaries:PositionalRegimeBlockSummary[]=[];
  for(const regimeId of regimeIds){
-  const regimeLabels=labels.filter(x=>x.regimeId===regimeId);
   for(let p=0;p<5;p++){
-   const overallCounts=Array(10).fill(0) as number[];
-   for(const label of regimeLabels)overallCounts[drawById.get(label.drawId)!.digits[p]]++;
+   const overallCounts=overall.get(regimeId)![p];
    const overallMax=Math.max(...overallCounts);
-   const overallDominant=regimeLabels.length?overallCounts.indexOf(overallMax):null;
+   const regimeTotal=overallCounts.reduce((s,x)=>s+x,0);
+   const overallDominant=regimeTotal?overallCounts.indexOf(overallMax):null;
    const blocks:PositionalStabilityBlock[]=[];
    for(let i=0;i<blockCount;i++){
     const nominalStart=first+i*blockSize-blockOffset;
     const start=Math.max(first,nominalStart),end=Math.min(last,nominalStart+blockSize-1);
-    const rows=regimeLabels.filter(x=>x.drawId>=start&&x.drawId<=end).map(x=>drawById.get(x.drawId)!);
-    const counts=Array(10).fill(0) as number[];
-    for(const row of rows)counts[row.digits[p]]++;
-    const max=Math.max(...counts),dominant=rows.length?counts.indexOf(max):null;
-    const share=rows.length?max/rows.length:null;
-    const entropy=rows.length?counts.reduce((h,n)=>{if(!n)return h;const q=n/rows.length;return h-q*Math.log2(q);},0):null;
+    const stats=byBlock.get(regimeId+"|"+p+"|"+i);
+    const n=stats?.n??0,counts=stats?.counts??Array(10).fill(0) as number[];
+    const max=Math.max(...counts),dominant=n?counts.indexOf(max):null;
+    const share=n?max/n:null;
+    const entropy=n?counts.reduce((h,count)=>{if(!count)return h;const q=count/n;return h-q*Math.log2(q);},0):null;
     blocks.push({blockIndex:i+1,startDrawId:start,endDrawId:end,partial:end-start+1<blockSize,
-      n:rows.length,dominantDigit:dominant,dominantShare:share,entropyBits:entropy,
-      effectiveDigits:entropy===null?null:2**entropy,status:rows.length>=minimum?"supported":"underpowered"});
+      n,dominantDigit:dominant,dominantShare:share,entropyBits:entropy,
+      effectiveDigits:entropy===null?null:2**entropy,status:n>=minimum?"supported":"underpowered"});
    }
    const supported=blocks.filter(b=>b.status==="supported");
    const shares=supported.map(b=>b.dominantShare!),entropies=supported.map(b=>b.entropyBits!);
