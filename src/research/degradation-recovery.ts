@@ -10,8 +10,8 @@ export function assessDegradationRecovery(records:Input[],config:EligibilityConf
   if(h.length<2)return{candidateKey:record.candidateKey,state:"insufficient" as DegradationState,latestScore:h.length?assessResearchPriority({candidateKey:record.candidateKey,history:h},config).priorityScore:null,baselineScore:null,peakScore:null,troughScore:null,dropFromPeak:null,alertCount:0,observations:h.length,events:[]};
   const scores=h.map((snap,i)=>assessResearchPriority({candidateKey:record.candidateKey,history:h.slice(0,i+1)},config).priorityScore);
   const baseline=scores[0],peak=Math.max(...scores),trough=Math.min(...scores),events=[] as Array<{at:string;from:DegradationState;to:DegradationState;score:number;reason:string}>;
-  let state:DegradationState="stable",downStreak=0,low=baseline;
-  for(let i=1;i<scores.length;i++){const score=scores[i],prev=scores[i-1],dropPeak=peak-score;if(score<=prev-8)downStreak++;else downStreak=0;let next=state,reason="";
+  let state:DegradationState="stable",downStreak=0,low=baseline,runningPeak=baseline;
+  for(let i=1;i<scores.length;i++){const score=scores[i],prev=scores[i-1];runningPeak=Math.max(runningPeak,score);const dropPeak=runningPeak-score;if(score<=prev-8)downStreak++;else downStreak=0;let next=state,reason="";
    if(state==="stable"&&(prev-score>=10||downStreak>=2)){next="watch";reason="Caída reciente del score (≥10) o dos descensos consecutivos";}
    if((state==="watch"||state==="stable")&&(dropPeak>=15||downStreak>=3)){next="degraded";reason="Descenso persistente o ≥15 puntos bajo el máximo";}
    if(state==="degraded"&&score>=low+10){next="recovering";reason="Mejora ≥10 puntos desde el mínimo";}
