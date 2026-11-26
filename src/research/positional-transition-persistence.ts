@@ -42,11 +42,12 @@ function auditSeries(s:PositionalRegimeBlockSummary,minConsecutive:number):Posit
  if(current)runs.push(current);
  for(const run of runs){const first=run.blocks[0],last=run.blocks[run.blocks.length-1];episodes.push({regimeId:s.regimeId,position:s.position,digit:run.digit,startBlockIndex:first.blockIndex,endBlockIndex:last.blockIndex,startDrawId:first.startDrawId,endDrawId:last.endDrawId,blocks:run.blocks.length,supportedDraws:run.blocks.reduce((n,b)=>n+b.n,0),status:run.blocks.length>=minConsecutive?"sustained":"transient"});}
  const seenDigits=new Set<number>(),transitions:PositionalDominanceTransition[]=[];
- for(let i=1;i<episodes.length;i++){const prior=episodes[i-1],next=episodes[i];if(next.startBlockIndex!==prior.endBlockIndex+1)continue;
+ if(episodes.length)seenDigits.add(episodes[0].digit);
+ for(let i=1;i<episodes.length;i++){const prior=episodes[i-1],next=episodes[i];if(next.startBlockIndex!==prior.endBlockIndex+1){seenDigits.clear();seenDigits.add(next.digit);continue;}
   const earlier=seenDigits.has(next.digit);
   transitions.push({regimeId:s.regimeId,position:s.position,fromDigit:prior.digit,toDigit:next.digit,atBlockIndex:next.startBlockIndex,atDrawId:next.startDrawId,destinationBlocks:next.blocks,destinationSupportedDraws:next.supportedDraws,status:next.blocks>=minConsecutive?"sustained":"transient",returnsToEarlierDigit:earlier});
+  seenDigits.add(next.digit);
  }
- for(const e of episodes)seenDigits.add(e.digit);
  const lengths=episodes.map(e=>e.blocks),drawLengths=episodes.map(e=>e.supportedDraws),sustained=episodes.filter(e=>e.status==="sustained").map(e=>e.blocks);
  const returns=transitions.filter(t=>t.returnsToEarlierDigit).length;
  return{regimeId:s.regimeId,position:s.position,eligibleBlocks:supported.length,underpoweredBlocks:s.blocks.length-supported.length,episodes,transitions,transitionCount:transitions.length,transientTransitions:transitions.filter(t=>t.status==="transient").length,sustainedTransitions:transitions.filter(t=>t.status==="sustained").length,returnsToEarlierDigit:returns,returnRate:transitions.length?returns/transitions.length:null,meanEpisodeBlocks:lengths.length?lengths.reduce((a,b)=>a+b,0)/lengths.length:null,medianEpisodeBlocks:median(lengths),maxEpisodeBlocks:lengths.length?Math.max(...lengths):0,meanEpisodeDraws:drawLengths.length?drawLengths.reduce((a,b)=>a+b,0)/drawLengths.length:null,meanSustainedEpisodeBlocks:sustained.length?sustained.reduce((a,b)=>a+b,0)/sustained.length:null};
