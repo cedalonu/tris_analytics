@@ -100,3 +100,11 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Umbral principal configurable mediante `TRIS_POSITIONAL_TRANSITION_MIN_BLOCKS` (2).
 - Un retorno es recurrencia descriptiva, no periodicidad. El análisis opera a escala de bloques y puede ocultar cambios intrabloque.
 - No modifica pronósticos, candidatos, pesos, portafolios ni ledger. Sin APIs, polling ni descargas.
+
+## Phase 28 — calibración sintética de persistencia de transiciones posicionales
+- Evalúa la fase 27 en cinco escenarios diseñados: dominante fijo, pulso de un bloque, cambio sostenido, cambio sostenido con retorno y fluctuación aleatoria.
+- Mide alertas sostenidas en escenarios sin cambio/aleatorios, detección y omisión de cambios sostenidos, transiciones medias e intervalos Wilson descriptivos.
+- Comando: `npm run research:positional-transition-calibration`.
+- Variables: `TRIS_POSITIONAL_TRANSITION_REPS` (500), `TRIS_POSITIONAL_TRANSITION_BLOCKS` (12), `TRIS_POSITIONAL_TRANSITION_SEED` (20261129), `TRIS_POSITIONAL_TRANSITION_MIN_BLOCKS` (2).
+- La calibración construye secuencias sintéticas de dominantes por bloque; no simula todos los dígitos dentro de cada sorteo. Cinco posiciones de una réplica pueden depender.
+- No optimiza umbrales, no usa CSV real y no demuestra predictibilidad o sesgo físico. CI guarda informes como artefactos.
