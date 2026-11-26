@@ -1,0 +1,5 @@
+import test from "node:test";import assert from "node:assert/strict";import {assessTemporalRankStability} from "./temporal-rank-stability";
+const rec=(key:string,ds:string[])=>({candidateKey:key,history:ds.map((d,i)=>({candidateKey:key,recordedAt:d,classification:"neutral",resolved:i+1}))});
+test("chronological cuts and ranks deterministic",()=>{const x=[rec("A",["2026-01-01","2026-01-10","2026-01-20","2026-01-30"]),rec("B",["2026-01-02","2026-01-11","2026-01-21"])];const a=assessTemporalRankStability(x,3);assert.ok(a.periods.length>=2);assert.deepEqual(a,assessTemporalRankStability(x,3));assert.equal(a.rows.length,2);});
+test("empty input and period range guard",()=>{assert.equal(assessTemporalRankStability([],3).summary.periodCount,0);assert.throws(()=>assessTemporalRankStability([],1));assert.throws(()=>assessTemporalRankStability([],13));});
+test("ranking cutoffs only use history available up to date",()=>{const a=assessTemporalRankStability([rec("A",["2026-01-01","2026-02-01","2026-03-01"]),rec("B",["2026-01-02"])],2);assert.ok(a.periods.every(p=>p.cutoff<="2026-03-01"));assert.ok(a.rows.every(r=>r.periodsPresent<=a.periods.length));});
