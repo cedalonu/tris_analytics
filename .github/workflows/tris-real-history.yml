@@ -48,6 +48,22 @@ jobs:
         run: npm run research:collective -- data/source-snapshots/Tris-2026-11-25.csv
       - name: Run persistence analysis
         run: npm run research:persistence -- data/source-snapshots/Tris-2026-11-25.csv
+      - name: Run catalog redundancy and overlap analysis
+        run: npm run research:overlap
+      - name: Run synthetic position-change null controls
+        run: npm run research:position-null
+      - name: Run synthetic family-concordance null calibration
+        run: npm run research:family-concordance-null
+      - name: Run synthetic regime-classifier calibration
+        run: npm run research:regime-calibration
+      - name: Run synthetic positional-stability calibration
+        run: npm run research:positional-stability-calibration
+      - name: Run synthetic positional-transition calibration
+        run: npm run research:positional-transition-calibration
+      - name: Run synthetic positional-pool stability calibration
+        run: npm run research:positional-pool-stability-calibration
+      - name: Run synthetic positional-pool sensitivity
+        run: npm run research:positional-pool-sensitivity
       - name: Run portfolio walk-forward benchmarks
         env:
           TRIS_PORTFOLIO_SIZES: "10"
