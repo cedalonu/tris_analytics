@@ -33,6 +33,22 @@ jobs:
         run: npm run test:research
       - name: Build application
         run: npm run build
+      - name: Validate selected restore run
+        if: github.event_name == 'workflow_dispatch' && inputs.restore_run_id != ''
+        env:
+          RESTORE_RUN_ID: ${{ inputs.restore_run_id }}
+        run: |
+          set -euo pipefail
+          run_json=$(gh run view "$RESTORE_RUN_ID" --repo "$GITHUB_REPOSITORY" --json workflowName,status,conclusion,headBranch)
+          echo "$run_json" | jq -e '
+            .workflowName == "TRIS real-history integration validation" and
+            .status == "completed" and
+            .conclusion == "success" and
+            .headBranch == "research-core-v1"
+          ' >/dev/null || {
+            echo "Restore source must be a successful completed real-history run from research-core-v1."
+            exit 1
+          }
       - name: Restore prior prospective ledger (explicit opt-in)
         if: github.event_name == 'workflow_dispatch' && inputs.restore_run_id != ''
         uses: actions/download-artifact@v4
