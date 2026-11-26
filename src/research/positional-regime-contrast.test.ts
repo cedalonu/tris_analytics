@@ -1,0 +1,10 @@
+import {test} from "node:test";
+import {strict as assert} from "node:assert";
+import {analyzePositionalRegimeProfiles} from "./positional-regime-profile";
+import {summarizePositionalRegimeStability} from "./positional-regime-stability";
+import {comparePositionalRegimes} from "./positional-regime-contrast";
+import type {Draw} from "../research-core";
+import type {ProspectiveRegimeLabel} from "./prospective-regime-persistence";
+function fixture(){const draws:Draw[]=[];const labels:ProspectiveRegimeLabel[]=[];for(let i=0;i<120;i++){const id=100+i;const regime=i<60?"A":"B";draws.push({drawId:id,digits:Array.from({length:5},(_,p)=>p===0?(regime==="A"?2:8):((i*3+p*2)%10))});if(i>0)labels.push({drawId:id,regimeId:regime,method:"synthetic-past-only",sourceStartDrawId:id-1,sourceEndDrawId:id-1});}return{draws,labels};}
+test("cross-regime contrast distinguishes stable same and regime-specific dominant digits",()=>{const {draws,labels}=fixture();const profiles=analyzePositionalRegimeProfiles(draws,labels,{minimumSupport:20});const stability=summarizePositionalRegimeStability(draws,labels,{blockSize:10,minimumDrawSupport:5});const report=comparePositionalRegimes(profiles,stability,{minimumRegimeSupport:20});const r1=report.contrasts.find(x=>x.position===1)!;assert.equal(r1.classification,"regime-specific-dominant");assert.equal(r1.firstDominantDigit,2);assert.equal(r1.secondDominantDigit,8);assert.equal(report.contrasts.length,5);});
+test("reports insufficient support and rejects invalid thresholds",()=>{const {draws,labels}=fixture();const profiles=analyzePositionalRegimeProfiles(draws,labels,{minimumSupport:20});const stability=summarizePositionalRegimeStability(draws,labels,{blockSize:10,minimumDrawSupport:5});assert.ok(comparePositionalRegimes(profiles,stability,{minimumRegimeSupport:1000}).contrasts.every(x=>x.classification==="insufficient"));assert.throws(()=>comparePositionalRegimes(profiles,stability,{jensenShannonDistanceThreshold:2}),/invalid positional regime contrast/);});
