@@ -34,7 +34,7 @@ export function calibratePositionalPoolTemporalStability(o:PositionalPoolCalibra
   for(let r=0;r<replications;r++){
    const random=rng((seed+si*1000003+r*7919)>>>0),rows=makeRows(scenario,blocks,random,r);
    const fixture:PositionalPoolConcordanceReport={method:"synthetic-fixture",minimumHistory:1,poolMethods:["frequency"],poolSizes:[5],blocks:rows,groups:[],limitations:[]};
-   const report=analyzePositionalPoolTemporalStability(fixture,{windowBlocks:window,stepBlocks:step,minimumPairs,consistencyThreshold:consistency,nearZeroThreshold:nearZero});
+   const report=analyzePositionalPoolTemporalStability(fixture,{windowBlocks:window,stepBlocks:step,minimumPairs:minPairs,consistencyThreshold:consistency,nearZeroThreshold:nearZero});
    const group=report.groups[0];validCorrelations+=report.windows.reduce((sum,x)=>sum+[x.dominantShareVsPoolInclusion,x.dominantTransitionVsTurnover,x.dominantInclusionVsHitRate].filter(v=>v!==null).length,0);
    if(group.classification==="temporally-consistent-positive")positive++;
    else if(group.classification==="temporally-consistent-negative")negative++;
