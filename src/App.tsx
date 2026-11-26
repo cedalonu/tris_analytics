@@ -1892,8 +1892,12 @@ export default function App() {
                 </div>
             ) : (
                 <div className="container max-w-[1040px] mx-auto p-3">
-                    <div className="text-[38px] font-black text-center text-[#ffeb3b] drop-shadow-[0_0_12px_rgba(255,235,59,.9)] leading-[0.9]">
-                        TRIS PREDICTOR <span className="text-[#00e5ff] drop-shadow-[0_0_12px_rgba(0,229,255,.9)]">V1 ML</span>
+                    <div className="text-center">
+                        <div className="text-[10px] font-black uppercase tracking-[.35em] text-[#00e5ff]">Sistema de análisis · Investigación prospectiva</div>
+                        <div className="mt-1 text-[34px] font-black text-[#ffeb3b] drop-shadow-[0_0_12px_rgba(255,235,59,.55)] leading-[0.95] md:text-[40px]">
+                            INTUICIÓN ARTIFICIAL <span className="text-[#00e5ff]">TRIS</span>
+                        </div>
+                        <div className="mt-2 text-[10px] tracking-wide text-[#777]">Motor local de análisis por posición · evidencia verificable · sin conexión a APIs</div>
                     </div>
                     <div className="text-center my-3 space-y-2">
                         {allDraws.length > 0 ? <span className="pill inline-flex items-center rounded-full px-3.5 py-1.5 text-[11px] font-bold bg-[rgba(0,229,255,.1)] border border-[rgba(0,229,255,.3)] text-[#00e5ff]">
