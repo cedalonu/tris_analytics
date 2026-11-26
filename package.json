@@ -48,7 +48,8 @@
     "research:positional-transitions": "tsx scripts/run-tris-regime-analysis.ts",
     "research:positional-transition-calibration": "tsx scripts/run-tris-positional-transition-calibration.ts",
     "research:positional-pool-stability-calibration": "tsx scripts/run-tris-positional-pool-stability-calibration.ts",
-    "research:positional-pool-sensitivity": "tsx scripts/run-tris-positional-pool-sensitivity.ts"
+    "research:positional-pool-sensitivity": "tsx scripts/run-tris-positional-pool-sensitivity.ts",
+    "research:positional-pool-null-controls": "tsx scripts/run-tris-positional-pool-null-controls.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
