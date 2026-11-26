@@ -1,0 +1,8 @@
+import {describe,it,expect} from "vitest";
+import {assessDegradationRecovery} from "./degradation-recovery";
+const make=(scores:number[])=>scores.map((s,i)=>({candidateKey:"h",recordedAt:new Date(Date.UTC(2020,0,i+1)).toISOString(),classification:s>=65?"favorable-observed":s>=45?"neutral":"unfavorable-observed",resolved:10+i*5}));
+describe("degradation/recovery monitor",()=>{it("handles insufficient histories safely",()=>{expect(assessDegradationRecovery([{candidateKey:"x",history:[]}]).rows[0].state).toBe("insufficient");});
+it("is deterministic",()=>{const input=[{candidateKey:"x",history:make([40,40,40])}];expect(assessDegradationRecovery(input)).toEqual(assessDegradationRecovery(input));});
+it("returns stable state for flat history",()=>{const report=assessDegradationRecovery([{candidateKey:"x",history:make([50,50,50,50])}]);expect(report.rows[0].events).toHaveLength(0);});
+it("marks observations and keeps event scores tied to chronological snapshots",()=>{const report=assessDegradationRecovery([{candidateKey:"x",history:make([85,65,40,65,85])}]);expect(report.rows[0].observations).toBe(5);expect(report.rows[0].events.every(e=>e.score>=0&&e.score<=100)).toBe(true);});
+it("does not use future snapshots when earlier record is omitted",()=>{const all=make([70,60,50,70]);const a=assessDegradationRecovery([{candidateKey:"x",history:all.slice(0,2)}]).rows[0];const b=assessDegradationRecovery([{candidateKey:"x",history:all.slice(0,2)}]).rows[0];expect(a).toEqual(b);});});
