@@ -33,7 +33,8 @@
     "research:candidate-portfolios": "tsx scripts/run-tris-candidate-portfolios.ts",
     "research:portfolio-walk-forward": "tsx scripts/run-tris-portfolio-walk-forward.ts",
     "research:prospective-portfolio": "tsx scripts/run-tris-prospective-portfolio.ts",
-    "research:family-concordance-null": "tsx scripts/run-tris-family-concordance-null.ts"
+    "research:family-concordance-null": "tsx scripts/run-tris-family-concordance-null.ts",
+    "research:family-concordance-audit": "tsx scripts/run-tris-family-concordance-audit.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
