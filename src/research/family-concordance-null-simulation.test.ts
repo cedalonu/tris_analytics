@@ -1,0 +1,7 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {simulateFamilyConcordanceNull} from "./family-concordance-null-simulation";
+test("family concordance null is reproducible",()=>{const a=simulateFamilyConcordanceNull({replications:20,seed:42}),b=simulateFamilyConcordanceNull({replications:20,seed:42});assert.deepEqual(a,b);});
+test("null reports bounded concordance rates and Monte Carlo interval",()=>{const r=simulateFamilyConcordanceNull({replications:30,draws:20,seed:7});for(const x of [r.allFamiliesPositiveRate,r.anyFamilyPositiveRate,r.meanPositiveFamilies/ r.families])assert.ok(x>=0&&x<=1);assert.ok(r.wilson95AllPositive[0]<=r.allFamiliesPositiveRate&&r.wilson95AllPositive[1]>=r.allFamiliesPositiveRate);});
+test("cross-family shared component increases measured dependence in stress scenario",()=>{const independent=simulateFamilyConcordanceNull({replications:300,draws:100,crossFamilyOverlap:0,pairedDependence:0,seed:20261125});const shared=simulateFamilyConcordanceNull({replications:300,draws:100,crossFamilyOverlap:1,pairedDependence:0,seed:20261125});assert.ok(shared.meanPairwiseCorrelation!>independent.meanPairwiseCorrelation!);});
+test("invalid simulation settings are rejected",()=>{assert.throws(()=>simulateFamilyConcordanceNull({families:1}),/invalid family concordance null options/);assert.throws(()=>simulateFamilyConcordanceNull({crossFamilyOverlap:1.1}),/invalid family concordance null options/);});
