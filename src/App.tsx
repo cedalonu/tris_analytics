@@ -417,6 +417,7 @@ import html2canvas from 'html2canvas';
 import { RandomForestClassifier } from 'ml-random-forest';
 // Sin soluciones.ts (datos del motor original): el export de Comparativa usa [] en Tris.
 import * as XLSX from 'xlsx';
+import ResearchDashboard from './ResearchDashboard';
 
 
 
@@ -1493,6 +1494,7 @@ function hitClass(c: number): string {
 // --- Main App Component ---
 export default function App() {
     const [loading, setLoading] = useState(true);
+    const [showResearchDashboard, setShowResearchDashboard] = useState(false);
     const [allDraws, setAllDraws] = useState<Draw[]>([]);
     const COMPARATIVA_DRAWS = useMemo(() => getComparativaDraws(allDraws), [allDraws]);
     const [sorteos, setSorteos] = useState<Draw[]>([]);
@@ -1914,6 +1916,7 @@ export default function App() {
 
     return (
         <div className="bg-[#0a0a0a] text-[#e8e8e8] min-h-screen font-sans selection:bg-[#7c4dff] selection:text-white pb-12">
+            {showResearchDashboard && <ResearchDashboard onBack={() => setShowResearchDashboard(false)} />}
 
             {loading ? (
                 <div id="loader" className="text-center py-20 text-[18px] text-[#00e5ff] font-bold">
@@ -1935,6 +1938,7 @@ export default function App() {
                             <div className="flex items-center gap-2 flex-wrap">
                                 <button onClick={downloadCSV} className="border border-[rgba(0,229,255,.4)] bg-[rgba(0,229,255,.15)] text-[#00e5ff] px-3 py-1 rounded-full text-[11px] font-extrabold cursor-pointer hover:bg-[rgba(0,229,255,.25)] transition">csv</button>
                                 <button onClick={downloadTXT} className="border border-[rgba(255,235,59,.4)] bg-[rgba(255,235,59,.1)] text-[#ffeb3b] px-3 py-1 rounded-full text-[11px] font-extrabold cursor-pointer hover:bg-[rgba(255,235,59,.2)] transition">txt</button>
+                                <button onClick={() => setShowResearchDashboard(true)} className="border border-[rgba(124,77,255,.55)] bg-[rgba(124,77,255,.2)] text-[#c4a7ff] px-3 py-1 rounded-full text-[11px] font-extrabold cursor-pointer hover:bg-[rgba(124,77,255,.3)] transition">🔬 Investigación</button>
                                 <button onClick={() => setShowLabModal(true)} className="border border-[rgba(124,77,255,.5)] bg-[rgba(124,77,255,.2)] text-[#b388ff] px-3 py-1 rounded-full text-[11px] font-extrabold cursor-pointer hover:bg-[rgba(124,77,255,.3)] transition">🧪 LAB</button>
                                 <h2 className="text-[19px] font-black">Predicción Sorteo {nextNum} ({drawTime})</h2>
                             </div>
