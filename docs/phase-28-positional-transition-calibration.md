@@ -11,11 +11,10 @@ Medir el comportamiento del detector de episodios y transiciones de la fase 27 a
 5. Fluctuación aleatoria de dominantes entre 0 y 9.
 
 ## Métricas
-- Series régimen/posición con cualquier transición.
-- Series con transición sostenida o transitoria.
-- Alertas sostenidas en escenarios sin cambio y aleatorios.
-- Detección y omisión de cambios sostenidos.
-- Transiciones medias por serie e intervalos Wilson descriptivos.
+- Conteos de series régimen/posición (de un total de `réplicas × 5 posiciones`) con cualquier transición, sostenida o transitoria.
+- Alertas sostenidas a nivel de réplica: cuenta una alerta si cualquiera de sus cinco posiciones presenta una transición sostenida. Su tasa es familiar por réplica, no una tasa individual por posición.
+- Detección y omisión de cambios sostenidos a nivel de réplica.
+- Transiciones medias por serie e intervalos Wilson descriptivos para las tasas a nivel de réplica.
 
 ## Ejecución
 `npm run research:positional-transition-calibration`
@@ -23,4 +22,4 @@ Medir el comportamiento del detector de episodios y transiciones de la fase 27 a
 Variables: `TRIS_POSITIONAL_TRANSITION_REPS` (500), `TRIS_POSITIONAL_TRANSITION_BLOCKS` (12), `TRIS_POSITIONAL_TRANSITION_SEED` (20261129), `TRIS_POSITIONAL_TRANSITION_MIN_BLOCKS` (2).
 
 ## Límites
-Los escenarios construyen directamente dominantes de bloque, no sorteos individuales. Las cinco posiciones de una réplica pueden depender. Tasas e intervalos son diagnósticos descriptivos. No se optimiza el umbral ni se demuestra predictibilidad, causalidad o sesgo físico. Sin CSV real, APIs, polling ni descargas.
+Los escenarios construyen directamente dominantes de bloque, no sorteos individuales. Los conteos de series se agregan por posición; las alertas falsas y la detección se miden por réplica (cualquier posición), por lo que son métricas familiares. Las cinco posiciones de una réplica pueden depender. Tasas e intervalos son diagnósticos descriptivos. No se optimiza el umbral ni se demuestra predictibilidad, causalidad o sesgo físico. Sin CSV real, APIs, polling ni descargas.
