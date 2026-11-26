@@ -32,3 +32,11 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Rechaza huecos de concursos, rangos ausentes y warm-up insuficiente; no inventa etiquetas para los primeros concursos sin historia.
 - Las etiquetas son descriptivas, no estados verdaderos, no predicciones ni prueba de estructura no aleatoria. No optimiza umbrales retrospectivamente y no altera pronósticos o portafolio.
 - Sin APIs, polling ni descargas: el CSV se proporciona manualmente.
+
+## Phase 19 — calibración sintética del clasificador past-only
+- Añade escenarios estacionarios con dígitos independientes uniformes y con sesgo fijo, para medir la tasa de etiquetas no estables sin cambio generador.
+- Añade un escenario de cambio abrupto de concentración del pool para medir detección con ventanas pasadas de 25 + 25 concursos.
+- Reporta tasas, conteos e intervalos Wilson descriptivos; las ventanas consecutivas se solapan, por lo que las observaciones no son independientes.
+- Semilla, réplicas y número de objetivos configurables; umbrales del clasificador permanecen congelados.
+- Comando offline: `npm run research:regime-calibration`; reporte en `reports/regime-calibration/latest.md` y `.json`.
+- No usa CSV real, APIs, polling ni descargas; no estima capacidad predictiva ni ajusta parámetros automáticamente.
