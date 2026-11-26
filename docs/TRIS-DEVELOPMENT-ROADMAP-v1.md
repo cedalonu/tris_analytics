@@ -260,3 +260,14 @@ Comando: `npm run research:prospective-portfolio -- ./data/Tris.csv`. El reporte
 - Runner offline: `npm run research:family-concordance-null`; genera `reports/family-concordance-null/latest.md/json`.
 - La calibración mide cuánto acuerdo puede surgir por ruido compartido; no estima dependencia real del TRIS, no ajusta umbrales y no modifica portafolios.
 - Sin APIs, polling, descargas ni CSV real. No se afirma ventaja predictiva.
+
+
+### Fase 13 — auditoría de concordancia observada frente a escenarios nulos
+- Añade `prospective-family-concordance-audit.ts`, pruebas y runner local.
+- Consume exclusivamente el manifiesto, pronósticos congelados y resultados ya resueltos del ledger prospectivo; no reconstruye ni rellena sorteos.
+- Calcula correlación media y acuerdo direccional observados entre familias y los compara con envolventes P05/mediana/P95 de escenarios nulos sintéticos con solapamiento latente configurable.
+- Ajusta el tamaño simulado al número de concursos comunes y a la mediana de candidatos por familia; esta aproximación queda explícitamente documentada y no pretende reproducir toda la heterogeneidad del sistema.
+- Requiere 30 concursos comunes por defecto para emitir la comparación; por debajo de ese soporte genera diagnóstico insuficiente y no presenta envolventes.
+- Comando: `npm run research:family-concordance-audit -- [directorio-ledger]`; salida en `family-concordance-audit/latest.md/json`.
+- Los rangos sintéticos no son p-valores ni intervalos de confianza sobre TRIS. No se ajustan pesos, candidatos, umbrales o estados del ledger.
+- Sin APIs, polling ni descargas; si aún no existen resultados prospectivos resueltos, el runner se detiene e informa que falta evidencia.
