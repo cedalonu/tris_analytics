@@ -23,10 +23,10 @@ export default function CycleValidation({ items }: { items: HistoricalPackage[] 
       </div>
       <div className="mt-3 overflow-x-auto rounded-xl border border-slate-800">
         <table className="w-full min-w-[760px] text-left text-xs">
-          <thead className="bg-slate-950 text-slate-400"><tr>{["Hipótesis", "Tipo", "Período", "Cobertura observada", "p ajustado", "Cobertura holdout", "Estado"].map(label => <th key={label} className="p-3">{label}</th>)}</tr></thead>
+          <thead className="bg-slate-950 text-slate-400"><tr>{["Hipótesis", "Tipo", "Período", "Cobertura observada", "p ajustado", "Período holdout", "Cobertura holdout", "Estado"].map(label => <th key={label} className="p-3">{label}</th>)}</tr></thead>
           <tbody>{result.rows.map(row => <tr key={row.candidateKey + row.basis} className="border-t border-slate-800">
             <td className="p-3 font-semibold">{row.candidateKey}</td><td className="p-3">{row.basis === "classification" ? "Clasificación" : "Dirección"}</td><td className="p-3">{row.period}</td>
-            <td className="p-3">{(row.observedCoverage * 100).toFixed(1)}%</td><td className="p-3">{row.adjustedPValue.toFixed(4)}</td><td className="p-3">{row.holdoutCoverage === null ? "N/D" : (row.holdoutCoverage * 100).toFixed(1) + "%"}</td>
+            <td className="p-3">{(row.observedCoverage * 100).toFixed(1)}%</td><td className="p-3">{row.adjustedPValue.toFixed(4)}</td><td className="p-3">{row.holdoutPeriod ?? "N/D"}</td><td className="p-3">{row.holdoutCoverage === null ? "N/D" : (row.holdoutCoverage * 100).toFixed(1) + "%"}</td>
             <td className={`p-3 font-semibold ${statusClass[row.status]}`}>{statusLabel[row.status]}</td>
           </tr>)}</tbody>
         </table>

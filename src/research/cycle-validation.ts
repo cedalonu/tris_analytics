@@ -8,6 +8,7 @@ export type CycleValidationRow = {
   observedCoverage: number;
   adjustedPValue: number;
   holdoutCoverage: number | null;
+  holdoutPeriod: number | null;
   holdoutEvaluable: boolean;
   status: "supported" | "weak" | "inconclusive" | "not-evaluable";
   permutations: number;
@@ -56,17 +57,24 @@ function streamsFrom(items: HistoricalPackage[]): Stream[] {
   }
   return streams;
 }
-function holdout(stream: Stream, period: number) {
+function holdout(stream: Stream) {
   const split = Math.floor(stream.tokens.length * 0.6);
   const train = stream.tokens.slice(0, split);
   const test = stream.tokens.slice(split);
-  if (train.length < Math.max(4, period * 2) || test.length < 2) return { coverage: null, evaluable: false };
+  if (train.length < 4 || test.length < 2) return { coverage: null, period: null, evaluable: false };
+  let selectedPeriod = 0;
+  let selectedCoverage = 0;
+  for (let period = 2; period <= Math.min(MAX_PERIOD, Math.floor(train.length / 2)); period++) {
+    const coverage = periodCoverage(train, period);
+    if (coverage > selectedCoverage) { selectedCoverage = coverage; selectedPeriod = period; }
+  }
+  if (!selectedPeriod || selectedCoverage < 0.8) return { coverage: null, period: null, evaluable: false };
   let matches = 0;
   for (let i = 0; i < test.length; i++) {
-    const expected = train[(train.length + i) % period];
+    const expected = train[(train.length + i) % selectedPeriod];
     if (test[i] === expected) matches++;
   }
-  return { coverage: matches / test.length, evaluable: true };
+  return { coverage: matches / test.length, period: selectedPeriod, evaluable: true };
 }
 
 export function validateHistoricalCycles(items: HistoricalPackage[], options: { permutations?: number; seed?: number } = {}) {
@@ -95,7 +103,7 @@ export function validateHistoricalCycles(items: HistoricalPackage[], options: { 
   const rows: CycleValidationRow[] = observed.map(({ pattern, stream, coverage }) => {
     const exceed = nullMaxima.filter(value => value >= coverage).length;
     const adjustedPValue = (exceed + 1) / (permutations + 1);
-    const test = holdout(stream, pattern.period);
+    const test = holdout(stream);
     let status: CycleValidationRow["status"];
     if (!test.evaluable) status = "not-evaluable";
     else if (adjustedPValue <= 0.05 && (test.coverage ?? 0) >= 0.8) status = "supported";
@@ -108,6 +116,7 @@ export function validateHistoricalCycles(items: HistoricalPackage[], options: { 
       observedCoverage: coverage,
       adjustedPValue,
       holdoutCoverage: test.coverage,
+      holdoutPeriod: test.period,
       holdoutEvaluable: test.evaluable,
       status,
       permutations,

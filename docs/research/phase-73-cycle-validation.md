@@ -7,7 +7,7 @@
 4. Ejecuta permutaciones de cada secuencia, conservando sus frecuencias marginales.
 5. En cada permutación registra el máximo de cobertura entre todas las hipótesis, bases y períodos (max-statistic), para ajustar la búsqueda múltiple.
 6. Estima p ajustado empírico como (1 + excedencias)/(B + 1).
-7. Divide cronológicamente 60/40; el período se aprende en el tramo inicial y se contrasta en el tramo reservado.
+7. Divide cronológicamente 60/40; el período se selecciona de nuevo usando solo el tramo inicial y se contrasta en el tramo reservado.
 
 ## Etiquetas
 - Respaldado: p ajustado <= 0.05 y cobertura holdout >= 0.80.
