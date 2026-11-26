@@ -4,7 +4,7 @@ import {MODES} from "./draw-evolution";
 export type ProspectiveLedgerIssueCode="duplicate-forecast-id"|"duplicate-candidate-target"|"invalid-forecast-identity"|"invalid-target-order"|"invalid-history-fingerprint"|"invalid-digit-pool"|"orphan-resolution"|"duplicate-resolution"|"immutable-forecast-mismatch"|"invalid-actual-result"|"invalid-resolution-time"|"resolution-before-generation";
 export interface ProspectiveLedgerIssue {code:ProspectiveLedgerIssueCode;recordId:string;detail:string;}
 export interface ProspectiveLedgerAuditReport {method:"read-only-prospective-ledger-integrity-v1";summary:{forecasts:number;resolutions:number;pending:number;resolved:number;orphanResolutions:number;duplicateForecastIds:number;duplicateCandidateTargets:number;issues:number;integrity:"clean"|"warnings"|"invalid"};coverage:Array<{targetDrawId:number;forecasts:number;resolved:number;pending:number}>;issues:ProspectiveLedgerIssue[];limitations:string[];}
-const digits=(xs:unknown,length:number):boolean=>Array.isArray(xs)&&xs.length>0&&xs.every(x=>typeof x==="string"&&/^\\d+$/.test(x)&&x.length===length);
+const digits=(xs:unknown,length:number):boolean=>Array.isArray(xs)&&xs.length>0&&xs.every(x=>typeof x==="string"&&/^[0-9]+$/.test(x)&&x.length===length);
 const outcomeLength=(f:FrozenForecast):number=>{
  if(f.family!=="transition")return 1;
  try{const config=JSON.parse(f.frozenConfig) as {mode?:string};return MODES.find(x=>x.mode===config.mode)?.positions.length??-1;}
