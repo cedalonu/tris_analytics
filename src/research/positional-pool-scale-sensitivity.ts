@@ -25,12 +25,12 @@ export function analyzePositionalPoolScaleSensitivity(draws:Draw[],labels:Prospe
    ["inclusion-hit-rate",g.dominantInclusionVsHitRateCorrelation]
   ] as Array<[PositionalPoolScaleMetric,number|null]>)observations.push({regimeId:g.regimeId,position:g.position,method:g.method,poolSize:g.poolSize,blockSize,metric,correlation,blocks:g.blocks});
  }
- const key=(x:{regimeId:string;position:number;method:string;poolSize:number;metric:string})=>[x.regimeId,x.position,x.method,x.poolSize,x.metric].join("|");
+ const key=(x:{regimeId:string;position:number;method:string;poolSize:number;metric:string})=>JSON.stringify([x.regimeId,x.position,x.method,x.poolSize,x.metric]);
  const groups:PositionalPoolScaleGroup[]=[...new Set(observations.map(key))].map(k=>{
   const rows=observations.filter(x=>key(x)===k).sort((a,b)=>a.blockSize-b.blockSize),valid=rows.filter(x=>x.correlation!==null);
   const positive=valid.filter(x=>x.correlation!>0).length,negative=valid.filter(x=>x.correlation!<0).length;
   const status:PositionalPoolScaleGroup["status"]=valid.length<2?"insufficient":valid.length!==blockSizes.length?"some-scales-only":positive===valid.length?"same-positive-direction-all-scales":negative===valid.length?"same-negative-direction-all-scales":"direction-mixed-across-scales";
-  const [regimeId,position,method,poolSize,metric]=k.split("|");
+  const [regimeId,position,method,poolSize,metric]=JSON.parse(k) as [string,number,PoolMethod,number,PositionalPoolScaleMetric];
   return{regimeId,position:Number(position),method:method as PoolMethod,poolSize:Number(poolSize),metric:metric as PositionalPoolScaleMetric,scales:rows.map(x=>({blockSize:x.blockSize,correlation:x.correlation,blocks:x.blocks})),validScales:valid.length,positiveScales:positive,negativeScales:negative,status};
  });
  return{method:"positional-pool-block-size-sensitivity-v1",blockSizes:[...blockSizes].sort((a,b)=>a-b),minimumHistory,minimumDrawSupport,observations,groups,limitations:[

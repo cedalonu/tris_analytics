@@ -24,12 +24,12 @@ export function analyzePositionalPoolOriginSensitivity(draws:Draw[],labels:Prosp
    ["inclusion-hit-rate",g.dominantInclusionVsHitRateCorrelation]
   ] as Array<[PositionalPoolOriginMetric,number|null]>)observations.push({regimeId:g.regimeId,position:g.position,method:g.method,poolSize:g.poolSize,blockSize,blockOffset,metric,correlation,blocks:g.blocks});
  }
- const key=(x:{regimeId:string;position:number;method:string;poolSize:number;metric:string})=>[x.regimeId,x.position,x.method,x.poolSize,x.metric].join("|");
+ const key=(x:{regimeId:string;position:number;method:string;poolSize:number;metric:string})=>JSON.stringify([x.regimeId,x.position,x.method,x.poolSize,x.metric]);
  const groups:PositionalPoolOriginGroup[]=[...new Set(observations.map(key))].map(k=>{
   const rows=observations.filter(x=>key(x)===k).sort((a,b)=>a.blockOffset-b.blockOffset),valid=rows.filter(x=>x.correlation!==null);
   const positive=valid.filter(x=>x.correlation!>0).length,negative=valid.filter(x=>x.correlation!<0).length;
   const status:PositionalPoolOriginGroup["status"]=valid.length<2?"insufficient":valid.length!==blockOffsets.length?"some-offsets-only":positive===valid.length?"same-positive-direction-all-offsets":negative===valid.length?"same-negative-direction-all-offsets":"direction-mixed-across-offsets";
-  const [regimeId,position,method,poolSize,metric]=k.split("|");
+  const [regimeId,position,method,poolSize,metric]=JSON.parse(k) as [string,number,PoolMethod,number,PositionalPoolOriginMetric];
   return{regimeId,position:Number(position),method:method as PoolMethod,poolSize:Number(poolSize),metric:metric as PositionalPoolOriginMetric,offsets:rows.map(x=>({blockOffset:x.blockOffset,correlation:x.correlation,blocks:x.blocks})),validOffsets:valid.length,positiveOffsets:positive,negativeOffsets:negative,status};
  });
  return{method:"positional-pool-block-origin-sensitivity-v1",blockSize,blockOffsets:[...blockOffsets].sort((a,b)=>a-b),minimumHistory,minimumDrawSupport,observations,groups,limitations:[

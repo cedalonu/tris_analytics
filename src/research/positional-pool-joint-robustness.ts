@@ -6,7 +6,7 @@ type OriginStatus="same-positive-direction-all-offsets"|"same-negative-direction
 export interface PositionalPoolJointRobustnessRow {regimeId:string;position:number;method:string;poolSize:number;metric:string;scaleStatus:DirectionStatus;originStatus:OriginStatus;scaleValid:number;originValid:number;scalePositive:number;originPositive:number;scaleNegative:number;originNegative:number;classification:"same-positive-across-scale-and-origin"|"same-negative-across-scale-and-origin"|"direction-conflict-between-dimensions"|"sensitive-to-scale-or-origin"|"insufficient";}
 export interface PositionalPoolJointRobustnessReport {method:string;scaleCount:number;originCount:number;rows:PositionalPoolJointRobustnessRow[];summary:{total:number;positiveRobust:number;negativeRobust:number;conflict:number;sensitive:number;insufficient:number};limitations:string[];}
 export function analyzePositionalPoolJointRobustness(scale:PositionalPoolScaleSensitivityReport,origin:PositionalPoolOriginSensitivityReport):PositionalPoolJointRobustnessReport{
- const key=(x:{regimeId:string;position:number;method:string;poolSize:number;metric:string})=>[x.regimeId,x.position,x.method,x.poolSize,x.metric].join("|");
+ const key=(x:{regimeId:string;position:number;method:string;poolSize:number;metric:string})=>JSON.stringify([x.regimeId,x.position,x.method,x.poolSize,x.metric]);
  const origins=new Map(origin.groups.map(x=>[key(x),x]));
  const rows:PositionalPoolJointRobustnessRow[]=scale.groups.map(s=>{
   const o=origins.get(key(s));
