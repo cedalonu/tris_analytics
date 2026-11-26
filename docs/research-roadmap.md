@@ -82,3 +82,11 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Comando offline: npm run research:positional-stability-calibration; reportes en reports/positional-stability-calibration/latest.md y .json.
 - La consistencia compara con el perfil agregado y no es validación fuera de muestra; posiciones y bloques pueden depender. Pulsos breves pueden pasar inadvertidos.
 - No usa CSV real, APIs, polling ni descargas; no modifica candidatos, pronósticos, pesos, portafolios o ledger.
+
+## Phase 26 — contraste de perfiles posicionales entre regímenes
+- Compara cada par de regímenes por posición R1–R5: dígito dominante, frecuencia dominante, entropía y distancia Jensen–Shannon.
+- Cruza la diferencia entre regímenes con la estabilidad interna por bloques de la fase 24.
+- Clasifica descriptivamente como persistent-same-dominant, regime-specific-dominant, distribution-shift, not-established o insufficient, con umbrales fijos y explícitos.
+- Integra el resultado en el análisis offline por CSV local; parámetros de soporte, distancia JS y entropía configurables.
+- No usa p-valores ni independencia; no demuestra causalidad, sesgo físico o predictibilidad; no modifica pronósticos, candidatos, pesos, portafolios o ledger.
+- Sin APIs, polling ni descargas.
