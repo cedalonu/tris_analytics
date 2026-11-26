@@ -34,7 +34,9 @@ export function auditProspectiveFamilyConcordance(
  const observedMeanDirection=directionValues.length?directionValues.reduce((a,b)=>a+b,0)/directionValues.length:null;
  const support=observed.pairs.length?Math.min(...observed.pairs.map(p=>p.commonDraws)):0;
  const counts=observed.families.map(f=>f.candidateCount).filter(n=>n>0),medianCandidates=counts.length?Math.max(1,Math.round(median(counts))):0;
- const sufficient=observed.families.length>=2&&support>=minimumDrawSupport&&medianCandidates>0;\n const estimatedBaselineRate=observed.families.length?observed.families.reduce((s,f)=>s+f.meanDrawBaselineRate,0)/observed.families.length:.2;\n const nullHitRate=options.hitRate??Math.max(.01,Math.min(.99,estimatedBaselineRate));
+ const sufficient=observed.families.length>=2&&support>=minimumDrawSupport&&medianCandidates>0;
+ const estimatedBaselineRate=observed.families.length?observed.families.reduce((s,f)=>s+f.meanDrawBaselineRate,0)/observed.families.length:.2;
+ const nullHitRate=options.hitRate??Math.max(.01,Math.min(.99,estimatedBaselineRate));
  const nullResults:FamilyConcordanceNullResult[]=sufficient?(options.overlapLevels??[0,.25,.5,.75,1]).map((crossFamilyOverlap,i)=>simulateFamilyConcordanceNull({
   replications:options.replications??2000,draws:support,families:observed.families.length,candidatesPerFamily:medianCandidates,
   hitRate:nullHitRate,pairedDependence:options.pairedDependence??.5,crossFamilyOverlap,seed:(options.seed??20261125)+i*100
