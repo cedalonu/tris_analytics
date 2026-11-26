@@ -16,7 +16,7 @@ export interface PositionalPairProfile {
   sameDigitCount:number; sameDigitRate:number|null;
   independentExpectedRate:number|null; excessSameDigitRate:number|null;
 }
-export interface PositionChangeProfile {
+export interface PositionChangeSynchronyPair {firstPosition:number;secondPosition:number;n:number;sameDeltaCount:number;sameDeltaRate:number|null;independentExpectedRate:number|null;excessSameDeltaRate:number|null}\nexport interface PositionChangeProfile {
   position:number; n:number; sameDigitRate:number|null;
   plusOneModuloRate:number|null; minusOneModuloRate:number|null;
   meanCircularDistance:number|null; deltaCounts:number[];
@@ -69,13 +69,24 @@ function profile(regimeId:string, rows:Draw[], previousById:Map<number,Draw>, mi
       plusOneModuloRate:n?plus/n:null,minusOneModuloRate:n?minus/n:null,
       meanCircularDistance:n?sumDistance/n:null,deltaCounts});
   }
+  const deltaRows=rows.map(row=>{const previous=previousById.get(row.drawId);return previous?row.digits.map((digit,p)=>(digit-previous.digits[p]+10)%10):null;}).filter((x):x is number[]=>x!==null);
+  const changeSynchronyPairs:PositionChangeSynchronyPair[]=[];
+  for(let p=0;p<5;p++)for(let q=p+1;q<5;q++){
+    const a=Array(10).fill(0) as number[],b=Array(10).fill(0) as number[];let same=0;
+    for(const delta of deltaRows){a[delta[p]]++;b[delta[q]]++;if(delta[p]===delta[q])same++;}
+    const expected=deltaRows.length?a.reduce((s,x,d)=>s+(x/deltaRows.length)*(b[d]/deltaRows.length),0):null;
+    const rate=deltaRows.length?same/deltaRows.length:null;
+    changeSynchronyPairs.push({firstPosition:p+1,secondPosition:q+1,n:deltaRows.length,
+      sameDeltaCount:same,sameDeltaRate:rate,independentExpectedRate:expected,
+      excessSameDeltaRate:rate===null||expected===null?null:rate-expected});
+  }
   const meanDistinctDigits=rows.length?rows.reduce((s,row)=>s+new Set(row.digits).size,0)/rows.length:null;
   return {regimeId,n:rows.length,support:rows.length>=minSupport?"adequate":"limited",
-    positions,positionPairs,changesFromPreviousDraw,meanDistinctDigits,
+    positions,positionPairs,changesFromPreviousDraw,changeSynchronyPairs,meanDistinctDigits,
     limitations:[
       "Las frecuencias describen los dígitos observados dentro del régimen; no son probabilidades futuras.",
       "La tasa esperada de coincidencia entre posiciones es un referente marginal de independencia, no una prueba estadística.",
-      "Los cambios comparan cada objetivo con el sorteo inmediatamente anterior, que puede pertenecer a otro régimen.",
+      "Los cambios comparan cada objetivo con el sorteo inmediatamente anterior, que puede pertenecer a otro régimen.",\n      "La sincronía de cambios compara deltas módulo 10 entre posiciones; el referente es marginal y descriptivo, no una prueba de independencia.",
       "El soporte se marca como limitado cuando hay menos de "+minSupport+" sorteos."
     ]};
 }
