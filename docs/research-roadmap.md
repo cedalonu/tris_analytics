@@ -163,3 +163,14 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Reportes en `reports/positional-pool-null-comparison/latest.json` y `.md`.
 - Las envolventes son referencias exploratorias, no intervalos de confianza ni pruebas de significancia. No corrige multiplicidad ni selecciona señales; no modifica pronósticos, candidatos, pesos, portafolios o ledger.
 - Usa exclusivamente los reportes locales derivados del CSV manual; sin APIs, polling ni descargas.
+
+
+## Phase 35 — robustez de concordancias mediante división cronológica
+- Divide las observaciones completas de cada grupo régimen/posición/método/tamaño en orden temporal: primera mitad para descubrimiento descriptivo y segunda mitad para validación descriptiva.
+- Calcula por separado las tres correlaciones de fase 29: dominancia/inclusión, cambio dominante/rotación e inclusión/acierto.
+- Clasifica si la asociación supera el umbral absoluto fijo en ambas mitades y conserva signo, aparece solo en descubrimiento, solo en validación, cambia de dirección, queda debajo del umbral en ambas o carece de soporte.
+- No baraja bloques, no imputa observaciones y conserva los índices de inicio/fin de cada mitad. Mínimo predeterminado: 3 pares completos por mitad; umbral descriptivo: |r| ≥ 0.30.
+- Comando offline: `npm run research:positional-pool-temporal-split -- [reporte-regime-analysis.json]`; predeterminado: `data/prospective-portfolio/regime-analysis/latest.json`.
+- Variables: `TRIS_POSITIONAL_POOL_SPLIT_MIN_PAIRS` y `TRIS_POSITIONAL_POOL_SPLIT_MIN_CORRELATION`. Reportes en `reports/positional-pool-temporal-split/latest.json` y `.md`.
+- La segunda mitad es temporalmente posterior, pero no es un conjunto externo independiente ni validación prospectiva de pronósticos. Las variables de dominancia del bloque son retrospectivas y no están disponibles al inicio de cada bloque.
+- No calcula p-valores, no corrige multiplicidad, no elige métodos y no modifica pronósticos, candidatos, pesos, portafolios o ledger. Solo usa reportes locales derivados del CSV manual; sin APIs, polling ni descargas.
