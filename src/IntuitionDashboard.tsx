@@ -1,10 +1,9 @@
 import React,{useMemo,useState} from "react";
 import type {Draw} from "./tris-csv";
 import {assessSignal,type SignalRecord,type SignalStatus} from "./research/intuition-ledger";
-import type {ResearchPlan,PlannedHypothesis,HypothesisPhaseResult} from "./research/intuition-orchestrator";
-import type {EvaluationPhase,HypothesisEvaluation} from "./research/intuition-evaluator";
+import type {ResearchPlan,PlannedHypothesis} from "./research/intuition-orchestrator";
 
-type Props={draws:Draw[];onBack:()=>void};
+type Props={draws:Draw[];onBack:()=>void;onOpenResearch:()=>void};
 type Tab="overview"|"memory"|"hypotheses"|"positions";
 const digits=Array.from({length:10},(_,i)=>i);
 const statusLabels:Record<SignalStatus,string>={hypothesis:"Hipótesis",testing:"En prueba",provisional:"Provisional",active:"Activa",weakening:"Debilitándose",retired:"Retirada"};
@@ -31,51 +30,6 @@ function parseResearchPlan(value:unknown):ResearchPlan{
  if(hypotheses.reduce((sum,h)=>sum+1,0)!==Number(p.selectedCount))throw new Error("Conteo de selección inconsistente.");
  return {...p,hypotheses} as unknown as ResearchPlan;
 }
-
-function parseEvaluationReport(value:unknown,plan:ResearchPlan):HypothesisPhaseResult[]{
- const root=value as Record<string,unknown>|null;
- const rows=Array.isArray(value)?value:(root&&Array.isArray(root.results)?root.results:null);
- if(!rows)throw new Error("El JSON debe ser un arreglo de resultados o contener results[].");
- const phases=new Set<EvaluationPhase>(["discovery","validation","holdout","prospective"]);
- const decisions=new Set(["insufficient-data","no-evidence","continue-research","holdout-confirmed","prospective-replicated"]);
- const planIds=new Set(plan.hypotheses.map(h=>h.candidate.id)),seen=new Set<string>();
- const count=(v:unknown,label:string)=>{if(!Number.isInteger(v)||Number(v)<0)throw new Error(label+" debe ser entero no negativo.");return Number(v);};
- const rate=(v:unknown,label:string)=>{if(typeof v!=="number"||!Number.isFinite(v)||v<0||v>1)throw new Error(label+" debe estar entre 0 y 1.");return v;};
- const interval=(v:unknown,label:string):[number,number]=>{if(!Array.isArray(v)||v.length!==2)throw new Error(label+" debe contener dos límites.");const lo=rate(v[0],label),hi=rate(v[1],label);if(lo>hi)throw new Error(label+" tiene límites invertidos.");return [lo,hi];};
- return rows.map((raw,index)=>{
-  if(!raw||typeof raw!=="object")throw new Error("Resultado "+(index+1)+" inválido.");
-  const r=raw as Record<string,unknown>,e=r.evaluation as Record<string,unknown>|undefined;
-  if(typeof r.hypothesisId!=="string"||!planIds.has(r.hypothesisId))throw new Error("Resultado "+(index+1)+": hypothesisId no pertenece al plan importado.");
-  if(!phases.has(r.phase as EvaluationPhase)||!e||e.phase!==r.phase)throw new Error("Resultado "+(index+1)+": fase inválida o inconsistente.");
-  const key=r.hypothesisId+"|"+r.phase;if(seen.has(key))throw new Error("Resultado duplicado para "+key);seen.add(key);
-  const summary=(v:unknown,label:string)=>{
-   if(!v||typeof v!=="object")throw new Error(label+" ausente.");
-   const x=v as Record<string,unknown>,n=count(x.n,label+".n"),hits=count(x.hits,label+".hits"),observed=rate(x.rate,label+".rate"),ci=interval(x.wilson95,label+".wilson95");
-   if(hits>n||(n===0&&observed!==0)||(n>0&&Math.abs(observed-hits/n)>1e-9))throw new Error(label+": conteos y tasa no coinciden.");
-   return {n,hits,rate:observed,wilson95:ci};
-  };
-  const candidate=summary(e.candidate,"candidate"),baseline=summary(e.baseline,"baseline");
-  if(candidate.n!==baseline.n)throw new Error("Comparación no pareada: candidate.n y baseline.n deben coincidir.");
-  const difference=candidate.rate-baseline.rate;
-  if(typeof e.difference!=="number"||Math.abs(e.difference-difference)>1e-9)throw new Error("difference no coincide con las tasas importadas.");
-  const ci=e.pairedDifferenceCI95;
-  if(!Array.isArray(ci)||ci.length!==2||ci.some(x=>typeof x!=="number"||!Number.isFinite(x)||x< -1||x>1)||Number(ci[0])>Number(ci[1]))throw new Error("pairedDifferenceCI95 inválido.");
-  for(const k of ["exactMcNemarP","adjustedP","adjustedAlpha"])rate(e[k],"evaluation."+k);
-  const wins=count(e.discordantCandidateWins,"discordantCandidateWins"),losses=count(e.discordantBaselineWins,"discordantBaselineWins");
-  if(wins+losses>candidate.n)throw new Error("Los resultados discordantes superan N.");
-  if(!Array.isArray(e.periodSummaries)||!Array.isArray(e.warnings)||!e.warnings.every(x=>typeof x==="string")||!decisions.has(String(e.decision)))throw new Error("El resultado no cumple el esquema de evaluación.");
-  const periods=e.periodSummaries.map((p,i)=>{
-   if(!p||typeof p!=="object"||typeof (p as Record<string,unknown>).period!=="string")throw new Error("Periodo "+(i+1)+" inválido.");
-   const x=p as Record<string,unknown>,base=summary(x.baseline,"period.baseline"),cand=summary(x,"period");
-   if(cand.n!==base.n||typeof x.difference!=="number"||Math.abs(x.difference-(cand.rate-base.rate))>1e-9)throw new Error("Periodo "+(i+1)+": comparación inconsistente.");
-   return {...cand,period:x.period as string,baseline:base,difference:x.difference};
-  });
-  if(count(e.positivePeriods,"positivePeriods")!==periods.filter(p=>p.difference>0).length||count(e.periodsWithData,"periodsWithData")!==periods.length)throw new Error("Los totales de periodos no coinciden.");
-  const evaluation={...e,candidate,baseline,difference,pairedDifferenceCI95:ci as [number,number],discordantCandidateWins:wins,discordantBaselineWins:losses,periodSummaries:periods} as unknown as HypothesisEvaluation;
-  return {hypothesisId:r.hypothesisId,phase:r.phase,evaluation} as HypothesisPhaseResult;
- });
-}
-
 function parseLedgerPayload(value:unknown):SignalRecord[]{
  const rows=Array.isArray(value)?value:(value&&typeof value==="object"&&Array.isArray((value as {signals?:unknown}).signals)?(value as {signals:unknown[]}).signals:value&&typeof value==="object"&&Array.isArray((value as {records?:unknown}).records)?(value as {records:unknown[]}).records:null);
  if(!rows)throw new Error("El JSON debe ser un arreglo de señales o contener signals[] / records[].");
@@ -107,7 +61,7 @@ const tabs:{id:Tab;label:string;icon:string}[]=[
 ];
 function Panel({title,sub,children}:{title:string;sub?:string;children:React.ReactNode}){return <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 md:p-5"><div className="mb-4"><h2 className="font-bold text-slate-100">{title}</h2>{sub&&<p className="mt-1 text-xs text-slate-400">{sub}</p>}</div>{children}</section>}
 function Stat({label,value,detail}:{label:string;value:React.ReactNode;detail:string}){return <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3"><div className="text-[10px] uppercase tracking-wider text-slate-500">{label}</div><div className="mt-1 text-2xl font-black text-slate-100">{value}</div><div className="mt-1 text-[10px] text-slate-500">{detail}</div></div>}
-export default function IntuitionDashboard({draws,onBack}:Props){
+export default function IntuitionDashboard({draws,onBack,onOpenResearch}:Props){
  const [tab,setTab]=useState<Tab>("overview");
  const [ledger,setLedger]=useState<SignalRecord[]>([]);
  const [ledgerName,setLedgerName]=useState("");
@@ -120,9 +74,6 @@ export default function IntuitionDashboard({draws,onBack}:Props){
  const [selectedHypothesis,setSelectedHypothesis]=useState("");
  const [familyFilter,setFamilyFilter]=useState("all");
  const [hypothesisSearch,setHypothesisSearch]=useState("");
- const [evaluationResults,setEvaluationResults]=useState<HypothesisPhaseResult[]>([]);
- const [evaluationName,setEvaluationName]=useState("");
- const [evaluationError,setEvaluationError]=useState("");
  const sorted=useMemo(()=>[...draws].sort((a,b)=>a.num-b.num),[draws]);
  const last20=sorted.slice(-20),last50=sorted.slice(-50);
  const matrix=useMemo(()=>Array.from({length:5},(_,pos)=>digits.map(d=>last20.filter(x=>x.digits[pos]===d).length)),[last20]);
@@ -142,9 +93,6 @@ export default function IntuitionDashboard({draws,onBack}:Props){
  const familyLabels:Record<string,string>={"transition":"Transiciones","position-mutation":"Mutación posicional","absence-return":"Ausencia y retorno","pool-ranking":"Ranking de pools"};
  const visibleHypotheses=researchPlan?.hypotheses.filter(h=>(familyFilter==="all"||h.candidate.family===familyFilter)&&(!hypothesisSearch||[h.candidate.id,h.candidate.title,h.candidate.description].join(" ").toLowerCase().includes(hypothesisSearch.toLowerCase())))??[];
  const chosenHypothesis=researchPlan?.hypotheses.find(h=>h.candidate.id===selectedHypothesis);
- const chosenEvaluations=evaluationResults.filter(r=>r.hypothesisId===selectedHypothesis).sort((a,b)=>["discovery","validation","holdout","prospective"].indexOf(a.phase)-["discovery","validation","holdout","prospective"].indexOf(b.phase));
- const phaseLabels:Record<EvaluationPhase,string>={discovery:"Descubrimiento",validation:"Validación",holdout:"Holdout",prospective:"Prospectiva"};
- const importEvaluations=async(file?:File)=>{if(!file)return;if(!researchPlan){setEvaluationError("Primero importa el plan congelado.");return;}try{const parsed=parseEvaluationReport(JSON.parse(await file.text()),researchPlan);setEvaluationResults(parsed);setEvaluationName(file.name);setEvaluationError("");}catch(error){setEvaluationError(error instanceof Error?error.message:"No fue posible leer el informe.");}};
  const importPlan=async(file?:File)=>{
   if(!file)return;
   try{const parsed=parseResearchPlan(JSON.parse(await file.text()));setResearchPlan(parsed);setPlanName(file.name);setPlanError("");setSelectedHypothesis(parsed.hypotheses[0]?.candidate.id??"");setFamilyFilter("all");setHypothesisSearch("");}
@@ -163,7 +111,7 @@ export default function IntuitionDashboard({draws,onBack}:Props){
     <div className="absolute -right-10 -top-16 h-64 w-64 rounded-full border border-violet-300/10"/><div className="absolute right-10 top-10 h-28 w-28 rounded-full border border-cyan-300/10"/>
     <div className="relative flex flex-wrap items-start justify-between gap-4">
      <div><div className="text-[10px] font-black uppercase tracking-[.32em] text-violet-300">INTUICIÓN ARTIFICIAL · TRIS</div><h1 className="mt-2 text-3xl font-black md:text-4xl">Memoria y razonamiento</h1><p className="mt-2 max-w-2xl text-sm text-slate-300">Un espacio para observar señales, organizar hipótesis y comparar patrones por posición sin confundir descripción con capacidad predictiva.</p></div>
-     <button onClick={onBack} className="rounded-xl border border-violet-700/70 bg-slate-950/50 px-4 py-2.5 text-sm font-bold text-violet-200 hover:bg-slate-800">← Volver al panel</button>
+     <div className="flex flex-wrap gap-2"><button onClick={onOpenResearch} className="rounded-xl border border-cyan-700/70 bg-cyan-950/30 px-4 py-2.5 text-sm font-bold text-cyan-200 hover:bg-cyan-900/40">🔬 Centro de investigación</button><button onClick={onBack} className="rounded-xl border border-violet-700/70 bg-slate-950/50 px-4 py-2.5 text-sm font-bold text-violet-200 hover:bg-slate-800">← Panel principal</button></div>
     </div>
     <div className="relative mt-5 flex flex-wrap gap-2 text-[10px] font-semibold"><span className="rounded-full border border-emerald-800 bg-emerald-950/50 px-3 py-1.5 text-emerald-300">● Cálculo local</span><span className="rounded-full border border-slate-700 bg-slate-950/50 px-3 py-1.5 text-slate-300">Historial {available?"disponible":"no cargado"}</span><span className="rounded-full border border-slate-700 bg-slate-950/50 px-3 py-1.5 text-slate-300">Sin pronósticos automáticos en este panel</span></div>
    </header>
@@ -196,9 +144,9 @@ export default function IntuitionDashboard({draws,onBack}:Props){
     <Panel title="Catálogo y plan congelado" sub="Carga un plan exportado por createResearchPlan(); la interfaz no genera ni reordena hipótesis automáticamente">
      <div className="flex flex-wrap items-center gap-3"><label className="cursor-pointer rounded-lg border border-violet-700 bg-violet-950/40 px-4 py-2 text-xs font-bold text-violet-200 hover:bg-violet-900/50">Importar plan JSON<input type="file" accept=".json,application/json" className="hidden" onChange={e=>{void importPlan(e.target.files?.[0]);e.currentTarget.value="";}}/></label><span className="text-xs text-slate-400">{planName||"Ningún plan importado"}</span><span className="text-[10px] text-slate-500">Solo lectura · configuración congelada</span></div>
      {planError&&<div role="alert" className="mt-3 rounded-lg border border-rose-800 bg-rose-950/30 p-3 text-xs text-rose-200">{planError}</div>}
-     <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4"><Stat label="Catálogo completo" value={researchPlan?researchPlan.catalogSize:"1,095"} detail="Candidatos generados por el motor"/><Stat label="Selección congelada" value={researchPlan?researchPlan.selectedCount:"—"} detail={researchPlan?"Presupuesto "+researchPlan.budget:"Pendiente de plan"}/><Stat label="Fecha del plan" value={researchPlan?researchPlan.createdAt.slice(0,10):"—"} detail="Marca temporal de creación"/><Stat label="Evaluaciones vinculadas" value={evaluationResults.length} detail="Resultados por hipótesis y fase"/></div>
+     <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4"><Stat label="Catálogo completo" value={researchPlan?researchPlan.catalogSize:"1,095"} detail="Candidatos generados por el motor"/><Stat label="Selección congelada" value={researchPlan?researchPlan.selectedCount:"—"} detail={researchPlan?"Presupuesto "+researchPlan.budget:"Pendiente de plan"}/><Stat label="Fecha del plan" value={researchPlan?researchPlan.createdAt.slice(0,10):"—"} detail="Marca temporal de creación"/><Stat label="Evaluaciones vinculadas" value="0" detail="No se importaron informes de resultados"/></div>
      {!researchPlan&&<div className="mt-4 rounded-xl border border-dashed border-slate-700 p-6 text-center"><b className="text-sm">Plan de hipótesis pendiente</b><p className="mx-auto mt-2 max-w-xl text-xs text-slate-400">Importa el JSON generado por el orquestador de investigación. La pantalla verificará esquema, IDs, familias y huellas de configuración. El catálogo de 1,095 es un tamaño teórico: no implica evaluación ni evidencia.</p></div>}
-     {researchPlan&&<><div className="mt-4 flex flex-wrap items-center gap-3 border-t border-slate-800 pt-4"><label className="cursor-pointer rounded-lg border border-cyan-800 bg-cyan-950/30 px-4 py-2 text-xs font-bold text-cyan-200 hover:bg-cyan-900/40">Importar informe de evaluación<input type="file" accept=".json,application/json" className="hidden" onChange={e=>{void importEvaluations(e.target.files?.[0]);e.currentTarget.value="";}}/></label><span className="text-xs text-slate-400">{evaluationName||"Sin informe importado"}</span><span className="text-[10px] text-slate-500">Solo lectura · IDs del plan · fases separadas</span></div>{evaluationError&&<div role="alert" className="mt-3 rounded-lg border border-rose-800 bg-rose-950/30 p-3 text-xs text-rose-200">{evaluationError}</div>}<div className="mt-4 grid grid-cols-2 gap-2 md:grid-cols-4"><div className="rounded-lg border border-slate-800 bg-slate-950/60 p-3"><div className="text-[10px] text-slate-500">Evaluaciones cargadas</div><div className="mt-1 text-xl font-black">{evaluationResults.length}</div><div className="text-[10px] text-slate-500">Por hipótesis y fase</div></div>{planFamilies.map(f=><div key={f} className="rounded-lg border border-slate-800 bg-slate-950/60 p-3"><div className="text-[10px] text-slate-500">{familyLabels[f]}</div><div className="mt-1 text-xl font-black">{researchPlan.familyCounts[f]}</div><div className="text-[10px] text-slate-500">seleccionadas</div></div>)}</div><div className="mt-3 rounded-lg border border-slate-800 bg-slate-950/50 p-3"><b className="text-xs">Advertencias del plan</b><ul className="mt-2 space-y-1 text-[10px] text-slate-400">{researchPlan.warnings.map((w,i)=><li key={i}>• {w}</li>)}</ul></div></>}
+     {researchPlan&&<><div className="mt-4 grid grid-cols-2 gap-2 md:grid-cols-4">{planFamilies.map(f=><div key={f} className="rounded-lg border border-slate-800 bg-slate-950/60 p-3"><div className="text-[10px] text-slate-500">{familyLabels[f]}</div><div className="mt-1 text-xl font-black">{researchPlan.familyCounts[f]}</div><div className="text-[10px] text-slate-500">seleccionadas</div></div>)}</div><div className="mt-3 rounded-lg border border-slate-800 bg-slate-950/50 p-3"><b className="text-xs">Advertencias del plan</b><ul className="mt-2 space-y-1 text-[10px] text-slate-400">{researchPlan.warnings.map((w,i)=><li key={i}>• {w}</li>)}</ul></div></>}
     </Panel>
     {researchPlan&&<div className="grid gap-4 xl:grid-cols-[1.15fr_.85fr]">
      <Panel title="Hipótesis seleccionadas" sub="Prioridad es una heurística de planificación, no una puntuación predictiva">
@@ -206,7 +154,7 @@ export default function IntuitionDashboard({draws,onBack}:Props){
       <div className="mb-2 text-[10px] text-slate-500">Mostrando {visibleHypotheses.length} de {researchPlan.hypotheses.length}</div>
       <div className="max-h-[520px] space-y-2 overflow-y-auto">{visibleHypotheses.map(h=><button key={h.candidate.id} onClick={()=>setSelectedHypothesis(h.candidate.id)} className={`w-full rounded-lg border p-3 text-left ${selectedHypothesis===h.candidate.id?"border-violet-500 bg-violet-950/30":"border-slate-800 bg-slate-950/50 hover:border-slate-600"}`}><div className="flex flex-wrap items-center justify-between gap-2"><b className="text-xs text-slate-100">{h.candidate.title}</b><span className="rounded-full border border-slate-700 px-2 py-1 text-[10px] text-cyan-200">Prioridad {h.priorityScore}</span></div><div className="mt-1 text-[10px] text-slate-500">{h.candidate.id} · {familyLabels[h.candidate.family]}</div><p className="mt-2 text-xs text-slate-400">{h.candidate.description}</p></button>)}</div>
      </Panel>
-     <Panel title="Configuración congelada" sub="Ficha del candidato seleccionado; no se recalcula ni se modifica">{chosenHypothesis?<div className="space-y-3"><div><div className="text-[10px] uppercase tracking-widest text-slate-500">ID</div><b className="break-all text-xs">{chosenHypothesis.candidate.id}</b><p className="mt-1 text-xs text-slate-400">{chosenHypothesis.candidate.description}</p></div><div className="grid grid-cols-2 gap-2"><Stat label="Familia" value={<span className="text-sm">{familyLabels[chosenHypothesis.candidate.family]}</span>} detail="Familia del generador"/><Stat label="Prioridad" value={chosenHypothesis.priorityScore} detail="Heurística de ordenamiento"/></div><div className="rounded-lg border border-slate-800 p-3"><b className="text-xs">Parámetros</b><pre className="mt-2 overflow-x-auto whitespace-pre-wrap break-words text-[10px] text-cyan-200">{JSON.stringify(chosenHypothesis.candidate.config,null,2)}</pre></div><div className="rounded-lg border border-slate-800 p-3"><b className="text-xs">Huella congelada</b><pre className="mt-2 overflow-x-auto whitespace-pre-wrap break-all text-[10px] text-slate-400">{chosenHypothesis.frozenConfig}</pre></div><div className="rounded-lg border border-slate-800 p-3"><b className="text-xs">Razones de prioridad</b><ul className="mt-2 space-y-1 text-[10px] text-slate-400">{chosenHypothesis.priorityReasons.map((reason,i)=><li key={i}>• {reason}</li>)}</ul></div><div className="rounded-lg border border-amber-900/60 bg-amber-950/20 p-3 text-[10px] text-amber-200">La evaluación se importa como artefacto separado. La coincidencia se verifica por ID de hipótesis; el formato HypothesisPhaseResult no incluye huella de configuración, por lo que el informe no acredita por sí solo que el evaluador haya usado la configuración congelada.</div><div className="rounded-lg border border-slate-800 p-3"><div className="flex flex-wrap items-center justify-between gap-2"><b className="text-xs">Resultados por fase</b><span className="text-[10px] text-slate-500">{chosenEvaluations.length} de 4 fases con informe</span></div>{chosenEvaluations.length?chosenEvaluations.map(r=><div key={r.phase} className="mt-3 border-t border-slate-800 pt-3"><div className="flex flex-wrap items-center justify-between gap-2"><b className="text-xs text-cyan-200">{phaseLabels[r.phase]}</b><span className="text-[10px] text-slate-400">{r.evaluation.decision}</span></div><div className="mt-2 grid grid-cols-2 gap-2 md:grid-cols-4"><Stat label="N pareado" value={r.evaluation.candidate.n} detail="Concursos evaluados"/><Stat label="Tasa hipótesis" value={(r.evaluation.candidate.rate*100).toFixed(2)+"%"} detail={r.evaluation.candidate.hits+" aciertos · IC Wilson 95% "+(r.evaluation.candidate.wilson95[0]*100).toFixed(1)+"–"+(r.evaluation.candidate.wilson95[1]*100).toFixed(1)+"%"}/><Stat label="Tasa base" value={(r.evaluation.baseline.rate*100).toFixed(2)+"%"} detail={r.evaluation.baseline.hits+" aciertos · misma muestra"}/><Stat label="Diferencia" value={(r.evaluation.difference*100).toFixed(2)+" pp"} detail={"IC pareado 95% "+(r.evaluation.pairedDifferenceCI95[0]*100).toFixed(1)+"–"+(r.evaluation.pairedDifferenceCI95[1]*100).toFixed(1)+" pp"}/></div><div className="mt-2 grid grid-cols-2 gap-2 text-[10px] text-slate-400 md:grid-cols-4"><span>McNemar p: {r.evaluation.exactMcNemarP.toPrecision(3)}</span><span>p ajustada: {r.evaluation.adjustedP.toPrecision(3)}</span><span>Alpha ajustada: {r.evaluation.adjustedAlpha.toPrecision(3)}</span><span>Periodos positivos: {r.evaluation.positivePeriods}/{r.evaluation.periodsWithData}</span></div>{r.evaluation.warnings.length>0&&<ul className="mt-2 space-y-1 text-[10px] text-amber-300">{r.evaluation.warnings.map((w,i)=><li key={i}>• {w}</li>)}</ul>}</div>):<p className="mt-3 text-xs text-slate-500">Sin resultados importados para esta hipótesis. No se infiere ausencia de evidencia ni se rellena con ceros.</p>}</div></div>:<p className="text-xs text-slate-500">No hay hipótesis en el plan.</p>}</Panel>
+     <Panel title="Configuración congelada" sub="Ficha del candidato seleccionado; no se recalcula ni se modifica">{chosenHypothesis?<div className="space-y-3"><div><div className="text-[10px] uppercase tracking-widest text-slate-500">ID</div><b className="break-all text-xs">{chosenHypothesis.candidate.id}</b><p className="mt-1 text-xs text-slate-400">{chosenHypothesis.candidate.description}</p></div><div className="grid grid-cols-2 gap-2"><Stat label="Familia" value={<span className="text-sm">{familyLabels[chosenHypothesis.candidate.family]}</span>} detail="Familia del generador"/><Stat label="Prioridad" value={chosenHypothesis.priorityScore} detail="Heurística de ordenamiento"/></div><div className="rounded-lg border border-slate-800 p-3"><b className="text-xs">Parámetros</b><pre className="mt-2 overflow-x-auto whitespace-pre-wrap break-words text-[10px] text-cyan-200">{JSON.stringify(chosenHypothesis.candidate.config,null,2)}</pre></div><div className="rounded-lg border border-slate-800 p-3"><b className="text-xs">Huella congelada</b><pre className="mt-2 overflow-x-auto whitespace-pre-wrap break-all text-[10px] text-slate-400">{chosenHypothesis.frozenConfig}</pre></div><div className="rounded-lg border border-slate-800 p-3"><b className="text-xs">Razones de prioridad</b><ul className="mt-2 space-y-1 text-[10px] text-slate-400">{chosenHypothesis.priorityReasons.map((reason,i)=><li key={i}>• {reason}</li>)}</ul></div><div className="rounded-lg border border-amber-900/60 bg-amber-950/20 p-3 text-[10px] text-amber-200">Estado inicial: hipótesis sin evidencia. Este plan no contiene evaluaciones ni resultados de sorteos.</div></div>:<p className="text-xs text-slate-500">No hay hipótesis en el plan.</p>}</Panel>
     </div>}
     <Panel title="Puertas de validación" sub="No se permite mezclar fases ni reinterpretar resultados pasados"><ol className="list-decimal space-y-2 pl-5 text-xs text-slate-300"><li>Congelar catálogo, presupuesto, configuración y línea base.</li><li>Separar descubrimiento, validación y holdout cronológico.</li><li>Exigir soporte mínimo y pruebas pareadas con corrección por multiplicidad.</li><li>Confirmar la ventaja en observaciones prospectivas independientes.</li></ol></Panel>
    </div>}
