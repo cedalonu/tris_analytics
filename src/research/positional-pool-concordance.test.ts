@@ -15,7 +15,7 @@ test("compares past-only pools with positional dominance by fixed block",()=>{
  assert.ok(report.blocks.length>0);
  assert.ok(report.blocks.every(x=>x.uniformReference===.3));
  assert.ok(report.blocks.every(x=>x.tested===0||x.poolHitRate!==null));
- assert.ok(report.groups.some(x=>x.position===0&&x.method==="frequency"));
+ assert.ok(report.groups.some(x=>x.regimeId==="pool-stable|dup-stable|distinct-stable|entropy-stable"&&x.position===0&&x.method==="frequency"&&x.poolSize===3));
  assert.ok(report.limitations.some(x=>x.includes("resultado del objetivo nunca participa")));
 });
 test("incremental rankings match the direct buildPool reference",()=>{

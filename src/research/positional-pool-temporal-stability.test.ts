@@ -14,7 +14,7 @@ test("rolling concordance stability is deterministic and creates consecutive win
  assert.deepEqual(a,b);
  assert.equal(a.windows.length,3);
  assert.equal(a.windows[0].firstBlockIndex,0);
- assert.equal(a.windows[0].lastBlockIndex,4);
+ assert.equal(a.windows[0].lastBlockIndex,4);assert.equal(a.windows[0].regimeId,"pool-stable|dup-stable|distinct-stable|entropy-stable");assert.equal(a.windows[0].position,0);assert.equal(a.windows[0].method,"frequency");assert.equal(a.windows[0].poolSize,3);assert.equal(a.groups[0].regimeId,"pool-stable|dup-stable|distinct-stable|entropy-stable");
 });
 test("does not bridge missing block indices",()=>{
  const broken={...fixture,blocks:fixture.blocks.filter(x=>x.blockIndex!==4)};
