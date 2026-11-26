@@ -1,0 +1,5 @@
+import {test} from "node:test";
+import {strict as assert} from "node:assert";
+import {calibratePositionalTransitionPersistence} from "./positional-transition-persistence-calibration";
+test("synthetic transition calibration is deterministic and covers five designed cases",()=>{const o={replications:8,blocksPerReplication:9,seed:77,minimumConsecutiveBlocksForSustained:2};const a=calibratePositionalTransitionPersistence(o),b=calibratePositionalTransitionPersistence(o);assert.deepEqual(a,b);assert.deepEqual(a.scenarios.map(x=>x.scenario),["stationary-no-change","brief-one-block-change","sustained-change","sustained-change-and-return","random-fluctuation"]);assert.equal(a.scenarios[0].falseSustainedAlerts,0);assert.equal(a.scenarios[2].detectedSustainedEvents,8);assert.equal(a.scenarios[3].detectedSustainedEvents,8);});
+test("rejects invalid calibration options",()=>{assert.throws(()=>calibratePositionalTransitionPersistence({blocksPerReplication:5}),/invalid positional transition/);assert.throws(()=>calibratePositionalTransitionPersistence({minimumConsecutiveBlocksForSustained:0}),/invalid positional transition/);});
