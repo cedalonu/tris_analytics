@@ -22,10 +22,10 @@ jobs:
         run: npm run lint
       - name: Research unit tests
         run: npm run test:research
-      - name: Run synthetic detector calibration
-        run: npm run research:position-null
       - name: Run past-only regime classifier calibration
         run: npm run research:regime-calibration
+      - name: Run synthetic detector calibration
+        run: npm run research:position-null
       - name: Upload synthetic calibration report
         uses: actions/upload-artifact@v4
         with:
