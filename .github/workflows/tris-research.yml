@@ -32,6 +32,9 @@ jobs:
         run: npm run research:positional-pool-stability-calibration
       - name: Run positional-pool sensitivity grid
         run: npm run research:positional-pool-sensitivity
+      - name: Run positional-pool equal-support null controls
+        run: npm run research:positional-pool-null-controls -- ./reports/fixture/regime-analysis/latest.json
+        continue-on-error: true
       - name: Run synthetic detector calibration
         run: npm run research:position-null
       - name: Upload synthetic calibration report
@@ -51,5 +54,7 @@ jobs:
             reports/positional-pool-temporal-stability-calibration/latest.md
             reports/positional-pool-temporal-sensitivity/latest.json
             reports/positional-pool-temporal-sensitivity/latest.md
+            reports/positional-pool-null-controls/latest.json
+            reports/positional-pool-null-controls/latest.md
           if-no-files-found: error
           retention-days: 14
