@@ -1466,16 +1466,21 @@ function getPoolsForDrawAllPos(allDraws: Draw[], drawNum: number | null, poolSiz
     return [0, 1, 2, 3, 4].map(pos => getPoolsForDraw(allDraws, drawNum, poolSize, pos));
 }
 
-// Tris: ~5 sorteos/día (Mediodía, Tres, Extra, Siete, Clásico). El CSV no trae el
-// tipo, solo concurso+fecha; el orden dentro del día es por concurso ascendente.
-// Horas Tijuana (CDMX -2h): Mediodía 11:00, Tres 13:00, Extra 15:00, Siete 17:00, Clásico 19:00.
+// Horarios oficiales de referencia indicados por el usuario, en hora de Ciudad de México.
+// El CSV no identifica el tipo de sorteo; se estima el siguiente turno por la secuencia
+// de concursos registrados en la misma fecha. No se infiere el horario desde la hora de carga.
 function getNextDrawTime(draws: Draw[]): string {
-    if (!draws || draws.length === 0) return 'Mediodía (11:00)';
+    if (!draws || draws.length === 0) return 'Medio Día (13:00 CDMX)';
     const last = draws[draws.length - 1];
     const drawsOnDate = draws.filter(d => d.date === last.date);
-    const slots = ['Mediodía (11:00)', 'Tres (13:00)', 'Extra (15:00)', 'Siete (17:00)', 'Clásico (19:00)'];
-    const nextIdx = drawsOnDate.length % 5;
-    return slots[nextIdx];
+    const slots = [
+        'Medio Día (13:00 CDMX)',
+        'De las Tres (15:00 CDMX)',
+        'Extra (17:00 CDMX)',
+        'De las Siete (19:00 CDMX)',
+        'Clásico (21:00 CDMX)'
+    ];
+    return slots[drawsOnDate.length % slots.length];
 }
 
 /**
