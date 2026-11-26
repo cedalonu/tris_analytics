@@ -44,7 +44,7 @@ function TemporalTimeline({windows,minimum}:{windows:any[];minimum:number}){
   <div className="mt-3 overflow-x-auto"><table className="w-full text-left text-[11px]"><thead className="text-slate-500"><tr><th className="p-2">Rango de concursos</th><th className="p-2">N resueltos</th><th className="p-2">Candidato</th><th className="p-2">Base</th><th className="p-2">Diferencia pareada</th><th className="p-2">Lectura</th></tr></thead><tbody>{data.map((w,i)=><tr key={w.startDrawId??i} className="border-t border-slate-800"><td className="p-2">{w.startDrawId}–{w.endDrawId}</td><td className="p-2">{w.resolved}/{w.forecasts}</td><td className="p-2 text-cyan-300">{w.usable?pct(w.candidateRate):"—"}</td><td className="p-2 text-violet-300">{w.usable?pct(w.baselineRate):"—"}</td><td className="p-2">{w.usable&&typeof w.pairedDifference==="number"?(w.pairedDifference*100).toFixed(1)+" pp":"—"}</td><td className="p-2 text-slate-400">{w.usable?"Evaluable":"Soporte insuficiente"}</td></tr>)}</tbody></table></div>
  </div>;
 }
-export default function ResearchDashboard({onBack}:{onBack:()=>void}){
+export default function ResearchDashboard({onBack,onOpenIntuition}:{onBack:()=>void;onOpenIntuition:()=>void}){
  const [reports,setReports]=useState<ReportRecord[]>([]);
  const [errors,setErrors]=useState<string[]>([]);
  const [active,setActive]=useState<ReportKind>("performance");
@@ -70,7 +70,7 @@ export default function ResearchDashboard({onBack}:{onBack:()=>void}){
     <div className="pointer-events-none absolute -right-12 -top-16 h-56 w-56 rounded-full border border-cyan-400/10"/><div className="pointer-events-none absolute -right-2 -top-8 h-36 w-36 rounded-full border border-violet-400/15"/>
     <div className="relative flex flex-wrap items-center justify-between gap-4">
      <div><div className="text-[10px] font-black uppercase tracking-[.3em] text-cyan-300">INTUICIÓN ARTIFICIAL · TRIS</div><h1 className="mt-2 text-2xl font-black tracking-tight md:text-4xl">Centro de investigación</h1><p className="mt-2 max-w-2xl text-sm text-slate-300">Memoria prospectiva, evaluación y estabilidad. Cada resultado depende de evidencia importada; los datos ausentes permanecen visibles.</p></div>
-     <button onClick={onBack} className="rounded-xl border border-cyan-700/70 bg-slate-950/50 px-4 py-2.5 text-sm font-bold text-cyan-200 hover:bg-slate-800">← Volver al predictor</button>
+     <div className="flex flex-wrap gap-2"><button onClick={onOpenIntuition} className="rounded-xl border border-violet-700/70 bg-violet-950/30 px-4 py-2.5 text-sm font-bold text-violet-200 hover:bg-violet-900/40">✧ Intuición artificial</button><button onClick={onBack} className="rounded-xl border border-cyan-700/70 bg-slate-950/50 px-4 py-2.5 text-sm font-bold text-cyan-200 hover:bg-slate-800">← Panel principal</button></div>
     </div>
     <div className="relative mt-5 flex flex-wrap gap-2 text-[10px] font-semibold"><span className="rounded-full border border-emerald-800 bg-emerald-950/50 px-3 py-1.5 text-emerald-300">● Solo análisis local</span><span className="rounded-full border border-slate-700 bg-slate-950/50 px-3 py-1.5 text-slate-300">Sin APIs ni descargas</span><span className="rounded-full border border-slate-700 bg-slate-950/50 px-3 py-1.5 text-slate-300">Sin afirmaciones predictivas no validadas</span></div>
    </div>
