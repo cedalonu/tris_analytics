@@ -16,7 +16,7 @@ export function parseTrisCSV(text: string): Draw[] {
     const withoutBom = text.charCodeAt(0) === 0xfeff ? text.slice(1) : text;
     const lines = withoutBom.trim().split('\n').map(line => line.endsWith('\r') ? line.slice(0, -1) : line);
     if (lines.length < 2) throw new Error('El CSV no contiene sorteos.');
-    const header = lines[0].split(',').map(value => value.trim().toUpperCase());
+    const header = lines[0].split(',').map(value => value.trim().replace(String.fromCharCode(0xfeff), '').toUpperCase());
     const required = ['CONCURSO', 'ID', 'R1', 'R2', 'R3', 'R4', 'R5', 'FECHA'];
     if (required.some((name, index) => header[index] !== name)) {
         throw new Error('Encabezado inválido. Se espera CONCURSO,ID,R1,R2,R3,R4,R5,FECHA.');
