@@ -117,3 +117,10 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - El dominante del bloque es retrospectivo y solo se usa para contraste; cada pool de cada objetivo usa estrictamente concursos anteriores. Los bloques sin soporte no se puentean.
 - Integrado en `npm run research:regime-analysis -- <local-Tris.csv> [ledger-directory]`; historia mínima por defecto 30, configurable con `TRIS_POSITIONAL_POOL_MIN_HISTORY`.
 - No modifica pronósticos, candidatos, pesos, portafolios ni ledger. Sin APIs, polling ni descargas.
+
+## Phase 30 — estabilidad temporal de la concordancia posicional-pool
+- Calcula correlaciones móviles de las tres relaciones descriptivas de fase 29, con ventanas consecutivas y mínimo de pares configurables.
+- Omite ventanas que contienen huecos de bloque y resume la persistencia del signo positivo/negativo, correlación absoluta media y clasificación descriptiva.
+- Predeterminados: ventana 5 bloques, paso 1, mínimo 3 pares; clasificación consistente exige 70% del signo dominante y al menos 3 correlaciones válidas.
+- Integrado en `research:regime-analysis`; añade `positionalPoolTemporalStability` al JSON y Markdown. Variables `TRIS_POSITIONAL_POOL_STABILITY_WINDOW`, `TRIS_POSITIONAL_POOL_STABILITY_STEP`, `TRIS_POSITIONAL_POOL_STABILITY_MIN_PAIRS`.
+- Ventanas solapadas no independientes; consistencia de signo no es inferencia ni pronóstico. No modifica ledger, pesos, candidatos ni portafolios. Offline, sin APIs.
