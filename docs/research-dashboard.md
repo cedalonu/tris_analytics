@@ -2,6 +2,10 @@
 
 El predictor incorpora el acceso **🔬 Investigación**. Abre un panel independiente; el predictor principal sigue disponible al volver.
 
+## Carga del historial CSV en el predictor
+
+Al abrir la aplicación, no se consulta GitHub ni se descarga el CSV automáticamente. Usa **Importar Tris.csv** y selecciona el archivo local. El importador valida el encabezado esperado, los cinco dígitos por concurso, las fechas y los concursos duplicados antes de actualizar el historial. Una copia queda en el almacenamiento local del navegador para la siguiente sesión; no se transmite a ningún servidor. Para actualizar el historial, vuelve a importar manualmente el CSV actualizado.
+
 ## Uso
 
 1. Ejecuta los análisis desde la raíz del repositorio con Node.js y las dependencias instaladas.
