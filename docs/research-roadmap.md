@@ -184,3 +184,13 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Escalas configurables mediante `TRIS_POSITIONAL_POOL_BLOCK_SIZES` (10,15,25,40); soporte mínimo mediante `TRIS_POSITIONAL_POOL_BLOCK_MIN_SUPPORT` (10). Historia mínima de pool reutiliza `TRIS_POSITIONAL_POOL_MIN_HISTORY`.
 - Las escalas comparten los mismos sorteos y no son réplicas independientes. La concordancia de signo no es inferencia; no hay p-valores ni corrección de multiplicidad y no se selecciona una escala ganadora.
 - No modifica pronósticos, candidatos, pesos, portafolios o ledger. Usa CSV local manual; sin APIs, polling ni descargas.
+
+
+## Phase 37 — sensibilidad al origen de los bloques
+- Extiende el resumen de estabilidad posicional con `blockOffset`, que desplaza límites de bloques sin alterar su tamaño; los extremos parciales se conservan y el soporte insuficiente se marca.
+- Con tamaño fijo predeterminado de 25 concursos, reconstruye la estabilidad y la concordancia posicional-pool para offsets 0, 6, 12 y 18. Cada offset se aplica desde el primer concurso etiquetado; no se optimiza según los resultados.
+- Compara las tres correlaciones por régimen, posición, método y tamaño de pool; clasifica dirección común, mixta, soporte parcial o insuficiente.
+- Integrado en `npm run research:regime-analysis -- <local-Tris.csv> [ledger-directory]`; añade `positionalPoolOriginSensitivity` al JSON y tabla al Markdown.
+- Configuración: `TRIS_POSITIONAL_POOL_ORIGIN_BLOCK_SIZE` (25) y `TRIS_POSITIONAL_POOL_BLOCK_OFFSETS` (0,6,12,18). Reutiliza historia mínima y soporte mínimo de las fases anteriores.
+- Los offsets se solapan sustancialmente y no son réplicas independientes. No hay p-valores ni corrección por comparaciones múltiples. La estabilidad no implica predictibilidad.
+- No modifica forecasts, candidatos, pesos, portafolios ni ledger. CSV local manual; sin APIs, polling ni descargas.
