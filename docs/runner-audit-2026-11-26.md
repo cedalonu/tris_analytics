@@ -29,12 +29,12 @@ The following analysis dimensions are implemented in the shared `scripts/run-tri
 - temporal-window sensitivity
 - history/support sensitivity
 
-Package aliases intentionally dispatch to this shared runner:
+Package aliases intentionally dispatch to the prospective-integrated runner:
 - `research:regime-position-profile`
 - `research:positional-transitions`
 - `research:positional-pool-scale-sensitivity`
 
-These commands are aliases, not independent executions or separate source entry points. The integrated runner writes its consolidated diagnostic JSON and Markdown to the regime-analysis output.
+These commands are aliases, not independent executions or separate source entry points. Both entry points produce consolidated analysis; the historical-only entry point is the appropriate one for full historical reports, while the prospective-integrated entry point additionally requires an actual resolved prospective result before generating its performance persistence report.
 
 ## Prospective-data gating
 
