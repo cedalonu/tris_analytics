@@ -250,3 +250,13 @@ El reporte `family-concordance.md/json` presenta por familia: número de candida
 El análisis no trata señales coincidentes como independientes: las familias comparten sorteos, historial y resultados. Sus objetivos pueden ser distintos, por lo que las tasas brutas no se interpretan como probabilidades comparables. La concordancia es descriptiva, no calcula p-valores, no modifica la composición, no ajusta pesos ni promueve hipótesis. Se añaden pruebas de promediado por concurso, cobertura sin resultados, y rechazo de duplicados/desalineaciones.
 
 Comando: `npm run research:prospective-portfolio -- ./data/Tris.csv`. El reporte de familias se genera junto al seguimiento prospectivo, usando exclusivamente los pronósticos congelados y resultados resueltos del ledger local. CSV manual, sin APIs, polling ni descargas. No se ha ejecutado con CSV real ni se afirma ventaja predictiva.
+
+
+### Fase 12 — calibración nula de concordancia entre familias
+- Añade `family-concordance-null-simulation.ts` y pruebas deterministas/de validación.
+- Compara escenarios sintéticos donde candidato y baseline tienen la misma tasa marginal; por construcción no existe ventaja predictiva.
+- Controla dependencia emparejada candidato-baseline y solapamiento de un resultado latente entre familias.
+- Reporta correlación media y percentiles entre familias, acuerdo direccional, tasa de réplicas donde todas/alguna familia parece positiva e intervalo Wilson Monte Carlo para todas positivas.
+- Runner offline: `npm run research:family-concordance-null`; genera `reports/family-concordance-null/latest.md/json`.
+- La calibración mide cuánto acuerdo puede surgir por ruido compartido; no estima dependencia real del TRIS, no ajusta umbrales y no modifica portafolios.
+- Sin APIs, polling, descargas ni CSV real. No se afirma ventaja predictiva.
