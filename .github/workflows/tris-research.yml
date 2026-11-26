@@ -24,6 +24,8 @@ jobs:
         run: npm run test:research
       - name: Run past-only regime classifier calibration
         run: npm run research:regime-calibration
+      - name: Run positional stability synthetic calibration
+        run: npm run research:positional-stability-calibration
       - name: Run synthetic detector calibration
         run: npm run research:position-null
       - name: Upload synthetic calibration report
@@ -35,5 +37,7 @@ jobs:
             reports/position-null/latest.md
             reports/regime-calibration/latest.json
             reports/regime-calibration/latest.md
+            reports/positional-stability-calibration/latest.json
+            reports/positional-stability-calibration/latest.md
           if-no-files-found: error
           retention-days: 14
