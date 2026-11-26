@@ -1142,8 +1142,8 @@ function parseCSV(text: string): Draw[] {
         if (cols.length < 8) throw new Error(`Fila ${i + 1}: faltan columnas obligatorias.`);
         const numText = (cols[0] ?? '').trim();
         const digitTexts = [2, 3, 4, 5, 6].map(index => (cols[index] ?? '').trim());
-        const num = /^\\d+$/.test(numText) ? Number(numText) : Number.NaN;
-        const digits = digitTexts.map(value => /^\\d$/.test(value) ? Number(value) : Number.NaN);
+        const num = /^\d+$/.test(numText) ? Number(numText) : Number.NaN;
+        const digits = digitTexts.map(value => /^\d$/.test(value) ? Number(value) : Number.NaN);
         const date = (cols[7] ?? '').trim();
         if (!Number.isSafeInteger(num) || num <= 0 || digits.some(d => !Number.isInteger(d)) || !date) {
             throw new Error(`Fila ${i + 1}: concurso, cinco dígitos o fecha inválidos.`);
