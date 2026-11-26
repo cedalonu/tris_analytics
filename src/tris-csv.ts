@@ -5,13 +5,16 @@ export interface Draw {
     date: string;
 }
 
-/**
- * Parses the official TRIS CSV format used by the local app.
- * It deliberately validates raw fields before numeric conversion so malformed
- * values such as "3x", "3.0", or multi-digit cells cannot be silently accepted.
- */
+function isDigitsOnly(value: string, exactLength?: number): boolean {
+    return value.length > 0
+        && (exactLength === undefined || value.length === exactLength)
+        && Array.from(value).every(char => char >= '0' && char <= '9');
+}
+
+/** Parser estricto del CSV local de TRIS. */
 export function parseTrisCSV(text: string): Draw[] {
-    const lines = text.replace(/^\\uFEFF/, '').trim().split(/\\r?\\n/);
+    const withoutBom = text.charCodeAt(0) === 0xfeff ? text.slice(1) : text;
+    const lines = withoutBom.trim().split('\n').map(line => line.endsWith('\r') ? line.slice(0, -1) : line);
     if (lines.length < 2) throw new Error('El CSV no contiene sorteos.');
     const header = lines[0].split(',').map(value => value.trim().toUpperCase());
     const required = ['CONCURSO', 'ID', 'R1', 'R2', 'R3', 'R4', 'R5', 'FECHA'];
@@ -26,8 +29,8 @@ export function parseTrisCSV(text: string): Draw[] {
         if (cols.length < 8) throw new Error(`Fila ${i + 1}: faltan columnas obligatorias.`);
         const numText = (cols[0] ?? '').trim();
         const digitTexts = [2, 3, 4, 5, 6].map(index => (cols[index] ?? '').trim());
-        const num = /^\\d+$/.test(numText) ? Number(numText) : Number.NaN;
-        const digits = digitTexts.map(value => /^\\d$/.test(value) ? Number(value) : Number.NaN);
+        const num = isDigitsOnly(numText) ? Number(numText) : Number.NaN;
+        const digits = digitTexts.map(value => isDigitsOnly(value, 1) ? Number(value) : Number.NaN);
         const date = (cols[7] ?? '').trim();
         if (!Number.isSafeInteger(num) || num <= 0 || digits.some(d => !Number.isInteger(d)) || !date) {
             throw new Error(`Fila ${i + 1}: concurso, cinco dígitos o fecha inválidos.`);
