@@ -13,7 +13,7 @@ export type CyclePattern = {
 };
 
 function findRepeatedPeriod(tokens: string[]) {
-  if (tokens.length < 4) return null;
+  if (tokens.length < 4 || new Set(tokens).size < 2) return null;
   const maxPeriod = Math.min(8, Math.floor(tokens.length / 2));
   for (let period = 2; period <= maxPeriod; period++) {
     const compared = tokens.length - period;
