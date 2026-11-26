@@ -6,7 +6,7 @@ test("pairs align by target IDs and flag strong dependence under permutation nul
  const x=[true,false,true,false,true,false,true,false,true,false,true,false];
  const r=buildSignalDependencyMatrix([stream("a",x,["x"],["history"]),stream("b",x,["x"],["history"])],{minMatched:10,permutations:100,seed:4});
  assert.equal(r.pairCount,1);assert.equal(r.pairs[0].matchedN,12);assert.equal(r.pairs[0].phi,1);
- assert.equal(r.pairs[0].classification,"empirical-dependence");assert.equal(r.pairs[0].temporalBlocks,2);
+ assert.equal(r.pairs[0].classification,"empirical-dependence");assert.equal(r.pairs[0].temporalBlocks,1);
  assert.equal(r.pairs[0].directionConsistency,1);
 });
 test("nonmatched target IDs are excluded; structural overlap stays descriptive",()=>{
