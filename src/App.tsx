@@ -1886,8 +1886,8 @@ export default function App() {
 
     return (
         <div className="bg-[#0a0a0a] text-[#e8e8e8] min-h-screen font-sans selection:bg-[#7c4dff] selection:text-white pb-12">
-            {showResearchDashboard && <ResearchDashboard onBack={() => setShowResearchDashboard(false)} />}
-            {showIntuitionDashboard && <IntuitionDashboard draws={allDraws} onBack={() => setShowIntuitionDashboard(false)} />}
+            {showResearchDashboard && <ResearchDashboard onBack={() => setShowResearchDashboard(false)} onOpenIntuition={() => { setShowResearchDashboard(false); setShowIntuitionDashboard(true); }} />}
+            {showIntuitionDashboard && <IntuitionDashboard draws={allDraws} onBack={() => setShowIntuitionDashboard(false)} onOpenResearch={() => { setShowIntuitionDashboard(false); setShowResearchDashboard(true); }} />}
 
             {loading ? (
                 <div id="loader" className="text-center py-20 text-[18px] text-[#00e5ff] font-bold">
