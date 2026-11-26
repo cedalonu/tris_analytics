@@ -1,0 +1,72 @@
+import React,{useMemo,useState} from "react";
+
+type ReportKind="ledger"|"coverage"|"performance"|"stability"|"sensitivity";
+type ReportRecord={kind:ReportKind;name:string;data:any};
+const labels:Record<ReportKind,string>={ledger:"Integridad del ledger",coverage:"Cobertura prospectiva",performance:"Desempeño por modalidad",stability:"Estabilidad temporal",sensitivity:"Sensibilidad temporal"};
+function classify(data:any):ReportKind|null{
+ const m=data?.method;
+ if(m==="read-only-prospective-ledger-integrity-v1")return "ledger";
+ if(m==="prospective-contest-coverage-v1")return "coverage";
+ if(m==="prospective-performance-by-config-v1")return "performance";
+ if(m==="prospective-performance-temporal-stability-v1")return "stability";
+ if(m==="prospective-performance-sensitivity-v1")return "sensitivity";
+ return null;
+}
+const pct=(v:any)=>typeof v==="number"&&Number.isFinite(v)?(v*100).toFixed(1)+"%":"—";
+const num=(v:any)=>typeof v==="number"&&Number.isFinite(v)?v.toLocaleString("es-MX"):"—";
+function Metric({label,value,detail}:{label:string;value:React.ReactNode;detail?:string}){return <div className="rounded-xl border border-slate-700 bg-slate-900/80 p-4 min-w-0"><div className="text-xs uppercase tracking-wider text-slate-400">{label}</div><div className="mt-2 text-2xl font-bold text-slate-100 break-words">{value}</div>{detail&&<div className="mt-1 text-xs text-slate-500">{detail}</div>}</div>}
+function RateBars({candidate,baseline}:{candidate:number|null|undefined;baseline:number|null|undefined}){
+ if(typeof candidate!=="number"||typeof baseline!=="number")return <span className="text-slate-500">Sin datos</span>;
+ return <div className="min-w-[150px] space-y-1.5">
+  <div className="flex items-center gap-2 text-[11px]"><span className="w-16 text-slate-400">Candidato</span><div className="h-2 flex-1 rounded bg-slate-800"><div className="h-2 rounded bg-cyan-400" style={{width:`${Math.max(0,Math.min(100,candidate*100))}%`}}/></div><span className="w-12 text-right text-slate-200">{pct(candidate)}</span></div>
+  <div className="flex items-center gap-2 text-[11px]"><span className="w-16 text-slate-400">Base</span><div className="h-2 flex-1 rounded bg-slate-800"><div className="h-2 rounded bg-violet-400" style={{width:`${Math.max(0,Math.min(100,baseline*100))}%`}}/></div><span className="w-12 text-right text-slate-200">{pct(baseline)}</span></div>
+ </div>;
+}
+export default function ResearchDashboard({onBack}:{onBack:()=>void}){
+ const [reports,setReports]=useState<ReportRecord[]>([]);
+ const [errors,setErrors]=useState<string[]>([]);
+ const [active,setActive]=useState<ReportKind>("performance");
+ const [busy,setBusy]=useState(false);
+ const byKind=useMemo(()=>Object.fromEntries(reports.map(r=>[r.kind,r])) as Partial<Record<ReportKind,ReportRecord>>,[reports]);
+ async function importFiles(files:FileList|null){
+  if(!files?.length)return;setBusy(true);const next:ReportRecord[]=[];const problems:string[]=[];
+  for(const file of Array.from(files)){try{const data=JSON.parse(await file.text());const kind=classify(data);if(!kind){problems.push(file.name+": formato de informe no reconocido");continue;}next.push({kind,name:file.name,data});}catch{problems.push(file.name+": no se pudo leer como JSON válido");}}
+  setReports(prev=>{const merged=new Map(prev.map(r=>[r.kind,r]));for(const item of next)merged.set(item.kind,item);return [...merged.values()];});setErrors(problems);setBusy(false);
+ }
+ const kinds=(Object.keys(labels) as ReportKind[]);
+ const ledger=byKind.ledger?.data,coverage=byKind.coverage?.data,performance=byKind.performance?.data,stability=byKind.stability?.data,sensitivity=byKind.sensitivity?.data;
+ const summaries:any={ledger:ledger?.summary,coverage:coverage?.summary,performance:performance?.summary,stability:stability?.summary,sensitivity:sensitivity?.summary};
+ const current=byKind[active]?.data;
+ return <div className="fixed inset-0 z-[100] overflow-y-auto bg-[#080d18] text-slate-100">
+  <div className="mx-auto max-w-7xl px-4 py-5 md:px-7">
+   <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-5">
+    <div><div className="text-xs font-bold uppercase tracking-[.25em] text-cyan-400">TRIS · laboratorio de investigación</div><h1 className="mt-1 text-2xl font-black md:text-3xl">Panel de evidencia prospectiva</h1><p className="mt-1 text-sm text-slate-400">Informes locales, congelados y verificables · sin conexión a APIs</p></div>
+    <button onClick={onBack} className="rounded-lg border border-slate-600 px-4 py-2 text-sm font-semibold hover:bg-slate-800">← Volver al predictor</button>
+   </div>
+   <section className="my-5 rounded-xl border border-cyan-900/70 bg-cyan-950/20 p-4">
+    <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-bold">Cargar informes de investigación</h2><p className="mt-1 text-xs text-slate-400">Selecciona uno o varios archivos latest.json generados por los comandos locales research:prospective-*</p></div><label className="cursor-pointer rounded-lg bg-cyan-500 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-cyan-300">{busy?"Leyendo…":"＋ Importar JSON"}<input type="file" accept=".json,application/json" multiple className="hidden" disabled={busy} onChange={e=>{void importFiles(e.target.files);e.currentTarget.value="";}}/></label></div>
+    <div className="mt-3 flex flex-wrap gap-2">{kinds.map(k=><span key={k} className={`rounded-full border px-2.5 py-1 text-[11px] ${byKind[k]?"border-emerald-700 bg-emerald-950/50 text-emerald-300":"border-slate-700 text-slate-500"}`}>{byKind[k]?"✓ ":"○ "}{labels[k]}</span>)}</div>
+    {errors.length>0&&<div className="mt-3 text-xs text-amber-300">{errors.map(e=><div key={e}>{e}</div>)}</div>}
+    {reports.length>0&&<div className="mt-3 flex items-center justify-between gap-3 text-xs text-slate-400"><span>{reports.length} tipos de informe cargados · Los archivos permanecen en este navegador.</span><button onClick={()=>{setReports([]);setErrors([]);}} className="underline hover:text-white">Limpiar panel</button></div>}
+   </section>
+   <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+    <Metric label="Pronósticos congelados" value={num(summaries.performance?.forecastRecords??summaries.ledger?.forecasts)} detail="Registros únicos según informe"/>
+    <Metric label="Resultados resueltos" value={num(summaries.performance?.resolvedRecords??summaries.ledger?.resolved)} detail="Con resolución asociada"/>
+    <Metric label="Pendientes" value={num(summaries.performance?.pendingRecords??summaries.ledger?.pending)} detail="Aún sin resolver"/>
+    <Metric label="Integridad" value={summaries.ledger?.integrity??"—"} detail={summaries.ledger?num(summaries.ledger.issues)+" incidencias": "Importa auditoría fase 41"}/>
+    <Metric label="Cobertura observada" value={pct(summaries.coverage?.coverageRate)} detail={summaries.coverage?num(summaries.coverage.observedContests)+" concursos observados":"Importa auditoría fase 42"}/>
+   </div>
+   <nav className="mt-6 flex gap-2 overflow-x-auto border-b border-slate-800 pb-2">{kinds.map(k=><button key={k} onClick={()=>setActive(k)} className={`whitespace-nowrap rounded-t-lg px-3 py-2 text-xs font-semibold ${active===k?"border-b-2 border-cyan-400 bg-slate-900 text-cyan-300":"text-slate-400 hover:bg-slate-900 hover:text-white"}`}>{labels[k]}</button>)}</nav>
+   {!current?<div className="mt-5 rounded-xl border border-dashed border-slate-700 p-10 text-center"><div className="text-3xl">▤</div><h3 className="mt-3 font-bold">Informe aún no importado</h3><p className="mx-auto mt-2 max-w-xl text-sm text-slate-400">Ejecuta el comando local correspondiente y carga su archivo latest.json. El panel no inventa métricas ni sustituye datos faltantes.</p></div>:<section className="mt-5 space-y-4">
+    <div className="flex flex-wrap items-center justify-between gap-2"><div><h2 className="text-lg font-bold">{labels[active]}</h2><p className="text-xs text-slate-500">Fuente: {byKind[active]?.name}</p></div><span className="rounded-full border border-emerald-800 bg-emerald-950/40 px-3 py-1 text-xs text-emerald-300">Informe cargado</span></div>
+    {active==="ledger"&&<><div className="grid grid-cols-2 gap-3 md:grid-cols-4"><Metric label="Pronósticos" value={num(current.summary?.forecasts)}/><Metric label="Resueltos" value={num(current.summary?.resolved)}/><Metric label="Pendientes" value={num(current.summary?.pending)}/><Metric label="Incidencias" value={num(current.summary?.issues)}/></div><div className="overflow-x-auto rounded-xl border border-slate-800"><table className="w-full text-left text-xs"><thead className="bg-slate-900 text-slate-400"><tr><th className="p-3">Código</th><th className="p-3">Registro</th><th className="p-3">Detalle</th></tr></thead><tbody>{(current.issues??[]).slice(0,250).map((x:any,i:number)=><tr key={i} className="border-t border-slate-800"><td className="p-3 font-mono text-amber-300">{x.code}</td><td className="p-3">{x.recordId}</td><td className="p-3 text-slate-400">{x.detail}</td></tr>)}</tbody></table></div></>}
+    {active==="coverage"&&<><div className="grid grid-cols-2 gap-3 md:grid-cols-4"><Metric label="Concursos observados" value={num(current.summary?.observedContests)}/><Metric label="Con pronóstico" value={num(current.summary?.contestsWithForecasts)}/><Metric label="Sin pronóstico" value={num(current.summary?.contestsWithoutForecasts)}/><Metric label="Tasa cobertura" value={pct(current.summary?.coverageRate)}/></div><div className="overflow-x-auto rounded-xl border border-slate-800"><table className="w-full text-left text-xs"><thead className="bg-slate-900 text-slate-400"><tr><th className="p-3">Concurso</th><th className="p-3">Pronósticos</th><th className="p-3">Resueltos</th><th className="p-3">Pendientes</th><th className="p-3">Estado</th></tr></thead><tbody>{(current.contests??[]).slice(-200).map((x:any)=><tr key={x.targetDrawId} className="border-t border-slate-800"><td className="p-3 font-bold">{x.targetDrawId}</td><td className="p-3">{x.forecastCount}</td><td className="p-3">{x.resolvedCount}</td><td className="p-3">{x.pendingCount}</td><td className="p-3 text-cyan-300">{x.status}</td></tr>)}</tbody></table></div></>}
+    {active==="performance"&&<><div className="grid grid-cols-2 gap-3 md:grid-cols-4"><Metric label="Configuraciones" value={num(current.summary?.groups)}/><Metric label="Con evidencia" value={num(current.summary?.groupsWithEvidence)}/><Metric label="Resueltos" value={num(current.summary?.resolvedRecords)}/><Metric label="Pendientes" value={num(current.summary?.pendingRecords)}/></div><div className="space-y-3">{(current.groups??[]).map((g:any)=><div key={g.key} className="rounded-xl border border-slate-800 bg-slate-900/60 p-4"><div className="flex flex-wrap justify-between gap-2"><div className="font-semibold">{g.family} <span className="text-xs text-slate-500">· Pos {g.position??"—"} · {g.method??g.mode??"configuración"}</span></div><div className="text-xs text-slate-400">N={g.resolved} / {g.forecasts} · Δ pareada {g.pairedDifference===null?"—":(g.pairedDifference*100).toFixed(1)+" pp"}</div></div><div className="mt-3"><RateBars candidate={g.candidateRate} baseline={g.baselineRate}/></div></div>)}</div></>}
+    {active==="stability"&&<><div className="grid grid-cols-2 gap-3 md:grid-cols-4"><Metric label="Grupos" value={num(current.summary?.groups)}/><Metric label="Positivos consistentes" value={num(current.summary?.consistentPositive)}/><Metric label="Negativos consistentes" value={num(current.summary?.consistentNegative)}/><Metric label="Insuficientes" value={num(current.summary?.insufficient)}/></div><div className="space-y-3">{(current.groups??[]).map((g:any)=><div key={g.key} className="rounded-xl border border-slate-800 p-4"><div className="flex flex-wrap justify-between gap-2"><b>{g.family}</b><span className="text-xs text-cyan-300">{g.status}</span></div><p className="mt-1 text-xs text-slate-500">Ventana: {g.windowDraws} sorteos · soporte mínimo: {g.minimumResolvedPerWindow} · diferencia global: {g.overallPairedDifference===null?"—":pct(g.overallPairedDifference)}</p><div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-4">{(g.windows??[]).map((w:any)=><div key={w.startDrawId} className="rounded-lg bg-slate-900 p-2 text-xs"><b>#{w.startDrawId}–{w.endDrawId}</b><div className="mt-1 text-slate-400">N={w.resolved}/{w.forecasts}</div><div className="text-cyan-300">C {pct(w.candidateRate)}</div><div className="text-violet-300">B {pct(w.baselineRate)}</div></div>)}</div></div>)}</div></>}
+    {active==="sensitivity"&&<><div className="grid grid-cols-2 gap-3 md:grid-cols-4"><Metric label="Grupos" value={num(current.summary?.groups)}/><Metric label="Robustos positivos" value={num(current.summary?.robustPositive)}/><Metric label="Sensibles a parámetros" value={num(current.summary?.parameterSensitive)}/><Metric label="Evidencia insuficiente" value={num(current.summary?.insufficient)}/></div><div className="overflow-x-auto rounded-xl border border-slate-800"><table className="w-full text-left text-xs"><thead className="bg-slate-900 text-slate-400"><tr><th className="p-3">Familia</th><th className="p-3">Configuraciones evaluadas</th><th className="p-3">Positivas</th><th className="p-3">Negativas</th><th className="p-3">Sin ventaja</th><th className="p-3">Insuficientes</th><th className="p-3">Conclusión</th></tr></thead><tbody>{(current.groups??[]).map((g:any)=><tr key={g.key} className="border-t border-slate-800"><td className="p-3">{g.family}</td><td className="p-3">{g.evaluatedConfigurations}</td><td className="p-3">{g.positiveConfigurations}</td><td className="p-3">{g.negativeConfigurations}</td><td className="p-3">{g.noEdgeConfigurations}</td><td className="p-3">{g.insufficientConfigurations}</td><td className="p-3 text-cyan-300">{g.conclusion}</td></tr>)}</tbody></table></div></>}
+    {Array.isArray(current.limitations)&&<details className="rounded-xl border border-slate-800 p-4"><summary className="cursor-pointer text-sm font-semibold">Limitaciones metodológicas</summary><ul className="mt-3 list-disc space-y-1 pl-5 text-xs text-slate-400">{current.limitations.map((x:string,i:number)=><li key={i}>{x}</li>)}</ul></details>}
+   </section>}
+   <footer className="mt-8 border-t border-slate-800 pt-4 text-xs text-slate-500">El panel muestra únicamente datos de los informes importados. No genera pronósticos, no modifica el ledger y no afirma capacidad predictiva.</footer>
+  </div>
+ </div>;
+}
