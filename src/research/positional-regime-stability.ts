@@ -79,8 +79,8 @@ export function summarizePositionalRegimeStability(
     entropyRange:entropies.length?Math.max(...entropies)-Math.min(...entropies):null,interpretation});
   }
  }
- return{method:"fixed-non-overlapping-positional-regime-stability-v1",
-  firstTargetDrawId:first,lastTargetDrawId:last,blockSize,minimumDrawSupport:minimum,regimes:summaries,
+ return{method:"fixed-non-overlapping-positional-regime-stability-v2",
+  firstTargetDrawId:first,lastTargetDrawId:last,blockSize,blockOffset,minimumDrawSupport:minimum,regimes:summaries,
   limitations:[
    "Los bloques son consecutivos y no solapados. blockOffset desplaza sus límites respecto del primer concurso etiquetado; los extremos parciales se conservan y se identifican.",
    "Cada bloque se evalúa por soporte dentro del régimen; bloques insuficientes no participan en resúmenes de estabilidad.",
