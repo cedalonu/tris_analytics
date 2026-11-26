@@ -20,6 +20,8 @@ jobs:
         run: npm install
       - name: TypeScript check
         run: npm run lint
+      - name: Build visual application
+        run: npm run build
       - name: Research unit tests
         run: npm run test:research
       - name: Run past-only regime classifier calibration
