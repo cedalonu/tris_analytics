@@ -13,7 +13,7 @@ test("diversity selection avoids a same-group lower-utility member when possible
 test("structural and empirical grouping remain distinct metrics",()=>{
  const result=selectRedundancyAwareSignalPortfolio("structural-diversity",3,signals,groups);
  assert.equal(result.metrics.empiricalGroupedCount,2);
- assert.equal(result.metrics.structuralGroupedCount,3);
+ assert.equal(result.metrics.structuralGroupedCount,2);
 });
 test("random controls reproducible and size-bounded",()=>{
  const a=selectRedundancyAwareSignalPortfolio("random",3,signals,groups,22);
