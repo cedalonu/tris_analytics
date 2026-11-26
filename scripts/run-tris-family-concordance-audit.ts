@@ -10,7 +10,7 @@ const dir=resolve(process.argv[2]??"data/prospective-portfolio");
 async function json<T>(name:string):Promise<T>{return JSON.parse(await readFile(resolve(dir,name),"utf8")) as T;}
 async function jsonl<T>(name:string):Promise<T[]>{return(await readFile(resolve(dir,name),"utf8")).split(/\r?\n/).filter(Boolean).map(x=>JSON.parse(x) as T);}
 const manifest=await json<ProspectivePortfolioManifest>("portfolio-manifest.json");
-const latest=await json<{summary:{lastObservedDrawId:number}}>("latest-summary.json");
+const latest=await json<{summary:{lastObservedDrawId:number};manifest:{portfolioId:string}}>("latest-summary.json");\nif(latest.manifest?.portfolioId!==manifest.portfolioId){console.error("latest-summary.json no corresponde al manifiesto del ledger.");process.exit(1);}
 const forecasts=await jsonl<FrozenForecast>("forecasts.jsonl"),results=await jsonl<ResolvedForecast>("results.jsonl");
 if(!results.length){console.error("Aún no hay resultados prospectivos resueltos; no se puede comparar concordancia observada.");process.exit(2);}
 const catalog=generateIntuitionCandidates();
