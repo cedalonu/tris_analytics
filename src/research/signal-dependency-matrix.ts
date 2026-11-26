@@ -21,7 +21,7 @@ function phi(a:boolean[],b:boolean[]):number|null {
  const n11=a.filter((x,i)=>x&&b[i]).length,n10=a.filter((x,i)=>x&&!b[i]).length,n01=a.filter((x,i)=>!x&&b[i]).length,n00=a.filter((x,i)=>!x&&!b[i]).length;
  const den=Math.sqrt((n11+n10)*(n01+n00)*(n11+n01)*(n10+n00));return den?((n11*n00-n10*n01)/den):null;
 }
-function jaccard(a:string[],b:string){const A=new Set(a),B=new Set(b),u=new Set([...A,...B]);return u.size?[...A].filter(x=>B.has(x)).length/u.size:0}
+function jaccard(a:string[],b:string[]):number{const A=new Set<string>(a),B=new Set<string>(b),u=new Set<string>([...A,...B]);let intersection=0;for(const item of A)if(B.has(item))intersection++;return u.size?intersection/u.size:0}
 function rng(seed:number){let s=seed>>>0;return()=>{s^=s<<13;s^=s>>>17;s^=s<<5;return(s>>>0)/4294967296}}
 function permP(a:boolean[],b:boolean[],observed:number|null,reps:number,seed:number):number|null{
  if(observed===null||a.length<2)return null;const random=rng(seed);let exceed=0;
@@ -38,7 +38,7 @@ export function buildSignalDependencyMatrix(signals:DependencySignal[],options:{
  for(let i=0;i<signals.length;i++)for(let j=i+1;j<signals.length;j++){
  const a=signals[i],b=signals[j],mapB=new Map(b.matchedAlerts.map(x=>[x.targetId,x.alert]));
  const matched=a.matchedAlerts.filter(x=>mapB.has(x.targetId)),aa=matched.map(x=>x.alert),bb=matched.map(x=>mapB.get(x.targetId)!);
- const n=matched.length,cor=n>=minMatched?phi(aa,bb):null,sharedComponents=a.components.filter(x=>b.components.includes(x)),sharedInputs=a.sharedInputs.filter(x=>b.sharedInputs.includes(x)),p=n>=minMatched?permP(aa,bb,cor,permutations,seed+i*7919+j):null;
+ const n=matched.length,cor=n>=minMatched?phi(aa,bb):null,sharedComponents:string[]=a.components.filter((x:string)=>b.components.some((y:string)=>y===x)),sharedInputs:string[]=a.sharedInputs.filter((x:string)=>b.sharedInputs.some((y:string)=>y===x)),p=n>=minMatched?permP(aa,bb,cor,permutations,seed+i*7919+j):null;
  const cls=n<minMatched?"insufficient":cor!==null&&Math.abs(cor)>=threshold&&p!==null&&p<=alpha?"empirical-dependence":sharedComponents.length||sharedInputs.length?"structural-only":"no-dependence-detected";
  const co=aa.filter((x,k)=>x&&bb[k]).length;
  pairs.push({a:a.id,b:b.id,matchedN:n,coAlerts:co,coAlertRate:n?co/n:null,phi:cor,observedAlertOverlap:n?co/n:null,structuralJaccard:jaccard(a.components,b.components),sharedComponents,sharedInputs,permutationP:p,classification:cls});
