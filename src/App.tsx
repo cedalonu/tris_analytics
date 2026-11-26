@@ -414,7 +414,6 @@ function ComparativaCellModal({
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import html2canvas from 'html2canvas';
-import { GoogleGenAI } from '@google/genai';
 import { RandomForestClassifier } from 'ml-random-forest';
 // Sin soluciones.ts (datos del motor original): el export de Comparativa usa [] en Tris.
 import * as XLSX from 'xlsx';
@@ -5877,19 +5876,9 @@ ${breakdownRows30.slice(20).join('\n')}
         setAssistantInput('');
 
         try {
-            const ai = new GoogleGenAI();
-            const algorithmicContext = getAssistantExpertResponse(text);
-            const prompt = `Consulta del usuario: "${text}"\n\nContexto algorítmico y datos estadísticos de Tris V4 ML para respaldar la respuesta:\n${algorithmicContext}`;
-
-            const response = await ai.models.generateContent({
-                model: 'gemini-1.5-flash',
-                contents: prompt,
-                config: {
-                    systemInstruction: "Eres el asistente oficial de Tris Predictor V4 ML impulsado por Gemini 1.5 Flash. Tu salida obligatoria para cualquier análisis o consulta de números es una Tesis de Análisis Predictivo y Científico que incluye: 1. Estructura de un Plan de Investigación y Análisis de Datos (Definición de objetivos, Diseño y recolección, Limpieza e inspección, Preparación y codificación, Análisis de datos escaneando Simulador C e Iteraciones, e Interpretación con los 5 dígitos potenciales (1 por posición) para el siguiente sorteo). 2. Estructura de Datos (Lineales: Arrays, Pilas; No lineales: Tablas Hash, Grafos/Árboles). Responde en español neutro, con rigor científico, directo y sin frases genéricas de cierre."
-                }
-            });
-
-            const replyText = response.text || algorithmicContext;
+            // Modo 100% local: la respuesta se construye con el motor algorítmico y los datos cargados.
+            // No se realizan llamadas a Gemini ni a servicios externos.
+            const replyText = getAssistantExpertResponse(text);
             const aiMsg = {
                 sender: 'assistant' as const,
                 text: replyText,
