@@ -1,0 +1,8 @@
+import {test} from "node:test";import {strict as assert} from "node:assert";import {buildHypothesisAlerts} from "./hypothesis-alerts";import type {EvidenceDossier,EvidenceSnapshot} from "./evidence-dossier";
+const s=(date:string,classification:EvidenceSnapshot["classification"],n:number,schema="v1"):EvidenceSnapshot=>({schema:"tris-evidence-snapshot-v1",recordedAt:date,sourceReportSchema:schema,candidateKey:"A",classification,resolved:n,reasons:[],limitations:[]});
+const d=(history:EvidenceSnapshot[]):EvidenceDossier=>({schema:"tris-evidence-dossier-v1",candidateKey:"A",createdAt:history[0]?.recordedAt??"2026-01-01",history,current:history.at(-1)??null,integrity:"clean"});
+test("classification shift creates descriptive alert",()=>assert.ok(buildHypothesisAlerts(d([s("2026-01-01","neutral",30),s("2026-02-01","favorable-observed",50)])).some(a=>a.type==="classification-change")));
+test("support drop creates review alert",()=>assert.equal(buildHypothesisAlerts(d([s("2026-01-01","neutral",40),s("2026-02-01","neutral",20)])).find(a=>a.type==="support-drop")?.severity,"review"));
+test("protocol changes flagged separately",()=>assert.ok(buildHypothesisAlerts(d([s("2026-01-01","neutral",30,"v1"),s("2026-02-01","neutral",35,"v2")])).some(a=>a.type==="protocol-change")));
+test("large count growth threshold creates informational alert",()=>assert.ok(buildHypothesisAlerts(d([s("2026-01-01","neutral",40),s("2026-02-01","neutral",60)])).some(a=>a.type==="support-growth")));
+test("deterministic IDs across repeated runs",()=>assert.equal(buildHypothesisAlerts(d([s("2026-01-01","neutral",30),s("2026-02-01","neutral",35)]))[0].eventId,buildHypothesisAlerts(d([s("2026-01-01","neutral",30),s("2026-02-01","neutral",35)]))[0].eventId));

@@ -126,6 +126,8 @@ jobs:
         run: npm run research:evidence-dossiers
       - name: Track hypothesis state transitions
         run: npm run research:hypothesis-tracker
+      - name: Generate hypothesis alert events
+        run: npm run research:hypothesis-alerts
       - name: Upload real-history reports and frozen ledgers
         uses: actions/upload-artifact@v4
         with:

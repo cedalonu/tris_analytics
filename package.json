@@ -63,7 +63,8 @@
     "research:frozen-union": "tsx scripts/run-tris-frozen-union.ts",
     "research:report-pack": "tsx scripts/run-tris-research-report-pack.ts",
     "research:evidence-dossiers": "tsx scripts/run-tris-evidence-dossiers.ts",
-    "research:hypothesis-tracker": "tsx scripts/run-tris-hypothesis-tracker.ts"
+    "research:hypothesis-tracker": "tsx scripts/run-tris-hypothesis-tracker.ts",
+    "research:hypothesis-alerts": "tsx scripts/run-tris-hypothesis-alerts.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
