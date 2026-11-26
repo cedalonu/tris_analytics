@@ -133,3 +133,12 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Comando offline: `npm run research:positional-pool-sensitivity`; reporte en `reports/positional-pool-temporal-sensitivity/latest.md` y `.json`.
 - Réplicas, tamaños de ventana, pasos, umbrales y semilla son configurables por variables `TRIS_POSITIONAL_POOL_SENSITIVITY_*`. No selecciona automáticamente una configuración ni modifica umbrales de producción.
 - Las tasas son específicas de escenarios sintéticos; la cuadrícula no es una prueba inferencial ni estima falsas alertas reales. No utiliza CSV real, APIs, polling ni descargas; no altera pronósticos, candidatos, pesos, portafolios o ledger.
+
+
+## Phase 32 — controles nulos de igual soporte para concordancia posicional-pool
+- Para cada régimen, posición, método y tamaño de pool, calcula las tres correlaciones observadas y las compara con controles por permutación de la segunda variable dentro del mismo grupo y métrica.
+- Cada permutación conserva exactamente el soporte y la distribución marginal de ambas variables; destruye su emparejamiento temporal. Informa media, desviación, percentiles 2.5/50/97.5, excedencias y tasa de cola empírica con corrección +1.
+- Comando offline: `npm run research:positional-pool-null-controls -- ./data/prospective-portfolio/regime-analysis/latest.json`; requiere ejecutar antes `research:regime-analysis` con el CSV local.
+- Configuración: `TRIS_POSITIONAL_POOL_NULL_REPS` (999), `TRIS_POSITIONAL_POOL_NULL_MIN_PAIRS` (3), `TRIS_POSITIONAL_POOL_NULL_SEED` (20261202).
+- La permutación no conserva autocorrelación; es un control de asociación sin emparejar, no un nulo temporal completo ni una prueba confirmatoria. La multiplicidad no se corrige y no hay selección automática.
+- No usa APIs, polling ni descargas; no modifica pronósticos, candidatos, pesos, portafolios ni ledger.
