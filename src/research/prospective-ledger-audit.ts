@@ -1,9 +1,15 @@
 /** Phase 41: read-only integrity audit for frozen prospective forecast ledgers. */
 import type {FrozenForecast,ResolvedForecast} from "./intuition-prospective";
+import {MODES} from "./draw-evolution";
 export type ProspectiveLedgerIssueCode="duplicate-forecast-id"|"duplicate-candidate-target"|"invalid-forecast-identity"|"invalid-target-order"|"invalid-history-fingerprint"|"invalid-digit-pool"|"orphan-resolution"|"duplicate-resolution"|"immutable-forecast-mismatch"|"invalid-actual-result"|"invalid-resolution-time"|"resolution-before-generation";
 export interface ProspectiveLedgerIssue {code:ProspectiveLedgerIssueCode;recordId:string;detail:string;}
 export interface ProspectiveLedgerAuditReport {method:"read-only-prospective-ledger-integrity-v1";summary:{forecasts:number;resolutions:number;pending:number;resolved:number;orphanResolutions:number;duplicateForecastIds:number;duplicateCandidateTargets:number;issues:number;integrity:"clean"|"warnings"|"invalid"};coverage:Array<{targetDrawId:number;forecasts:number;resolved:number;pending:number}>;issues:ProspectiveLedgerIssue[];limitations:string[];}
-const digits=(xs:unknown):boolean=>Array.isArray(xs)&&xs.length>0&&xs.every(x=>typeof x==="string"&&/^[0-9]$/.test(x));
+const digits=(xs:unknown,length:number):boolean=>Array.isArray(xs)&&xs.length>0&&xs.every(x=>typeof x==="string"&&/^\\d+$/.test(x)&&x.length===length);
+const outcomeLength=(f:FrozenForecast):number=>{
+ if(f.family!=="transition")return 1;
+ try{const config=JSON.parse(f.frozenConfig) as {mode?:string};return MODES.find(x=>x.mode===config.mode)?.positions.length??-1;}
+ catch{return -1;}
+};
 const immutable=(f:FrozenForecast,r:ResolvedForecast):boolean=>f.schemaVersion===r.schemaVersion&&f.forecastId===r.forecastId&&f.candidateId===r.candidateId&&f.family===r.family&&f.frozenConfig===r.frozenConfig&&f.targetDrawId===r.targetDrawId&&f.generatedAt===r.generatedAt&&f.historyThroughDrawId===r.historyThroughDrawId&&f.historySha256===r.historySha256&&JSON.stringify(f.prediction)===JSON.stringify(r.prediction)&&JSON.stringify(f.baseline)===JSON.stringify(r.baseline);
 export function auditProspectiveLedger(forecasts:FrozenForecast[],resolutions:ResolvedForecast[]):ProspectiveLedgerAuditReport {
  const issues:ProspectiveLedgerIssue[]=[];const add=(code:ProspectiveLedgerIssueCode,recordId:string,detail:string)=>issues.push({code,recordId,detail});
@@ -14,7 +20,8 @@ export function auditProspectiveLedger(forecasts:FrozenForecast[],resolutions:Re
   if(!f.forecastId||!f.candidateId||!f.frozenConfig||f.schemaVersion!==1)add("invalid-forecast-identity",f.forecastId||"(sin-id)","Faltan campos de identidad o schemaVersion no soportada.");
   if(!Number.isInteger(f.targetDrawId)||f.targetDrawId!==f.historyThroughDrawId+1)add("invalid-target-order",f.forecastId,"El concurso objetivo no es exactamente el siguiente al historial congelado.");
   if(!/^[a-f0-9]{64}$/i.test(f.historySha256))add("invalid-history-fingerprint",f.forecastId,"La huella SHA-256 del historial no tiene formato válido.");
-  if(!digits(f.prediction)||!digits(f.baseline))add("invalid-digit-pool",f.forecastId,"Predicción y baseline deben contener dígitos individuales del 0 al 9.");
+  const outcomeDigits=outcomeLength(f);
+  if(outcomeDigits<1||!digits(f.prediction,outcomeDigits)||!digits(f.baseline,outcomeDigits))add("invalid-digit-pool",f.forecastId,"Predicción y baseline deben contener cadenas numéricas con la longitud de salida definida por la familia y el modo congelado.");
   if(!Number.isFinite(Date.parse(f.generatedAt)))add("invalid-forecast-identity",f.forecastId,"generatedAt no es una fecha válida.");
  }
  const resolutionById=new Map<string,ResolvedForecast>();
