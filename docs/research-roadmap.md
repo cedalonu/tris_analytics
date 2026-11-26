@@ -48,3 +48,18 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Mantiene pronósticos y resultados congelados; pendientes y oportunidades sin pronóstico siguen separados. No reconstruye concursos omitidos.
 - Umbral de soporte mediante `TRIS_REGIME_PERSISTENCE_MIN_DRAWS`; los umbrales del clasificador permanecen congelados.
 - No hace llamadas de red, APIs, polling ni descargas. Requiere CSV proporcionado manualmente y ledger prospectivo local.
+
+## Phase 21 — estabilidad temporal y confirmación past-only de regímenes
+- Añade una capa de estabilización online sobre las etiquetas past-only. Un régimen nuevo requiere por defecto tres etiquetas consecutivas idénticas para confirmarse.
+- Durante una transición, las observaciones se asignan a `transition-watch`; el nuevo régimen solo se aplica desde el concurso de confirmación. No se reasignan retroactivamente los concursos anteriores.
+- Si la etiqueta vuelve al último régimen confirmado antes de completar la racha, se marca `return-to-confirmed`; los episodios cortos cerrados se clasifican retrospectivamente como `transient` y los episodios finales incompletos como `unconfirmed-at-end`.
+- El reporte separa asignación online de segmentación retrospectiva de episodios; esta última es descriptiva y no simula conocimiento disponible en tiempo real.
+- No modifica pronósticos congelados, portafolio, pesos ni ledger; no utiliza APIs, polling ni descargas.
+
+## Phase 22 — duración de episodios, transiciones y sensibilidad
+- Calcula duración media, mediana y máxima de episodios observados, cantidad y matriz de transiciones entre etiquetas exactas.
+- Compara reglas fijas de confirmación de 2, 3, 4 y 5 etiquetas consecutivas: episodios persistentes/transitorios, transiciones confirmadas, proporción de concursos en observación y retraso mecánico de confirmación.
+- La comparación es de sensibilidad, no una búsqueda de parámetro óptimo; no elige un umbral en función de aciertos o resultados.
+- Los reportes independiente e integrado incluyen estas métricas; se conservan las limitaciones por ventanas rolling solapadas y dependencia entre etiquetas consecutivas.
+- Comando: `npm run research:regime-stability -- [directorio-ledger]`; el flujo integrado también presenta la sensibilidad.
+- No calcula p-valores, no modifica pronósticos ni portafolios y no usa APIs, polling ni descargas.
