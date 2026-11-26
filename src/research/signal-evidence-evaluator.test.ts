@@ -1,0 +1,10 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {evaluateSignalEvidence} from "./signal-evidence-evaluator";
+const valid={id:"s1",name:"Example",origin:"prospective" as const,integrity:{valid:true,issues:[]},data:{expected:200,observed:190,resolved:180},comparison:{metric:"hit-rate",signalValue:0.12,baselineValue:0.1,direction:"higher-is-better" as const,adjustedForMultipleTests:true},temporal:{blocks:5,directionConsistentBlocks:4},sensitivity:{runs:10,consistentRuns:9},independence:{familyCount:2}};
+test("passes only fully gated prospective evidence without implying proven edge",()=>{const r=evaluateSignalEvidence(valid);assert.equal(r.state,"validation-ready");assert.equal(r.coverage,0.95);assert.equal(r.baselineComparison,0.01999999999999999);assert.equal(r.blockers.length,0);assert.match(r.limitations[1],/no está demostrada/);});
+test("historical and synthetic evidence stay exploratory",()=>{assert.equal(evaluateSignalEvidence({...valid,origin:"historical"}).state,"exploratory");assert.equal(evaluateSignalEvidence({...valid,origin:"synthetic"}).state,"exploratory");});
+test("underpowered prospective data remain pending",()=>{const r=evaluateSignalEvidence({...valid,data:{expected:100,observed:70,resolved:20}});assert.equal(r.state,"pending");assert.ok(r.blockers.length>0);});
+test("valid prospective evidence with missing gates remains validating",()=>{const r=evaluateSignalEvidence({...valid,comparison:{...valid.comparison,adjustedForMultipleTests:false},independence:{familyCount:1}});assert.equal(r.state,"validating");assert.ok(r.blockers.some(x=>x.includes("multiple-testing")));});
+test("integrity failure rejects evidence",()=>{const r=evaluateSignalEvidence({...valid,integrity:{valid:false,issues:["duplicate draw"]}});assert.equal(r.state,"rejected");});
+test("invalid counts and thresholds are rejected",()=>{assert.throws(()=>evaluateSignalEvidence({...valid,data:{expected:10,observed:11,resolved:9}}),/invalid data counts/);assert.throws(()=>evaluateSignalEvidence(valid,{minCoverage:1.2}),/minCoverage/);});
