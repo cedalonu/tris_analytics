@@ -108,3 +108,12 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Variables: `TRIS_POSITIONAL_TRANSITION_REPS` (500), `TRIS_POSITIONAL_TRANSITION_BLOCKS` (12), `TRIS_POSITIONAL_TRANSITION_SEED` (20261129), `TRIS_POSITIONAL_TRANSITION_MIN_BLOCKS` (2).
 - La calibración construye secuencias sintéticas de dominantes por bloque; no simula todos los dígitos dentro de cada sorteo. Cinco posiciones de una réplica pueden depender.
 - No optimiza umbrales, no usa CSV real y no demuestra predictibilidad o sesgo físico. CI guarda informes como artefactos.
+
+## Phase 29 — concordancia entre dominancia posicional y dinámica de pools
+- Contrasta, por régimen, posición y bloque no solapado, la dominancia posicional observada con pools construidos de forma estrictamente walk-forward.
+- Por método y tamaño de pool mide aciertos, referencia k/10, inclusión del dígito dominante observado, Jaccard entre pools consecutivos y rotación de composición.
+- Entre bloques calcula correlaciones descriptivas: frecuencia dominante/inclusión del dominante, cambio de dominante/rotación del pool e inclusión/acierto.
+- Reporta concordancia positiva, discordancia negativa, resultado mixto o soporte insuficiente; umbrales de correlación ±0.30 son etiquetas descriptivas, no inferencia ni optimización.
+- El dominante del bloque es retrospectivo y solo se usa para contraste; cada pool de cada objetivo usa estrictamente concursos anteriores. Los bloques sin soporte no se puentean.
+- Integrado en `npm run research:regime-analysis -- <local-Tris.csv> [ledger-directory]`; historia mínima por defecto 30, configurable con `TRIS_POSITIONAL_POOL_MIN_HISTORY`.
+- No modifica pronósticos, candidatos, pesos, portafolios ni ledger. Sin APIs, polling ni descargas.
