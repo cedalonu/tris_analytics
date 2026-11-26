@@ -5,19 +5,20 @@ El componente `src/IntuitionDashboard.tsx` se abre desde el botón **Intuición 
 ## Vistas
 
 - **Resumen:** estado del historial, último concurso, ventanas disponibles y actividad reciente.
-- **Memoria de señales:** explica los estados del ledger. El panel no finge que existe un ledger cargado: la conexión de lectura/escritura del registro persistente queda pendiente.
-- **Hipótesis:** muestra el tamaño del catálogo definido por el generador y deja explícito que no equivale a hipótesis evaluadas. La importación del plan congelado y de sus resultados queda pendiente.
+- **Memoria de señales:** permite importar un ledger JSON local en modo solo lectura. Acepta un arreglo de señales o un objeto con `signals[]` o `records[]`. Valida IDs, fechas, fases y conteos; presenta evidencias y recalcula el estado mediante `assessSignal()`. No escribe ni persiste cambios.
+- **Hipótesis:** permite importar un `ResearchPlan` JSON 1.0 producido por el orquestador. Valida la estructura, los IDs únicos, las familias, los registros iniciales sin evidencia y la coincidencia de las configuraciones congeladas. Muestra el presupuesto, la distribución por familia, la prioridad heurística, los parámetros y la huella congelada. La prioridad organiza trabajo de investigación; no es una puntuación predictiva.
 - **Concordancia:** calcula conteos marginales de dígitos por posición sobre las últimas 20 y 50 filas del historial cargado. Presenta top 3 por posición, coincidencias entre rankings y comparación de top 1 entre ventanas.
 
 ## Límites metodológicos
 
-Las frecuencias y coincidencias son descriptivas. No son probabilidades futuras, no prueban dependencia, no generan por sí solas una ventaja y no deben presentarse como pronósticos. La memoria persistente debe conectarse al ledger de investigación con operaciones append-only y auditoría; nunca debe inferirse o completar evidencia faltante desde la interfaz.
+Las frecuencias y coincidencias son descriptivas. No son probabilidades futuras, no prueban dependencia, no generan por sí solas una ventaja y no deben presentarse como pronósticos. La interfaz importa artefactos locales en memoria; no crea evidencia, no ejecuta evaluaciones y no modifica el ledger ni el plan congelado. Descubrimiento, validación, holdout y prospectiva deben permanecer separados y cronológicamente ordenados.
 
 ## Uso
 
 1. Importar manualmente `Tris.csv` desde el panel principal.
 2. Abrir **Intuición artificial**.
-3. Consultar las vistas; los conteos se recalculan desde el historial en memoria.
-4. Para la memoria de señales y el catálogo evaluado, conectar en una fase posterior los artefactos congelados del motor de investigación. Hasta entonces, sus estados permanecen explícitamente pendientes.
+3. En **Memoria de señales**, importar el JSON del ledger si está disponible.
+4. En **Hipótesis**, importar el JSON del plan congelado si está disponible.
+5. Consultar las vistas; los datos importados se mantienen únicamente en memoria mientras la pantalla está abierta.
 
-El módulo es local y exploratorio. No modifica el ledger, no ejecuta sorteos ni afirma capacidad predictiva.
+El módulo es local y exploratorio. No descarga datos, no modifica artefactos de investigación y no afirma capacidad predictiva.
