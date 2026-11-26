@@ -63,3 +63,13 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Los reportes independiente e integrado incluyen estas métricas; se conservan las limitaciones por ventanas rolling solapadas y dependencia entre etiquetas consecutivas.
 - Comando: `npm run research:regime-stability -- [directorio-ledger]`; el flujo integrado también presenta la sensibilidad.
 - No calcula p-valores, no modifica pronósticos ni portafolios y no usa APIs, polling ni descargas.
+
+## Phase 24 — estabilidad temporal de perfiles posicionales
+- Añade un auditor por bloques fijos, consecutivos y no solapados, anclados al primer concurso etiquetado; el último bloque puede ser parcial.
+- Para cada régimen y posición R1–R5 mide por bloque el dígito dominante, su frecuencia, entropía y número efectivo de dígitos.
+- Resume cuántos bloques tienen soporte suficiente, la consistencia del dígito dominante frente al perfil agregado del régimen, la variación de la frecuencia dominante y el rango de entropía.
+- Clasifica el resultado como estable-dominante, variable-dominance o insuficiente con reglas descriptivas; exige al menos tres bloques con soporte para emitir una clasificación.
+- Parámetros configurables: `TRIS_REGIME_POSITION_BLOCK_SIZE` (25 por defecto) y `TRIS_REGIME_POSITION_BLOCK_MIN_SUPPORT` (10 por defecto).
+- El análisis se integra en `npm run research:regime-analysis -- <local-Tris.csv> [ledger-directory]`; agrega `positionalStability` al JSON y una tabla al Markdown.
+- La consistencia contra el perfil agregado no es validación fuera de muestra; no se calculan p-valores ni se asume independencia entre sorteos.
+- No cambia pronósticos congelados, candidatos, pesos, portafolios ni estados del ledger. Sin APIs, polling ni descargas.
