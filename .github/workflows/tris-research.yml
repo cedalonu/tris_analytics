@@ -30,7 +30,9 @@ jobs:
         run: npm run research:positional-transition-calibration
       - name: Run positional-pool temporal stability calibration
         run: npm run research:positional-pool-stability-calibration
-      - name: Run positional-pool sensitivity grid\n        run: npm run research:positional-pool-sensitivity\n      - name: Run synthetic detector calibration
+      - name: Run positional-pool sensitivity grid
+        run: npm run research:positional-pool-sensitivity
+      - name: Run synthetic detector calibration
         run: npm run research:position-null
       - name: Upload synthetic calibration report
         uses: actions/upload-artifact@v4
@@ -46,6 +48,8 @@ jobs:
             reports/positional-transition-calibration/latest.json
             reports/positional-transition-calibration/latest.md
             reports/positional-pool-temporal-stability-calibration/latest.json
-            reports/positional-pool-temporal-stability-calibration/latest.md\n            reports/positional-pool-temporal-sensitivity/latest.json\n            reports/positional-pool-temporal-sensitivity/latest.md
+            reports/positional-pool-temporal-stability-calibration/latest.md
+            reports/positional-pool-temporal-sensitivity/latest.json
+            reports/positional-pool-temporal-sensitivity/latest.md
           if-no-files-found: error
           retention-days: 14
