@@ -124,6 +124,8 @@ jobs:
         run: npm run research:report-pack
       - name: Generate hypothesis evidence dossiers
         run: npm run research:evidence-dossiers
+      - name: Track hypothesis state transitions
+        run: npm run research:hypothesis-tracker
       - name: Upload real-history reports and frozen ledgers
         uses: actions/upload-artifact@v4
         with:
