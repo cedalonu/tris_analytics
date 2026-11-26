@@ -90,3 +90,13 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Integra el resultado en el análisis offline por CSV local; parámetros de soporte, distancia JS y entropía configurables.
 - No usa p-valores ni independencia; no demuestra causalidad, sesgo físico o predictibilidad; no modifica pronósticos, candidatos, pesos, portafolios o ledger.
 - Sin APIs, polling ni descargas.
+
+## Phase 27 — persistencia y recurrencia de transiciones posicionales
+- Reutiliza bloques fijos, consecutivos y no solapados de la fase 24 para seguir el dígito dominante por régimen y posición R1–R5.
+- Construye episodios de dominancia; registra duración en bloques y concursos con soporte, cambios de dominante y retornos a dígitos dominantes anteriores.
+- Los bloques con soporte insuficiente rompen la secuencia y no se puentean.
+- Distingue episodios transitorios/sostenidos y calcula sensibilidad a 1, 2 y 3 bloques consecutivos; no selecciona umbral óptimo.
+- Reporta resumen por régimen/posición y agregado por posición; el comando integrado es `npm run research:regime-analysis -- <local-Tris.csv> [ledger-directory]` (alias: `npm run research:positional-transitions -- <local-Tris.csv> [ledger-directory]`).
+- Umbral principal configurable mediante `TRIS_POSITIONAL_TRANSITION_MIN_BLOCKS` (2).
+- Un retorno es recurrencia descriptiva, no periodicidad. El análisis opera a escala de bloques y puede ocultar cambios intrabloque.
+- No modifica pronósticos, candidatos, pesos, portafolios ni ledger. Sin APIs, polling ni descargas.
