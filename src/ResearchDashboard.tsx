@@ -66,7 +66,7 @@ export default function ResearchDashboard({onBack,onOpenIntuition}:{onBack:()=>v
  const current=byKind[active]?.data;
  const performanceGroups=useMemo(()=>{const groups=performance?.groups??[];const q=performanceQuery.trim().toLowerCase();return groups.filter((g:any)=>(performanceFamily==="all"||g.family===performanceFamily)&&(!q||[g.family,g.method,g.mode,g.config].filter(Boolean).join(" ").toLowerCase().includes(q))).sort((a:any,b:any)=>performanceSort==="difference"?((b.pairedDifference??-Infinity)-(a.pairedDifference??-Infinity)):performanceSort==="sample"?(b.resolved-a.resolved):a.family.localeCompare(b.family));},[performance,performanceFamily,performanceQuery,performanceSort]);
  const performanceFamilies=useMemo(()=>[...new Set((performance?.groups??[]).map((g:any)=>g.family))].sort() as string[],[performance]);
- if(showMonitor)return <HypothesisMonitor onBack={()=>setShowMonitor(false}/>;
+ if(showMonitor)return <HypothesisMonitor onBack={()=>setShowMonitor(false)} />;
  return <div className="fixed inset-0 z-[100] overflow-y-auto bg-[#080d18] text-slate-100">
   <div className="mx-auto max-w-7xl px-4 py-5 md:px-7">
    <div className="relative overflow-hidden rounded-2xl border border-cyan-900/70 bg-gradient-to-br from-slate-900 via-[#0b1830] to-violet-950/40 p-5 md:p-7">
