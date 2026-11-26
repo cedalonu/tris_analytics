@@ -12,3 +12,13 @@ Add overlapping, full-length chronological windows to expose short-term changes 
  
 ## Phase 16 — persistence of individual prospective signals
 Evaluate each frozen candidate against its own paired baseline across consecutive, non-overlapping prospective blocks. Report resolved coverage, hit and baseline counts, block differences, positive/negative/neutral/underpowered blocks, directional runs, and a descriptive consistency label. Missed forecasts are not reconstructed; pending and unforecasted opportunities remain separate. Minimum block support is configurable. No p-values, automatic selection, promotion, or weight/portfolio changes. Local prospective ledger only; no APIs.
+
+## Phase 17 — persistencia prospectiva condicionada por régimen
+- Desglosa por régimen la persistencia de cada candidato, comparando únicamente sus resultados con su baseline congelado.
+- Consume etiquetas de régimen externas en `regime-labels.jsonl`; cada etiqueta incluye método, intervalo histórico y concurso objetivo.
+- Impone que `sourceEndDrawId < drawId` para impedir que el régimen use el resultado del propio concurso o información futura.
+- Reporta soporte, aciertos, baseline, diferencia, cobertura, pendientes, oportunidades sin pronóstico y estado positivo/negativo/neutro/insuficiente por candidato y régimen.
+- No descubre ni optimiza regímenes automáticamente: la calidad del análisis depende de la metodología de etiquetado, que debe quedar documentada y congelada.
+- Comando offline: `npm run research:regime-persistence -- [directorio-ledger]`; umbral mediante `TRIS_REGIME_PERSISTENCE_MIN_DRAWS`.
+- Formato por línea de `regime-labels.jsonl`: `{"drawId":123,"regimeId":"A","method":"rolling-pool-state-v1","sourceStartDrawId":100,"sourceEndDrawId":122}`. Debe existir exactamente una etiqueta por concurso prospectivo observado.
+- No calcula p-valores, no cambia pronósticos, pesos, candidatos, portafolio ni ledger. Sin APIs, polling ni descargas.
