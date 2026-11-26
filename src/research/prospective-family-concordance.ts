@@ -55,7 +55,10 @@ export function summarizeProspectiveFamilyConcordance(
   if(f.targetDrawId<manifest.firstTargetDrawId||f.targetDrawId>lastObservedDrawId+1)throw new Error("forecast target outside prospective range");
   if(f.frozenConfig!==manifest.candidateConfigs[f.candidateId]||f.family!==familyById.get(f.candidateId))throw new Error("forecast differs from frozen candidate identity");
   if(forecastById.has(f.forecastId))throw new Error("duplicate forecast ID");
-  forecastById.set(f.forecastId,f);\n  forecastByKey.set(f.targetDrawId+"|"+f.candidateId,f);
+  const key=f.targetDrawId+"|"+f.candidateId;
+  if(forecastByKey.has(key))throw new Error("duplicate candidate forecast for target contest");
+  forecastById.set(f.forecastId,f);
+  forecastByKey.set(key,f);
  }
  for(const r of results){
   if(!memberIds.has(r.candidateId))continue;
