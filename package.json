@@ -50,7 +50,8 @@
     "research:positional-pool-stability-calibration": "tsx scripts/run-tris-positional-pool-stability-calibration.ts",
     "research:positional-pool-sensitivity": "tsx scripts/run-tris-positional-pool-sensitivity.ts",
     "research:positional-pool-null-controls": "tsx scripts/run-tris-positional-pool-null-controls.ts",
-    "research:positional-pool-circular-shift": "tsx scripts/run-tris-positional-pool-circular-shift.ts"
+    "research:positional-pool-circular-shift": "tsx scripts/run-tris-positional-pool-circular-shift.ts",
+    "research:positional-pool-null-comparison": "tsx scripts/run-tris-positional-pool-null-comparison.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
