@@ -31,6 +31,7 @@ test("uses target outcomes only after checking label history is strictly earlier
 });
 test("rejects duplicate labels, gaps, and invalid support",()=>{
  assert.throws(()=>analyzePositionalRegimeProfiles(draws,[labels[0],labels[0]]),/duplicate/);
+ assert.throws(()=>analyzePositionalRegimeProfiles(draws,[labels[1],labels[0]]),/strictly chronological/);
  assert.throws(()=>analyzePositionalRegimeProfiles(draws.slice(0,3).concat({...draws[3],drawId:105}),labels.slice(0,2)),/contiguous/);
  assert.throws(()=>analyzePositionalRegimeProfiles(draws,labels,{minimumSupport:0}),/minimumSupport/);
 });
