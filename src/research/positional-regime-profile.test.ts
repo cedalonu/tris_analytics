@@ -19,7 +19,7 @@ test("profiles positional digits and separates groups by past-only label",()=>{
  assert.equal(a.n,3);assert.equal(b.n,4);
  assert.equal(a.positions[0].dominantDigit,1);
  assert.equal(b.positions[0].dominantDigit,8);
- assert.equal(a.positions[0].entropyBits,0);
+ assert.equal(a.positions[0].entropyBits,0);\n assert.equal(a.changeSynchronyPairs[0].sameDeltaRate,1);
  assert.equal(b.positions[0].effectiveDigits,1);
  assert.equal(b.positionPairs[0].sameDigitRate,1);
  assert.equal(b.positionPairs[0].excessSameDigitRate,0);
