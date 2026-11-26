@@ -21,3 +21,12 @@ Variables de entorno:
 
 ## Interpretación y límites
 Las ventanas móviles se solapan y no son independientes. La consistencia de signo no es prueba estadística ni implica magnitud útil, causalidad o predictibilidad. Correlaciones no calculables se omiten, no se sustituyen por cero. Se heredan los límites de la fase 29: dominante del bloque retrospectivo, referencia k/10 solo orientativa, múltiples comparaciones y dependencia temporal. No hay p-valores ni optimización de umbrales. No cambia el ledger, candidatos, pesos, portafolios ni pronósticos congelados. Todo funciona offline con CSV local; sin APIs, polling ni descargas.
+
+## Calibración sintética
+Se añade `calibratePositionalPoolTemporalStability` y el comando `npm run research:positional-pool-stability-calibration`. El CI lo ejecuta y conserva los informes como artefactos.
+
+Escenarios: relaciones nulas independientes, concordancia positiva persistente, concordancia negativa persistente, cambio alternante de signo y asociación positiva débil con ruido. Predeterminados: 500 réplicas, 30 bloques, ventana 5/paso 1, semilla fija 20261130. Reporta alertas de estabilidad en escenarios nulos/alternantes, detección de signo en escenarios persistentes e intervalos Wilson descriptivos.
+
+Variables de entorno: `TRIS_POSITIONAL_POOL_STABILITY_REPS`, `TRIS_POSITIONAL_POOL_STABILITY_BLOCKS`, `TRIS_POSITIONAL_POOL_STABILITY_SEED`, `TRIS_POSITIONAL_POOL_STABILITY_CONSISTENCY`, `TRIS_POSITIONAL_POOL_STABILITY_NEAR_ZERO`, además de ventana/paso/mínimo de pares ya descritos.
+
+La simulación no sustituye validación con resultados reales y no calibra el azar real de TRIS. Las tres relaciones comparten variables y las ventanas se solapan; las tasas son diagnósticos sintéticos, no p-valores ni garantías.
