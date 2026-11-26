@@ -142,3 +142,13 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Configuración: `TRIS_POSITIONAL_POOL_NULL_REPS` (999), `TRIS_POSITIONAL_POOL_NULL_MIN_PAIRS` (3), `TRIS_POSITIONAL_POOL_NULL_SEED` (20261202).
 - La permutación no conserva autocorrelación; es un control de asociación sin emparejar, no un nulo temporal completo ni una prueba confirmatoria. La multiplicidad no se corrige y no hay selección automática.
 - No usa APIs, polling ni descargas; no modifica pronósticos, candidatos, pesos, portafolios ni ledger.
+
+
+## Phase 33 — controles nulos con desplazamiento circular temporal
+- Complementa fase 32 con desplazamientos circulares no nulos del segundo vector dentro de cada serie régimen/posición/método/tamaño; conserva exactamente sus valores y orden cíclico, rompiendo la alineación con el primer vector.
+- Solo evalúa pares completos en bloques consecutivos; los grupos con huecos se marcan `non-contiguous-blocks`, sin interpolar ni puentear.
+- Reporta correlación observada, media/desviación/percentiles de la distribución desplazada, excedencias y tasa empírica de cola (+1).
+- Comando: `npm run research:positional-pool-circular-shift -- ./data/prospective-portfolio/regime-analysis/latest.json`. Requiere antes `research:regime-analysis` con CSV local.
+- Configuración: `TRIS_POSITIONAL_POOL_SHIFT_REPS` (999), `TRIS_POSITIONAL_POOL_SHIFT_MIN_PAIRS` (5), `TRIS_POSITIONAL_POOL_SHIFT_SEED` (20261203).
+- Conserva secuencia cíclica pero crea una unión artificial entre extremos; presupone comparabilidad aproximada de desplazamientos y puede ser inadecuado ante tendencias/cambios de régimen. Diagnóstico exploratorio, no p-valor confirmatorio ni corrección de multiplicidad.
+- Debe interpretarse junto con la permutación de fase 32. No cambia pronósticos, candidatos, pesos, portafolios o ledger; sin APIs, polling ni descargas.
