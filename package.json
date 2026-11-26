@@ -39,7 +39,8 @@
     "research:family-concordance-rolling": "tsx scripts/run-tris-family-concordance-rolling.ts",
     "research:candidate-persistence": "tsx scripts/run-tris-candidate-persistence.ts",
     "research:regime-persistence": "tsx scripts/run-tris-regime-persistence.ts",
-    "research:regime-labels": "tsx scripts/run-tris-regime-labels.ts"
+    "research:regime-labels": "tsx scripts/run-tris-regime-labels.ts",
+    "research:regime-calibration": "tsx scripts/run-tris-regime-calibration.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
