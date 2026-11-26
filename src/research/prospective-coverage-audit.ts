@@ -13,8 +13,15 @@ export function auditProspectiveCoverage(draws:Draw[],forecasts:FrozenForecast[]
  const lastAuditedTargetDrawId=Math.max(lastObservedDrawId,Math.max(...forecasts.map(f=>f.targetDrawId)));
  const forecastCounts=new Map<number,number>(),resolvedCounts=new Map<number,number>();
  for(const f of forecasts)forecastCounts.set(f.targetDrawId,(forecastCounts.get(f.targetDrawId)??0)+1);
- const forecastIds=new Set(forecasts.map(f=>f.forecastId));
- for(const r of resolutions)if(forecastIds.has(r.forecastId))resolvedCounts.set(r.targetDrawId,(resolvedCounts.get(r.targetDrawId)??0)+1);
+ const forecastById=new Map(forecasts.map(f=>[f.forecastId,f]));
+ const resolvedForecastIds=new Set<string>();
+ for(const r of resolutions){
+  const forecast=forecastById.get(r.forecastId);
+  if(forecast&&!resolvedForecastIds.has(r.forecastId)&&r.targetDrawId===forecast.targetDrawId){
+   resolvedForecastIds.add(r.forecastId);
+   resolvedCounts.set(forecast.targetDrawId,(resolvedCounts.get(forecast.targetDrawId)??0)+1);
+  }
+ }
  const contests:ContestCoverageRow[]=[];
  for(let id=firstTargetDrawId;id<=lastAuditedTargetDrawId;id++){
   const forecastCount=forecastCounts.get(id)??0,resolvedCount=resolvedCounts.get(id)??0,pendingCount=Math.max(0,forecastCount-resolvedCount),observed=id<=lastObservedDrawId;
@@ -27,6 +34,6 @@ export function auditProspectiveCoverage(draws:Draw[],forecasts:FrozenForecast[]
   contests.push({targetDrawId:id,observed,forecastCount,resolvedCount,pendingCount,status});
  }
  const observedContests=contests.filter(x=>x.observed),contestsWithForecasts=observedContests.filter(x=>x.forecastCount>0).length,contestsWithoutForecasts=observedContests.filter(x=>x.forecastCount===0).length;
- const totalForecasts=forecasts.length,totalResolved=resolutions.filter(r=>forecastIds.has(r.forecastId)).length,totalPending=Math.max(0,totalForecasts-totalResolved);
+ const totalForecasts=forecasts.length,totalResolved=resolvedForecastIds.size,totalPending=Math.max(0,totalForecasts-totalResolved);
  return {method:"prospective-contest-coverage-v1",summary:{firstTargetDrawId,lastObservedDrawId,lastAuditedTargetDrawId,contestsAudited:contests.length,observedContests:observedContests.length,contestsWithForecasts,contestsWithoutForecasts,contestsFullyResolved:observedContests.filter(x=>x.forecastCount>0&&x.pendingCount===0&&x.resolvedCount>0).length,contestsWithPendingForecasts:observedContests.filter(x=>x.pendingCount>0).length,resultsPresentButUnresolved:observedContests.filter(x=>x.status==="result-present-but-unresolved").length,totalForecasts,totalResolved,totalPending,coverageRate:observedContests.length?contestsWithForecasts/observedContests.length:null},contests,limitations:["La ausencia de pronóstico se reporta como falta de registro; no se atribuye una causa ni se inventa una explicación.","El análisis cubre desde el primer concurso objetivo registrado hasta el último concurso del CSV local; no demuestra que el CSV completo se haya sincronizado en cada momento.","La cobertura mide presencia de registros, no calidad predictiva ni ventaja sobre el azar.","La auditoría es de solo lectura y no reconstruye pronósticos retroactivos ni modifica los ledgers."]};
 }
