@@ -23,14 +23,26 @@ function RateBars({candidate,baseline}:{candidate:number|null|undefined;baseline
  </div>;
 }
 function TemporalTimeline({windows,minimum}:{windows:any[];minimum:number}){
- const data=(windows??[]).map(w=>({...w,usable:w.resolved>=minimum&&typeof w.pairedDifference==="number"}));
+ const data=(windows??[]).map(w=>({...w,usable:w.resolved>=minimum&&typeof w.candidateRate==="number"&&typeof w.baselineRate==="number"}));
  if(!data.length)return <p className="text-xs text-slate-500">Sin ventanas temporales para graficar.</p>;
- const width=760,height=190,left=42,right=14,top=14,bottom=34,innerW=width-left-right,innerH=height-top-bottom;
+ const width=760,height=220,left=42,right=14,top=16,bottom=38,innerW=width-left-right,innerH=height-top-bottom;
  const x=(i:number)=>left+(data.length===1?innerW/2:i*innerW/(data.length-1));
- const y=(v:number)=>top+(1-Math.max(-1,Math.min(1,v)))/2*innerH;
- const points=data.map((w,i)=>w.usable?`${x(i)},${y(w.pairedDifference)}`:null).filter(Boolean).join(" ");
- const zero=y(0);
- return <div className="mt-4 rounded-lg border border-slate-800 bg-slate-950/50 p-3"><div className="mb-2 flex flex-wrap justify-between gap-2 text-xs"><b>Evolución temporal · diferencia pareada</b><span className="text-slate-500">Arriba: candidato · Abajo: línea base</span></div><svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Diferencia pareada por ventana temporal" className="w-full"><line x1={left} x2={width-right} y1={zero} y2={zero} stroke="#64748b" strokeDasharray="4 4"/><line x1={left} x2={left} y1={top} y2={height-bottom} stroke="#475569"/><polyline points={points} fill="none" stroke="#22d3ee" strokeWidth="2.5" strokeLinejoin="round"/>{data.map((w,i)=>{const usable=w.usable;const yy=usable?y(w.pairedDifference):height-bottom-3;return <g key={w.startDrawId}><circle cx={x(i)} cy={yy} r="4.5" fill={usable?"#22d3ee":"#64748b"} stroke="#0f172a" strokeWidth="1.5"><title>{`Concursos ${w.startDrawId}–${w.endDrawId}: ${usable?(w.pairedDifference*100).toFixed(1)+" pp":"soporte insuficiente"}; N=${w.resolved}/${w.forecasts}`}</title></circle><text x={x(i)} y={height-12} fill="#94a3b8" fontSize="9" textAnchor="middle">{w.startDrawId}</text></g>})}<text x="5" y={top+4} fill="#94a3b8" fontSize="9">+100%</text><text x="16" y={zero+3} fill="#94a3b8" fontSize="9">0</text><text x="5" y={height-bottom} fill="#94a3b8" fontSize="9">−100%</text></svg><div className="mt-2 flex flex-wrap gap-3 text-[11px] text-slate-400"><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-cyan-400"/>Ventana con soporte suficiente</span><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-slate-500"/>Soporte insuficiente (no se interpreta como cero)</span></div></div>;
+ const y=(v:number)=>top+(1-Math.max(0,Math.min(1,v)))*innerH;
+ const line=(field:"candidateRate"|"baselineRate")=>data.map((w,i)=>w.usable?`${x(i)},${y(w[field])}`:null).filter(Boolean).join(" ");
+ return <div className="mt-4 rounded-lg border border-slate-800 bg-slate-950/50 p-3">
+  <div className="mb-2 flex flex-wrap justify-between gap-2 text-xs"><b>Evolución temporal · candidato vs. línea base</b><span className="text-slate-500">Tasa de acierto por ventana</span></div>
+  <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Tasas de acierto del candidato y la línea base por ventana temporal" className="w-full">
+   {[0,0.25,0.5,0.75,1].map(v=><g key={v}><line x1={left} x2={width-right} y1={y(v)} y2={y(v)} stroke="#334155" strokeDasharray="3 5"/><text x="5" y={y(v)+3} fill="#94a3b8" fontSize="9">{Math.round(v*100)}%</text></g>)}
+   <polyline points={line("candidateRate")} fill="none" stroke="#22d3ee" strokeWidth="2.5" strokeLinejoin="round"/>
+   <polyline points={line("baselineRate")} fill="none" stroke="#a78bfa" strokeWidth="2.5" strokeLinejoin="round"/>
+   {data.map((w,i)=>{const usable=w.usable;return <g key={w.startDrawId}>
+    {usable?<><circle cx={x(i)} cy={y(w.candidateRate)} r="4" fill="#22d3ee"><title>{`Candidato: ${pct(w.candidateRate)} · N=${w.resolved}`}</title></circle><circle cx={x(i)} cy={y(w.baselineRate)} r="4" fill="#a78bfa"><title>{`Línea base: ${pct(w.baselineRate)} · N=${w.resolved}`}</title></circle></>:<circle cx={x(i)} cy={height-bottom+8} r="4" fill="#64748b"><title>{`Concursos ${w.startDrawId}–${w.endDrawId}: soporte insuficiente; N=${w.resolved}/${w.forecasts}`}</title></circle>}
+    <text x={x(i)} y={height-10} fill="#94a3b8" fontSize="9" textAnchor="middle">{w.startDrawId}</text>
+   </g>})}
+  </svg>
+  <div className="mt-2 flex flex-wrap gap-3 text-[11px] text-slate-400"><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-cyan-400"/>Candidato</span><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-violet-400"/>Línea base</span><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-slate-500"/>Soporte insuficiente (omitido del trazado)</span></div>
+  <div className="mt-3 overflow-x-auto"><table className="w-full text-left text-[11px]"><thead className="text-slate-500"><tr><th className="p-2">Rango de concursos</th><th className="p-2">N resueltos</th><th className="p-2">Candidato</th><th className="p-2">Base</th><th className="p-2">Diferencia pareada</th><th className="p-2">Lectura</th></tr></thead><tbody>{data.map((w,i)=><tr key={w.startDrawId??i} className="border-t border-slate-800"><td className="p-2">{w.startDrawId}–{w.endDrawId}</td><td className="p-2">{w.resolved}/{w.forecasts}</td><td className="p-2 text-cyan-300">{w.usable?pct(w.candidateRate):"—"}</td><td className="p-2 text-violet-300">{w.usable?pct(w.baselineRate):"—"}</td><td className="p-2">{w.usable&&typeof w.pairedDifference==="number"?(w.pairedDifference*100).toFixed(1)+" pp":"—"}</td><td className="p-2 text-slate-400">{w.usable?"Evaluable":"Soporte insuficiente"}</td></tr>)}</tbody></table></div>
+ </div>;
 }
 export default function ResearchDashboard({onBack}:{onBack:()=>void}){
  const [reports,setReports]=useState<ReportRecord[]>([]);
