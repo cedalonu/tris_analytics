@@ -22,3 +22,13 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Comando offline: `npm run research:regime-persistence -- [directorio-ledger]`; umbral mediante `TRIS_REGIME_PERSISTENCE_MIN_DRAWS`.
 - Formato por línea de `regime-labels.jsonl`: `{"drawId":123,"regimeId":"A","method":"rolling-pool-state-v1","sourceStartDrawId":100,"sourceEndDrawId":122}`. Debe existir exactamente una etiqueta por concurso prospectivo observado.
 - No calcula p-valores, no cambia pronósticos, pesos, candidatos, portafolio ni ledger. Sin APIs, polling ni descargas.
+
+## Phase 18 — clasificador determinista de regímenes past-only
+- Añade un clasificador que asigna el régimen del concurso objetivo usando exclusivamente los 50 concursos anteriores: 25 de referencia y 25 recientes por defecto.
+- Resume distribución de tamaños de pool, tasa de pares duplicados, media de dígitos distintos y entropía posicional media.
+- Construye una etiqueta reproducible con umbrales fijos y explícitos: TV de pools 0.20, cambio de duplicados 0.08, cambio de diversidad 0.5 y cambio de entropía 0.35.
+- Cada etiqueta conserva método, intervalo de referencia y último concurso usado; el final del historial debe ser estrictamente menor al concurso objetivo.
+- Runner offline: `npm run research:regime-labels -- <local-Tris.csv> [directorio-ledger]`. Lee el manifiesto y el último resumen del ledger; genera `regime-labels.jsonl` y `regime-labels-diagnostics.json`.
+- Rechaza huecos de concursos, rangos ausentes y warm-up insuficiente; no inventa etiquetas para los primeros concursos sin historia.
+- Las etiquetas son descriptivas, no estados verdaderos, no predicciones ni prueba de estructura no aleatoria. No optimiza umbrales retrospectivamente y no altera pronósticos o portafolio.
+- Sin APIs, polling ni descargas: el CSV se proporciona manualmente.
