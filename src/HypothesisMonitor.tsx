@@ -7,6 +7,8 @@ import {compareDecisionConfigs} from "./research/decision-compare";
 import {assessDecisionRobustness} from "./research/decision-robustness";
 import {assessRankStability} from "./research/rank-stability";
 import {assessTemporalRankStability} from "./research/temporal-rank-stability";
+import {assessDegradationRecovery} from "./research/degradation-recovery";
+import {buildConsolidatedDiagnostics} from "./research/consolidated-diagnostics";
 type C="insufficient"|"neutral"|"favorable-observed"|"unfavorable-observed"|"contradictory";type S={recordedAt:string;classification:C;resolved:number;reasons:string[];limitations:string[];candidateKey:string;sourceReportSchema?:string};type D={candidateKey:string;history:S[];current:S|null;integrity?:string};type Alert={eventId:string;candidateKey:string;type:string;recordedAt:string;severity:"info"|"review";message:string};
 const labels:Record<C,string>={insufficient:"Insuficiente",neutral:"Neutral","favorable-observed":"Favorable observado","unfavorable-observed":"Desfavorable observado",contradictory:"Contradictorio"};const colors:Record<C,string>={insufficient:"#64748b",neutral:"#38bdf8","favorable-observed":"#34d399","unfavorable-observed":"#fb7185",contradictory:"#fbbf24"};
 function parse(x:any):D[]{if(x?.schema==="tris-hypothesis-tracker-v1"&&Array.isArray(x.records))return x.records.map((r:any)=>({candidateKey:r.candidateKey,history:[r.previous,r.current].filter(Boolean),current:r.current,integrity:r.integrity}));if(x&&typeof x.candidateKey==="string"&&Array.isArray(x.history))return[x];return[];}
