@@ -24,6 +24,8 @@ jobs:
         run: npm run test:research
       - name: Run synthetic detector calibration
         run: npm run research:position-null
+      - name: Run past-only regime classifier calibration
+        run: npm run research:regime-calibration
       - name: Upload synthetic calibration report
         uses: actions/upload-artifact@v4
         with:
@@ -31,5 +33,7 @@ jobs:
           path: |
             reports/position-null/latest.json
             reports/position-null/latest.md
+            reports/regime-calibration/latest.json
+            reports/regime-calibration/latest.md
           if-no-files-found: error
           retention-days: 14
