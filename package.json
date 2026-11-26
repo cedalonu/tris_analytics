@@ -41,7 +41,8 @@
     "research:regime-persistence": "tsx scripts/run-tris-regime-persistence.ts",
     "research:regime-labels": "tsx scripts/run-tris-regime-labels.ts",
     "research:regime-calibration": "tsx scripts/run-tris-regime-calibration.ts",
-    "research:regime-analysis": "tsx scripts/run-tris-regime-analysis.ts"
+    "research:regime-analysis": "tsx scripts/run-tris-regime-analysis.ts",
+    "research:regime-stability": "tsx scripts/run-tris-regime-stability.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
