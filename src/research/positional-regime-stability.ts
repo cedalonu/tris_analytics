@@ -24,6 +24,7 @@ export interface PositionalRegimeBlockSummary {
 export interface PositionalRegimeStabilityReport {
   method:string;firstTargetDrawId:number;lastTargetDrawId:number;
   blockSize:number;blockOffset:number;minimumDrawSupport:number;regimes:PositionalRegimeBlockSummary[];
+  limitations:string[];
 }
 interface BlockCounts {n:number;counts:number[]}
 export function summarizePositionalRegimeStability(
