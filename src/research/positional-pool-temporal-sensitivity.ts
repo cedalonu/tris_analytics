@@ -1,4 +1,4 @@
-import {calibratePositionalPoolTemporalStability, type PositionalPoolCalibrationScenarioResult} from "./positional-pool-temporal-stability-calibration";
+import {calibratePositionalPoolTemporalStability} from "./positional-pool-temporal-stability-calibration";
 
 export interface PositionalPoolSensitivityOptions {
   replications?: number;
@@ -25,7 +25,6 @@ export interface PositionalPoolSensitivityReport {
   blocksPerReplication:number;
   minimumPairs:number;
   rows:PositionalPoolSensitivityRow[];
-  scenarioDefinitions:PositionalPoolCalibrationScenarioResult[];
   limitations:string[];
 }
 export function analyzePositionalPoolSensitivity(options:PositionalPoolSensitivityOptions={}):PositionalPoolSensitivityReport {
@@ -33,7 +32,7 @@ export function analyzePositionalPoolSensitivity(options:PositionalPoolSensitivi
   const windows=options.windowBlocks??[5,8,10], modes=options.stepModes??["one","half","non-overlap"];
   const thresholds=options.consistencyThresholds??[.7,.8], minimumPairs=options.minimumPairs??3, seed=options.seed??20261201;
   if(!Number.isInteger(reps)||reps<1||!Number.isInteger(blocks)||blocks<3||!Number.isInteger(minimumPairs)||minimumPairs<3||!Number.isInteger(seed)) throw new Error("invalid positional pool sensitivity options");
-  if(!windows.length||windows.some(w=>!Number.isInteger(w)||w<3||w>blocks)||!modes.length||!thresholds.length||thresholds.some(t=>t<=.5||t>1)) throw new Error("invalid positional pool sensitivity grid");
+  if(!windows.length||windows.some(w=>!Number.isInteger(w)||w<3||w>blocks)||!modes.length||modes.some(m=>!["one","half","non-overlap"].includes(m))||!thresholds.length||thresholds.some(t=>t<=.5||t>1)) throw new Error("invalid positional pool sensitivity grid");
   const rows:PositionalPoolSensitivityRow[]=[];
   let index=0;
   for(const windowBlocks of windows) for(const mode of modes) for(const consistencyThreshold of thresholds) {
@@ -49,7 +48,6 @@ export function analyzePositionalPoolSensitivity(options:PositionalPoolSensitivi
     index++;
   }
   return {method:"positional-pool-temporal-stability-sensitivity-grid-v1",replications:reps,blocksPerReplication:blocks,minimumPairs,rows,
-    scenarioDefinitions:[{scenario:"null-independent",replications:reps,falseStableAlerts:0,detectedPositive:0,detectedNegative:0,unstableOrInsufficient:0,falseStableAlertRate:0,falseStableAlertWilson95:[0,1],positiveDetectionRate:0,positiveDetectionWilson95:[0,1],negativeDetectionRate:0,negativeDetectionWilson95:[0,1],meanValidWindowCorrelations:0,description:"Escenario nulo independiente."}],
     limitations:[
       "La cuadrícula compara sensibilidad a ventana, solapamiento y umbral; no selecciona automáticamente una configuración óptima.",
       "Las tasas proceden de escenarios sintéticos diseñados y no estiman tasas reales de falsos positivos en TRIS.",
