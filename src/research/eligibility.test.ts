@@ -3,7 +3,7 @@ import {assessEligibility} from "./eligibility";
 const clean=(n=3)=>({candidateKey:"H-1",history:Array.from({length:n},(_,i)=>({candidateKey:"H-1",recordedAt:`2026-11-${String(1+i).padStart(2,"0")}T00:00:00Z`}))});
 test("clean sufficient history is eligible",()=>assert.equal(assessEligibility(clean()).status,"eligible"));
 test("short history is review",()=>assert.equal(assessEligibility(clean(2)).status,"review"));
-test("quality below configurable threshold is blocked",()=>assert.equal(assessEligibility(clean(),{minimumQuality:90,minimumRevisions:3}).status,"blocked"));
+test("quality below configurable threshold is blocked",()=>assert.equal(assessEligibility(clean(2),{minimumQuality:90,minimumRevisions:2}).status,"blocked"));
 test("chronology problem blocks eligibility",()=>{const x=clean();x.history.reverse();assert.equal(assessEligibility(x).status,"blocked");});
 test("identity mismatch blocks eligibility",()=>{const x=clean();x.history[0].candidateKey="other";assert.equal(assessEligibility(x).status,"blocked");});
 test("duplicate dates block eligibility",()=>{const x=clean();x.history[1].recordedAt=x.history[0].recordedAt;assert.equal(assessEligibility(x).status,"blocked");});
