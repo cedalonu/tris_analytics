@@ -73,3 +73,8 @@ The real-history workflow starts from a clean checkout and uploads `data/prospec
 ### Next engineering task
 
 Design and implement an explicit ledger restore/continuity workflow with safeguards: import the prior artifact only when portfolio identity and ledger hashes match; validate append-only sequence and contest uniqueness; keep manual CSV as source; archive prior ledger before writes; make CI restore behavior opt-in and auditable. An opt-in manual workflow restore has now been added to `.github/workflows/tris-real-history.yml`: provide a prior successful run ID to download the named artifact and restore only its `data/prospective` folder. Normal push runs do not restore. The restore path is now implemented but still needs CI validation and an end-to-end manual test; do not claim durable prospective accumulation until that test succeeds.
+
+
+### CI coverage update (2026-11-26)
+
+The synthetic-only `research:family-concordance-null` runner is now included in `.github/workflows/tris-research.yml` with 300 replications per scenario, 100 synthetic draws, and a fixed seed. Its JSON/Markdown output is included in the CI artifact. This is calibration-only; it does not read real TRIS outcomes, alter portfolio settings, or count as prospective predictive evidence. Workflow validation is pending for the new commit.
