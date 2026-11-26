@@ -56,3 +56,20 @@ Circular-shift and dual-null comparisons require complete contiguous block serie
 - This inventory does not activate candidates, change forecast pools/weights, modify the prospective ledger, or imply a predictive edge.
 - Historical/synthetic diagnostics remain descriptive; prospective evidence requires frozen forecasts and actual resolved outcomes.
 - Before claiming full execution coverage, run each standalone command or define an explicit CI matrix and retain its status/artifact evidence.
+
+
+## Execution coverage and durable prospective ledger
+
+### Coverage classification
+
+- `research:sync`, `research:validate`, `research:regime`, `research:historical-regime-analysis`, `research:memory`, `research:context-memory`, `research:adaptive-memory`, `research:regime-memory`, `research:concordance`, `research:interactions`, `research:collective`, `research:persistence`, `research:pools`, `research:portfolio-walk-forward`, and the positional-pool historical controls are covered by the real-history workflow.
+- Synthetic-only CI runs calibration, overlap, candidate-portfolio simulation, and detector-null calibration; these are not empirical TRIS forecast tests.
+- Prospective-only runner families (cycles, position-memory/change, candidate persistence, prospective family concordance null/audit/stability/rolling, regime persistence/labels/stability) are not executed by current CI. Many require outcome records and are correctly gated; the synthetic family-null runner can be CI-executed independently.
+
+### Important persistence gap
+
+The real-history workflow starts from a clean checkout and uploads `data/prospective/**` as a workflow artifact with 90-day retention. No prospective/cycle ledger files are tracked in the repository tree. Therefore a forecast ledger created during one CI run is not automatically restored into a later run. This means CI artifacts alone do not provide a durable, automatically accumulating prospective history. Preserve the artifact and restore it explicitly in a subsequent workflow or maintain the ledger in a user-controlled persistent location; do not silently overwrite, backfill, or auto-commit it.
+
+### Next engineering task
+
+Design and implement an explicit ledger restore/continuity workflow with safeguards: import the prior artifact only when portfolio identity and ledger hashes match; validate append-only sequence and contest uniqueness; keep manual CSV as source; archive prior ledger before writes; make CI restore behavior opt-in and auditable. Until this is implemented and tested, prospective evidence accumulation is not considered operationally persistent.
