@@ -2,7 +2,7 @@
  * Overlapping rolling-window view of prospective family concordance.
  * Windows are descriptive and dependent by construction; no inferential claims.
  */
-import type {ProspectiveFamilyConcordance,FamilyPairConcordance} from "./prospective-family-concordance";
+import type {ProspectiveFamilyConcordance} from "./prospective-family-concordance";
 
 export interface RollingConcordanceWindow {
   windowIndex:number; startDrawId:number; endDrawId:number; familyA:string; familyB:string;
