@@ -152,3 +152,14 @@ Evaluate each frozen candidate against its own paired baseline across consecutiv
 - Configuración: `TRIS_POSITIONAL_POOL_SHIFT_REPS` (999), `TRIS_POSITIONAL_POOL_SHIFT_MIN_PAIRS` (5), `TRIS_POSITIONAL_POOL_SHIFT_SEED` (20261203).
 - Conserva secuencia cíclica pero crea una unión artificial entre extremos; presupone comparabilidad aproximada de desplazamientos y puede ser inadecuado ante tendencias/cambios de régimen. Diagnóstico exploratorio, no p-valor confirmatorio ni corrección de multiplicidad.
 - Debe interpretarse junto con la permutación de fase 32. No cambia pronósticos, candidatos, pesos, portafolios o ledger; sin APIs, polling ni descargas.
+
+
+## Phase 34 — comparación conjunta de controles nulos
+- Cruza los resultados de fases 32 y 33 por régimen, posición, método, tamaño de pool y métrica.
+- Solo compara cuando ambos informes tienen grupo y métrica, soporte idéntico, correlación observada coincidente y el desplazamiento circular está evaluado. No empareja ni interpola grupos ausentes.
+- Clasifica descriptivamente si la correlación observada queda fuera de las envolventes percentiles 2.5–97.5 de ambos controles, solo uno, de ninguno o si no es comparable.
+- Muestra las tasas de cola Monte Carlo de cada control por separado; no las combina ni las denomina p-valores.
+- Comando offline: `npm run research:positional-pool-null-comparison -- [reporte-fase32.json] [reporte-fase33.json]`; predeterminados: `reports/positional-pool-null-controls/latest.json` y `reports/positional-pool-circular-shift/latest.json`.
+- Reportes en `reports/positional-pool-null-comparison/latest.json` y `.md`.
+- Las envolventes son referencias exploratorias, no intervalos de confianza ni pruebas de significancia. No corrige multiplicidad ni selecciona señales; no modifica pronósticos, candidatos, pesos, portafolios o ledger.
+- Usa exclusivamente los reportes locales derivados del CSV manual; sin APIs, polling ni descargas.
