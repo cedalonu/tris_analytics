@@ -12,7 +12,7 @@ export interface FamilyConcordanceNullResult {
   replications:number; draws:number; families:number; candidatesPerFamily:number;
   hitRate:number; pairedDependence:number; crossFamilyOverlap:number; seed:number;
   meanPairwiseCorrelation:number|null; correlationP05:number|null; correlationMedian:number|null; correlationP95:number|null;
-  meanDirectionAgreement:number|null; allFamiliesPositiveRate:number; anyFamilyPositiveRate:number;
+  meanDirectionAgreement:number|null; directionAgreementP05:number|null; directionAgreementMedian:number|null; directionAgreementP95:number|null; allFamiliesPositiveRate:number; anyFamilyPositiveRate:number;
   meanPositiveFamilies:number; wilson95AllPositive:[number,number]; interpretation:string[];
 }
 function rng(seed:number){let x=seed>>>0;return()=>{x^=x<<13;x^=x>>>17;x^=x<<5;return(x>>>0)/4294967296;}}
@@ -54,7 +54,7 @@ export function simulateFamilyConcordanceNull(options:FamilyConcordanceNullOptio
  }
  const mean=(xs:number[])=>xs.length?xs.reduce((a,b)=>a+b,0)/xs.length:null;
  const interval=wilson(allPositive,replications);
- return{replications,draws,families,candidatesPerFamily,hitRate,pairedDependence,crossFamilyOverlap,seed,meanPairwiseCorrelation:mean(correlations),correlationP05:quantile(correlations,.05),correlationMedian:quantile(correlations,.5),correlationP95:quantile(correlations,.95),meanDirectionAgreement:mean(agreements),allFamiliesPositiveRate:allPositive/replications,anyFamilyPositiveRate:anyPositive/replications,meanPositiveFamilies:positiveTotal/replications,wilson95AllPositive:interval,interpretation:[
+ return{replications,draws,families,candidatesPerFamily,hitRate,pairedDependence,crossFamilyOverlap,seed,meanPairwiseCorrelation:mean(correlations),correlationP05:quantile(correlations,.05),correlationMedian:quantile(correlations,.5),correlationP95:quantile(correlations,.95),meanDirectionAgreement:mean(agreements),directionAgreementP05:quantile(agreements,.05),directionAgreementMedian:quantile(agreements,.5),directionAgreementP95:quantile(agreements,.95),allFamiliesPositiveRate:allPositive/replications,anyFamilyPositiveRate:anyPositive/replications,meanPositiveFamilies:positiveTotal/replications,wilson95AllPositive:interval,interpretation:[
   "En cada familia, candidato y baseline tienen la misma probabilidad marginal de acierto; el nulo no contiene ventaja predictiva.",
   "pairedDependence controla la probabilidad de que baseline copie el resultado candidato; crossFamilyOverlap controla el uso de un resultado latente común entre familias.",
   "Correlación y acuerdo pueden aparecer bajo el nulo por ruido compartido; no demuestran capacidad predictiva.",
