@@ -60,7 +60,8 @@
     "research:prospective-performance": "tsx scripts/run-tris-prospective-performance.ts",
     "research:prospective-performance-stability": "tsx scripts/run-tris-prospective-performance-stability.ts",
     "research:prospective-performance-sensitivity": "tsx scripts/run-tris-prospective-performance-sensitivity.ts",
-    "research:frozen-union": "tsx scripts/run-tris-frozen-union.ts"
+    "research:frozen-union": "tsx scripts/run-tris-frozen-union.ts",
+    "research:report-pack": "tsx scripts/run-tris-research-report-pack.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
