@@ -17,6 +17,7 @@ import {summarizePositionalRegimeStability} from "../src/research/positional-reg
 import {comparePositionalRegimes} from "../src/research/positional-regime-contrast";
 import {analyzePositionalTransitionPersistence} from "../src/research/positional-transition-persistence";
 import {analyzePositionalPoolConcordance} from "../src/research/positional-pool-concordance";
+import {analyzePositionalPoolTemporalStability} from "../src/research/positional-pool-temporal-stability";
 import {summarizeProspectiveRegimePersistence} from "../src/research/prospective-regime-persistence";
 
 const input=process.argv[2],dir=resolve(process.argv[3]??"data/prospective-portfolio");
@@ -44,13 +45,14 @@ const positionalStability=summarizePositionalRegimeStability(imported.validation
 const positionalContrasts=comparePositionalRegimes(positionalProfiles,positionalStability,{minimumRegimeSupport:Number(process.env.TRIS_REGIME_CONTRAST_MIN_SUPPORT??30),jensenShannonDistanceThreshold:Number(process.env.TRIS_REGIME_CONTRAST_JS_THRESHOLD??0.10),entropyDifferenceThresholdBits:Number(process.env.TRIS_REGIME_CONTRAST_ENTROPY_BITS??0.25)});
 const positionalTransitions=analyzePositionalTransitionPersistence(positionalStability,{minimumConsecutiveBlocksForSustained:Number(process.env.TRIS_POSITIONAL_TRANSITION_MIN_BLOCKS??2)});
 const positionalPoolConcordance=analyzePositionalPoolConcordance(imported.validation.valid,stability.auditLabels,positionalStability,{minimumHistory:Number(process.env.TRIS_POSITIONAL_POOL_MIN_HISTORY??30)});
+const positionalPoolTemporalStability=analyzePositionalPoolTemporalStability(positionalPoolConcordance,{windowBlocks:Number(process.env.TRIS_POSITIONAL_POOL_STABILITY_WINDOW??5),stepBlocks:Number(process.env.TRIS_POSITIONAL_POOL_STABILITY_STEP??1),minimumPairs:Number(process.env.TRIS_POSITIONAL_POOL_STABILITY_MIN_PAIRS??3)});
 const report=summarizeProspectiveRegimePersistence(manifest,forecasts,results,stability.auditLabels,last,{minimumResolvedDraws:Number(process.env.TRIS_REGIME_PERSISTENCE_MIN_DRAWS??10)});
 const sourceSha256=createHash("sha256").update(csv,"utf8").digest("hex");
 const out=resolve(dir,"regime-analysis");await mkdir(out,{recursive:true});
 const generatedAt=new Date().toISOString();
 await writeFile(resolve(dir,"regime-labels.jsonl"),classifier.labels.map(x=>JSON.stringify(x)).join("\n")+"\n","utf8");
-await writeFile(resolve(dir,"regime-labels-diagnostics.json"),JSON.stringify({source:basename(resolve(input)),sourceSha256,method:classifier.method,warmupDraws:classifier.warmupDraws,labels:classifier.labels.length,regimeCounts:classifier.labels.reduce((a,x)=>({...a,[x.regimeId]:(a[x.regimeId]??0)+1}),{} as Record<string,number>),diagnostics:classifier.diagnostics,stability,dynamics,positionalProfiles,positionalStability,positionalContrasts,positionalTransitions,positionalPoolConcordance,limitations:classifier.limitations},null,2)+"\n","utf8");
-const full={generatedAt,source:basename(resolve(input)),sourceSha256,classifierMethod:classifier.method,stability,dynamics,positionalProfiles,positionalStability,positionalContrasts,positionalTransitions,positionalPoolConcordance,report};
+await writeFile(resolve(dir,"regime-labels-diagnostics.json"),JSON.stringify({source:basename(resolve(input)),sourceSha256,method:classifier.method,warmupDraws:classifier.warmupDraws,labels:classifier.labels.length,regimeCounts:classifier.labels.reduce((a,x)=>({...a,[x.regimeId]:(a[x.regimeId]??0)+1}),{} as Record<string,number>),diagnostics:classifier.diagnostics,stability,dynamics,positionalProfiles,positionalStability,positionalContrasts,positionalTransitions,positionalPoolConcordance,positionalPoolTemporalStability,limitations:classifier.limitations},null,2)+"\n","utf8");
+const full={generatedAt,source:basename(resolve(input)),sourceSha256,classifierMethod:classifier.method,stability,dynamics,positionalProfiles,positionalStability,positionalContrasts,positionalTransitions,positionalPoolConcordance,positionalPoolTemporalStability,report};
 await writeFile(resolve(out,"latest.json"),JSON.stringify(full,null,2)+"\n","utf8");
 const pct=(x:number|null)=>x===null?"n/d":(100*x).toFixed(1)+"%";
 const md=["# TRIS — análisis integral de persistencia por régimen","","- Fuente CSV: "+basename(resolve(input)),"- SHA-256 CSV: "+sourceSha256,"- Método de clasificación: "+classifier.method,"- Portafolio: "+report.portfolioId,"- Concursos observados: "+report.firstTargetDrawId+"–"+report.lastObservedDrawId,"- Etiquetas generadas: "+classifier.labels.length,"- Confirmación mínima de régimen: "+stability.minConsecutive+" etiquetas consecutivas","- Transiciones observadas: "+stability.transitions,"- Transiciones confirmadas: "+stability.confirmedTransitions,"- Episodios transitorios: "+stability.transientEpisodes,"","## Episodios de régimen", "| Episodio | Régimen | Inicio | Fin | Concursos | Clasificación | Confirmación |","|---:|---|---:|---:|---:|---|---:|",...stability.episodes.map(e=>"| "+e.episodeIndex+" | "+e.regimeId+" | "+e.startDrawId+" | "+e.endDrawId+" | "+e.length+" | "+e.status+" | "+(e.confirmedAtDrawId??"n/d")+" |"),"","## Sensibilidad a la regla de confirmación","| Racha mínima | Episodios | Persistentes | Transitorios | Transiciones confirmadas | Concursos en observación | % observación | Retraso medio |","|---:|---:|---:|---:|---:|---:|---:|---:|",...dynamics.thresholdSensitivity.map(x=>"| "+x.minConsecutive+" | "+x.episodes+" | "+x.persistentEpisodes+" | "+x.transientEpisodes+" | "+x.confirmedTransitions+" | "+x.watchDraws+" | "+(100*x.watchShare).toFixed(1)+"% | "+(x.meanConfirmationDelay??"n/d")+" |"),"","## Reglas de transición",...stability.limitations.map(x=>"- "+x),"","| Régimen | Candidato | Familia | Resueltos / esperados | Pendientes | Sin pronóstico | Aciertos | Baseline | Diferencia | Cobertura | Estado |","|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|",...report.summaries.map(s=>"| "+s.regimeId+" | "+s.candidateId+" | "+s.family+" | "+s.resolvedDraws+" / "+s.expectedDraws+" | "+s.pendingDraws+" | "+s.unforecastedDraws+" | "+s.hits+" | "+s.baselineHits+" | "+pct(s.difference)+" | "+pct(s.coverage)+" | "+s.status+" |"),"","## Perfil posicional por régimen",
@@ -114,6 +116,20 @@ const md=["# TRIS — análisis integral de persistencia por régimen","","- Fue
 ...positionalPoolConcordance.groups.map(x=>"| "+x.regimeId+" | R"+(x.position+1)+" | "+x.method+" | "+x.poolSize+" | "+x.blocks+" | "+(x.dominantShareVsPoolInclusionCorrelation?.toFixed(3)??"n/d")+" | "+(x.dominantTransitionVsPoolTurnoverCorrelation?.toFixed(3)??"n/d")+" | "+(x.dominantInclusionVsHitRateCorrelation?.toFixed(3)??"n/d")+" | "+x.interpretation+" |"),
 "",
 ...positionalPoolConcordance.limitations.map(x=>"- "+x),
+"",
+"## Estabilidad temporal de la concordancia posicional-pool",
+"- Ventana móvil: "+positionalPoolTemporalStability.windowBlocks+" bloques; paso: "+positionalPoolTemporalStability.stepBlocks,
+"- Mínimo de pares por correlación: "+positionalPoolTemporalStability.minimumPairs,
+"",
+"| Régimen | Posición | Método | Tamaño | Ventana | Bloques | Corr. dominante/inclusión | Corr. cambio/rotación | Corr. inclusión/acierto |",
+"|---|---:|---|---:|---:|---:|---:|---:|---:|",
+...positionalPoolTemporalStability.windows.map(x=>"| "+x.regimeId+" | R"+(x.position+1)+" | "+x.method+" | "+x.poolSize+" | "+x.firstBlockIndex+"–"+x.lastBlockIndex+" | "+x.blocks+" | "+(x.dominantShareVsPoolInclusion?.toFixed(3)??"n/d")+" | "+(x.dominantTransitionVsTurnover?.toFixed(3)??"n/d")+" | "+(x.dominantInclusionVsHitRate?.toFixed(3)??"n/d")+" |"),
+"",
+"| Régimen | Posición | Método | Tamaño | Ventanas | Positivas | Negativas | Cercanas a cero | Consistencia de signo | Correlación absoluta media | Clasificación |",
+"|---|---:|---|---:|---:|---:|---:|---:|---:|---:|---|",
+...positionalPoolTemporalStability.groups.map(x=>"| "+x.regimeId+" | R"+(x.position+1)+" | "+x.method+" | "+x.poolSize+" | "+x.windows+" | "+x.positiveWindows+" | "+x.negativeWindows+" | "+x.nearZeroWindows+" | "+pct(x.signConsistency)+" | "+(x.meanAbsoluteCorrelation?.toFixed(3)??"n/d")+" | "+x.classification+" |"),
+"",
+...positionalPoolTemporalStability.limitations.map(x=>"- "+x),
 "",
 "## Contraste de perfiles posicionales entre regímenes",
 "- Soporte mínimo por régimen: "+positionalContrasts.minimumRegimeSupport,
