@@ -32,6 +32,16 @@ jobs:
         run: npm run research:validate -- data/source-snapshots/Tris-2026-11-25.csv data/prospective
       - name: Run historical regime analysis
         run: npm run research:regime -- data/source-snapshots/Tris-2026-11-25.csv
+      - name: Run historical-only past-only positional regime analysis
+        run: npm run research:historical-regime-analysis -- data/source-snapshots/Tris-2026-11-25.csv
+      - name: Run positional-pool permutation null controls
+        run: npm run research:positional-pool-null-controls -- reports/historical-regime-analysis/latest.json
+      - name: Run positional-pool circular-shift controls
+        run: npm run research:positional-pool-circular-shift -- reports/historical-regime-analysis/latest.json
+      - name: Compare positional-pool null controls
+        run: npm run research:positional-pool-null-comparison
+      - name: Run positional-pool chronological split
+        run: npm run research:positional-pool-temporal-split -- reports/historical-regime-analysis/latest.json
       - name: Run temporal memory
         run: npm run research:memory -- data/source-snapshots/Tris-2026-11-25.csv
       - name: Run contextual memory
