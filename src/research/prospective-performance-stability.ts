@@ -10,7 +10,7 @@ export function auditProspectivePerformanceStability(forecasts:FrozenForecast[],
  const unique=new Map<string,FrozenForecast>();for(const f of forecasts)if(!unique.has(f.forecastId))unique.set(f.forecastId,f);
  const validResolutions=new Map<string,ResolvedForecast>();for(const r of resolutions){const f=unique.get(r.forecastId);if(f&&f.targetDrawId===r.targetDrawId&&!validResolutions.has(r.forecastId))validResolutions.set(r.forecastId,r);}
  const groups=new Map<string,FrozenForecast[]>();for(const f of unique.values()){const key=f.family+"|"+f.frozenConfig;const a=groups.get(key)??[];a.push(f);groups.set(key,a);}
- const allTargets=[...unique.values()].map(f=>f.targetDrawId),origin=allTargets.length?Math.min(...allTargets):0,latest=allTargets.length?Math.max(...allTargets):0;
+ const allTargets=[...unique.values()].map(f=>f.targetDrawId),origin=allTargets.length?Math.min(...allTargets):0;
  const output:PerformanceStabilityGroup[]=[];
  for(const [key,items] of groups){
   const first=items[0],maxIndex=Math.floor((Math.max(...items.map(x=>x.targetDrawId))-origin)/windowDraws),windows:PerformanceWindow[]=[];
