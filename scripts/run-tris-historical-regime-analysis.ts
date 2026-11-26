@@ -84,7 +84,7 @@ const positionalPoolWindowSensitivity=analyzePositionalPoolWindowSensitivity(pos
  minimumPairs:Number(process.env.TRIS_POSITIONAL_POOL_WINDOW_MIN_PAIRS??3)
 });
 const positionalPoolSupportSensitivity=analyzePositionalPoolSupportSensitivity(draws,stability.auditLabels,{
- minimumHistories:(process.env.TRIS_POSITIONAL_POOL_MIN_HISTORIES??"20,30,50").split(",").map(Number),
+ minimumHistories:(process.env.TRIS_POSITIONAL_POOL_MIN_HISTORIES??"50,100,200").split(",").map(Number),
  minimumDrawSupports:(process.env.TRIS_POSITIONAL_POOL_MIN_SUPPORT_GRID??"5,10,15").split(",").map(Number),
  blockSize:Number(process.env.TRIS_POSITIONAL_POOL_ORIGIN_BLOCK_SIZE??25)
 });
