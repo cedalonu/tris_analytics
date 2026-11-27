@@ -7,11 +7,13 @@ const printable=(v:any)=>v===undefined?null:typeof v==="string"?v:stable(v);
 const unwrap=(v:any)=>v?.report&&typeof v.report==="object"?v.report:v;
 function rowsFor(phase:number,doc:any):{key:string;value:any;category:SnapshotDelta["category"]}[]{
  const r=unwrap(doc);
- if(phase===94)return(Array.isArray(r.rows)?r.rows:[]).map((x:any)=>({key:[x.targetDrawId,x.family,x.position].join("|"),value:x,category:"source-data"}));
- if(phase===95||phase===96)return(Array.isArray(r.metrics)?r.metrics:[]).map((x:any)=>({key:[x.family,x.position].join("|"),value:x,category:"results"}));
- if(phase===97||phase===98)return(Array.isArray(r.groups)?r.groups:[]).map((x:any)=>({key:[x.family,x.position].join("|"),value:x,category:"results"}));
- if(phase===99)return[{key:"summary",value:r.summary??null,category:"audit"},{key:"provenance",value:r.provenance??null,category:"source-data"},...(Array.isArray(r.checks)?r.checks.map((x:any)=>({key:String(x.id),value:x,category:"audit" as const})):[])];
- if(phase===101)return(Array.isArray(r.phases)?r.phases:[]).map((x:any)=>({key:String(x.phase),value:x,category:"results"}));
+ const metadata:any={};for(const field of ["method","settings","environment","sourceReport","sourceReports"])if(r?.[field]!==undefined)metadata[field]=r[field];
+ const metaRows=Object.keys(metadata).length?[{key:"_metadata",value:metadata,category:"parameters" as const}]:[];
+ if(phase===94)return[...metaRows,...(Array.isArray(r.rows)?r.rows:[]).map((x:any)=>({key:[x.targetDrawId,x.family,x.position].join("|"),value:x,category:"source-data"}))];
+ if(phase===95||phase===96)return[...metaRows,...(Array.isArray(r.metrics)?r.metrics:[]).map((x:any)=>({key:[x.family,x.position].join("|"),value:x,category:"results"}))];
+ if(phase===97||phase===98)return[...metaRows,...(Array.isArray(r.groups)?r.groups:[]).map((x:any)=>({key:[x.family,x.position].join("|"),value:x,category:"results"}))];
+ if(phase===99)return[...metaRows,{key:"summary",value:r.summary??null,category:"audit"},{key:"provenance",value:r.provenance??null,category:"source-data"},...(Array.isArray(r.checks)?r.checks.map((x:any)=>({key:String(x.id),value:x,category:"audit" as const})):[])];
+ if(phase===101)return[...metaRows,...(Array.isArray(r.phases)?r.phases:[]).map((x:any)=>({key:String(x.phase),value:x,category:"results"}))];
  return[];
 }
 function classifyField(phase:number,field:string,defaultCategory:SnapshotDelta["category"]):SnapshotDelta["category"]{
