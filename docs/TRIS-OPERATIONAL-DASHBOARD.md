@@ -12,8 +12,18 @@ El modo normal de la app permanece igual sin ese parámetro.
 4. Si hay errores de validación, no reemplaza el dataset anterior.
 5. Si pasa validación, guarda la copia importada en localStorage de ese navegador.
 
+## Importar ledger prospectivo
+1. En GitHub, abre Actions → **TRIS live prospective cycle**.
+2. En una ejecución exitosa de la rama `research-core-v1`, descarga el artefacto `tris-live-prospective-ledger`.
+3. Descomprime el ZIP. En la carpeta `cycles` encontrarás `cycles.jsonl` y `outcomes.jsonl`.
+4. En el dashboard, abre **Prospectiva / Ledger** e importa ambos archivos a la vez.
+5. El panel muestra ciclos, pronósticos congelados, resueltos, pendientes estimados, comparación investigador/baseline y detalle por concurso.
+
+La importación se conserva en el almacenamiento local del navegador. No envía archivos a un servidor ni cambia el ledger remoto. El artefacto contiene registros reales de la ejecución; el dashboard los visualiza, no los audita.
+
 ## Módulos
 - Panel principal: métricas de dataset, último resultado, frecuencia total, sorteos recientes.
+- Prospectiva / Ledger: ciclo por concurso, forecasts congelados, outcomes, hits y comparativa por familia.
 - Historial: buscar concurso, resultado o fecha.
 - Análisis por posición: frecuencia de 0–9 en R1 a R5.
 - Integridad: advertencias, errores, saltos de concursos y reglas de importación.
@@ -27,4 +37,4 @@ El modo normal de la app permanece igual sin ese parámetro.
 - Los datos se guardan en el navegador local; no se envían al servidor.
 
 ## Alcance
-Esta entrega es la primera integración de UI y CSV histórico. El ledger prospectivo, auditoría de pronósticos y métricas reales del investigador todavía no están conectados al dashboard.
+Esta entrega conecta la interfaz con CSV histórico y permite importar el ledger prospectivo real de los artefactos de CI. La auditoría de integridad del ledger todavía debe verificarse por separado; importación visual no significa auditoría aprobada.
