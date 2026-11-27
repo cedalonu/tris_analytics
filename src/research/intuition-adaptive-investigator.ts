@@ -44,9 +44,14 @@ export function selectAdaptiveIntuitionCandidates(candidates:IntuitionCandidate[
   selected.push({candidate,priorityScore:score,priorityReasons:reasons});selectedIds.add(candidate.id);counts[candidate.family]++;
   if(kind==="exploration")explorationCount++;else exploitationCount++;
  };
- for(const family of FAMILIES) {
+ const familyExploreRemainder=FAMILIES.reduce((sum,f)=>sum+(Math.max(0,Math.floor(caps[f]??0))*explorationFraction-Math.floor(Math.max(0,Math.floor(caps[f]??0))*explorationFraction)),0);
+ let extraExploreFamilies=Math.round(familyExploreRemainder);
+ for(const [familyIndex,family] of FAMILIES.entries()) {
   const cap=Math.max(0,Math.floor(caps[family]??0)),group=byFamily.get(family)??[];
-  const exploitQuota=Math.min(cap,Math.floor(cap*(1-explorationFraction))),exploreQuota=cap-exploitQuota;
+  const baseExplore=Math.floor(cap*explorationFraction);
+  const exploreExtra=extraExploreFamilies>0&&cap*explorationFraction>baseExplore;
+  const exploreQuota=baseExplore+(exploreExtra?1:0),exploitQuota=cap-exploreQuota;
+  if(exploreExtra)extraExploreFamilies--;
   const exploitRanked=[...group].sort((a,b)=>{
    const x=statById.get(a.id)!,y=statById.get(b.id)!;
    return (100*(y.shrunkAdvantage+.25*y.recentAdvantage)+y.schedulingScore/1000)-(100*(x.shrunkAdvantage+.25*x.recentAdvantage)+x.schedulingScore/1000)||a.id.localeCompare(b.id);

@@ -21,3 +21,10 @@ test("retired candidates are excluded and selection is deterministic",()=>{
  const a=selectAdaptiveIntuitionCandidates(candidates,[],options),b=selectAdaptiveIntuitionCandidates(candidates,[],options);
  assert.deepEqual(a.selected.map(x=>x.candidate.id),b.selected.map(x=>x.candidate.id));assert.ok(!a.selected.some(x=>x.candidate.id===retired.id));assert.equal(a.retiredExcluded,1);
 });
+
+test("default 100-candidate budget splits exactly 50 exploration and 50 exploitation",()=>{
+ const result=selectAdaptiveIntuitionCandidates(candidates,[],{beforeDrawId:900,budget:100,familyCaps:{transition:25,"position-mutation":25,"absence-return":25,"pool-ranking":25},explorationFraction:.5});
+ assert.equal(result.selected.length,candidates.length);
+ assert.equal(result.explorationCount,50);assert.equal(result.exploitationCount,50);
+ assert.deepEqual(result.familyCounts,{transition:25,"position-mutation":25,"absence-return":25,"pool-ranking":25});
+});
