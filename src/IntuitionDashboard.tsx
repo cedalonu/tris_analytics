@@ -7,6 +7,8 @@ type Props={draws:Draw[];onBack:()=>void;onOpenResearch:()=>void};
 type Tab="overview"|"memory"|"hypotheses"|"positions";
 type PositionMemoryRow={position:number;family:string;configuration:string;poolRegime:string;duplicateRegime:string;draws:number;candidateTrials:number;distinctCandidates:number;meanCandidateHitRate:number;meanBaselineHitRate:number;difference:number;latestBlock:{state:string;draws:number}|null;interpretation:string};
 type PositionMemoryPayload={resolvedOutcomes:number;positionSpecificTrials:number;modeLevelTrials:number;minimumDrawsForSummary:number;blockSize:number;positions:PositionMemoryRow[];modeScopes:{mode:string;draws:number;candidateTrials:number;meanCandidateHitRate:number;meanBaselineHitRate:number;difference:number}[];warnings:string[]};
+type InvestigatorSelectionRow={candidateId:string;family:"transition"|"position-mutation"|"absence-return"|"pool-ranking";config:Record<string,unknown>;priorityScore:number;reasons:string[]};
+type InvestigatorPayload={generatedAt:string;targetDrawId:number;historyThroughDrawId:number;catalogSize:number;budget:number;frozenCount:number;explorationCount:number;exploitationCount:number;retiredExcluded:number;familyCounts:Record<string,number>;selected:InvestigatorSelectionRow[];warnings:string[]};
 const digits=Array.from({length:10},(_,i)=>i);
 const statusLabels:Record<SignalStatus,string>={hypothesis:"Hipótesis",testing:"En prueba",provisional:"Provisional",active:"Activa",weakening:"Debilitándose",retired:"Retirada"};
 
@@ -79,6 +81,9 @@ export default function IntuitionDashboard({draws,onBack,onOpenResearch}:Props){
  const [positionMemory,setPositionMemory]=useState<PositionMemoryPayload|null>(null);
  const [positionMemoryName,setPositionMemoryName]=useState("");
  const [positionMemoryError,setPositionMemoryError]=useState("");
+ const [investigator,setInvestigator]=useState<InvestigatorPayload|null>(null);
+ const [investigatorName,setInvestigatorName]=useState("");
+ const [investigatorError,setInvestigatorError]=useState("");
  const sorted=useMemo(()=>[...draws].sort((a,b)=>a.num-b.num),[draws]);
  const last20=sorted.slice(-20),last50=sorted.slice(-50);
  const matrix=useMemo(()=>Array.from({length:5},(_,pos)=>digits.map(d=>last20.filter(x=>x.digits[pos]===d).length)),[last20]);
@@ -102,6 +107,30 @@ export default function IntuitionDashboard({draws,onBack,onOpenResearch}:Props){
   if(!file)return;
   try{const parsed=parseResearchPlan(JSON.parse(await file.text()));setResearchPlan(parsed);setPlanName(file.name);setPlanError("");setSelectedHypothesis(parsed.hypotheses[0]?.candidate.id??"");setFamilyFilter("all");setHypothesisSearch("");}
   catch(error){setPlanError(error instanceof Error?error.message:"No fue posible leer el plan.");}
+ };
+ const importInvestigator=async(file?:File)=>{
+  if(!file)return;
+  try{
+   const raw=JSON.parse(await file.text()) as Record<string,unknown>;
+   if(!raw||!Array.isArray(raw.selected)||!Array.isArray(raw.warnings)||!raw.familyCounts||typeof raw.familyCounts!=="object")throw new Error("El archivo no contiene un informe del investigador adaptativo.");
+   for(const key of ["generatedAt"])if(typeof raw[key]!=="string"||!Number.isFinite(Date.parse(String(raw[key]))))throw new Error("Fecha de generación inválida.");
+   for(const key of ["targetDrawId","historyThroughDrawId","catalogSize","budget","frozenCount","explorationCount","exploitationCount","retiredExcluded"])if(!Number.isInteger(raw[key])||Number(raw[key])<0)throw new Error("Métrica inválida: "+key);
+   if(Number(raw.targetDrawId)!==Number(raw.historyThroughDrawId)+1)throw new Error("El informe no corresponde al concurso consecutivo del historial.");
+   if(Number(raw.explorationCount)+Number(raw.exploitationCount)!==raw.selected.length||Number(raw.frozenCount)>raw.selected.length)throw new Error("Los conteos de selección no coinciden.");
+   const ids=new Set<string>();
+   const selected=raw.selected.map((item,index)=>{
+    if(!item||typeof item!=="object")throw new Error("Candidato "+(index+1)+" inválido.");
+    const row=item as Record<string,unknown>;
+    if(typeof row.candidateId!=="string"||!row.candidateId||ids.has(row.candidateId))throw new Error("ID de candidato vacío o duplicado.");
+    ids.add(row.candidateId);
+    if(!["transition","position-mutation","absence-return","pool-ranking"].includes(String(row.family))||!row.config||typeof row.config!=="object"||typeof row.priorityScore!=="number"||!Number.isFinite(row.priorityScore)||!Array.isArray(row.reasons)||!row.reasons.every(x=>typeof x==="string"))throw new Error("Campos de candidato inválidos: "+row.candidateId);
+    return row as unknown as InvestigatorSelectionRow;
+   });
+   const familyCounts=raw.familyCounts as Record<string,unknown>;
+   for(const family of ["transition","position-mutation","absence-return","pool-ranking"])if(!Number.isInteger(familyCounts[family])||Number(familyCounts[family])<0)throw new Error("Conteo familiar inválido: "+family);
+   setInvestigator({...raw,selected,warnings:raw.warnings.filter((x):x is string=>typeof x==="string")} as InvestigatorPayload);
+   setInvestigatorName(file.name);setInvestigatorError("");
+  }catch(error){setInvestigatorError(error instanceof Error?error.message:"No fue posible leer el informe del investigador.");}
  };
  const importPositionMemory=async(file?:File)=>{
   if(!file)return;
@@ -180,6 +209,25 @@ export default function IntuitionDashboard({draws,onBack,onOpenResearch}:Props){
      <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4"><Stat label="Catálogo completo" value={researchPlan?researchPlan.catalogSize:"1,095"} detail="Candidatos generados por el motor"/><Stat label="Selección congelada" value={researchPlan?researchPlan.selectedCount:"—"} detail={researchPlan?"Presupuesto "+researchPlan.budget:"Pendiente de plan"}/><Stat label="Fecha del plan" value={researchPlan?researchPlan.createdAt.slice(0,10):"—"} detail="Marca temporal de creación"/><Stat label="Evaluaciones vinculadas" value="0" detail="No se importaron informes de resultados"/></div>
      {!researchPlan&&<div className="mt-4 rounded-xl border border-dashed border-slate-700 p-6 text-center"><b className="text-sm">Plan de hipótesis pendiente</b><p className="mx-auto mt-2 max-w-xl text-xs text-slate-400">Importa el JSON generado por el orquestador de investigación. La pantalla verificará esquema, IDs, familias y huellas de configuración. El catálogo de 1,095 es un tamaño teórico: no implica evaluación ni evidencia.</p></div>}
      {researchPlan&&<><div className="mt-4 grid grid-cols-2 gap-2 md:grid-cols-4">{planFamilies.map(f=><div key={f} className="rounded-lg border border-slate-800 bg-slate-950/60 p-3"><div className="text-[10px] text-slate-500">{familyLabels[f]}</div><div className="mt-1 text-xl font-black">{researchPlan.familyCounts[f]}</div><div className="text-[10px] text-slate-500">seleccionadas</div></div>)}</div><div className="mt-3 rounded-lg border border-slate-800 bg-slate-950/50 p-3"><b className="text-xs">Advertencias del plan</b><ul className="mt-2 space-y-1 text-[10px] text-slate-400">{researchPlan.warnings.map((w,i)=><li key={i}>• {w}</li>)}</ul></div></>}
+    </Panel>
+    <Panel title="Investigador adaptativo" sub="Selección de hipótesis para el siguiente concurso; combina exploración y evidencia prospectiva previa sin modificar pronósticos congelados">
+     <div className="flex flex-wrap items-center gap-3">
+      <label className="cursor-pointer rounded-lg border border-cyan-700 bg-cyan-950/40 px-4 py-2 text-xs font-bold text-cyan-200 hover:bg-cyan-900/50">Importar informe adaptativo<input type="file" accept=".json,application/json" className="hidden" onChange={e=>{void importInvestigator(e.target.files?.[0]);e.currentTarget.value="";}}/></label>
+      <span className="text-xs text-slate-400">{investigatorName||"Ningún informe del investigador importado"}</span>
+      {investigator&&<button type="button" onClick={()=>{setInvestigator(null);setInvestigatorName("");setInvestigatorError("");}} className="rounded-lg border border-slate-700 px-3 py-2 text-xs text-slate-300 hover:border-rose-700 hover:text-rose-200">Limpiar informe</button>}
+     </div>
+     {investigatorError&&<div role="alert" className="mt-3 rounded-lg border border-rose-800 bg-rose-950/30 p-3 text-xs text-rose-200">{investigatorError}</div>}
+     {investigator?<div className="mt-4 space-y-4">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+       <Stat label="Concurso objetivo" value={investigator.targetDrawId} detail={"Historial hasta "+investigator.historyThroughDrawId}/>
+       <Stat label="Catálogo examinado" value={investigator.catalogSize} detail="Plantillas de hipótesis"/>
+       <Stat label="Pronósticos congelados" value={investigator.frozenCount} detail={"Presupuesto "+investigator.budget}/>
+       <Stat label="Explorar / explotar" value={investigator.explorationCount+" / "+investigator.exploitationCount} detail="Selección de investigación"/>
+      </div>
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-4">{planFamilies.map(f=><div key={f} className="rounded-lg border border-slate-800 bg-slate-950/60 p-3"><div className="text-[10px] text-slate-500">{familyLabels[f]}</div><div className="mt-1 text-lg font-black">{investigator.familyCounts[f]??0}</div><div className="text-[10px] text-slate-500">seleccionadas</div></div>)}</div>
+      <div className="max-h-[420px] overflow-auto"><table className="w-full min-w-[640px] text-left text-xs"><thead className="text-slate-400"><tr><th className="p-2">Candidato</th><th className="p-2">Familia</th><th className="p-2">Puntaje de agenda</th><th className="p-2">Configuración</th><th className="p-2">Modo</th></tr></thead><tbody>{investigator.selected.map(row=><tr key={row.candidateId} className="border-t border-slate-800"><td className="p-2 font-mono text-[10px]">{row.candidateId}</td><td className="p-2">{familyLabels[row.family]}</td><td className="p-2 tabular-nums">{row.priorityScore.toFixed(3)}</td><td className="max-w-[240px] truncate p-2 font-mono text-[10px]" title={JSON.stringify(row.config)}>{JSON.stringify(row.config)}</td><td className="p-2">{row.reasons[0]?.startsWith("Exploración")?"Exploración":"Explotación"}</td></tr>)}</tbody></table></div>
+      <div className="rounded-lg border border-slate-800 bg-slate-950/50 p-3"><b className="text-xs">Advertencias y límites</b><ul className="mt-2 space-y-1 text-[10px] text-slate-400">{investigator.warnings.map((w,i)=><li key={i}>• {w}</li>)}</ul></div>
+     </div>:<p className="mt-3 text-xs text-slate-500">Importa <code>data/cycles/investigator-report.json</code> generado por el ciclo local para revisar la selección que quedó congelada antes del concurso objetivo.</p>}
     </Panel>
     {researchPlan&&<div className="grid gap-4 xl:grid-cols-[1.15fr_.85fr]">
      <Panel title="Hipótesis seleccionadas" sub="Prioridad es una heurística de planificación, no una puntuación predictiva">
