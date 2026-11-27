@@ -76,7 +76,8 @@
     "research:structural-experiment-ledger": "tsx scripts/run-tris-structural-experiment-ledger.ts",
     "research:structural-prospective-stability": "tsx scripts/run-tris-structural-prospective-stability.ts",
     "research:structural-degradation-monitor": "tsx scripts/run-tris-structural-degradation-monitor.ts",
-    "research:historical-regime-comparison": "tsx scripts/run-tris-historical-regime-comparison.ts"
+    "research:historical-regime-comparison": "tsx scripts/run-tris-historical-regime-comparison.ts",
+    "research:positional-change-points": "tsx scripts/run-tris-positional-change-points.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",

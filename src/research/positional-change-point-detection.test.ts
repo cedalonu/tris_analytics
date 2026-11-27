@@ -1,0 +1,8 @@
+import {strict as assert} from "node:assert";import {test} from "node:test";import {analyzePositionalChangePoints} from "./positional-change-point-detection";import type {Draw} from "../research-core";
+const make=(split=100):Draw[]=>Array.from({length:180},(_,i)=>({drawId:i+1,date:"2026-01-01",digits:(i<split?[0,1,2,3,4]:[7,1,2,3,4]) as any}));
+test("detects change in only affected position",()=>{const r=analyzePositionalChangePoints(make(),101,160,{referenceWindow:20,recentWindow:20,minimumSupport:15});assert.ok(r.perPosition[0].episodeCount>0);assert.equal(r.perPosition[1].episodeCount,0);});
+test("detects simultaneous positional episodes",()=>{const d=make().map(x=>({...x,digits:(x.drawId<100?[0,1,2,3,4]:[7,8,2,3,4]) as any}));const r=analyzePositionalChangePoints(d,101,160,{referenceWindow:20,recentWindow:20,minimumSupport:15});assert.ok(r.simultaneous.some(x=>x.positions.includes(1)&&x.positions.includes(2)));});
+test("rejects gaps",()=>{const d=make();d.splice(40,1);assert.throws(()=>analyzePositionalChangePoints(d,101,160),/contiguous/);});
+test("rejects invalid thresholds",()=>assert.throws(()=>analyzePositionalChangePoints(make(),101,160,{changeThreshold:.05,returnThreshold:.1}),/invalid positional/));
+test("requires prior history",()=>assert.throws(()=>analyzePositionalChangePoints(make(),30,60),/insufficient pre-target/));
+test("validates target range",()=>assert.throws(()=>analyzePositionalChangePoints(make(),181,190),/target draw range missing/));
