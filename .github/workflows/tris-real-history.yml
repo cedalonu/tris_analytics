@@ -77,6 +77,8 @@ jobs:
         run: npm run research:regime -- data/source-snapshots/Tris-2026-11-25.csv
       - name: Run historical-only past-only positional regime analysis
         run: npm run research:historical-regime-analysis -- data/source-snapshots/Tris-2026-11-25.csv
+      - name: Validate joint digit dependence on chronological holdout
+        run: npm run research:joint-digit-dependence-validation -- data/source-snapshots/Tris-2026-11-25.csv 11033 30505 30506 36997 999 1192026
       - name: Run positional-pool permutation null controls
         run: npm run research:positional-pool-null-controls -- reports/historical-regime-analysis/latest.json
       - name: Run positional-pool circular-shift controls
