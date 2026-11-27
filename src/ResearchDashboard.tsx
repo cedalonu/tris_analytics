@@ -3,7 +3,8 @@ import HypothesisMonitor from "./HypothesisMonitor";
 import StructuralMotifRandomControl from "./StructuralMotifRandomControl";
 import StructuralMotifTemporalRobustness from "./StructuralMotifTemporalRobustness";
 import StructuralMotifBlockBootstrap from "./StructuralMotifBlockBootstrap";
-import StructuralMotifBootstrapSensitivity from "./StructuralMotifBootstrapSensitivity";\nimport StructuralMotifJointStability from "./StructuralMotifJointStability";
+import StructuralMotifBootstrapSensitivity from "./StructuralMotifBootstrapSensitivity";
+import StructuralMotifJointStability from "./StructuralMotifJointStability";
 
 type ReportKind="ledger"|"coverage"|"performance"|"stability"|"sensitivity"|"structuralOutcome"|"structuralRandomControl"|"structuralTemporalRobustness"|"structuralBlockBootstrap"|"structuralBootstrapSensitivity"|"structuralJointStability";
 type ReportRecord={kind:ReportKind;name:string;data:any};
@@ -19,7 +20,8 @@ function classify(data:any):ReportKind|null{
  if(m==="structural-motif-matched-random-control-v1")return "structuralRandomControl";
  if(m==="structural-motif-temporal-robustness-v1")return "structuralTemporalRobustness";
  if(m==="structural-motif-block-bootstrap-v1")return "structuralBlockBootstrap";
- if(m==="structural-motif-bootstrap-sensitivity-v1")return "structuralBootstrapSensitivity";\n if(m==="structural-motif-joint-stability-v1")return "structuralJointStability";
+ if(m==="structural-motif-bootstrap-sensitivity-v1")return "structuralBootstrapSensitivity";
+ if(m==="structural-motif-joint-stability-v1")return "structuralJointStability";
  return null;
 }
 const pct=(v:any)=>typeof v==="number"&&Number.isFinite(v)?(v*100).toFixed(1)+"%":"—";
@@ -118,7 +120,8 @@ export default function ResearchDashboard({onBack,onOpenIntuition}:{onBack:()=>v
     {active==="structuralRandomControl"&&<StructuralMotifRandomControl report={current}/>}
     {active==="structuralTemporalRobustness"&&<StructuralMotifTemporalRobustness report={current}/>}
     {active==="structuralBlockBootstrap"&&<StructuralMotifBlockBootstrap report={current}/>}
-    {active==="structuralBootstrapSensitivity"&&<StructuralMotifBootstrapSensitivity report={current}/>}\n    {active==="structuralJointStability"&&<StructuralMotifJointStability report={current}/>}
+    {active==="structuralBootstrapSensitivity"&&<StructuralMotifBootstrapSensitivity report={current}/>}
+    {active==="structuralJointStability"&&<StructuralMotifJointStability report={current}/>}
     {Array.isArray(current.limitations)&&<details className="rounded-xl border border-slate-800 p-4"><summary className="cursor-pointer text-sm font-semibold">Limitaciones metodológicas</summary><ul className="mt-3 list-disc space-y-1 pl-5 text-xs text-slate-400">{current.limitations.map((x:string,i:number)=><li key={i}>{x}</li>)}</ul></details>}
    </section>}
    <footer className="mt-8 border-t border-slate-800 pt-4 text-xs text-slate-500">El panel muestra únicamente datos de los informes importados. No genera pronósticos, no modifica el ledger y no afirma capacidad predictiva.</footer>
