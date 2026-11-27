@@ -1,0 +1,13 @@
+import {strict as assert} from "node:assert";
+import {test} from "node:test";
+import {analyzeProspectiveDegradation} from "./structural-motif-prospective-degradation";
+const report=(delta:number,targets=30)=>({method:"tris-prospective-stability-validation-v1",lock:{rankingFingerprint:"abc",cutoffDrawId:100},metrics:[{family:"pool",position:0,targets,delta,candidateRate:.2+delta,baselineRate:.2}]});
+const snap=(day:number,delta:number,targets=30)=>({capturedAt:`2026-01-${String(day).padStart(2,"0")}T00:00:00Z`,report:report(delta,targets)});
+test("single positive snapshot starts stable",()=>assert.equal(analyzeProspectiveDegradation([snap(1,.1)]).rows[0].state,"stable"));
+test("declining delta beyond threshold flags degradation",()=>assert.equal(analyzeProspectiveDegradation([snap(1,.1),snap(2,.02)]).rows[0].state,"degraded"));
+test("non-positive delta remains degraded",()=>assert.equal(analyzeProspectiveDegradation([snap(1,.1),snap(2,-.02)]).rows[0].state,"degraded"));
+test("improvement above zero and threshold marks recovery",()=>assert.equal(analyzeProspectiveDegradation([snap(1,.1),snap(2,-.1),snap(3,.02)]).rows[0].state,"recovered"));
+test("small sample remains insufficient",()=>assert.equal(analyzeProspectiveDegradation([snap(1,.1,12)]).rows[0].state,"insufficient"));
+test("changed lock fingerprint is rejected",()=>{const b=snap(2,.1);b.report.lock.rankingFingerprint="different";assert.throws(()=>analyzeProspectiveDegradation([snap(1,.1),b]),/context changed/);});
+test("timestamps must be strictly increasing",()=>assert.throws(()=>analyzeProspectiveDegradation([snap(1,.1),snap(1,.2)]),/strictly increasing/));
+test("output order is deterministic by severity then key",()=>{const a=report(.1);a.metrics.push({family:"other",position:2,targets:30,delta:-.2,candidateRate:0,baselineRate:.2});const r=analyzeProspectiveDegradation([{capturedAt:"2026-01-01T00:00:00Z",report:a}]);assert.equal(r.rows[0].family,"other");});
