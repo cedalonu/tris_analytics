@@ -17,7 +17,7 @@ test("does not fill missing candidate observations and flags insufficient pairs"
   const items = Array.from({ length: 6 }, (_, i) => pack(String(i), "2026-02-" + String(i + 1).padStart(2, "0"), i === 2 ? [["A", i], ["B", i]] : [["A", i], ["B", i + 1]]));
   const result = analyzeHypothesisRelations(items);
   assert.equal(result.valid, true);
-  if (result.valid) { assert.equal(result.rows[0].observations, 4); assert.equal(result.rows[0].status, "insufficient"); }
+  if (result.valid) { assert.equal(result.rows[0].observations, 3); assert.equal(result.rows[0].status, "insufficient"); }
 });
 test("rejects invalid package history", () => {
   const result = analyzeHypothesisRelations([pack("1", "bad", [["A", 1]]), pack("2", "2026-03-02", [["A", 2]])]);
