@@ -1,0 +1,13 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {analyzeFindingPersistence} from "./structural-motif-finding-persistence";
+import type {ExperimentRecord} from "./structural-motif-experiment-ledger";
+const rec=(id:string,n:number):ExperimentRecord=>({schema:"tris-experiment-record-v1",runId:id,capturedAt:"2026-01-0"+n,gitRef:null,gitCommit:null,status:"complete",phaseRange:"95–98",artifacts:[95,96,97,98].map(phase=>({phase,kind:"json",sourcePath:"p"+phase,snapshotPath:id+"/p"+phase,sha256:"x",bytes:1,available:true})),missing:[],reproducibilityStatus:null,contentFingerprint:id});
+function docs(labels:string[],method="m"){return Object.fromEntries(labels.flatMap((label,i)=>[95,96,97,98].map(p=>["p"+p,JSON.stringify({method,settings:{window:4},[p<=96?"metrics":"groups"]:[{family:"F",position:1,[p<=96?"interpretation":p===97?"conclusion":"classification"]:label}]})])));}
+const records=[rec("a",1),rec("b",2),rec("c",3)];
+test("repeated same label is persistent",()=>{const r=analyzeFindingPersistence(records,{a:docs(["positive"]),b:docs(["positive"]),c:docs(["positive"])});assert.equal(r.series.find(x=>x.phase===95)?.status,"persistent");});
+test("new repeated tail label is emerging",()=>{const r=analyzeFindingPersistence(records,{a:docs(["mixed"]),b:docs(["positive"]),c:docs(["positive"])});assert.equal(r.series.find(x=>x.phase===95)?.status,"emerging");});
+test("dominant but nonterminal label is intermittent",()=>{const rr=[rec("a",1),rec("b",2),rec("c",3),rec("d",4)];const r=analyzeFindingPersistence(rr,{a:docs(["positive"]),b:docs(["positive"]),c:docs(["positive"]),d:docs(["mixed"])});assert.equal(r.series.find(x=>x.phase===95)?.status,"intermittent");});
+test("two latest valid reports without key are described as not reported",()=>{const rr=[...records,rec("d",4),rec("e",5)];const blank=()=>Object.fromEntries([95,96,97,98].map(p=>["p"+p,JSON.stringify({method:"m",metrics:[],groups:[]})]));const r=analyzeFindingPersistence(rr,{a:docs(["positive"]),b:docs(["positive"]),c:docs(["positive"]),d:blank(),e:blank()});assert.equal(r.series.find(x=>x.phase===95)?.status,"disappeared-from-report");});
+test("missing snapshots are unknown, not disappearance",()=>{const r=analyzeFindingPersistence(records,{a:docs(["positive"]),b:{},c:{}});assert.notEqual(r.series.find(x=>x.phase===95)?.status,"disappeared-from-report");});
+test("method or settings changes are flagged",()=>{const r=analyzeFindingPersistence(records,{a:docs(["positive"]),b:docs(["positive"]),c:docs(["positive"],"m2")});assert.ok(r.series.find(x=>x.phase===95)?.contextChanges.length);});
