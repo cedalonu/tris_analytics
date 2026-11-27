@@ -3,6 +3,12 @@ name: TRIS real-history integration validation
 on:
   push:
     branches: [research-core-v1]
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
   workflow_dispatch:
     inputs:
       restore_run_id:

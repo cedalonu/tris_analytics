@@ -5,6 +5,12 @@ on:
     branches: [main]
   push:
     branches: [research-core-v1]
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
 
 jobs:
   research:
