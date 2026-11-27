@@ -5,7 +5,7 @@ const key=(x:any)=>x&&typeof x.family==="string"&&Number.isInteger(x.position)?x
 const pct=(v:any)=>typeof v==="number"&&Number.isFinite(v)?(v*100).toFixed(2)+"%":"—";
 const pp=(v:any)=>typeof v==="number"&&Number.isFinite(v)?(v*100).toFixed(2)+" pp":"—";
 const unwrap=(x:any)=>x?.data?.report??x?.data??null;
-export default function StructuralEvidenceCenter({reports}:{reports:Record<string,RecordItem|undefined>}){
+export default function StructuralEvidenceCenter({reports}:{reports:any}){
  const [family,setFamily]=useState("all"),[position,setPosition]=useState("all");
  const data=useMemo(()=>Object.fromEntries(Object.entries(reports).map(([k,v])=>[k,unwrap(v)])),[reports]);
  const phase94=data.structuralRandomControl,phase95=data.structuralTemporalRobustness,phase96=data.structuralBlockBootstrap,phase97=data.structuralBootstrapSensitivity,phase98=data.structuralJointStability,phase99=data.structuralChainAudit;

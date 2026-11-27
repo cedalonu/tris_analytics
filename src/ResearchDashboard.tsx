@@ -8,7 +8,8 @@ import StructuralMotifJointStability from "./StructuralMotifJointStability";
 import StructuralResearchChainAudit from "./StructuralResearchChainAudit";
 import StructuralEvidenceCenter from "./StructuralEvidenceCenter";
 
-type StoredReportKind="ledger"|"coverage"|"performance"|"stability"|"sensitivity"|"structuralOutcome"|"structuralRandomControl"|"structuralTemporalRobustness"|"structuralBlockBootstrap"|"structuralBootstrapSensitivity"|type ReportRecordKind=StoredReportKind;
+type StoredReportKind="ledger"|"coverage"|"performance"|"stability"|"sensitivity"|"structuralOutcome"|"structuralRandomControl"|"structuralTemporalRobustness"|"structuralBlockBootstrap"|"structuralBootstrapSensitivity"|"structuralJointStability"|"structuralChainAudit";
+type ReportRecordKind=StoredReportKind;
 type ReportKind=StoredReportKind|"structuralEvidenceCenter";
 type ReportRecord={kind:ReportRecordKind;name:string;data:any};
 const labels:Record<ReportKind,string>={ledger:"Integridad del ledger",coverage:"Cobertura prospectiva",performance:"Desempeño por modalidad",stability:"Estabilidad temporal",sensitivity:"Sensibilidad temporal",structuralOutcome:"Motivos vs. resultados oficiales",structuralRandomControl:"Control aleatorio emparejado",structuralTemporalRobustness:"Robustez temporal y holdout",structuralBlockBootstrap:"Bootstrap por bloques temporales",structuralBootstrapSensitivity:"Sensibilidad del bootstrap",structuralJointStability:"Estabilidad conjunta (95–97)",structuralChainAudit:"Auditoría de cadena (94–98)",structuralEvidenceCenter:"Centro de Evidencia TRIS"};
