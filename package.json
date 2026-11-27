@@ -79,7 +79,8 @@
     "research:historical-regime-comparison": "tsx scripts/run-tris-historical-regime-comparison.ts",
     "research:positional-change-points": "tsx scripts/run-tris-positional-change-points.ts",
     "research:positional-coordination": "tsx scripts/run-tris-positional-coordination.ts",
-    "research:positional-sequences": "tsx scripts/run-tris-positional-sequences.ts"
+    "research:positional-sequences": "tsx scripts/run-tris-positional-sequences.ts",
+    "research:conditional-position-changes": "tsx scripts/run-tris-conditional-position-changes.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
