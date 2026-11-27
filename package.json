@@ -70,7 +70,8 @@
     "research:structural-temporal-robustness": "tsx scripts/run-tris-structural-temporal-robustness.ts",
     "research:structural-block-bootstrap": "tsx scripts/run-tris-structural-block-bootstrap.ts",
     "research:structural-bootstrap-sensitivity": "tsx scripts/run-tris-structural-bootstrap-sensitivity.ts",
-    "research:structural-joint-stability": "tsx scripts/run-tris-structural-joint-stability.ts"
+    "research:structural-joint-stability": "tsx scripts/run-tris-structural-joint-stability.ts",
+    "research:structural-chain-audit": "tsx scripts/run-tris-structural-chain-audit.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
@@ -94,4 +95,4 @@
     "typescript": "~5.8.2",
     "vite": "^8.3.8"
   }
-}\n
+}

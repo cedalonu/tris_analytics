@@ -5,10 +5,11 @@ import StructuralMotifTemporalRobustness from "./StructuralMotifTemporalRobustne
 import StructuralMotifBlockBootstrap from "./StructuralMotifBlockBootstrap";
 import StructuralMotifBootstrapSensitivity from "./StructuralMotifBootstrapSensitivity";
 import StructuralMotifJointStability from "./StructuralMotifJointStability";
+import StructuralResearchChainAudit from "./StructuralResearchChainAudit";
 
-type ReportKind="ledger"|"coverage"|"performance"|"stability"|"sensitivity"|"structuralOutcome"|"structuralRandomControl"|"structuralTemporalRobustness"|"structuralBlockBootstrap"|"structuralBootstrapSensitivity"|"structuralJointStability";
+type ReportKind="ledger"|"coverage"|"performance"|"stability"|"sensitivity"|"structuralOutcome"|"structuralRandomControl"|"structuralTemporalRobustness"|"structuralBlockBootstrap"|"structuralBootstrapSensitivity"|"structuralJointStability"|"structuralChainAudit";
 type ReportRecord={kind:ReportKind;name:string;data:any};
-const labels:Record<ReportKind,string>={ledger:"Integridad del ledger",coverage:"Cobertura prospectiva",performance:"Desempeño por modalidad",stability:"Estabilidad temporal",sensitivity:"Sensibilidad temporal",structuralOutcome:"Motivos vs. resultados oficiales",structuralRandomControl:"Control aleatorio emparejado",structuralTemporalRobustness:"Robustez temporal y holdout",structuralBlockBootstrap:"Bootstrap por bloques temporales",structuralBootstrapSensitivity:"Sensibilidad del bootstrap",structuralJointStability:"Estabilidad conjunta (95–97)"};
+const labels:Record<ReportKind,string>={ledger:"Integridad del ledger",coverage:"Cobertura prospectiva",performance:"Desempeño por modalidad",stability:"Estabilidad temporal",sensitivity:"Sensibilidad temporal",structuralOutcome:"Motivos vs. resultados oficiales",structuralRandomControl:"Control aleatorio emparejado",structuralTemporalRobustness:"Robustez temporal y holdout",structuralBlockBootstrap:"Bootstrap por bloques temporales",structuralBootstrapSensitivity:"Sensibilidad del bootstrap",structuralJointStability:"Estabilidad conjunta (95–97)",structuralChainAudit:"Auditoría de cadena (94–98)"};
 function classify(data:any):ReportKind|null{
  const m=data?.method;
  if(m==="read-only-prospective-ledger-integrity-v1")return "ledger";
@@ -22,6 +23,7 @@ function classify(data:any):ReportKind|null{
  if(m==="structural-motif-block-bootstrap-v1")return "structuralBlockBootstrap";
  if(m==="structural-motif-bootstrap-sensitivity-v1")return "structuralBootstrapSensitivity";
  if(m==="structural-motif-joint-stability-v1")return "structuralJointStability";
+ if(m==="structural-motif-research-chain-audit-v1")return "structuralChainAudit";
  return null;
 }
 const pct=(v:any)=>typeof v==="number"&&Number.isFinite(v)?(v*100).toFixed(1)+"%":"—";
@@ -122,6 +124,7 @@ export default function ResearchDashboard({onBack,onOpenIntuition}:{onBack:()=>v
     {active==="structuralBlockBootstrap"&&<StructuralMotifBlockBootstrap report={current}/>}
     {active==="structuralBootstrapSensitivity"&&<StructuralMotifBootstrapSensitivity report={current}/>}
     {active==="structuralJointStability"&&<StructuralMotifJointStability report={current}/>}
+    {active==="structuralChainAudit"&&<StructuralResearchChainAudit report={current}/>}
     {Array.isArray(current.limitations)&&<details className="rounded-xl border border-slate-800 p-4"><summary className="cursor-pointer text-sm font-semibold">Limitaciones metodológicas</summary><ul className="mt-3 list-disc space-y-1 pl-5 text-xs text-slate-400">{current.limitations.map((x:string,i:number)=><li key={i}>{x}</li>)}</ul></details>}
    </section>}
    <footer className="mt-8 border-t border-slate-800 pt-4 text-xs text-slate-500">El panel muestra únicamente datos de los informes importados. No genera pronósticos, no modifica el ledger y no afirma capacidad predictiva.</footer>
