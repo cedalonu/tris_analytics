@@ -46,9 +46,10 @@ El ciclo:
 - crea el siguiente ciclo para el sorteo inmediato posterior al último registro;
 - conserva configuración, huella SHA-256 del histórico y hora de congelación;
 - mantiene memoria de ciclo, estados de señales y contexto posicional;
+- proyecta los resultados en `signals.json`, el ledger del evaluador compartido con el panel;
 - no rellena sorteos perdidos ni reconstruye pronósticos retrospectivos.
 
-Guardar y respaldar íntegramente `data/cycles/` entre ejecuciones. Incluye `cycles.jsonl`, `outcomes.jsonl`, `state.json`, `lifecycle.json`, `position-context-memory.json` y `latest-report.md`. Los archivos JSONL son registros append-only; no editarlos a mano.
+Guardar y respaldar íntegramente `data/cycles/` entre ejecuciones. Incluye `cycles.jsonl`, `outcomes.jsonl`, `state.json`, `signals.json`, `lifecycle.json`, `position-context-memory.json` y `latest-report.md`. El archivo `signals.json` es una proyección evaluada de `outcomes.jsonl`, no una segunda fuente de resultados: se reconstruye de forma determinista si una ejecución se interrumpe después de escribir resultados. Los archivos JSONL son registros append-only; no editarlos a mano.
 
 La auditoría comprueba el checkpoint del prefijo histórico, la identidad de ciclos y pronósticos, el vínculo entre resultados y pronósticos congelados y la resolución exacta contra el CSV. Si falla por truncamiento, alteración del histórico o falta de checkpoint, detenerse y recuperar el ledger y CSV originales; no borrar el estado para forzar una inicialización.
 
@@ -87,7 +88,7 @@ Los estados del ciclo (`emerging`, `persistent`, `weakening`, `retired`, etc.) d
 
 ## Panel
 
-El panel de intuición permite importar manualmente un ResearchPlan JSON y un ledger de señales JSON. La importación es explícita: el navegador no lee automáticamente archivos locales de `data/cycles/` ni ejecuta los runners. Exportar/seleccionar los archivos generados por los scripts para inspeccionarlos en la interfaz. El panel es una vista de análisis; la ejecución y la persistencia append-only pertenecen a los scripts locales.
+El panel de intuición permite importar manualmente un ResearchPlan JSON y un ledger de señales JSON. Para revisar el estado del ciclo operativo, importar `data/cycles/signals.json`. La importación es explícita: el navegador no lee automáticamente archivos locales de `data/cycles/` ni ejecuta los runners. Exportar/seleccionar los archivos generados por los scripts para inspeccionarlos en la interfaz. El panel es una vista de análisis; la ejecución y la persistencia append-only pertenecen a los scripts locales.
 
 ## Reproducibilidad y seguridad del dato
 
