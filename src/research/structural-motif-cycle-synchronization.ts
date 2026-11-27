@@ -42,7 +42,7 @@ export function analyzeMotifCycleSynchronization(
       const periodScore = samePeriod ? 1 : 0;
       const sequenceScore = sameSequenceUpToRotation ? 1 : 0;
       const synchronizationScore = 0.5 * temporalJaccard + 0.25 * periodScore + 0.25 * sequenceScore;
-      const classification = synchronizationScore >= 0.75 ? "alineada" : synchronizationScore >= 0.45 ? "parcial" : "desfasada";
+      const classification = samePeriod && sameSequenceUpToRotation && synchronizationScore >= 0.75 ? "alineada" : synchronizationScore >= 0.45 ? "parcial" : "desfasada";
       pairs.push({ left, right, overlapWindows, unionWindows, temporalJaccard, samePeriod, sameSequenceUpToRotation, synchronizationScore, classification, startLag: right.startWindow - left.startWindow });
     }
   }
