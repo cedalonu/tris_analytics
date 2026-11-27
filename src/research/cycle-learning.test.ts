@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import type {Draw} from "../research-core";
-import {freezeLearningCycle,resolveLearningCycleSignal,assessCycleSignalLifecycle,fingerprintCycleHistory,type ResolvedCycleSignal} from "./cycle-learning";
+import {freezeLearningCycle,resolveLearningCycleSignal,assessCycleSignalLifecycle,fingerprintCycleHistory,projectCycleOutcomesToSignalLedger,type ResolvedCycleSignal} from "./cycle-learning";
 import type {IntuitionCandidate} from "./intuition-candidate-generator";
 
 const history=(n=220):Draw[]=>Array.from({length:n},(_,i)=>({drawId:5000+i,digits:[i%10,(i+1)%10,(i*3)%10,(i*7)%10,(i*9)%10] as Draw["digits"],date:"2026-01-"+String((i%28)+1).padStart(2,"0")}));
@@ -39,4 +39,23 @@ test("retires a signal after three consecutive negative blocks",()=>{
  const rows:ResolvedCycleSignal[]=[];
  for(let i=0;i<75;i++)rows.push({schemaVersion:1,forecastId:"r"+i,candidateId:"retire-me",family:"pool-ranking",frozenConfig:"{}",targetDrawId:8000+i,generatedAt:stamp,historyThroughDrawId:7999+i,historySha256:"h",prediction:["1"],baseline:["0"],resolvedAt:stamp,actual:"0",candidateHit:false,baselineHit:true,cycleId:"rc"+i,modelVersion:"tris-cycle-learning-v1",position:0,context:{previousPoolSize:3,previousDuplicatePairs:2,previousRepeatedPositions:2,poolRegime:"compact",duplicateRegime:"many-duplicates"}});
  assert.equal(assessCycleSignalLifecycle(rows)[0].status,"retired");
+});
+
+test("consolidated evaluator projection is deterministic and recovers interrupted writes",()=>{
+ const make=(i:number,cycleId:string,hit:boolean):ResolvedCycleSignal=>({
+  schemaVersion:1,forecastId:"forecast-"+i,candidateId:candidate.id,family:"pool-ranking",
+  frozenConfig:candidate.frozenConfig,targetDrawId:9000+i,generatedAt:stamp,
+  historyThroughDrawId:8999+i,historySha256:"history-"+i,prediction:["1"],baseline:["0"],
+  resolvedAt:"2026-11-25T13:00:00.000Z",actual:hit?"1":"0",candidateHit:hit,baselineHit:!hit,
+  cycleId,modelVersion:"tris-cycle-learning-v1",position:0,
+  context:{previousPoolSize:3,previousDuplicatePairs:2,previousRepeatedPositions:2,poolRegime:"compact",duplicateRegime:"many-duplicates"}
+ });
+ const first=make(0,"cycle-a",true),second=make(1,"cycle-b",false);
+ const partial=projectCycleOutcomesToSignalLedger([first]);
+ const recovered=projectCycleOutcomesToSignalLedger([first,second],partial);
+ const direct=projectCycleOutcomesToSignalLedger([first,second]);
+ assert.deepEqual(recovered,direct);
+ assert.deepEqual(projectCycleOutcomesToSignalLedger([first,second],recovered),recovered);
+ assert.equal(recovered[0].evidence.filter(e=>e.phase==="prospective").length,2);
+ assert.equal(recovered[0].evidence.filter(e=>e.phase==="prospective").reduce((n,e)=>n+e.n,0),2);
 });

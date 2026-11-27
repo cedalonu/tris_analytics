@@ -3,7 +3,7 @@
 import {readFile} from "node:fs/promises";
 import {resolve} from "node:path";
 import {importTrisCsv} from "../src/research/data-adapter";
-import {fingerprintCycleHistory,resolveLearningCycleSignal,type FrozenLearningCycle,type ResolvedCycleSignal} from "../src/research/cycle-learning";
+import {fingerprintCycleHistory,resolveLearningCycleSignal,projectCycleOutcomesToSignalLedger,type FrozenLearningCycle,type ResolvedCycleSignal} from "../src/research/cycle-learning";
 
 const csvPath=resolve(process.argv[2]??"data/source-snapshots/Tris-2026-11-25.csv");
 const dir=resolve(process.argv[3]??"data/cycle-smoke");
@@ -54,27 +54,11 @@ for(const row of outcomes){
  for(const key of ["candidateId","targetDrawId","historySha256","frozenConfig","actual","candidateHit","baselineHit","cycleId"] as const)
   if(JSON.stringify(row[key])!==JSON.stringify(expected[key]))throw new Error("Resolved outcome differs from its frozen forecast for "+row.forecastId+" ("+key+").");
 }
-// Cross-check the consolidated evaluator projection against append-only outcomes.
-let signalRecords:any[]=[];
-try{signalRecords=JSON.parse(await readFile(resolve(dir,"signals.json"),"utf8")) as any[];}
-catch(error){throw new Error("Consolidated signal ledger is required: "+String(error));}
-const signalMap=new Map<string,any>();
-for(const record of signalRecords){
- if(typeof record.id!=="string"||signalMap.has(record.id)||!Array.isArray(record.evidence))throw new Error("Invalid or duplicate consolidated signal record.");
- signalMap.set(record.id,record);
- const expectedStatus=(await import("../src/research/intuition-ledger")).assessSignal(record as import("../src/research/intuition-ledger").SignalRecord).status;
- if(record.status!==expectedStatus)throw new Error("Consolidated signal status differs from evaluator for "+record.id);
-}
-const outcomeGroups=new Map<string,ResolvedCycleSignal[]>();
-for(const row of outcomes){const group=outcomeGroups.get(row.candidateId)??[];group.push(row);outcomeGroups.set(row.candidateId,group);}
-for(const [candidateId,rows] of outcomeGroups){
- const record=signalMap.get(candidateId);
- if(!record)throw new Error("Resolved outcomes missing from consolidated signal ledger: "+candidateId);
- const prospective=record.evidence.filter((e:any)=>e.phase==="prospective");
- const n=prospective.reduce((s:number,e:any)=>s+e.n,0),hits=prospective.reduce((s:number,e:any)=>s+e.hits,0),baselineN=prospective.reduce((s:number,e:any)=>s+e.baselineN,0),baselineHits=prospective.reduce((s:number,e:any)=>s+e.baselineHits,0);
- if(n!==rows.length||hits!==rows.filter(x=>x.candidateHit).length||baselineN!==rows.length||baselineHits!==rows.filter(x=>x.baselineHit).length)
-  throw new Error("Consolidated evaluator evidence does not reconcile with cycle outcomes for "+candidateId);
-}
+// Recompute the canonical evaluator projection from outcomes and reconcile exactly.
+const expectedSignals=projectCycleOutcomesToSignalLedger(outcomes);
+const actualSignals=JSON.parse(await readFile(resolve(dir,"signals.json"),"utf8"));
+if(JSON.stringify(actualSignals)!==JSON.stringify(expectedSignals))
+ throw new Error("Consolidated signal ledger differs from the canonical projection of cycle outcomes.");
 if(cycles.length!==1)throw new Error("Smoke test expected exactly one bootstrap cycle; found "+cycles.length+".");
 const latest=draws.at(-1)!;
 if(cycles[0].targetDrawId!==latest.drawId+1)throw new Error("Bootstrap cycle does not target the next contest.");

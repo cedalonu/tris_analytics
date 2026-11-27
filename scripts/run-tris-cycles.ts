@@ -5,9 +5,9 @@ import {resolve,basename} from "node:path";
 import {createHash} from "node:crypto";
 import {importTrisCsv} from "../src/research/data-adapter";
 import {createResearchPlan} from "../src/research/intuition-orchestrator";
-import {freezeLearningCycle,resolveLearningCycleSignal,assessCycleSignalLifecycle,fingerprintCycleHistory,type FrozenLearningCycle,type ResolvedCycleSignal} from "../src/research/cycle-learning";
+import {freezeLearningCycle,resolveLearningCycleSignal,assessCycleSignalLifecycle,fingerprintCycleHistory,projectCycleOutcomesToSignalLedger,type FrozenLearningCycle,type ResolvedCycleSignal} from "../src/research/cycle-learning";
 import {analyzePositionContextMemory} from "../src/research/position-context-memory";
-import {appendEvidence,assessSignal,type SignalRecord} from "../src/research/intuition-ledger";
+import type {SignalRecord} from "../src/research/intuition-ledger";
 
 const sha=(value:string)=>createHash("sha256").update(value,"utf8").digest("hex");
 const input=process.argv[2];
@@ -65,40 +65,10 @@ const allOutcomes=[...outcomes,...newOutcomes],lifecycle=assessCycleSignalLifecy
 // Canonical signal ledger: append each newly resolved cycle batch exactly once.
 // Cycle outcomes remain the source of truth; this ledger is the evaluator projection.
 const signalsPath=resolve(ledgerDir,"signals.json");
-let signalRecords:SignalRecord[]=[];
-try{signalRecords=JSON.parse(await readFile(signalsPath,"utf8")) as SignalRecord[];}
+let priorSignalRecords:SignalRecord[]=[];
+try{priorSignalRecords=JSON.parse(await readFile(signalsPath,"utf8")) as SignalRecord[];}
 catch(error){if((error as NodeJS.ErrnoException).code!=="ENOENT")throw error;}
-const signalMap=new Map(signalRecords.map(record=>[record.id,record]));
-if(signalMap.size!==signalRecords.length)throw new Error("Duplicate candidate IDs in consolidated signal ledger.");
-const allByCandidateCycle=new Map<string,ResolvedCycleSignal[]>();
-for(const row of allOutcomes){const key=row.candidateId+"|"+row.cycleId,batch=allByCandidateCycle.get(key)??[];batch.push(row);allByCandidateCycle.set(key,batch);}
-for(const rows of allByCandidateCycle.values()){
- const candidateId=rows[0].candidateId;
- const first=rows[0],existing=signalMap.get(candidateId);
- const record:SignalRecord=existing??{
-  id:candidateId,description:"TRIS prospective cycle candidate: "+first.family,
-  status:"hypothesis",evidence:[],createdAt:first.generatedAt,updatedAt:first.generatedAt,
-  frozenConfig:first.frozenConfig
- };
- if(record.frozenConfig&&record.frozenConfig!==first.frozenConfig)throw new Error("Candidate frozen configuration changed in consolidated signal ledger: "+candidateId);
- const evidenceId=sha(rows.map(row=>row.forecastId).sort().join("\n"));
- if(!record.evidence.some(e=>e.id===evidenceId)){
-  const evidence={
-   id:evidenceId,phase:"prospective" as const,evaluatedAt:rows[0].resolvedAt,
-   n:rows.length,hits:rows.filter(row=>row.candidateHit).length,
-   baselineN:rows.length,baselineHits:rows.filter(row=>row.baselineHit).length,
-   discordantCandidateWins:rows.filter(row=>row.candidateHit&&!row.baselineHit).length,
-   discordantBaselineWins:rows.filter(row=>!row.candidateHit&&row.baselineHit).length,
-   testCount:100,
-   notes:"Append-only prospective evidence from frozen learning-cycle outcomes; multiplicity budget fixed at 100 candidates."
-  };
-  signalMap.set(candidateId,appendEvidence(record,evidence));
- }
- const updated=signalMap.get(candidateId)!;
- const assessment=assessSignal(updated);
- signalMap.set(candidateId,{...updated,status:assessment.status});
-}
-signalRecords=[...signalMap.values()].sort((a,b)=>a.id.localeCompare(b.id));
+const signalRecords=projectCycleOutcomesToSignalLedger(allOutcomes,priorSignalRecords);
 await writeFile(signalsPath,JSON.stringify(signalRecords,null,2)+"\n","utf8");
 const nextTarget=latest.drawId+1,alreadyFrozen=cycles.some(c=>c.targetDrawId===nextTarget);
 let newCycle:FrozenLearningCycle|null=null;

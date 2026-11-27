@@ -6,6 +6,7 @@
 import {createHash} from "node:crypto";
 import type {Draw} from "../research-core";
 import type {IntuitionCandidate} from "./intuition-candidate-generator";
+import {appendEvidence,assessSignal,type SignalRecord} from "./intuition-ledger";
 import {freezeProspectiveForecast,resolveProspectiveForecast,type FrozenForecast,type ResolvedForecast} from "./intuition-prospective";
 
 export interface PreDrawContext {
@@ -116,6 +117,54 @@ export function resolveLearningCycleSignal(
  if(signal.forecast.targetDrawId!==cycle.targetDrawId||signal.forecast.historySha256!==cycle.historySha256)throw new Error("signal does not belong to the frozen cycle");
  const resolved=resolveProspectiveForecast(signal.forecast,actualDraw,priorHistory,resolvedAt);
  return {...resolved,cycleId:cycle.cycleId,modelVersion:cycle.modelVersion,position:signal.position,context:{...signal.context}} as ResolvedCycleSignal;
+}
+/**
+ * Rebuild the canonical evaluator projection from the append-only cycle outcomes.
+ * Grouping by candidate and frozen cycle makes retries deterministic and repairs
+ * an interrupted write without duplicating evidence.
+ */
+export function projectCycleOutcomesToSignalLedger(
+ rows:ResolvedCycleSignal[],existingRecords:SignalRecord[]=[]
+):SignalRecord[]{
+ const records=new Map(existingRecords.map(record=>[record.id,record]));
+ if(records.size!==existingRecords.length)throw new Error("duplicate candidate IDs in signal ledger");
+ const grouped=new Map<string,ResolvedCycleSignal[]>();
+ for(const row of rows){
+  const key=row.candidateId+"|"+row.cycleId,group=grouped.get(key)??[];
+  group.push(row);grouped.set(key,group);
+ }
+ for(const group of grouped.values()){
+  const first=group[0],candidateId=first.candidateId;
+  const localIds=new Set<string>();
+  for(const row of group){
+   if(row.candidateId!==candidateId||row.cycleId!==first.cycleId||row.frozenConfig!==first.frozenConfig||row.targetDrawId!==first.targetDrawId)
+    throw new Error("inconsistent candidate cycle evidence group");
+   if(localIds.has(row.forecastId))throw new Error("duplicate forecast in candidate cycle evidence group");
+   localIds.add(row.forecastId);
+  }
+  const existing=records.get(candidateId);
+  const record:SignalRecord=existing??{
+   id:candidateId,description:"TRIS prospective cycle candidate: "+first.family,
+   status:"hypothesis",evidence:[],createdAt:first.generatedAt,updatedAt:first.generatedAt,
+   frozenConfig:first.frozenConfig
+  };
+  if(record.frozenConfig&&record.frozenConfig!==first.frozenConfig)
+   throw new Error("candidate frozen configuration changed in signal ledger: "+candidateId);
+  const evidenceId=sha(group.map(row=>row.forecastId).sort().join("\n"));
+  if(!record.evidence.some(e=>e.id===evidenceId)){
+   records.set(candidateId,appendEvidence(record,{
+    id:evidenceId,phase:"prospective",evaluatedAt:first.resolvedAt,
+    n:group.length,hits:group.filter(row=>row.candidateHit).length,
+    baselineN:group.length,baselineHits:group.filter(row=>row.baselineHit).length,
+    discordantCandidateWins:group.filter(row=>row.candidateHit&&!row.baselineHit).length,
+    discordantBaselineWins:group.filter(row=>!row.candidateHit&&row.baselineHit).length,
+    testCount:100,
+    notes:"Append-only prospective evidence from frozen learning-cycle outcomes; multiplicity budget fixed at 100 candidates."
+   }));
+  }
+ }
+ return [...records.values()].map(record=>({...record,status:assessSignal(record).status}))
+  .sort((a,b)=>a.id.localeCompare(b.id));
 }
 /** Build non-overlapping chronological blocks. Partial final blocks need >=10 observations. */
 export function assessCycleSignalLifecycle(rows:ResolvedCycleSignal[],blockSize=25):CycleSignalLifecycle[] {
