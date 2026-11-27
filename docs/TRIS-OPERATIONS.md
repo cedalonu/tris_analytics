@@ -43,6 +43,11 @@ También se admite el flujo manual: descargar el archivo autorizado y guardarlo 
 
 Después de cada sorteo publicado, abrir **Actions → TRIS live prospective cycle → Run workflow** en la rama `research-core-v1`. Este flujo manual consulta la fuente una vez, restaura el último ledger exitoso, ejecuta ciclo + auditoría y publica un artefacto versionado para la siguiente ejecución. No existe un calendario ni polling automático. También puede ejecutarse localmente con `npm run research:cycles:source`. Si se trabaja con un archivo manual, usar:
 
+```bash
+npm run research:cycles -- data/Tris.csv data/cycles
+npm run research:cycles-audit -- data/Tris.csv data/cycles
+```
+
 El ciclo:
 - resuelve únicamente pronósticos previamente congelados cuyo ID de sorteo aparece exactamente en el CSV;
 - compara cada señal con su baseline pareado;
