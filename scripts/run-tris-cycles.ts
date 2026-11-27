@@ -116,6 +116,8 @@ if(!alreadyFrozen){
  await writeFile(resolve(ledgerDir,"investigator-report.json"),JSON.stringify({
   generatedAt:stamp,targetDrawId:nextTarget,historyThroughDrawId:latest.drawId,
   catalogSize:investigatorReport.catalogSize,baseCatalogSize:catalog.length,
+  investigatorCatalogSize:investigatorCatalog.length,
+  forecastEligibilityPolicy:"forecastable-preflight-v1",
   forecastableCatalogSize:forecastableCatalog.length,
   forecastIneligibleCount:investigatorCatalog.length-forecastableCatalog.length,
   forecastIneligibleByFamily:Object.fromEntries(familyOrder.map(family=>[

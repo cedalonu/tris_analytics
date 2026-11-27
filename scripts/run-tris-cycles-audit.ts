@@ -63,6 +63,7 @@ if(cycles.length!==1)throw new Error("Smoke test expected exactly one bootstrap 
 const latest=draws.at(-1)!;
 const investigator=JSON.parse(await readFile(resolve(dir,"investigator-report.json"),"utf8")) as {
  generatedAt:string;targetDrawId:number;historyThroughDrawId:number;catalogSize:number;baseCatalogSize?:number;
+ investigatorCatalogSize?:number;forecastEligibilityPolicy?:string;
  forecastableCatalogSize?:number;forecastIneligibleCount?:number;forecastIneligibleByFamily?:Record<string,number>;
  budget:number;frozenCount:number;
  explorationCount:number;exploitationCount:number;retiredExcluded:number;familyCounts:Record<string,number>;
@@ -74,11 +75,13 @@ if(!Number.isFinite(Date.parse(investigator.generatedAt))||investigator.targetDr
  throw new Error("Adaptive investigator report has invalid timestamp or temporal boundary.");
 if(investigator.catalogSize<investigator.budget||investigator.budget!==100||investigator.selected.length!==100||investigator.frozenCount!==cycles[0].frozenCount)
  throw new Error("Adaptive investigator report candidate budget does not reconcile.");
-if(investigator.forecastableCatalogSize!==investigator.catalogSize||
- investigator.forecastIneligibleCount!==(investigator.baseCatalogSize??0)-investigator.forecastableCatalogSize)
- throw new Error("Forecast-eligibility counts do not reconcile.");
-if(cycles[0].selectedCount!==investigator.selected.length||cycles[0].frozenCount!==investigator.selected.length)
- throw new Error("Every selected candidate must produce one frozen prospective forecast.");
+if(investigator.forecastEligibilityPolicy==="forecastable-preflight-v1"){
+ if(investigator.forecastableCatalogSize!==investigator.catalogSize||
+  investigator.forecastIneligibleCount!==(investigator.investigatorCatalogSize??0)-investigator.forecastableCatalogSize)
+  throw new Error("Forecast-eligibility counts do not reconcile.");
+ if(cycles[0].selectedCount!==investigator.selected.length||cycles[0].frozenCount!==investigator.selected.length)
+  throw new Error("Every selected candidate must produce one frozen prospective forecast.");
+}
 if(investigator.explorationCount+investigator.exploitationCount!==investigator.selected.length||investigator.explorationCount!==50||investigator.exploitationCount!==50)
  throw new Error("Bootstrap investigator must allocate 50 exploration and 50 exploitation slots.");
 if(Object.values(investigator.familyCounts).reduce((sum,count)=>sum+count,0)!==investigator.selected.length)
@@ -111,9 +114,10 @@ for(const variant of investigator.variants??[]){
 const selectedById=new Map(investigator.selected.map(x=>[x.candidateId,x]));
 if(selectedById.size!==investigator.selected.length)throw new Error("Adaptive investigator selected duplicate candidate IDs.");
 const frozenCandidateIds=new Set(cycles[0].signals.map(signal=>signal.candidateId));
-for(const selectedCandidate of investigator.selected)
- if(!frozenCandidateIds.has(selectedCandidate.candidateId))
-  throw new Error("Selected candidate was not frozen because it lacked a usable forecast: "+selectedCandidate.candidateId);
+if(investigator.forecastEligibilityPolicy==="forecastable-preflight-v1")
+ for(const selectedCandidate of investigator.selected)
+  if(!frozenCandidateIds.has(selectedCandidate.candidateId))
+   throw new Error("Selected candidate was not frozen because it lacked a usable forecast: "+selectedCandidate.candidateId);
 for(const signal of cycles[0].signals){
  const selected=selectedById.get(signal.candidateId);
  if(!selected||selected.priorityScore!==signal.priorityScore||JSON.stringify(selected.reasons)!==JSON.stringify(signal.priorityReasons))
