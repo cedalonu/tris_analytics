@@ -78,9 +78,9 @@ export default function ResearchDashboard({onBack,onOpenIntuition}:{onBack:()=>v
     </div>
     <div className="relative mt-5 flex flex-wrap gap-2 text-[10px] font-semibold"><span className="rounded-full border border-emerald-800 bg-emerald-950/50 px-3 py-1.5 text-emerald-300">● Solo análisis local</span><span className="rounded-full border border-slate-700 bg-slate-950/50 px-3 py-1.5 text-slate-300">Sin APIs ni descargas</span><span className="rounded-full border border-slate-700 bg-slate-950/50 px-3 py-1.5 text-slate-300">Sin afirmaciones predictivas no validadas</span></div>
    </div>
-   <nav aria-label="Fases del centro de investigación" className="mt-5 grid grid-cols-2 gap-2 md:grid-cols-5">
+   <nav aria-label="Fases del centro de investigación" className="mt-5 grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
     {kinds.map((k,i)=><button key={k} type="button" aria-pressed={active===k} onClick={()=>setActive(k)} className={`group min-h-20 rounded-xl border p-3 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 ${active===k?"border-cyan-500/80 bg-cyan-950/40 shadow-[0_0_20px_rgba(34,211,238,.08)]":"border-slate-800 bg-slate-900/60 hover:border-slate-600"}`}>
-     <div className="flex items-center justify-between"><span className="text-[10px] font-black tracking-widest text-slate-500">FASE {41+i}</span><span className={`text-xs ${byKind[k]?"text-emerald-400":"text-slate-600"}`}>{byKind[k]?"●":"○"}</span></div>
+     <div className="flex items-center justify-between"><span className="text-[10px] font-black tracking-widest text-slate-500">FASE {k==="structuralOutcome"?93:41+i}</span><span className={`text-xs ${byKind[k]?"text-emerald-400":"text-slate-600"}`}>{byKind[k]?"●":"○"}</span></div>
      <div className={`mt-2 text-xs font-bold leading-snug ${active===k?"text-cyan-200":"text-slate-300"}`}>{labels[k]}</div>
      <div className="mt-2 text-[10px] text-slate-500">{byKind[k]?"Informe disponible":"Pendiente de importar"}</div>
     </button>)}
