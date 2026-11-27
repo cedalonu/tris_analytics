@@ -1,0 +1,14 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {evaluateStructuralMotifProspectiveOutcomes} from "./structural-motif-prospective-outcome";
+import type {HistoricalPackage} from "./historical-comparison";
+import type {FrozenForecast,ResolvedForecast} from "./intuition-prospective";
+import type {Draw} from "../research-core";
+function makePackages(n=10):HistoricalPackage[]{return Array.from({length:n},(_,i)=>{const value=100+Math.sin(i*1.2)*20+Math.cos(i*.6)*7,date=new Date(Date.UTC(2026,0,i+1)).toISOString();return{id:"p"+i,name:"p"+i,date,package:{manifest:{schema:"tris-reproducibility-manifest-v1",snapshotFingerprint:"fp"+i},snapshots:["A","B","C"].map(candidateKey=>({candidateKey,history:[{recordedAt:date,classification:"neutral",resolved:value}]}))}};});}
+function makeForecasts():FrozenForecast[]{return["A","B","C"].map(candidateId=>({schemaVersion:1,forecastId:"f"+candidateId,candidateId,family:"pool-ranking",frozenConfig:'{"family":"pool-ranking","position":0,"method":"recent-frequency","poolSize":1,"window":20}',targetDrawId:101,generatedAt:"2026-01-11T00:00:00.000Z",historyThroughDrawId:100,historySha256:"a".repeat(64),prediction:["1"],baseline:["2"]}));}
+function makeResolutions(fs:FrozenForecast[]):ResolvedForecast[]{return fs.map(f=>({...f,resolvedAt:"2026-01-12T00:00:00.000Z",actual:"12345",candidateHit:true,baselineHit:false}));}
+const draws:Draw[]=[{drawId:101,digits:[1,2,3,4,5],date:"12/01/2026"}];
+test("excludes package observations recorded at or after forecast generation",()=>{const ps=makePackages(),future=makePackages(11).at(-1)!;future.id="future";future.name="future";future.date="2026-01-12T00:00:00.000Z";future.package.snapshots.forEach(s=>s.history[0].recordedAt=future.date);const fs=makeForecasts(),r=evaluateStructuralMotifProspectiveOutcomes([...ps,future],fs,makeResolutions(fs),draws,{permutations:99});assert.equal(r.audits[0].priorPackages,10);assert.equal(r.audits[0].futurePackagesExcluded,1);});
+test("rejects results that disagree with the official CSV",()=>{const fs=makeForecasts(),rs=makeResolutions(fs).map((r,i)=>i===0?{...r,actual:"99999"}:r),out=evaluateStructuralMotifProspectiveOutcomes(makePackages(),fs,rs,draws,{permutations:99});assert.equal(out.summary.officialMismatches,1);assert.equal(out.summary.validForecasts,2);});
+test("reports insufficient history rather than fabricating a network",()=>{const fs=makeForecasts(),r=evaluateStructuralMotifProspectiveOutcomes(makePackages(8),fs,makeResolutions(fs),draws,{permutations:99});assert.equal(r.audits[0].status,"insufficient-history");assert.equal(r.metrics.length,0);});
+test("evaluation is deterministic",()=>{const fs=makeForecasts(),a=evaluateStructuralMotifProspectiveOutcomes(makePackages(),fs,makeResolutions(fs),draws,{permutations:99}),b=evaluateStructuralMotifProspectiveOutcomes(makePackages(),fs,makeResolutions(fs),draws,{permutations:99});assert.deepEqual(a,b);});
