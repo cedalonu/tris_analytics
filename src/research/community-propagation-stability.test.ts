@@ -1,0 +1,6 @@
+import test from "node:test";import assert from "node:assert/strict";import {compareExposureWindows,type ExposureWindow} from "./community-propagation-stability";
+const w=(index:number,pairs:string[],rows:any[]=[]):ExposureWindow=>({index,startDate:"2026-01-01",endDate:"2026-01-09",packageCount:9,nodes:3,edges:2,pairs:new Set(pairs),rows});
+test("identical exposure pairs remain fully stable",()=>{const a=w(0,['["A","B"]','["A","C"]']),b=w(1,['["A","B"]','["A","C"]']);const r=compareExposureWindows(a,b);assert.equal(r.pairJaccard,1);assert.equal(r.persistentPairs,2);assert.equal(r.newPairs,0);assert.equal(r.lostPairs,0);});
+test("reports new and lost seed-target routes between windows",()=>{const r=compareExposureWindows(w(0,['ab','ac']),w(1,['ab','ad']));assert.equal(r.persistentPairs,1);assert.equal(r.newPairs,1);assert.equal(r.lostPairs,1);assert.equal(r.pairJaccard,1/3);});
+test("compares each seed's exposed destination set",()=>{const a=w(0,[],[{seed:"A",exposed:[{id:"B"},{id:"C"}]}]),b=w(1,[],[{seed:"A",exposed:[{id:"B"},{id:"D"}]}]);const r=compareExposureWindows(a,b);assert.equal(r.seedStability,1/3);});
+test("empty exposure sets are treated as stable rather than undefined",()=>{const r=compareExposureWindows(w(0,[]),w(1,[]));assert.equal(r.pairJaccard,1);assert.equal(r.seedStability,1);});
