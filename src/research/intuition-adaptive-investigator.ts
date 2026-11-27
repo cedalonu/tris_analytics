@@ -31,8 +31,16 @@ export function selectAdaptiveIntuitionCandidates(candidates:IntuitionCandidate[
   return {candidateId:candidate.id,family:candidate.family,resolvedDraws:rows.length,pairedWins:wins,pairedLosses:losses,shrunkAdvantage:(wins-losses)/(rows.length+priorStrength),recentAdvantage:(recentWins-recentLosses)/(recent.length+10),schedulingScore:scoreIntuitionCandidate(candidate).score,retired:retired.has(candidate.id)};
  });
  const statById=new Map(stats.map(s=>[s.candidateId,s]));
- const defaultCap=Math.ceil(budget/4);
- const caps:Record<CandidateFamily,number>={transition:defaultCap,"position-mutation":defaultCap,"absence-return":defaultCap,"pool-ranking":defaultCap,...options.familyCaps};
+ const baseCap=Math.floor(budget/4),remainder=budget%4;
+ const caps:Record<CandidateFamily,number>={
+  transition:baseCap+(remainder>0?1:0),
+  "position-mutation":baseCap+(remainder>1?1:0),
+  "absence-return":baseCap+(remainder>2?1:0),
+  "pool-ranking":baseCap,
+  ...options.familyCaps
+ };
+ const capTotal=FAMILIES.reduce((sum,f)=>sum+Math.max(0,Math.floor(caps[f]??0)),0);
+ if(capTotal>budget)throw new Error("family caps cannot exceed the investigator budget");
  const counts:Record<CandidateFamily,number>={transition:0,"position-mutation":0,"absence-return":0,"pool-ranking":0};
  const selected:AdaptiveSelectedCandidate[]=[],selectedIds=new Set<string>();let explorationCount=0,exploitationCount=0;
  const byFamily=new Map(FAMILIES.map(f=>[f,candidates.filter(c=>c.family===f&&!retired.has(c.id))]));

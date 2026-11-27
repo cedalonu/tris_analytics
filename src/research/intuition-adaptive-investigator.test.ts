@@ -29,3 +29,10 @@ test("default 100-candidate budget splits exactly 50 exploration and 50 exploita
  assert.equal(result.explorationCount,50);assert.equal(result.exploitationCount,50);
  assert.deepEqual(result.familyCounts,{transition:25,"position-mutation":25,"absence-return":25,"pool-ranking":25});
 });
+
+test("default family caps never exceed a non-divisible budget",()=>{
+ const result=selectAdaptiveIntuitionCandidates(generateIntuitionCandidates(),[],{beforeDrawId:901,budget:5});
+ assert.equal(result.selected.length,5);
+ assert.deepEqual(result.familyCounts,{transition:2,"position-mutation":1,"absence-return":1,"pool-ranking":1});
+ assert.throws(()=>selectAdaptiveIntuitionCandidates(generateIntuitionCandidates(),[],{beforeDrawId:901,budget:5,familyCaps:{transition:5,"position-mutation":5}}),/cannot exceed/);
+});
