@@ -75,6 +75,7 @@ const signalRecords=projectCycleOutcomesToSignalLedger(allOutcomes,priorSignalRe
 await writeFile(signalsPath,JSON.stringify(signalRecords,null,2)+"\n","utf8");
 const nextTarget=latest.drawId+1,alreadyFrozen=cycles.some(c=>c.targetDrawId===nextTarget);
 let newCycle:FrozenLearningCycle|null=null;
+let forecastIneligibleCount=0;
 let investigatorReport:ReturnType<typeof selectAdaptiveIntuitionCandidates>|null=null;
 if(!alreadyFrozen){
  const retiredIds=lifecycle.filter(x=>x.status==="retired").map(x=>x.candidateId);
@@ -89,6 +90,7 @@ if(!alreadyFrozen){
  const forecastableCatalog=investigatorCatalog.filter(candidate=>
   freezeProspectiveForecast(draws,candidate,nextTarget,stamp)!==null
  );
+ forecastIneligibleCount=investigatorCatalog.length-forecastableCatalog.length;
  const familyOrder=["transition","position-mutation","absence-return","pool-ranking"] as const;
  const eligibleByFamily=Object.fromEntries(familyOrder.map(family=>[
   family,forecastableCatalog.filter(candidate=>candidate.family===family).length
@@ -152,7 +154,7 @@ const report=[
  "- New cycle target: "+(newCycle?String(newCycle.targetDrawId):"already frozen / no new cycle"),
  "- Investigator mode: "+(investigatorReport?"evidence-guided exploration/exploitation":"no new cycle required"),
  "- Forecast-eligible investigator catalog: "+(investigatorReport?.catalogSize??0),
- "- Candidates without forecast support: "+(investigatorReport?investigatorCatalog.length-investigatorReport.catalogSize:0),
+ "- Candidates without forecast support: "+forecastIneligibleCount,
  "- Investigator exploration / exploitation: "+(investigatorReport?investigatorReport.explorationCount+" / "+investigatorReport.exploitationCount:"n/a"),
  "- Signals selected after retired-signal filter: "+(newCycle?.selectedCount??0),
  "- Previously retired signals excluded from new cycles: "+lifecycle.filter(x=>x.status==="retired").length,
