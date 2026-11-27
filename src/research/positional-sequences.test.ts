@@ -1,5 +1,5 @@
-import test from "node:test";import assert from "node:assert/strict";import {analyzePositionalSequences} from "./positional-sequences";
-const draws=(rows:number[][])=>rows.map((digits,i)=>({drawId:100+i,digits}));
+import test from "node:test";import type {Draw} from "../research-core";import assert from "node:assert/strict";import {analyzePositionalSequences} from "./positional-sequences";
+const draws=(rows:number[][]):Draw[]=>rows.map((digits,i)=>({drawId:100+i,digits:digits as Draw["digits"]}));
 test("detects a repeated ordered positional sequence",()=>{const rows=Array.from({length:80},(_,i)=>[0,0,0,0,0]);for(let i=5;i<70;i+=6){rows[i][0]=1-rows[i-1][0];rows[i+1][1]=1-rows[i][1];rows[i+2][2]=1-rows[i+1][2];}const r=analyzePositionalSequences(draws(rows),101,179,{maxDelay:2,permutations:99,minimumSupport:3,seed:5});assert.ok(r.patterns.some(p=>p.positions.join(",")==="1,2,3"&&p.occurrences>=3));});
 test("requires contiguous chronological draws",()=>{const d=draws(Array.from({length:20},()=>[0,0,0,0,0]));d[4].drawId++;assert.throws(()=>analyzePositionalSequences(d,101,119),/contiguous/);});
 test("is deterministic for a fixed seed",()=>{const d=draws(Array.from({length:60},(_,i)=>[i%3?0:1,i%4?0:2,i%5?0:3,i%2?0:4,0]));const a=analyzePositionalSequences(d,101,159,{permutations:99,minimumSupport:3,seed:8}),b=analyzePositionalSequences(d,101,159,{permutations:99,minimumSupport:3,seed:8});assert.deepEqual(a,b);});
