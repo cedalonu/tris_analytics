@@ -1,0 +1,10 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {evaluateStructuralMotifJointStability} from "./structural-motif-joint-stability";
+const p95={report:{metrics:[{family:"A",position:0,holdout:{deltaVsRandom:.1},positiveBlocks:3,blocksEvaluated:4,interpretation:"holdout-positive-and-most-training-blocks-positive"}]}};
+const p96={report:{metrics:[{family:"A",position:0,bootstrap:{q025:.02,q975:.2},interpretation:"interval-above-zero"}]}};
+const p97={report:{groups:[{family:"A",position:0,conclusion:"robust-positive-across-block-sizes",evaluatedBlockSizes:3,requestedBlockSizes:[3,5,7]}]}};
+test("classifies unanimous favorable retrospective criteria",()=>{const r=evaluateStructuralMotifJointStability(p95,p96,p97);assert.equal(r.groups[0].classification,"consistent-retrospective-support");});
+test("classifies evaluable but conflicting evidence as mixed",()=>{const bad={report:{metrics:[{family:"A",position:0,bootstrap:{q025:-.1,q975:.2},interpretation:"interval-includes-zero"}]}};assert.equal(evaluateStructuralMotifJointStability(p95,bad,p97).groups[0].classification,"mixed-evidence");});
+test("preserves groups with missing phase as insufficient",()=>{const r=evaluateStructuralMotifJointStability(p95,null,p97);assert.equal(r.groups[0].classification,"insufficient-evidence");assert.deepEqual(r.groups[0].missingPhases,["96"]);});
+test("does not classify a missing group as negative",()=>{const r=evaluateStructuralMotifJointStability(p95,{report:{metrics:[]}},p97);assert.equal(r.groups[0].classification,"insufficient-evidence");});
