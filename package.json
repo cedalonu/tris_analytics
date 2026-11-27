@@ -82,7 +82,8 @@
     "research:positional-sequences": "tsx scripts/run-tris-positional-sequences.ts",
     "research:conditional-position-changes": "tsx scripts/run-tris-conditional-position-changes.ts",
     "research:joint-positional-interactions": "tsx scripts/run-tris-joint-positional-interactions.ts",
-    "research:joint-digit-dependence": "tsx scripts/run-tris-joint-digit-dependence.ts"
+    "research:joint-digit-dependence": "tsx scripts/run-tris-joint-digit-dependence.ts",
+    "research:joint-digit-dependence-validation": "tsx scripts/run-tris-joint-digit-dependence-validation.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
