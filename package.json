@@ -71,7 +71,8 @@
     "research:structural-block-bootstrap": "tsx scripts/run-tris-structural-block-bootstrap.ts",
     "research:structural-bootstrap-sensitivity": "tsx scripts/run-tris-structural-bootstrap-sensitivity.ts",
     "research:structural-joint-stability": "tsx scripts/run-tris-structural-joint-stability.ts",
-    "research:structural-chain-audit": "tsx scripts/run-tris-structural-chain-audit.ts"
+    "research:structural-chain-audit": "tsx scripts/run-tris-structural-chain-audit.ts",
+    "research:structural-reproducibility": "tsx scripts/run-tris-structural-reproducibility.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",

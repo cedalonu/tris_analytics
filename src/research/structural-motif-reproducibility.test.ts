@@ -1,0 +1,10 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {compareStructuralReproducibility,type StructuralReproducibilityManifest} from "./structural-motif-reproducibility";
+const phase=(n:number,hash="out",input="in",settings={seed:1}):any=>({phase:n,label:"Fase "+n,method:"m"+n,settings,inputFiles:[{path:"input.json",sha256:input}],outputHashes:{json:hash,markdown:hash+"-md"},available:true,issues:[]});
+const manifest=(p:any[]= [phase(94)]):StructuralReproducibilityManifest=>({method:"structural-motif-reproducibility-manifest-v1",createdForComparison:false,environment:{node:"v22"},phases:p});
+test("identical inputs, settings and output hashes are reproducible",()=>{const result=compareStructuralReproducibility(manifest(),manifest());assert.equal(result.status,"reproducible");assert.equal(result.summary.reproducible,1);});
+test("changed output under identical inputs and settings is non-reproducible",()=>{const result=compareStructuralReproducibility(manifest(),manifest([phase(94,"different")]));assert.equal(result.status,"non-reproducible");assert.equal(result.summary.nonReproducible,1);});
+test("changed input is context change, not a reproducibility failure",()=>{const result=compareStructuralReproducibility(manifest(),manifest([phase(94,"out","changed")]));assert.equal(result.status,"context-changed");assert.equal(result.summary.changedInputs,1);});
+test("changed settings are reported separately",()=>{const result=compareStructuralReproducibility(manifest(),manifest([phase(94,"out","in",{seed:2})]));assert.equal(result.summary.changedSettings,1);});
+test("missing baseline or incomplete phase is not evaluable",()=>{const current=manifest([({...phase(94),available:false})]);assert.equal(compareStructuralReproducibility(null,current).status,"baseline-required");assert.equal(compareStructuralReproducibility(manifest(),current).summary.notEvaluable,1);});
