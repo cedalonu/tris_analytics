@@ -1,0 +1,10 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {validateMotifStructureWalkForward} from "./structural-motif-walk-forward-validation";
+import type {MotifWindow,TriadType} from "./structural-motifs";
+const make=(index:number,rates:Record<TriadType,number>):MotifWindow=>({index,startDate:"2026-01-01",endDate:"2026-01-02",packageCount:9,nodes:3,edges:2,motifs:[],counts:{empty:0,"single-edge":0,wedge:0,triangle:0},rates});
+const r=(wedge:number):Record<TriadType,number>=>({empty:0,"single-edge":0,wedge,triangle:1-wedge});
+test("scores each next window against prior-only forecasts",()=>{const x=validateMotifStructureWalkForward([make(0,r(.8)),make(1,r(.7)),make(2,r(.6))]);assert.equal(x.summary.targets,2);assert.equal(x.points[0].targetWindow,1);assert.equal(x.points[0].predicted.wedge,.8);assert.equal(x.points[0].observed.wedge,.7);});
+test("appending future windows does not change earlier forecasts",()=>{const a=[make(0,r(.8)),make(1,r(.7)),make(2,r(.6))],before=validateMotifStructureWalkForward(a);const after=validateMotifStructureWalkForward([...a,make(3,r(.1))]);assert.deepEqual(after.points.slice(0,2),before.points);});
+test("uses expanding baseline formed only from earlier windows",()=>{const x=validateMotifStructureWalkForward([make(0,r(.8)),make(1,r(.6)),make(2,r(.4))]);assert.equal(x.points[1].baseline.wedge,.7);});
+test("reports insufficient evidence without targets",()=>{const x=validateMotifStructureWalkForward([make(0,r(.5))]);assert.equal(x.valid,false);assert.equal(x.summary.targets,0);assert.equal(x.summary.modelMae,null);});
