@@ -23,6 +23,8 @@ La importación se conserva en el almacenamiento local del navegador. No envía 
 
 ## Módulos
 - Panel principal: métricas de dataset, último resultado, frecuencia total, sorteos recientes.
+- Red de transiciones: conexiones entre dígitos de posiciones adyacentes (R1→R2→R3→R4→R5), con ventanas seleccionables de 50, 150 o 500 sorteos; filtro de todas, sobre esperado o 25% superior; tooltip y panel Top 8 de conteos.
+- Referencia nula descriptiva: conteo esperado aproximado N/100 por pareja bajo independencia y uniformidad de dígitos. Ratio observado/esperado se muestra solo como descripción; no prueba señal, no corrige por múltiples comparaciones y no representa probabilidad del siguiente sorteo.
 - Prospectiva / Ledger: ciclo por concurso, forecasts congelados, outcomes, hits y comparativa por familia.
 - Historial: buscar concurso, resultado o fecha.
 - Análisis por posición: frecuencia de 0–9 en R1 a R5.
