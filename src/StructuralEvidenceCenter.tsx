@@ -6,14 +6,14 @@ const pp=(v:any)=>typeof v==="number"&&Number.isFinite(v)?(v*100).toFixed(2)+" p
 const unwrap=(x:any)=>x?.data?.report??x?.data??null;
 export default function StructuralEvidenceCenter({reports}:{reports:any}){
  const [family,setFamily]=useState("all"),[position,setPosition]=useState("all");
- const data=useMemo(()=>Object.fromEntries(Object.entries(reports).map(([k,v])=>[k,unwrap(v)])),[reports]);
+ const data=useMemo(()=>Object.fromEntries(Object.entries(reports).map(([k,v])=>[k,unwrap(v)])) as Record<string,any>,[reports]);
  const phase94=data.structuralRandomControl,phase95=data.structuralTemporalRobustness,phase96=data.structuralBlockBootstrap,phase97=data.structuralBootstrapSensitivity,phase98=data.structuralJointStability,phase99=data.structuralChainAudit;
  const phases=[phase94,phase95,phase96,phase97,phase98,phase99];
  const missing=phaseNames.filter((_,i)=>!phases[i]);
  const audit=phase99?.summary;
  const groups=useMemo(()=>{
-  const maps=[phase95?.metrics??[],phase96?.metrics??[],phase97?.groups??[],phase98?.groups??[]].map((arr:any[])=>new Map(arr.map((x:any)=>[key(x),x]).filter((x:any)=>x[0])));
-  const keys=[...new Set(maps.flatMap(m=>[...m.keys()]))].sort();
+  const maps:Map<string,any>[]=[phase95?.metrics??[],phase96?.metrics??[],phase97?.groups??[],phase98?.groups??[]].map((arr:any[])=>new Map<string,any>(arr.map((x:any)=>[key(x),x] as [string|null,any]).filter((x:any)=>typeof x[0]==="string") as [string,any][]));
+  const keys=[...new Set<string>(maps.flatMap(m=>Array.from(m.keys())))].sort();
   return keys.map(k=>{const [f,p]=k.split("|"),a=maps[0].get(k),b=maps[1].get(k),c=maps[2].get(k),d=maps[3].get(k);return{key:k,family:f,position:Number(p),p95:a,p96:b,p97:c,p98:d};});
  },[phase95,phase96,phase97,phase98]);
  const families=[...new Set(groups.map(g=>g.family))].sort();
