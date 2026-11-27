@@ -6,7 +6,7 @@ import {buildHypothesisNetwork} from "./hypothesis-network";
 import {enumerateStructuralMotifs} from "./structural-motifs";
 import {MODES,outcomeForMode} from "./draw-evolution";
 type Audit={targetDrawId:number;generatedAt:string;priorPackages:number;futurePackagesExcluded:number;nodes:number;motifCandidates:number;status:string};
-type CandidateEntry={candidateId:string;predictions:string[];baseline:string[];structural:boolean};
+export type CandidateEntry={candidateId:string;predictions:string[];baseline:string[];structural:boolean};
 type Row={targetDrawId:number;family:string;position:number;actualToken:string;candidateEntries:CandidateEntry[];structuralCandidates:number;allCandidates:number;structuralPoolSize:number;allPoolSize:number;baselinePoolSize:number;structuralHit:boolean;allHit:boolean;baselineHit:boolean};
 const wilson=(h:number,n:number)=>{const z=1.959963984540054,p=n?h/n:0,z2=z*z,d=1+z2/n,c=(p+z2/(2*n))/d,w=n?z*Math.sqrt((p*(1-p)+z2/(4*n))/n)/d:0;return{lower:Math.max(0,c-w),upper:Math.min(1,c+w)}};
 function cutoffPackages(items:HistoricalPackage[],cutoff:string){const eligible:HistoricalPackage[]=[];let future=0;for(const p of items){const all=p.package.snapshots.flatMap(s=>s.history.map(h=>h.recordedAt));if(all.some(t=>t>=cutoff))future++;const snapshots=p.package.snapshots.map(s=>({...s,history:s.history.filter(h=>h.recordedAt<cutoff)})).filter(s=>s.history.length);if(!snapshots.length)continue;const date=snapshots.flatMap(s=>s.history.map(h=>h.recordedAt)).sort().at(-1)!;eligible.push({...p,date,package:{...p.package,snapshots}});}return{eligible,future};}
