@@ -62,7 +62,9 @@ if(JSON.stringify(actualSignals)!==JSON.stringify(expectedSignals))
 if(cycles.length!==1)throw new Error("Smoke test expected exactly one bootstrap cycle; found "+cycles.length+".");
 const latest=draws.at(-1)!;
 const investigator=JSON.parse(await readFile(resolve(dir,"investigator-report.json"),"utf8")) as {
- generatedAt:string;targetDrawId:number;historyThroughDrawId:number;catalogSize:number;budget:number;frozenCount:number;
+ generatedAt:string;targetDrawId:number;historyThroughDrawId:number;catalogSize:number;baseCatalogSize?:number;
+ forecastableCatalogSize?:number;forecastIneligibleCount?:number;forecastIneligibleByFamily?:Record<string,number>;
+ budget:number;frozenCount:number;
  explorationCount:number;exploitationCount:number;retiredExcluded:number;familyCounts:Record<string,number>;
  selected:Array<{candidateId:string;family:string;config:Record<string,unknown>;priorityScore:number;reasons:string[];parentCandidateId?:string|null}>;
  variants?:Array<{candidateId:string;parentCandidateId:string;changedParameter:"window"|"priorMisses";fromValue:number;toValue:number;config:Record<string,unknown>;frozenConfig:string;parentResolvedDraws:number;parentPairedWins:number;parentPairedLosses:number;parentShrunkAdvantage:number;proposalReason:string}>;
@@ -72,10 +74,18 @@ if(!Number.isFinite(Date.parse(investigator.generatedAt))||investigator.targetDr
  throw new Error("Adaptive investigator report has invalid timestamp or temporal boundary.");
 if(investigator.catalogSize<investigator.budget||investigator.budget!==100||investigator.selected.length!==100||investigator.frozenCount!==cycles[0].frozenCount)
  throw new Error("Adaptive investigator report candidate budget does not reconcile.");
+if(investigator.forecastableCatalogSize!==investigator.catalogSize||
+ investigator.forecastIneligibleCount!==(investigator.baseCatalogSize??0)-investigator.forecastableCatalogSize)
+ throw new Error("Forecast-eligibility counts do not reconcile.");
+if(cycles[0].selectedCount!==investigator.selected.length||cycles[0].frozenCount!==investigator.selected.length)
+ throw new Error("Every selected candidate must produce one frozen prospective forecast.");
 if(investigator.explorationCount+investigator.exploitationCount!==investigator.selected.length||investigator.explorationCount!==50||investigator.exploitationCount!==50)
  throw new Error("Bootstrap investigator must allocate 50 exploration and 50 exploitation slots.");
+if(Object.values(investigator.familyCounts).reduce((sum,count)=>sum+count,0)!==investigator.selected.length)
+ throw new Error("Adaptive investigator family counts do not reconcile with selected budget.");
 for(const family of ["transition","position-mutation","absence-return","pool-ranking"])
- if(investigator.familyCounts[family]!==25)throw new Error("Adaptive investigator family quota mismatch: "+family);
+ if(!Number.isInteger(investigator.familyCounts[family])||investigator.familyCounts[family]<0)
+  throw new Error("Adaptive investigator family count is invalid: "+family);
 if(investigator.retiredExcluded!==0)throw new Error("Fresh bootstrap should not exclude any previously retired candidates.");
 if((investigator.variantCount??0)!==(investigator.variants??[]).length)throw new Error("Adaptive variant count does not reconcile.");
 for(const variant of investigator.variants??[]){
@@ -100,6 +110,10 @@ for(const variant of investigator.variants??[]){
 }
 const selectedById=new Map(investigator.selected.map(x=>[x.candidateId,x]));
 if(selectedById.size!==investigator.selected.length)throw new Error("Adaptive investigator selected duplicate candidate IDs.");
+const frozenCandidateIds=new Set(cycles[0].signals.map(signal=>signal.candidateId));
+for(const selectedCandidate of investigator.selected)
+ if(!frozenCandidateIds.has(selectedCandidate.candidateId))
+  throw new Error("Selected candidate was not frozen because it lacked a usable forecast: "+selectedCandidate.candidateId);
 for(const signal of cycles[0].signals){
  const selected=selectedById.get(signal.candidateId);
  if(!selected||selected.priorityScore!==signal.priorityScore||JSON.stringify(selected.reasons)!==JSON.stringify(signal.priorityReasons))

@@ -5,6 +5,7 @@ import {resolve,basename} from "node:path";
 import {createHash} from "node:crypto";
 import {importTrisCsv} from "../src/research/data-adapter";
 import {generateIntuitionCandidates} from "../src/research/intuition-candidate-generator";
+import {freezeProspectiveForecast} from "../src/research/intuition-prospective";
 import {selectAdaptiveIntuitionCandidates} from "../src/research/intuition-adaptive-investigator";
 import {proposeAdaptiveCandidateVariants} from "../src/research/intuition-adaptive-variants";
 import {freezeLearningCycle,resolveLearningCycleSignal,assessCycleSignalLifecycle,fingerprintCycleHistory,projectCycleOutcomesToSignalLedger,type FrozenLearningCycle,type ResolvedCycleSignal} from "../src/research/cycle-learning";
@@ -82,17 +83,46 @@ if(!alreadyFrozen){
   beforeDrawId:nextTarget,minResolvedDraws:25,priorStrength:20,maxVariants:20,retiredCandidateIds:retiredIds
  });
  const investigatorCatalog=[...catalog,...variants.map(v=>v.candidate)];
- investigatorReport=selectAdaptiveIntuitionCandidates(investigatorCatalog,allOutcomes,{
+ // Do not spend the fixed research budget on candidates that cannot form a
+ // forecast from the current pre-draw history. Preflight is deterministic and
+ // does not inspect the target result.
+ const forecastableCatalog=investigatorCatalog.filter(candidate=>
+  freezeProspectiveForecast(draws,candidate,nextTarget,stamp)!==null
+ );
+ const familyOrder=["transition","position-mutation","absence-return","pool-ranking"] as const;
+ const eligibleByFamily=Object.fromEntries(familyOrder.map(family=>[
+  family,forecastableCatalog.filter(candidate=>candidate.family===family).length
+ ])) as Record<(typeof familyOrder)[number],number>;
+ const familyCaps={transition:0,"position-mutation":0,"absence-return":0,"pool-ranking":0};
+ for(const family of familyOrder)familyCaps[family]=Math.min(25,eligibleByFamily[family]);
+ let unallocated=Math.max(0,100-familyOrder.reduce((sum,family)=>sum+familyCaps[family],0));
+ while(unallocated>0){
+  let allocated=false;
+  for(const family of familyOrder){
+   if(unallocated===0)break;
+   if(familyCaps[family]<eligibleByFamily[family]){
+    familyCaps[family]++;unallocated--;allocated=true;
+   }
+  }
+  if(!allocated)break;
+ }
+ investigatorReport=selectAdaptiveIntuitionCandidates(forecastableCatalog,allOutcomes,{
   beforeDrawId:nextTarget,budget:100,explorationFraction:.5,priorStrength:20,recentWindow:25,
-  familyCaps:{transition:25,"position-mutation":25,"absence-return":25,"pool-ranking":25},
-  retiredCandidateIds:retiredIds
+  familyCaps,retiredCandidateIds:retiredIds
  });
  const selected=investigatorReport.selected.map(item=>({candidate:item.candidate,priorityScore:item.priorityScore,priorityReasons:item.priorityReasons}));
  newCycle=freezeLearningCycle(draws,selected,nextTarget,stamp,selected.length);
  if(newCycle.frozenCount)await appendFile(cyclesPath,JSON.stringify(newCycle)+"\n","utf8");
  await writeFile(resolve(ledgerDir,"investigator-report.json"),JSON.stringify({
   generatedAt:stamp,targetDrawId:nextTarget,historyThroughDrawId:latest.drawId,
-  catalogSize:investigatorReport.catalogSize,baseCatalogSize:catalog.length,variantCount:variants.length,
+  catalogSize:investigatorReport.catalogSize,baseCatalogSize:catalog.length,
+  forecastableCatalogSize:forecastableCatalog.length,
+  forecastIneligibleCount:investigatorCatalog.length-forecastableCatalog.length,
+  forecastIneligibleByFamily:Object.fromEntries(familyOrder.map(family=>[
+   family,investigatorCatalog.filter(candidate=>candidate.family===family).length-eligibleByFamily[family]
+  ])),
+  forecastIneligibleCandidateIds:investigatorCatalog.filter(candidate=>!forecastableCatalog.some(eligible=>eligible.id===candidate.id)).map(candidate=>candidate.id),
+  variantCount:variants.length,
   variants:variants.map(v=>({candidateId:v.candidate.id,parentCandidateId:v.parentCandidateId,changedParameter:v.changedParameter,fromValue:v.fromValue,toValue:v.toValue,config:v.candidate.config,frozenConfig:v.candidate.frozenConfig,parentResolvedDraws:v.parentResolvedDraws,parentPairedWins:v.parentPairedWins,parentPairedLosses:v.parentPairedLosses,parentShrunkAdvantage:v.parentShrunkAdvantage,proposalReason:v.proposalReason})),
   budget:investigatorReport.budget,
   frozenCount:newCycle.frozenCount,explorationCount:investigatorReport.explorationCount,
@@ -119,7 +149,8 @@ const report=[
  "- Previously frozen signal outcomes resolved: "+newOutcomes.length,
  "- New cycle target: "+(newCycle?String(newCycle.targetDrawId):"already frozen / no new cycle"),
  "- Investigator mode: "+(investigatorReport?"evidence-guided exploration/exploitation":"no new cycle required"),
- "- Investigator catalog: "+(investigatorReport?.catalogSize??0),
+ "- Forecast-eligible investigator catalog: "+(investigatorReport?.catalogSize??0),
+ "- Candidates without forecast support: "+(investigatorReport?investigatorCatalog.length-investigatorReport.catalogSize:0),
  "- Investigator exploration / exploitation: "+(investigatorReport?investigatorReport.explorationCount+" / "+investigatorReport.exploitationCount:"n/a"),
  "- Signals selected after retired-signal filter: "+(newCycle?.selectedCount??0),
  "- Previously retired signals excluded from new cycles: "+lifecycle.filter(x=>x.status==="retired").length,
