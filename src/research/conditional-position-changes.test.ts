@@ -1,5 +1,5 @@
-import test from "node:test";import assert from "node:assert/strict";import {analyzeConditionalPositionChanges} from "./conditional-position-changes";
-const make=(a:number[][])=>a.map((digits,i)=>({drawId:200+i,digits}));
+import test from "node:test";import type {Draw} from "../research-core";import assert from "node:assert/strict";import {analyzeConditionalPositionChanges} from "./conditional-position-changes";
+const make=(a:number[][]):Draw[]=>a.map((digits,i)=>({drawId:200+i,digits:digits as Draw["digits"]}));
 test("detects directed conditional association in synthetic sequence",()=>{const a=Array.from({length:180},()=>[0,0,0,0,0]);for(let i=5;i<160;i+=8){a[i][0]=1-a[i-1][0];a[i+1][1]=1-a[i][1];}const r=analyzeConditionalPositionChanges(make(a),201,379,{maxLag:1,permutations:99,minimumSupport:5,seed:4});const x=r.associations.find(v=>v.sourcePosition===1&&v.targetPosition===2&&v.lag===1);assert.ok(x);assert.ok((x.riskDifference??0)>0);});
 test("rejects draw gaps",()=>{const a=make(Array.from({length:40},()=>[0,0,0,0,0]));a[7].drawId++;assert.throws(()=>analyzeConditionalPositionChanges(a,201,239),/contiguous/);});
 test("is deterministic",()=>{const a=make(Array.from({length:100},(_,i)=>[i%3?0:1,i%4?0:1,i%5?0:1,i%6?0:1,i%7?0:1]));const o={maxLag:2,permutations:99,minimumSupport:5,seed:116};assert.deepEqual(analyzeConditionalPositionChanges(a,201,299,o),analyzeConditionalPositionChanges(a,201,299,o));});

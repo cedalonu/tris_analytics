@@ -1,5 +1,5 @@
-import test from "node:test";import assert from "node:assert/strict";import {validateJointDigitDependence} from "./joint-digit-dependence-validation";
-const data=(n:number,fn:(i:number)=>number[])=>Array.from({length:n},(_,i)=>({drawId:2000+i,digits:fn(i)}));
+import test from "node:test";import type {Draw} from "../research-core";import assert from "node:assert/strict";import {validateJointDigitDependence} from "./joint-digit-dependence-validation";
+const data=(n:number,fn:(i:number)=>number[]):Draw[]=>Array.from({length:n},(_,i)=>({drawId:2000+i,digits:fn(i) as Draw["digits"]}));
 test("26 subsets and disjoint windows",()=>{const a=data(120,i=>[i%10,i%10,(i*3)%10,(i*7)%10,(i*9)%10]);const r=validateJointDigitDependence(a,2000,2059,2060,2119,{permutations:99});assert.equal(r.summary.subsets,26);});
 test("replicates persistent dependence",()=>{const a=data(160,i=>[i%10,i%10,(i*3)%10,(i*7)%10,(i*9)%10]);const r=validateJointDigitDependence(a,2000,2079,2080,2159,{permutations:199,seed:4});assert.equal(r.results.find(x=>x.positions.join(",")==="1,2")?.status,"replicated");});
 test("rejects overlap and gaps",()=>{const a=data(100,i=>[i%10,(i+1)%10,(i+2)%10,(i+3)%10,(i+4)%10]);assert.throws(()=>validateJointDigitDependence(a,2000,2059,2059,2099),/disjoint/);a[30].drawId++;assert.throws(()=>validateJointDigitDependence(a,2000,2049,2050,2099),/contiguous/);});
