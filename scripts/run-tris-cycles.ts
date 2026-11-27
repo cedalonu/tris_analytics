@@ -70,9 +70,10 @@ try{signalRecords=JSON.parse(await readFile(signalsPath,"utf8")) as SignalRecord
 catch(error){if((error as NodeJS.ErrnoException).code!=="ENOENT")throw error;}
 const signalMap=new Map(signalRecords.map(record=>[record.id,record]));
 if(signalMap.size!==signalRecords.length)throw new Error("Duplicate candidate IDs in consolidated signal ledger.");
-const newByCandidate=new Map<string,ResolvedCycleSignal[]>();
-for(const row of newOutcomes){const batch=newByCandidate.get(row.candidateId)??[];batch.push(row);newByCandidate.set(row.candidateId,batch);}
-for(const [candidateId,rows] of newByCandidate){
+const allByCandidateCycle=new Map<string,ResolvedCycleSignal[]>();
+for(const row of allOutcomes){const key=row.candidateId+"|"+row.cycleId,batch=allByCandidateCycle.get(key)??[];batch.push(row);allByCandidateCycle.set(key,batch);}
+for(const rows of allByCandidateCycle.values()){
+ const candidateId=rows[0].candidateId;
  const first=rows[0],existing=signalMap.get(candidateId);
  const record:SignalRecord=existing??{
   id:candidateId,description:"TRIS prospective cycle candidate: "+first.family,
@@ -83,7 +84,7 @@ for(const [candidateId,rows] of newByCandidate){
  const evidenceId=sha(rows.map(row=>row.forecastId).sort().join("\n"));
  if(!record.evidence.some(e=>e.id===evidenceId)){
   const evidence={
-   id:evidenceId,phase:"prospective" as const,evaluatedAt:stamp,
+   id:evidenceId,phase:"prospective" as const,evaluatedAt:rows[0].resolvedAt,
    n:rows.length,hits:rows.filter(row=>row.candidateHit).length,
    baselineN:rows.length,baselineHits:rows.filter(row=>row.baselineHit).length,
    discordantCandidateWins:rows.filter(row=>row.candidateHit&&!row.baselineHit).length,
