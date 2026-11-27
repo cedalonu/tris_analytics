@@ -41,7 +41,7 @@ También se admite el flujo manual: descargar el archivo autorizado y guardarlo 
 
 ### 2. Congelar y actualizar el ciclo de aprendizaje
 
-Después de cada sorteo publicado, abrir **Actions → TRIS live prospective cycle → Run workflow** en la rama `research-core-v1`. Este flujo manual consulta la fuente una vez, restaura el último ledger exitoso, ejecuta ciclo + auditoría y publica un artefacto versionado para la siguiente ejecución. No existe un calendario ni polling automático. También puede ejecutarse localmente con `npm run research:cycles:source`. Si se trabaja con un archivo manual, usar:
+Después de cada sorteo publicado, hacer un push a `research-core-v1` (puede ser un commit vacío dedicado al sorteo). El workflow `TRIS live prospective cycle` se ejecuta con ese push, consulta la fuente una sola vez, restaura el último ledger exitoso, ejecuta ciclo + auditoría y publica un artefacto versionado para la siguiente ejecución. No existe un calendario ni polling automático. También puede ejecutarse localmente con `npm run research:cycles:source`. Si se trabaja con un archivo manual, usar:
 
 ```bash
 npm run research:cycles -- data/Tris.csv data/cycles

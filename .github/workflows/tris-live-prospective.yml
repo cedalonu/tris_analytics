@@ -1,7 +1,8 @@
 name: TRIS live prospective cycle
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [research-core-v1]
 
 permissions:
   contents: read
