@@ -1,9 +1,10 @@
 #!/usr/bin/env tsx
-import {readFile,writeFile,mkdir,access} from "node:fs/promises";
-import {resolve,dirname} from "node:path";
+import {readFile,writeFile,mkdir} from "node:fs/promises";
+import {resolve} from "node:path";
 import {createHash} from "node:crypto";
 import {compareStructuralReproducibility,type ReproducibilityPhase,type StructuralReproducibilityManifest} from "../src/research/structural-motif-reproducibility";
 const root=resolve("reports/structural-motif-reproducibility"),baselinePath=resolve(root,"baseline.json"),latestPath=resolve(root,"latest.json");
+const expectedMethods:Record<number,string>={94:"structural-motif-matched-random-control-v1",95:"structural-motif-temporal-robustness-v1",96:"structural-motif-block-bootstrap-v1",97:"structural-motif-bootstrap-sensitivity-v1",98:"structural-motif-joint-stability-v1",99:"structural-motif-research-chain-audit-v1"};
 const defs=[{phase:94,label:"Control aleatorio emparejado",dir:"structural-motif-random-control"},{phase:95,label:"Holdout y bloques temporales",dir:"structural-motif-temporal-robustness"},{phase:96,label:"Bootstrap por bloques",dir:"structural-motif-block-bootstrap"},{phase:97,label:"Sensibilidad del bootstrap",dir:"structural-motif-bootstrap-sensitivity"},{phase:98,label:"Estabilidad conjunta",dir:"structural-motif-joint-stability"},{phase:99,label:"Auditoría de cadena",dir:"structural-motif-research-chain-audit"}];
 const hash=(s:string)=>createHash("sha256").update(s).digest("hex");
 async function read(path:string){try{return await readFile(path,"utf8");}catch(e){if((e as NodeJS.ErrnoException).code==="ENOENT")return null;throw e;}}
@@ -17,7 +18,8 @@ async function capture():Promise<StructuralReproducibilityManifest>{
   if(wrapper){const paths=sourcePaths(wrapper,def.phase);if(!paths.length)issues.push("No hay sourceReport(s) declarados.");for(const p of paths){const abs=resolve(p),content=await read(abs);if(content===null)issues.push("No existe la entrada "+abs);else inputFiles.push({path:abs,sha256:hash(content)});}}
   if(!md)issues.push("No existe "+mdPath);
   const report=wrapper?.report??wrapper;
-  phases.push({phase:def.phase,label:def.label,method:report?.method??null,settings:report?.settings??null,inputFiles,outputHashes:{json:json===null?null:hash(json),markdown:md===null?null:hash(md)},available:issues.length===0&&!!report?.method,issues});
+  if(report?.method!==expectedMethods[def.phase])issues.push("Método no esperado: "+String(report?.method)+"; se esperaba "+expectedMethods[def.phase]);
+  phases.push({phase:def.phase,label:def.label,method:report?.method??null,settings:report?.settings??null,inputFiles,outputHashes:{json:json===null?null:hash(json),markdown:md===null?null:hash(md)},available:issues.length===0&&report?.method===expectedMethods[def.phase],issues});
  }
  const pkg=JSON.parse((await read("package.json"))??"{}");
  return{method:"structural-motif-reproducibility-manifest-v1",createdForComparison:false,environment:{node:process.version,platform:process.platform,arch:process.arch,packageVersion:pkg.version??null},phases};
