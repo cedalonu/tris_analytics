@@ -1,13 +1,14 @@
 import type {Draw} from "../research-core";
 import type {FrozenForecast,ResolvedForecast} from "./intuition-prospective";
 import type {StabilityRankingReport,StabilityRankRow} from "./structural-motif-stability-ranking";
-import {MODES} from "./draw-evolution";
+import {MODES,outcomeForMode} from "./draw-evolution";
 import {createHash} from "node:crypto";
 export type ProspectiveStabilityLock={method:"tris-prospective-stability-lock-v1";lockedAt:string;cutoffDrawId:number;cutoffDate:string|null;rankingFingerprint:string;selectionRule:string;entries:{family:string;position:number;retrospectiveRank:number;retrospectiveTier:string}[];limitations:string[]};
 type Metric={family:string;position:number;targets:number;candidateHits:number;baselineHits:number;candidateRate:number;baselineRate:number;delta:number;candidatePoolMean:number;baselinePoolMean:number;windows:{startDrawId:number;endDrawId:number;targets:number;candidateRate:number;baselineRate:number;delta:number}[];classification:"prospective-advantage-repeated"|"no-prospective-advantage"|"mixed-prospective-evidence"|"insufficient-prospective-evidence"};
 const sha=(s:string)=>createHash("sha256").update(s,"utf8").digest("hex");
 const wilson=(hits:number,n:number)=>{if(!n)return{lower:null,upper:null};const z=1.959963984540054,p=hits/n,z2=z*z,d=1+z2/n,c=(p+z2/(2*n))/d,w=z*Math.sqrt((p*(1-p)+z2/(4*n))/n)/d;return{lower:Math.max(0,c-w),upper:Math.min(1,c+w)};};
 function positions(f:FrozenForecast):number[]{try{const c=JSON.parse(f.frozenConfig);if(c.family!==f.family)return[];if(f.family==="transition")return MODES.find(m=>m.mode===c.mode)?.positions??[];return Number.isInteger(c.position)&&c.position>=0&&c.position<=4?[c.position]:[];}catch{return[];}}
+function resolvedOutcome(f:FrozenForecast,d:Draw):string|null{try{const c=JSON.parse(f.frozenConfig);if(c.family!==f.family)return null;if(f.family==="transition")return MODES.some(m=>m.mode===c.mode)?outcomeForMode(d.digits,c.mode):null;return Number.isInteger(c.position)&&c.position>=0&&c.position<=4?String(d.digits[c.position]):null;}catch{return null;}}
 function tokens(f:FrozenForecast,p:number,baseline=false):string[]{const xs=baseline?f.baseline:f.prediction;if(f.family==="transition"){try{const c=JSON.parse(f.frozenConfig),m=MODES.find(x=>x.mode===c.mode),i=m?.positions.indexOf(p)??-1;return i<0?[]:xs.filter(x=>new RegExp("^[0-9]{"+m!.positions.length+"}$").test(x)).map(x=>x[i]);}catch{return[];}}return positions(f).includes(p)?xs.filter(x=>/^[0-9]$/.test(x)):[];}
 export function createProspectiveStabilityLock(ranking:StabilityRankingReport,draws:Draw[],lockedAt:string):ProspectiveStabilityLock{
  if(ranking.status!=="ready"||!ranking.ranking.length)throw Error("a populated phase-109 stability ranking is required");
@@ -32,7 +33,9 @@ export function evaluateProspectiveStability(lock:ProspectiveStabilityLock,forec
   if(r.actual!==d.digits.join("")){skipped.officialMismatch++;continue;}
   if(!Number.isFinite(Date.parse(r.resolvedAt))||Date.parse(r.resolvedAt)<=Date.parse(f.generatedAt)){skipped.invalidTiming++;continue;}
   const ps=positions(f);if(!ps.length){skipped.invalidConfig++;continue;}
-  let valid=true;for(const p of ps){const key=f.family+"|"+p;if(!selected.has(key))continue;const actual=String(d.digits[p]),pred=tokens(f,p),base=tokens(f,p,true);if(!pred.length||!base.length||pred.some(x=>!/^[0-9]$/.test(x))||base.some(x=>!/^[0-9]$/.test(x))){valid=false;break;}if(pred.includes(actual)!==r.candidateHit||base.includes(actual)!==r.baselineHit){valid=false;break;}}
+  const relevant=ps.filter(p=>selected.has(f.family+"|"+p));if(!relevant.length){skipped.outsideCohort++;continue;}
+  const officialOutcome=resolvedOutcome(f,d);if(officialOutcome===null||f.prediction.includes(officialOutcome)!==r.candidateHit||f.baseline.includes(officialOutcome)!==r.baselineHit){skipped.invalidFlags++;continue;}
+  let valid=true;for(const p of relevant){const pred=tokens(f,p),base=tokens(f,p,true);if(!pred.length||!base.length||pred.some(x=>!/^[0-9]$/.test(x))||base.some(x=>!/^[0-9]$/.test(x))){valid=false;break;}}
   if(!valid){skipped.invalidFlags++;continue;}
   for(const p of ps){const key=f.family+"|"+p;if(!selected.has(key))continue;const group=groups.get(key)??new Map(),row=group.get(f.targetDrawId)??{pred:new Set<string>(),base:new Set<string>(),actual:String(d.digits[p]),candidateCount:0};tokens(f,p).forEach(x=>row.pred.add(x));tokens(f,p,true).forEach(x=>row.base.add(x));row.candidateCount++;group.set(f.targetDrawId,row);groups.set(key,group);}
  }
