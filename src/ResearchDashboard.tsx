@@ -3,10 +3,11 @@ import HypothesisMonitor from "./HypothesisMonitor";
 import StructuralMotifRandomControl from "./StructuralMotifRandomControl";
 import StructuralMotifTemporalRobustness from "./StructuralMotifTemporalRobustness";
 import StructuralMotifBlockBootstrap from "./StructuralMotifBlockBootstrap";
+import StructuralMotifBootstrapSensitivity from "./StructuralMotifBootstrapSensitivity";
 
-type ReportKind="ledger"|"coverage"|"performance"|"stability"|"sensitivity"|"structuralOutcome"|"structuralRandomControl"|"structuralTemporalRobustness"|"structuralBlockBootstrap";
+type ReportKind="ledger"|"coverage"|"performance"|"stability"|"sensitivity"|"structuralOutcome"|"structuralRandomControl"|"structuralTemporalRobustness"|"structuralBlockBootstrap"|"structuralBootstrapSensitivity";
 type ReportRecord={kind:ReportKind;name:string;data:any};
-const labels:Record<ReportKind,string>={ledger:"Integridad del ledger",coverage:"Cobertura prospectiva",performance:"Desempeño por modalidad",stability:"Estabilidad temporal",sensitivity:"Sensibilidad temporal",structuralOutcome:"Motivos vs. resultados oficiales",structuralRandomControl:"Control aleatorio emparejado",structuralTemporalRobustness:"Robustez temporal y holdout",structuralBlockBootstrap:"Bootstrap por bloques temporales"};
+const labels:Record<ReportKind,string>={ledger:"Integridad del ledger",coverage:"Cobertura prospectiva",performance:"Desempeño por modalidad",stability:"Estabilidad temporal",sensitivity:"Sensibilidad temporal",structuralOutcome:"Motivos vs. resultados oficiales",structuralRandomControl:"Control aleatorio emparejado",structuralTemporalRobustness:"Robustez temporal y holdout",structuralBlockBootstrap:"Bootstrap por bloques temporales",structuralBootstrapSensitivity:"Sensibilidad del bootstrap"};
 function classify(data:any):ReportKind|null{
  const m=data?.method;
  if(m==="read-only-prospective-ledger-integrity-v1")return "ledger";
@@ -18,6 +19,7 @@ function classify(data:any):ReportKind|null{
  if(m==="structural-motif-matched-random-control-v1")return "structuralRandomControl";
  if(m==="structural-motif-temporal-robustness-v1")return "structuralTemporalRobustness";
  if(m==="structural-motif-block-bootstrap-v1")return "structuralBlockBootstrap";
+ if(m==="structural-motif-bootstrap-sensitivity-v1")return "structuralBootstrapSensitivity";
  return null;
 }
 const pct=(v:any)=>typeof v==="number"&&Number.isFinite(v)?(v*100).toFixed(1)+"%":"—";
@@ -68,8 +70,8 @@ export default function ResearchDashboard({onBack,onOpenIntuition}:{onBack:()=>v
   setReports(prev=>{const merged=new Map(prev.map(r=>[r.kind,r]));for(const item of next)merged.set(item.kind,item);return [...merged.values()];});setErrors(problems);setBusy(false);
  }
  const kinds=(Object.keys(labels) as ReportKind[]);
- const ledger=byKind.ledger?.data,coverage=byKind.coverage?.data,performance=byKind.performance?.data,stability=byKind.stability?.data,sensitivity=byKind.sensitivity?.data,structuralOutcome=byKind.structuralOutcome?.data,structuralRandomControl=byKind.structuralRandomControl?.data,structuralBlockBootstrap=byKind.structuralBlockBootstrap?.data;
- const summaries:any={ledger:ledger?.summary,coverage:coverage?.summary,performance:performance?.summary,stability:stability?.summary,sensitivity:sensitivity?.summary,structuralOutcome:structuralOutcome?.summary,structuralRandomControl:structuralRandomControl?.summary,structuralTemporalRobustness:byKind.structuralTemporalRobustness?.data?.summary,structuralBlockBootstrap:structuralBlockBootstrap?.summary};
+ const ledger=byKind.ledger?.data,coverage=byKind.coverage?.data,performance=byKind.performance?.data,stability=byKind.stability?.data,sensitivity=byKind.sensitivity?.data,structuralOutcome=byKind.structuralOutcome?.data,structuralRandomControl=byKind.structuralRandomControl?.data,structuralBlockBootstrap=byKind.structuralBlockBootstrap?.data,structuralBootstrapSensitivity=byKind.structuralBootstrapSensitivity?.data;
+ const summaries:any={ledger:ledger?.summary,coverage:coverage?.summary,performance:performance?.summary,stability:stability?.summary,sensitivity:sensitivity?.summary,structuralOutcome:structuralOutcome?.summary,structuralRandomControl:structuralRandomControl?.summary,structuralTemporalRobustness:byKind.structuralTemporalRobustness?.data?.summary,structuralBlockBootstrap:structuralBlockBootstrap?.summary,structuralBootstrapSensitivity:structuralBootstrapSensitivity?.summary};
  const current=byKind[active]?.data;
  const performanceGroups=useMemo(()=>{const groups=performance?.groups??[];const q=performanceQuery.trim().toLowerCase();return groups.filter((g:any)=>(performanceFamily==="all"||g.family===performanceFamily)&&(!q||[g.family,g.method,g.mode,g.config].filter(Boolean).join(" ").toLowerCase().includes(q))).sort((a:any,b:any)=>performanceSort==="difference"?((b.pairedDifference??-Infinity)-(a.pairedDifference??-Infinity)):performanceSort==="sample"?(b.resolved-a.resolved):a.family.localeCompare(b.family));},[performance,performanceFamily,performanceQuery,performanceSort]);
  const performanceFamilies=useMemo(()=>[...new Set((performance?.groups??[]).map((g:any)=>g.family))].sort() as string[],[performance]);
@@ -86,7 +88,7 @@ export default function ResearchDashboard({onBack,onOpenIntuition}:{onBack:()=>v
    </div>
    <nav aria-label="Fases del centro de investigación" className="mt-5 grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
     {kinds.map((k,i)=><button key={k} type="button" aria-pressed={active===k} onClick={()=>setActive(k)} className={`group min-h-20 rounded-xl border p-3 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 ${active===k?"border-cyan-500/80 bg-cyan-950/40 shadow-[0_0_20px_rgba(34,211,238,.08)]":"border-slate-800 bg-slate-900/60 hover:border-slate-600"}`}>
-     <div className="flex items-center justify-between"><span className="text-[10px] font-black tracking-widest text-slate-500">FASE {k==="structuralOutcome"?93:k==="structuralRandomControl"?94:k==="structuralTemporalRobustness"?95:k==="structuralBlockBootstrap"?96:41+i}</span><span className={`text-xs ${byKind[k]?"text-emerald-400":"text-slate-600"}`}>{byKind[k]?"●":"○"}</span></div>
+     <div className="flex items-center justify-between"><span className="text-[10px] font-black tracking-widest text-slate-500">FASE {k==="structuralOutcome"?93:k==="structuralRandomControl"?94:k==="structuralTemporalRobustness"?95:k==="structuralBlockBootstrap"?96:k==="structuralBootstrapSensitivity"?97:41+i}</span><span className={`text-xs ${byKind[k]?"text-emerald-400":"text-slate-600"}`}>{byKind[k]?"●":"○"}</span></div>
      <div className={`mt-2 text-xs font-bold leading-snug ${active===k?"text-cyan-200":"text-slate-300"}`}>{labels[k]}</div>
      <div className="mt-2 text-[10px] text-slate-500">{byKind[k]?"Informe disponible":"Pendiente de importar"}</div>
     </button>)}
@@ -116,6 +118,7 @@ export default function ResearchDashboard({onBack,onOpenIntuition}:{onBack:()=>v
     {active==="structuralRandomControl"&&<StructuralMotifRandomControl report={current}/>}
     {active==="structuralTemporalRobustness"&&<StructuralMotifTemporalRobustness report={current}/>}
     {active==="structuralBlockBootstrap"&&<StructuralMotifBlockBootstrap report={current}/>}
+    {active==="structuralBootstrapSensitivity"&&<StructuralMotifBootstrapSensitivity report={current}/>}
     {Array.isArray(current.limitations)&&<details className="rounded-xl border border-slate-800 p-4"><summary className="cursor-pointer text-sm font-semibold">Limitaciones metodológicas</summary><ul className="mt-3 list-disc space-y-1 pl-5 text-xs text-slate-400">{current.limitations.map((x:string,i:number)=><li key={i}>{x}</li>)}</ul></details>}
    </section>}
    <footer className="mt-8 border-t border-slate-800 pt-4 text-xs text-slate-500">El panel muestra únicamente datos de los informes importados. No genera pronósticos, no modifica el ledger y no afirma capacidad predictiva.</footer>
