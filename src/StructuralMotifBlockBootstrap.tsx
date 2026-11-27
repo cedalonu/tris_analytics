@@ -1,0 +1,14 @@
+import React from "react";
+export default function StructuralMotifBlockBootstrap({report}:{report:any}){
+ const pct=(v:any)=>typeof v==="number"?(v*100).toFixed(1)+"%":"—";
+ const pp=(v:any)=>typeof v==="number"?(v*100).toFixed(2)+" pp":"—";
+ return <div className="space-y-4">
+  <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+   {[[ "Grupos evaluados",report?.summary?.evaluatedGroups??0 ],[ "IC por encima de cero",report?.summary?.intervalsAboveZero??0 ],[ "IC incluye cero",report?.summary?.intervalsIncludingZero??0 ],[ "Sin soporte",report?.summary?.skippedGroups??0 ]].map(([label,value])=><div key={String(label)} className="rounded-xl border border-slate-700 bg-slate-900 p-4"><div className="text-xs text-slate-400">{label}</div><div className="mt-2 text-2xl font-bold">{value}</div></div>)}
+  </div>
+  <p className="text-xs text-slate-400">Diferencia = tasa estructural observada menos la media esperada del control aleatorio emparejado. Los intervalos proceden de bloques cronológicos contiguos; no son p-valores.</p>
+  <div className="overflow-x-auto rounded-xl border border-slate-800"><table className="w-full text-left text-xs"><thead className="bg-slate-900 text-slate-400"><tr><th className="p-3">Familia</th><th className="p-3">Pos.</th><th className="p-3">N</th><th className="p-3">Δ observada</th><th className="p-3">IC 95%</th><th className="p-3">P(Δ &gt; 0)</th><th className="p-3">Media bootstrap Δ</th><th className="p-3">Lectura</th></tr></thead><tbody>{(report?.metrics??[]).map((m:any)=><tr key={m.family+"-"+m.position} className="border-t border-slate-800"><td className="p-3">{m.family}</td><td className="p-3">{m.position+1}</td><td className="p-3">{m.evaluatedTargets}</td><td className="p-3">{pp(m.observed.difference)}</td><td className="p-3">{pp(m.bootstrap.q025)} a {pp(m.bootstrap.q975)}</td><td className="p-3">{pct(m.bootstrap.probabilityAboveZero)}</td><td className="p-3">{pp(m.bootstrap.mean)}</td><td className="p-3 text-cyan-300">{m.interpretation}</td></tr>)}</tbody></table></div>
+  {(report?.skipped??[]).length>0&&<div className="rounded-xl border border-amber-900/60 p-3 text-xs text-amber-200"><b>Grupos sin soporte suficiente</b><ul className="mt-2 list-disc pl-5">{report.skipped.map((x:any,i:number)=><li key={i}>{x.family}, posición {x.position+1}: N={x.observations}; mínimo={x.minimum}; {x.reason}</li>)}</ul></div>}
+  <details className="rounded-xl border border-slate-800 p-4"><summary className="cursor-pointer text-sm font-semibold">Configuración y limitaciones</summary><p className="mt-2 text-xs text-slate-400">Bloque: {report?.settings?.blockSize} · Réplicas: {report?.settings?.replicates} · Semilla: {report?.settings?.seed}.</p><ul className="mt-3 list-disc space-y-1 pl-5 text-xs text-slate-400">{(report?.limitations??[]).map((x:string,i:number)=><li key={i}>{x}</li>)}</ul></details>
+ </div>;
+}
