@@ -93,7 +93,7 @@ if(!alreadyFrozen){
  await writeFile(resolve(ledgerDir,"investigator-report.json"),JSON.stringify({
   generatedAt:stamp,targetDrawId:nextTarget,historyThroughDrawId:latest.drawId,
   catalogSize:investigatorReport.catalogSize,baseCatalogSize:catalog.length,variantCount:variants.length,
-  variants:variants.map(v=>({candidateId:v.candidate.id,parentCandidateId:v.parentCandidateId,changedParameter:v.changedParameter,fromValue:v.fromValue,toValue:v.toValue,parentResolvedDraws:v.parentResolvedDraws,parentPairedWins:v.parentPairedWins,parentPairedLosses:v.parentPairedLosses,parentShrunkAdvantage:v.parentShrunkAdvantage,proposalReason:v.proposalReason})),
+  variants:variants.map(v=>({candidateId:v.candidate.id,parentCandidateId:v.parentCandidateId,changedParameter:v.changedParameter,fromValue:v.fromValue,toValue:v.toValue,config:v.candidate.config,frozenConfig:v.candidate.frozenConfig,parentResolvedDraws:v.parentResolvedDraws,parentPairedWins:v.parentPairedWins,parentPairedLosses:v.parentPairedLosses,parentShrunkAdvantage:v.parentShrunkAdvantage,proposalReason:v.proposalReason})),
   budget:investigatorReport.budget,
   frozenCount:newCycle.frozenCount,explorationCount:investigatorReport.explorationCount,
   exploitationCount:investigatorReport.exploitationCount,retiredExcluded:investigatorReport.retiredExcluded,

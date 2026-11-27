@@ -64,8 +64,9 @@ const latest=draws.at(-1)!;
 const investigator=JSON.parse(await readFile(resolve(dir,"investigator-report.json"),"utf8")) as {
  generatedAt:string;targetDrawId:number;historyThroughDrawId:number;catalogSize:number;budget:number;frozenCount:number;
  explorationCount:number;exploitationCount:number;retiredExcluded:number;familyCounts:Record<string,number>;
- selected:Array<{candidateId:string;family:string;config:Record<string,unknown>;priorityScore:number;reasons:string[]}>;
- warnings:string[];
+ selected:Array<{candidateId:string;family:string;config:Record<string,unknown>;priorityScore:number;reasons:string[];parentCandidateId?:string|null}>;
+ variants?:Array<{candidateId:string;parentCandidateId:string;changedParameter:"window"|"priorMisses";fromValue:number;toValue:number;config:Record<string,unknown>;frozenConfig:string;parentResolvedDraws:number;parentPairedWins:number;parentPairedLosses:number;parentShrunkAdvantage:number;proposalReason:string}>;
+ variantCount?:number;baseCatalogSize?:number;warnings:string[];
 };
 if(!Number.isFinite(Date.parse(investigator.generatedAt))||investigator.targetDrawId!==latest.drawId+1||investigator.historyThroughDrawId!==latest.drawId)
  throw new Error("Adaptive investigator report has invalid timestamp or temporal boundary.");
@@ -76,6 +77,27 @@ if(investigator.explorationCount+investigator.exploitationCount!==investigator.s
 for(const family of ["transition","position-mutation","absence-return","pool-ranking"])
  if(investigator.familyCounts[family]!==25)throw new Error("Adaptive investigator family quota mismatch: "+family);
 if(investigator.retiredExcluded!==0)throw new Error("Fresh bootstrap should not exclude any previously retired candidates.");
+if((investigator.variantCount??0)!==(investigator.variants??[]).length)throw new Error("Adaptive variant count does not reconcile.");
+for(const variant of investigator.variants??[]){
+ const parentRows=outcomes.filter(row=>row.candidateId===variant.parentCandidateId);
+ if(parentRows.length<25)throw new Error("Adaptive variant parent lacks 25 resolved prospective outcomes: "+variant.parentCandidateId);
+ const parentConfig=JSON.parse(parentRows[0].frozenConfig) as Record<string,unknown>;
+ const wins=parentRows.filter(row=>row.candidateHit&&!row.baselineHit).length,losses=parentRows.filter(row=>!row.candidateHit&&row.baselineHit).length;
+ const advantage=(wins-losses)/(parentRows.length+20);
+ if(advantage<=0||parentRows.length!==variant.parentResolvedDraws||wins!==variant.parentPairedWins||losses!==variant.parentPairedLosses||Math.abs(advantage-variant.parentShrunkAdvantage)>1e-12)
+  throw new Error("Adaptive variant parent evidence summary does not reconcile: "+variant.parentCandidateId);
+ const keys=new Set([...Object.keys(parentConfig),...Object.keys(variant.config)]);
+ const changed=[...keys].filter(key=>parentConfig[key]!==variant.config[key]);
+ if(changed.length!==1||changed[0]!==variant.changedParameter||parentConfig[variant.changedParameter]!==variant.fromValue||variant.config[variant.changedParameter]!==variant.toValue)
+  throw new Error("Adaptive variant must change exactly its declared parameter: "+variant.candidateId);
+ if(variant.frozenConfig!==JSON.stringify(variant.config,Object.keys(variant.config).sort()))
+  throw new Error("Adaptive variant frozen config is not canonical: "+variant.candidateId);
+ if(variant.parentShrunkAdvantage<=0||variant.proposalReason.length===0)
+  throw new Error("Adaptive variant proposal lacks positive parent evidence or rationale.");
+ const selectedVariant=investigator.selected.find(x=>x.candidateId===variant.candidateId);
+ if(selectedVariant&&selectedVariant.parentCandidateId!==variant.parentCandidateId)
+  throw new Error("Selected adaptive variant lost its parent lineage: "+variant.candidateId);
+}
 const selectedById=new Map(investigator.selected.map(x=>[x.candidateId,x]));
 if(selectedById.size!==investigator.selected.length)throw new Error("Adaptive investigator selected duplicate candidate IDs.");
 for(const signal of cycles[0].signals){
