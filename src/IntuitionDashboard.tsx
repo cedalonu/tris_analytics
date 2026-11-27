@@ -5,6 +5,8 @@ import type {ResearchPlan,PlannedHypothesis} from "./research/intuition-orchestr
 
 type Props={draws:Draw[];onBack:()=>void;onOpenResearch:()=>void};
 type Tab="overview"|"memory"|"hypotheses"|"positions";
+type PositionMemoryRow={position:number;family:string;configuration:string;poolRegime:string;duplicateRegime:string;draws:number;candidateTrials:number;distinctCandidates:number;meanCandidateHitRate:number;meanBaselineHitRate:number;difference:number;latestBlock:{state:string;draws:number}|null;interpretation:string};
+type PositionMemoryPayload={resolvedOutcomes:number;positionSpecificTrials:number;modeLevelTrials:number;minimumDrawsForSummary:number;blockSize:number;positions:PositionMemoryRow[];modeScopes:{mode:string;draws:number;candidateTrials:number;meanCandidateHitRate:number;meanBaselineHitRate:number;difference:number}[];warnings:string[]};
 const digits=Array.from({length:10},(_,i)=>i);
 const statusLabels:Record<SignalStatus,string>={hypothesis:"Hipótesis",testing:"En prueba",provisional:"Provisional",active:"Activa",weakening:"Debilitándose",retired:"Retirada"};
 
@@ -74,6 +76,9 @@ export default function IntuitionDashboard({draws,onBack,onOpenResearch}:Props){
  const [selectedHypothesis,setSelectedHypothesis]=useState("");
  const [familyFilter,setFamilyFilter]=useState("all");
  const [hypothesisSearch,setHypothesisSearch]=useState("");
+ const [positionMemory,setPositionMemory]=useState<PositionMemoryPayload|null>(null);
+ const [positionMemoryName,setPositionMemoryName]=useState("");
+ const [positionMemoryError,setPositionMemoryError]=useState("");
  const sorted=useMemo(()=>[...draws].sort((a,b)=>a.num-b.num),[draws]);
  const last20=sorted.slice(-20),last50=sorted.slice(-50);
  const matrix=useMemo(()=>Array.from({length:5},(_,pos)=>digits.map(d=>last20.filter(x=>x.digits[pos]===d).length)),[last20]);
@@ -97,6 +102,34 @@ export default function IntuitionDashboard({draws,onBack,onOpenResearch}:Props){
   if(!file)return;
   try{const parsed=parseResearchPlan(JSON.parse(await file.text()));setResearchPlan(parsed);setPlanName(file.name);setPlanError("");setSelectedHypothesis(parsed.hypotheses[0]?.candidate.id??"");setFamilyFilter("all");setHypothesisSearch("");}
   catch(error){setPlanError(error instanceof Error?error.message:"No fue posible leer el plan.");}
+ };
+ const importPositionMemory=async(file?:File)=>{
+  if(!file)return;
+  try{
+   const raw=JSON.parse(await file.text()) as Record<string,unknown>;
+   if(!raw||!Array.isArray(raw.positions)||!Array.isArray(raw.modeScopes)||!Array.isArray(raw.warnings))throw new Error("El archivo no contiene memoria contextual de ciclos.");
+   for(const key of ["resolvedOutcomes","positionSpecificTrials","modeLevelTrials","minimumDrawsForSummary","blockSize"]){
+    if(!Number.isFinite(raw[key])||Number(raw[key])<0)throw new Error("Métrica inválida: "+key);
+   }
+   const positions=raw.positions.map((item,index)=>{
+    if(!item||typeof item!=="object")throw new Error("Fila posicional "+(index+1)+" inválida.");
+    const row=item as Record<string,unknown>;
+    if(!Number.isInteger(row.position)||Number(row.position)<0||Number(row.position)>4||typeof row.family!=="string"||typeof row.configuration!=="string"||typeof row.poolRegime!=="string"||typeof row.duplicateRegime!=="string"||typeof row.interpretation!=="string")throw new Error("Campos posicionales inválidos en fila "+(index+1)+".");
+    for(const key of ["draws","candidateTrials","distinctCandidates","meanCandidateHitRate","meanBaselineHitRate","difference"])if(!Number.isFinite(row[key]))throw new Error("Valor numérico inválido en fila "+(index+1)+": "+key);
+    const latest=row.latestBlock as Record<string,unknown>|null;
+    if(latest!==null&&(!latest||typeof latest.state!=="string"||!Number.isFinite(latest.draws)))throw new Error("Bloque reciente inválido en fila "+(index+1)+".");
+    return row as unknown as PositionMemoryRow;
+   });
+   const modeScopes=raw.modeScopes.map((item,index)=>{
+    if(!item||typeof item!=="object")throw new Error("Ámbito de modo "+(index+1)+" inválido.");
+    const row=item as Record<string,unknown>;
+    if(typeof row.mode!=="string")throw new Error("Nombre de modo inválido.");
+    for(const key of ["draws","candidateTrials","meanCandidateHitRate","meanBaselineHitRate","difference"])if(!Number.isFinite(row[key]))throw new Error("Métrica de modo inválida: "+key);
+    return row as unknown as PositionMemoryPayload["modeScopes"][number];
+   });
+   setPositionMemory({...raw,positions,modeScopes,warnings:raw.warnings.filter((x):x is string=>typeof x==="string")} as PositionMemoryPayload);
+   setPositionMemoryName(file.name);setPositionMemoryError("");
+  }catch(error){setPositionMemoryError(error instanceof Error?error.message:"No fue posible leer la memoria contextual.");}
  };
  const importLedger=async(file?:File)=>{
   if(!file)return;
@@ -158,7 +191,31 @@ export default function IntuitionDashboard({draws,onBack,onOpenResearch}:Props){
     </div>}
     <Panel title="Puertas de validación" sub="No se permite mezclar fases ni reinterpretar resultados pasados"><ol className="list-decimal space-y-2 pl-5 text-xs text-slate-300"><li>Congelar catálogo, presupuesto, configuración y línea base.</li><li>Separar descubrimiento, validación y holdout cronológico.</li><li>Exigir soporte mínimo y pruebas pareadas con corrección por multiplicidad.</li><li>Confirmar la ventaja en observaciones prospectivas independientes.</li></ol></Panel>
    </div>}
-   {tab==="positions"&&<div className="space-y-4"><Panel title="Concordancia descriptiva por posición" sub={`Frecuencia observada en los últimos ${last20.length} sorteos; cada columna corresponde a una posición`}><div className="overflow-x-auto"><table className="w-full min-w-[620px] border-separate border-spacing-1 text-center text-xs"><thead><tr><th className="p-2 text-left text-slate-500">Dígito</th>{[1,2,3,4,5].map(p=><th key={p} className="p-2 text-cyan-300">Pos. {p}</th>)}</tr></thead><tbody>{digits.map(d=><tr key={d}><th className="p-2 text-left font-mono text-slate-300">{d}</th>{matrix.map((row,pos)=><td key={pos} className="rounded-md p-2 font-bold" style={{background:available?`rgba(34,211,238,${.07+.55*(row[d]/maxCount)})`:"#172033",color:row[d]?"#e2e8f0":"#64748b"}}>{available?row[d]:"—"}</td>)}</tr>)}</tbody></table></div><p className="mt-3 text-[10px] text-slate-500">La intensidad visual representa conteos, no probabilidad ni recomendación de selección.</p></Panel>
+   {tab==="positions"&&<div className="space-y-4">
+    <Panel title="Memoria contextual del ciclo prospectivo" sub="Resultados congelados por posición, familia y contexto previo; se carga desde data/cycles/position-context-memory.json">
+     <div className="flex flex-wrap items-center gap-3">
+      <label className="cursor-pointer rounded-lg border border-cyan-700 bg-cyan-950/40 px-4 py-2 text-xs font-bold text-cyan-200 hover:bg-cyan-900/50">Importar memoria contextual<input type="file" accept=".json,application/json" className="hidden" onChange={e=>{void importPositionMemory(e.target.files?.[0]);e.currentTarget.value="";}}/></label>
+      <span className="text-xs text-slate-400">{positionMemoryName||"Ninguna memoria contextual importada"}</span>
+      {positionMemory&&<button type="button" onClick={()=>{setPositionMemory(null);setPositionMemoryName("");setPositionMemoryError("");}} className="rounded-lg border border-slate-700 px-3 py-2 text-xs text-slate-300 hover:border-rose-700 hover:text-rose-200">Limpiar memoria</button>}
+     </div>
+     {positionMemoryError&&<div role="alert" className="mt-3 rounded-lg border border-rose-800 bg-rose-950/30 p-3 text-xs text-rose-200">{positionMemoryError}</div>}
+     {positionMemory?<div className="mt-4 space-y-4">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+       <Stat label="Resultados resueltos" value={positionMemory.resolvedOutcomes} detail="Pronósticos congelados evaluados"/>
+       <Stat label="Pruebas posicionales" value={positionMemory.positionSpecificTrials} detail="Candidatos de una posición"/>
+       <Stat label="Transiciones de modo" value={positionMemory.modeLevelTrials} detail="Evaluadas por separado"/>
+       <Stat label="Estratos" value={positionMemory.positions.length} detail="Posición y contexto previo"/>
+      </div>
+      <div className="overflow-x-auto"><table className="w-full min-w-[900px] text-left text-xs">
+       <thead className="text-slate-400"><tr><th className="p-2">Pos.</th><th className="p-2">Familia</th><th className="p-2">Configuración</th><th className="p-2">Pool previo</th><th className="p-2">Duplicados</th><th className="p-2">Sorteos</th><th className="p-2">Cobertura</th><th className="p-2">Baseline</th><th className="p-2">Diferencia</th><th className="p-2">Último bloque</th></tr></thead>
+       <tbody>{positionMemory.positions.map((row,index)=><tr key={row.position+"-"+row.family+"-"+row.configuration+"-"+row.poolRegime+"-"+row.duplicateRegime+"-"+index} className="border-t border-slate-800">
+        <td className="p-2 font-bold text-cyan-300">{row.position+1}</td><td className="p-2">{row.family}</td><td className="max-w-[240px] truncate p-2 font-mono text-[10px]" title={row.configuration}>{row.configuration}</td><td className="p-2">{row.poolRegime}</td><td className="p-2">{row.duplicateRegime}</td><td className="p-2 tabular-nums">{row.draws}</td><td className="p-2 tabular-nums">{(100*row.meanCandidateHitRate).toFixed(1)}%</td><td className="p-2 tabular-nums">{(100*row.meanBaselineHitRate).toFixed(1)}%</td><td className="p-2 tabular-nums">{(100*row.difference).toFixed(1)} pp</td><td className="p-2">{row.latestBlock?row.latestBlock.state+" · "+row.latestBlock.draws:"—"}</td>
+       </tr>)}</tbody>
+      </table></div>
+      <p className="text-[10px] text-slate-500">Las tasas se promedian primero por concurso para evitar que más candidatos en un mismo sorteo pesen más. Son coberturas descriptivas, no probabilidades.</p>
+     </div>:<p className="mt-3 text-xs text-slate-500">Importa el archivo generado por el runner local después de procesar un CSV actualizado.</p>}
+    </Panel>
+    <Panel title="Concordancia descriptiva por posición" sub={`Frecuencia observada en los últimos ${last20.length} sorteos; cada columna corresponde a una posición`}><div className="overflow-x-auto"><table className="w-full min-w-[620px] border-separate border-spacing-1 text-center text-xs"><thead><tr><th className="p-2 text-left text-slate-500">Dígito</th>{[1,2,3,4,5].map(p=><th key={p} className="p-2 text-cyan-300">Pos. {p}</th>)}</tr></thead><tbody>{digits.map(d=><tr key={d}><th className="p-2 text-left font-mono text-slate-300">{d}</th>{matrix.map((row,pos)=><td key={pos} className="rounded-md p-2 font-bold" style={{background:available?`rgba(34,211,238,${.07+.55*(row[d]/maxCount)})`:"#172033",color:row[d]?"#e2e8f0":"#64748b"}}>{available?row[d]:"—"}</td>)}</tr>)}</tbody></table></div><p className="mt-3 text-[10px] text-slate-500">La intensidad visual representa conteos, no probabilidad ni recomendación de selección.</p></Panel>
     <div className="grid gap-4 lg:grid-cols-2"><Panel title="Top 3 observado por posición" sub="Ordenado por frecuencia en la ventana corta"><div className="space-y-3">{topByPosition.map((row,pos)=><div key={pos} className="flex items-center gap-3"><span className="w-14 text-xs font-bold text-cyan-300">Pos. {pos+1}</span><div className="flex flex-1 gap-2">{row.map(d=><span key={d} className="flex-1 rounded-lg border border-slate-700 bg-slate-950 p-2 text-center text-sm font-black">{available?d:"—"}<small className="mt-1 block text-[9px] font-normal text-slate-500">{available?matrix[pos][d]+" apar.":"sin datos"}</small></span>)}</div></div>)}</div></Panel>
      <Panel title="Coincidencias entre posiciones" sub="Dígitos presentes en el top 3 de más de una posición"><div className="flex flex-wrap gap-2">{overlap.length?overlap.map(([d,n])=><span key={d} className="rounded-lg border border-violet-700/70 bg-violet-950/40 px-3 py-2 text-sm font-bold text-violet-200">Dígito {d} · {n} posiciones</span>):<span className="text-xs text-slate-500">{available?"No hay coincidencias en esta ventana.":"Pendiente de historial."}</span>}</div><p className="mt-3 text-[10px] text-slate-500">Coincidencia descriptiva entre rankings marginales; no implica dependencia ni ventaja estadística.</p></Panel></div>
     <Panel title="Comparación de ventanas" sub="Conteos en últimos 20 frente a últimos 50 sorteos"><div className="overflow-x-auto"><table className="w-full min-w-[520px] text-center text-xs"><thead className="text-slate-500"><tr><th className="p-2 text-left">Posición</th><th className="p-2">Top 1 · 20</th><th className="p-2">Apariciones</th><th className="p-2">Top 1 · 50</th><th className="p-2">Apariciones</th></tr></thead><tbody>{[0,1,2,3,4].map(pos=>{const a=[...digits].sort((x,y)=>matrix[pos][y]-matrix[pos][x]||x-y)[0],b=[...digits].sort((x,y)=>matrix50[pos][y]-matrix50[pos][x]||x-y)[0];return <tr key={pos} className="border-t border-slate-800"><td className="p-2 text-left text-cyan-300">Pos. {pos+1}</td><td className="p-2 font-bold">{available?a:"—"}</td><td className="p-2">{available?matrix[pos][a]:"—"}</td><td className="p-2 font-bold">{last50.length?b:"—"}</td><td className="p-2">{last50.length?matrix50[pos][b]:"—"}</td></tr>})}</tbody></table></div></Panel>
