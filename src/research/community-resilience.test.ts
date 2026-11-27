@@ -1,0 +1,7 @@
+import test from "node:test";import assert from "node:assert/strict";import {assessCommunityResilience} from "./community-resilience";import type {CommunityWindow,TemporalCommunity} from "./community-evolution";
+const c=(id:string,members:string[],cohesion=.8,conductance=.1):TemporalCommunity=>({id,members,size:members.length,cohesion,conductance});
+const w=(index:number,communities:TemporalCommunity[]):CommunityWindow=>({index,startDate:"2026-01-01",endDate:"2026-01-09",packageCount:9,communities,events:[]});
+test("identifies a stable community lineage as resilient",()=>{const r=assessCommunityResilience([w(0,[c("A",["a","b","c"])]),w(1,[c("B",["a","b","c"])]),w(2,[c("C",["a","b","c"])])]);assert.equal(r[0].state,"resilient");assert.equal(r[0].finalScore,1);});
+test("detects recovery after a temporary disruption",()=>{const r=assessCommunityResilience([w(0,[c("A",["a","b","c","d"])]),w(1,[c("B",["a","b","x","y"])]),w(2,[c("C",["a","b","c","d"])])]);assert.equal(r[0].state,"recovered");assert.equal(r[0].recoveryWindow,2);});
+test("marks a lineage as untrackable after it disappears",()=>{const r=assessCommunityResilience([w(0,[c("A",["a","b","c"])]),w(1,[]),w(2,[])]);assert.equal(r[0].state,"untrackable");assert.equal(r[0].finalScore,0);});
+test("returns no lineages when the first window has no communities",()=>{assert.deepEqual(assessCommunityResilience([w(0,[]),w(1,[])]),[]);});
