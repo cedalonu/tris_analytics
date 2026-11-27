@@ -13,7 +13,9 @@ if(parsed.validation.warnings.some(w=>w.startsWith("draw gap ")))throw new Error
 const draws=parsed.validation.valid;
 if(draws.length<200)throw new Error("At least 200 validated draws are required.");
 const readJsonl=async<T>(name:string):Promise<T[]>=>{
- const raw=await readFile(resolve(dir,name),"utf8");
+ let raw:string;
+ try{raw=await readFile(resolve(dir,name),"utf8");}
+ catch(error){if((error as NodeJS.ErrnoException).code==="ENOENT"&&name==="outcomes.jsonl")return [];throw error;}
  return raw.split(/\r?\n/).filter(Boolean).map(line=>JSON.parse(line) as T);
 };
 const cycles=await readJsonl<FrozenLearningCycle>("cycles.jsonl");
