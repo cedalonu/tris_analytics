@@ -4,7 +4,8 @@ import {readFile,appendFile,writeFile,mkdir} from "node:fs/promises";
 import {resolve,basename} from "node:path";
 import {createHash} from "node:crypto";
 import {importTrisCsv} from "../src/research/data-adapter";
-import {createResearchPlan} from "../src/research/intuition-orchestrator";
+import {generateIntuitionCandidates} from "../src/research/intuition-candidate-generator";
+import {selectAdaptiveIntuitionCandidates} from "../src/research/intuition-adaptive-investigator";
 import {freezeLearningCycle,resolveLearningCycleSignal,assessCycleSignalLifecycle,fingerprintCycleHistory,projectCycleOutcomesToSignalLedger,type FrozenLearningCycle,type ResolvedCycleSignal} from "../src/research/cycle-learning";
 import {analyzePositionContextMemory} from "../src/research/position-context-memory";
 import type {SignalRecord} from "../src/research/intuition-ledger";
@@ -72,12 +73,27 @@ const signalRecords=projectCycleOutcomesToSignalLedger(allOutcomes,priorSignalRe
 await writeFile(signalsPath,JSON.stringify(signalRecords,null,2)+"\n","utf8");
 const nextTarget=latest.drawId+1,alreadyFrozen=cycles.some(c=>c.targetDrawId===nextTarget);
 let newCycle:FrozenLearningCycle|null=null;
+let investigatorReport:ReturnType<typeof selectAdaptiveIntuitionCandidates>|null=null;
 if(!alreadyFrozen){
- const plan=createResearchPlan({createdAt:stamp,prioritizerOptions:{maxCandidates:100}});
- const retiredIds=new Set(lifecycle.filter(x=>x.status==="retired").map(x=>x.candidateId));
- const selected=plan.hypotheses.filter(h=>!retiredIds.has(h.candidate.id)).map(h=>({candidate:h.candidate,priorityScore:h.priorityScore,priorityReasons:h.priorityReasons}));
+ const retiredIds=lifecycle.filter(x=>x.status==="retired").map(x=>x.candidateId);
+ const catalog=generateIntuitionCandidates();
+ investigatorReport=selectAdaptiveIntuitionCandidates(catalog,allOutcomes,{
+  beforeDrawId:nextTarget,budget:100,explorationFraction:.5,priorStrength:20,recentWindow:25,
+  familyCaps:{transition:25,"position-mutation":25,"absence-return":25,"pool-ranking":25},
+  retiredCandidateIds:retiredIds
+ });
+ const selected=investigatorReport.selected.map(item=>({candidate:item.candidate,priorityScore:item.priorityScore,priorityReasons:item.priorityReasons}));
  newCycle=freezeLearningCycle(draws,selected,nextTarget,stamp,selected.length);
  if(newCycle.frozenCount)await appendFile(cyclesPath,JSON.stringify(newCycle)+"\n","utf8");
+ await writeFile(resolve(ledgerDir,"investigator-report.json"),JSON.stringify({
+  generatedAt:stamp,targetDrawId:nextTarget,historyThroughDrawId:latest.drawId,
+  catalogSize:investigatorReport.catalogSize,budget:investigatorReport.budget,
+  frozenCount:newCycle.frozenCount,explorationCount:investigatorReport.explorationCount,
+  exploitationCount:investigatorReport.exploitationCount,retiredExcluded:investigatorReport.retiredExcluded,
+  familyCounts:investigatorReport.familyCounts,
+  selected:investigatorReport.selected.map(x=>({candidateId:x.candidate.id,family:x.candidate.family,config:x.candidate.config,priorityScore:x.priorityScore,reasons:x.priorityReasons})),
+  warnings:investigatorReport.warnings
+ },null,2)+"\n","utf8");
 }
 await writeFile(resolve(ledgerDir,"lifecycle.json"),JSON.stringify({generatedAt:stamp,source:basename(csvPath),signals:lifecycle},null,2)+"\n","utf8");
 const positionMemory=analyzePositionContextMemory(allOutcomes);
@@ -95,6 +111,9 @@ const report=[
  "- Initial bootstrap: "+(initialized?"yes":"no"),
  "- Previously frozen signal outcomes resolved: "+newOutcomes.length,
  "- New cycle target: "+(newCycle?String(newCycle.targetDrawId):"already frozen / no new cycle"),
+ "- Investigator mode: "+(investigatorReport?"evidence-guided exploration/exploitation":"no new cycle required"),
+ "- Investigator catalog: "+(investigatorReport?.catalogSize??0),
+ "- Investigator exploration / exploitation: "+(investigatorReport?investigatorReport.explorationCount+" / "+investigatorReport.exploitationCount:"n/a"),
  "- Signals selected after retired-signal filter: "+(newCycle?.selectedCount??0),
  "- Previously retired signals excluded from new cycles: "+lifecycle.filter(x=>x.status==="retired").length,
  "- Signals successfully frozen: "+(newCycle?.frozenCount??0),
@@ -130,7 +149,7 @@ const report=[
  "- Hit rates are binary pool/outcome coverage, not calibrated probabilities.",
  "- Lifecycle labels are descriptive; they do not promote hypotheses or change candidate weights.",
  "- No APIs, network calls, polling or automatic downloads are used.","",
- "## Local files","- "+cyclesPath,"- "+outcomesPath,"- "+statePath,"- "+resolve(ledgerDir,"lifecycle.json"),"- "+resolve(ledgerDir,"position-context-memory.json"),"- "+signalsPath
+ "## Local files","- "+cyclesPath,"- "+outcomesPath,"- "+statePath,"- "+resolve(ledgerDir,"lifecycle.json"),"- "+resolve(ledgerDir,"position-context-memory.json"),"- "+signalsPath,"- "+resolve(ledgerDir,"investigator-report.json")
 ].join("\n")+"\n";
 await writeFile(resolve(ledgerDir,"latest-report.md"),report,"utf8");
 const nextState:State={schemaVersion:1,processedThroughDrawId:latest.drawId,processedDrawCount:draws.length,processedPrefixSha256:fingerprintCycleHistory(draws),updatedAt:stamp};
