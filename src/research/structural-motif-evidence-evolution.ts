@@ -16,7 +16,7 @@ export function analyzeEvidenceEvolution(records:ExperimentRecord[],files:Record
  for(const run of sorted){const phases=new Map<number,ReturnType<typeof read>>();for(const spec of specs){const a=run.artifacts.find(x=>x.phase===spec.phase&&x.kind==="json"),doc=read(a?files[run.runId]?.[a.sourcePath]:undefined,spec.phase);phases.set(spec.phase,doc);if(doc)for(const k of doc.rows.keys())keys.add(k);}parsed.set(run.runId,phases);}
  const persistence=analyzeFindingPersistence(sorted,files),groups:EvidenceEvolutionRow[]=[];
  for(const k of [...keys].sort()){
-  const [family,position]=k.split("|"),transitions:EvidenceTransition[]=[],conflicts:EvidenceConflict[]=[],observedLabels=new Set<string>(),changedPhases=new Set<number>();let observations=0,missingSnapshots=0;
+  const [family,position]=k.split("|"),transitions:EvidenceTransition[]=[],conflicts:EvidenceConflict[]=[],observedLabels=new Set<string>(),changedPhases=new Set<number>();let observations=0,missingSnapshots=0,contextChangeCount=0;
   for(let i=0;i<sorted.length;i++){
    const run=sorted[i],phaseRows=parsed.get(run.runId)!;
    const labels=specs.map(s=>({phase:s.phase,doc:phaseRows.get(s.phase),label:phaseRows.get(s.phase)?.rows.get(k)??null}));
@@ -26,12 +26,12 @@ export function analyzeEvidenceEvolution(records:ExperimentRecord[],files:Record
    if(i===0)continue;
    const prior=sorted[i-1],priorRows=parsed.get(prior.runId)!;
    for(const spec of specs){const a=priorRows.get(spec.phase),b=phaseRows.get(spec.phase);if(!a||!b){transitions.push({phase:spec.phase,family,position,fromRunId:prior.runId,toRunId:run.runId,fromDate:prior.capturedAt,toDate:run.capturedAt,kind:"unknown-gap",fromLabel:null,toLabel:null,contextChanged:false});continue;}
-    const from=a.rows.get(k)??null,to=b.rows.get(k)??null;if(from===to)continue;
+    const contextChanged=a.context!==b.context;if(contextChanged){contextChangeCount++;changedPhases.add(spec.phase);}const from=a.rows.get(k)??null,to=b.rows.get(k)??null;if(from===to)continue;
     const fromFav=from===favorable[spec.phase],toFav=to===favorable[spec.phase];
     let kind:EvidenceChangeKind;
     if(from&&to)kind=fromFav&&!toFav?"favorable-to-other":!fromFav&&toFav?"other-to-favorable":"label-changed";
     else if(from&&!to)kind="reported-to-absent";else if(!from&&to)kind="absent-to-reported";else continue;
-    const contextChanged=a.context!==b.context;if(contextChanged)changedPhases.add(spec.phase);
+    
     transitions.push({phase:spec.phase,family,position,fromRunId:prior.runId,toRunId:run.runId,fromDate:prior.capturedAt,toDate:run.capturedAt,kind,fromLabel:from,toLabel:to,contextChanged});
    }
   }
@@ -41,5 +41,5 @@ export function analyzeEvidenceEvolution(records:ExperimentRecord[],files:Record
   groups.push({family,position,transitions,conflicts,observations,distinctLabels:observedLabels.size,missingSnapshots,changedPhases:[...changedPhases].sort((a,b)=>a-b),status});
  }
  const all=groups.flatMap(x=>x.transitions),count=(kind:EvidenceChangeKind)=>all.filter(x=>x.kind===kind).length;
- return{status:groups.some(x=>x.status!=="insufficient")?"ready":"insufficient",runsConsidered:sorted.length,summary:{groups:groups.length,transitions:all.filter(x=>x.kind!=="unknown-gap").length,favorableToOther:count("favorable-to-other"),otherToFavorable:count("other-to-favorable"),crossPhaseConflicts:groups.reduce((n,x)=>n+x.conflicts.length,0),contextChanges:all.filter(x=>x.contextChanged).length,unknownGaps:count("unknown-gap"),insufficient:groups.filter(x=>x.status==="insufficient").length},groups,limitations:["Solo se considera favorable la etiqueta exacta predefinida para cada fase 95–98; otras etiquetas se denominan «otra/no favorable», sin afirmar que sean estadísticamente negativas.","Las contradicciones entre fases se detectan cuando, en la misma captura y familia/posición, una fase tiene su etiqueta favorable exacta y otra una etiqueta distinta de su propio criterio favorable.","Las transiciones comparan capturas consecutivas. Una ausencia de fila en JSON legible se distingue de un snapshot ausente o ilegible; este último genera unknown-gap.","Cambios de método, configuración o entorno declarados se marcan, pero no se atribuye causalidad.","Las capturas pueden compartir los mismos datos históricos; los cambios no son evidencia independiente ni validación prospectiva.","El análisis es retrospectivo: no predice números TRIS, probabilidades de ganar ni rentabilidad."]};
+ return{status:groups.some(x=>x.status!=="insufficient")?"ready":"insufficient",runsConsidered:sorted.length,summary:{groups:groups.length,transitions:all.filter(x=>x.kind!=="unknown-gap").length,favorableToOther:count("favorable-to-other"),otherToFavorable:count("other-to-favorable"),crossPhaseConflicts:groups.reduce((n,x)=>n+x.conflicts.length,0),contextChanges:contextChangeCount,unknownGaps:count("unknown-gap"),insufficient:groups.filter(x=>x.status==="insufficient").length},groups,limitations:["Solo se considera favorable la etiqueta exacta predefinida para cada fase 95–98; otras etiquetas se denominan «otra/no favorable», sin afirmar que sean estadísticamente negativas.","Las contradicciones entre fases se detectan cuando, en la misma captura y familia/posición, una fase tiene su etiqueta favorable exacta y otra una etiqueta distinta de su propio criterio favorable.","Las transiciones comparan capturas consecutivas. Una ausencia de fila en JSON legible se distingue de un snapshot ausente o ilegible; este último genera unknown-gap.","Cambios de método, configuración o entorno declarados se marcan, pero no se atribuye causalidad.","Las capturas pueden compartir los mismos datos históricos; los cambios no son evidencia independiente ni validación prospectiva.","El análisis es retrospectivo: no predice números TRIS, probabilidades de ganar ni rentabilidad."]};
 }

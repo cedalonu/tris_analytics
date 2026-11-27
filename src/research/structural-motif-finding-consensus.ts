@@ -48,9 +48,11 @@ export function analyzeFindingConsensus(records:ExperimentRecord[],filesByRun:Re
   const notes:string[]=[];
   let status:ConsensusStatus;
   if(contextChanges.length)status="context-changed";
-  else if(missing.length||pStatuses.some(x=>x.status==="missing"||x.status==="incomplete"||x.status==="insufficient"))status="insufficient";
+  else if(missing.length)status="insufficient";
   else if([a,b,c,d].some(x=>!x?.label))status="not-interpreted";
-  else if(fav95&&fav96&&fav97&&fav98&&favPersistence)status="concordant-support";
+  else if(!fav95||!fav96||!fav97||!fav98)status="mixed";
+  else if(pStatuses.some(x=>x.status==="missing"||x.status==="incomplete"||x.status==="insufficient"))status="insufficient";
+  else if(favPersistence)status="concordant-support";
   else status="mixed";
   if(!favPersistence)notes.push("La persistencia no cumple el criterio estricto en las cuatro fases; se muestran estados separados.");
   if(unknownLabels.length)notes.push("Una o más etiquetas no cumplen el criterio favorable predefinido; se conserva su texto literal.");
