@@ -66,7 +66,8 @@
     "research:evidence-dossiers": "tsx scripts/run-tris-evidence-dossiers.ts",
     "research:hypothesis-tracker": "tsx scripts/run-tris-hypothesis-tracker.ts",
     "research:hypothesis-alerts": "tsx scripts/run-tris-hypothesis-alerts.ts",
-    "research:structural-random-control": "tsx scripts/run-tris-structural-random-control.ts"
+    "research:structural-random-control": "tsx scripts/run-tris-structural-random-control.ts",
+    "research:structural-temporal-robustness": "tsx scripts/run-tris-structural-temporal-robustness.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
