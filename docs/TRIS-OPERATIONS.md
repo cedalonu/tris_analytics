@@ -41,7 +41,7 @@ También se admite el flujo manual: descargar el archivo autorizado y guardarlo 
 
 ### 2. Congelar y actualizar el ciclo de aprendizaje
 
-Después de cada sorteo, ejecutar `npm run research:cycles:source`. El comando toma una instantánea nueva de la fuente y ejecuta ciclo + auditoría. Si se trabaja con un archivo manual, usar:
+Después de cada sorteo publicado, abrir **Actions → TRIS live prospective cycle → Run workflow** en la rama `research-core-v1`. Este flujo manual consulta la fuente una vez, restaura el último ledger exitoso, ejecuta ciclo + auditoría y publica un artefacto versionado para la siguiente ejecución. No existe un calendario ni polling automático. También puede ejecutarse localmente con `npm run research:cycles:source`. Si se trabaja con un archivo manual, usar:
 
 El ciclo:
 - resuelve únicamente pronósticos previamente congelados cuyo ID de sorteo aparece exactamente en el CSV;

@@ -1,0 +1,75 @@
+name: TRIS live prospective cycle
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: tris-live-prospective-research-core-v1
+  cancel-in-progress: false
+
+jobs:
+  cycle:
+    if: github.ref == 'refs/heads/research-core-v1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out research branch
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Restore latest successful prospective ledger
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          previous_run_id=$(gh run list \
+            --repo "$GITHUB_REPOSITORY" \
+            --workflow "TRIS live prospective cycle" \
+            --branch research-core-v1 \
+            --status success \
+            --limit 1 \
+            --json databaseId \
+            --jq '.[0].databaseId // empty')
+          if [ -n "$previous_run_id" ]; then
+            echo "Restoring previous successful ledger from run $previous_run_id"
+            gh run download "$previous_run_id" \
+              --repo "$GITHUB_REPOSITORY" \
+              --name tris-live-prospective-ledger \
+              --dir restored-ledger
+            if [ ! -d restored-ledger/cycles ]; then
+              echo "Previous artifact has no cycles directory; refusing to bootstrap over missing state."
+              exit 1
+            fi
+            mkdir -p data/cycles data/source-snapshots
+            cp -a restored-ledger/cycles/. data/cycles/
+            if [ -d restored-ledger/source-snapshots ]; then
+              cp -a restored-ledger/source-snapshots/. data/source-snapshots/
+            fi
+          else
+            echo "No prior successful live ledger; this is the prospective bootstrap."
+          fi
+      - name: Fetch, validate, run and audit latest official CSV
+        run: npm run research:cycles:source
+      - name: Publish current cycle summary
+        run: |
+          if [ -f data/cycles/latest-report.md ]; then
+            cat data/cycles/latest-report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Upload append-only prospective ledger and source snapshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: tris-live-prospective-ledger
+          path: |
+            data/cycles/
+            data/source-snapshots/Tris-*.csv
+            data/source-snapshots/Tris-*.json
+          if-no-files-found: error
+          retention-days: 90
