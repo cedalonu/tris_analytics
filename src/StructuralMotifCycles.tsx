@@ -28,7 +28,7 @@ export default function StructuralMotifCycles({ items }: { items: HistoricalPack
       </div>
       <h3 className="mt-4 text-sm font-bold">Secuencias encontradas</h3>
       <div className="mt-2 max-h-80 overflow-auto rounded-xl border border-slate-800">
-        {cycles.slice(0, 300).map((cycle, index) => <div key={cycle.key + cycle.startWindow + cycle.period} className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 p-2 text-xs"><div><b>{cycle.members.join(" · ")}</b><div className="mt-1 text-slate-400">{cycle.sequence.map(type => names[type]).join(" → ")} → …</div></div><div className="text-right"><b>Periodo {cycle.period} · {cycle.repetitions} repeticiones</b><div className="text-slate-500">Ventanas {cycle.startWindow + 1}–{cycle.endWindow + 1} · {cycle.rightCensored ? "alcanza el final" : "tramo cerrado"}</div></div></div>)}
+        {cycles.slice(0, 300).map(cycle => <div key={cycle.key + cycle.startWindow + cycle.period} className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 p-2 text-xs"><div><b>{cycle.members.join(" · ")}</b><div className="mt-1 text-slate-400">{cycle.sequence.map(type => names[type]).join(" → ")} → …</div></div><div className="text-right"><b>Periodo {cycle.period} · {cycle.repetitions} repeticiones</b><div className="text-slate-500">Ventanas {cycle.startWindow + 1}–{cycle.endWindow + 1} · {cycle.rightCensored ? "alcanza el final" : "tramo cerrado"}</div></div></div>)}
         {cycles.length === 0 && <p className="p-3 text-xs text-slate-500">No se detectaron ciclos con los filtros actuales.</p>}
         {cycles.length > 300 && <p className="p-2 text-[10px] text-slate-500">Se muestran los primeros 300 de {cycles.length} ciclos.</p>}
       </div>
