@@ -9,7 +9,7 @@ export interface HistoricalRegimeComparisonOptions extends PastOnlyRegimeOptions
 export function analyzeHistoricalRegimeComparison(draws:Draw[],firstTargetDrawId:number,lastTargetDrawId:number,options:HistoricalRegimeComparisonOptions={}){
  const minimumSupport=options.minimumSupport??30,blockSize=options.blockSize??25,minimumDrawSupport=options.minimumDrawSupport??10;
  if(!Number.isInteger(minimumSupport)||minimumSupport<1)throw Error("minimumSupport must be positive");
- const classifier=classifyPastOnlyRegimes(draws,firstTargetDrawId,lastTargetDrawId,{referenceWindow:options.referenceWindow,recentWindow:options.recentWindow,poolTvThreshold:options.poolTvThreshold,duplicateRateThreshold:options.duplicateRateThreshold,distinctMeanThreshold:options.distinctMeanThreshold,entropyThreshold:options.entropyThreshold});
+ const classifier=classifyPastOnlyRegimes(draws,firstTargetDrawId,lastTargetDrawId,options);
  if(classifier.skippedDrawIds.length)throw Error("targets lack sufficient past history: "+classifier.skippedDrawIds.slice(0,20).join(", "));
  const dynamics=analyzeRegimeTransitionDynamics(classifier.labels);
  const profiles=analyzePositionalRegimeProfiles(draws,classifier.labels,{minimumSupport});
