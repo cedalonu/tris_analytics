@@ -110,6 +110,19 @@ jobs:
           TRIS_PORTFOLIO_SIZES: "10"
           TRIS_PORTFOLIO_RANDOM_REPS: "5"
         run: npm run research:portfolio-walk-forward -- data/source-snapshots/Tris-2026-11-25.csv
+      - name: Smoke-test append-only learning cycle on exact historical snapshot
+        run: |
+          set -euo pipefail
+          rm -rf data/cycle-smoke
+          npm run research:cycles -- data/source-snapshots/Tris-2026-11-25.csv data/cycle-smoke
+          before_cycles=$(sha256sum data/cycle-smoke/cycles.jsonl | cut -d' ' -f1)
+          before_outcomes=$(sha256sum data/cycle-smoke/outcomes.jsonl 2>/dev/null | cut -d' ' -f1 || true)
+          npm run research:cycles -- data/source-snapshots/Tris-2026-11-25.csv data/cycle-smoke
+          after_cycles=$(sha256sum data/cycle-smoke/cycles.jsonl | cut -d' ' -f1)
+          after_outcomes=$(sha256sum data/cycle-smoke/outcomes.jsonl 2>/dev/null | cut -d' ' -f1 || true)
+          test "$before_cycles" = "$after_cycles"
+          test "$before_outcomes" = "$after_outcomes"
+          npm run research:cycles-audit -- data/source-snapshots/Tris-2026-11-25.csv data/cycle-smoke
       - name: Freeze next-draw prospective hypotheses
         run: npm run research:prospective -- data/source-snapshots/Tris-2026-11-25.csv data/prospective
       - name: Audit prospective ledger integrity
@@ -137,6 +150,7 @@ jobs:
           path: |
             reports/**
             data/prospective/**
+            data/cycle-smoke/**
             data/tris-sync-checkpoint.json
           if-no-files-found: error
           retention-days: 90

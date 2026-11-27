@@ -25,6 +25,22 @@ async function readState():Promise<State|null>{try{return JSON.parse(await readF
 const cycles=await readJsonl<FrozenLearningCycle>(cyclesPath),outcomes=await readJsonl<ResolvedCycleSignal>(outcomesPath);
 const stamp=new Date().toISOString(),latest=draws.at(-1)!;
 let state=await readState(),initialized=false;
+if(!state&&(cycles.length||outcomes.length))throw new Error("Cycle ledger has frozen records but its checkpoint is missing; refusing unsafe reinitialization.");
+const cycleTargets=new Set<number>(),cycleIds=new Set<string>(),frozenIds=new Set<string>();
+for(const cycle of cycles){
+ if(cycleTargets.has(cycle.targetDrawId)||cycleIds.has(cycle.cycleId))throw new Error("Duplicate frozen cycle target or cycle ID.");
+ cycleTargets.add(cycle.targetDrawId);cycleIds.add(cycle.cycleId);
+ for(const signal of cycle.signals){
+  if(frozenIds.has(signal.forecast.forecastId))throw new Error("Duplicate frozen forecast ID in cycle ledger.");
+  frozenIds.add(signal.forecast.forecastId);
+ }
+}
+const outcomeIds=new Set<string>();
+for(const outcome of outcomes){
+ if(outcomeIds.has(outcome.forecastId))throw new Error("Duplicate resolved forecast ID in outcome ledger.");
+ outcomeIds.add(outcome.forecastId);
+ if(!frozenIds.has(outcome.forecastId))throw new Error("Outcome has no matching frozen forecast; refusing to continue.");
+}
 if(state){
  const prefix=draws.filter(d=>d.drawId<=state!.processedThroughDrawId);
  if(prefix.length!==state.processedDrawCount||prefix.at(-1)?.drawId!==state.processedThroughDrawId||fingerprintCycleHistory(prefix)!==state.processedPrefixSha256)
