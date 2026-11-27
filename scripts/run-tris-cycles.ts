@@ -7,6 +7,7 @@ import {importTrisCsv} from "../src/research/data-adapter";
 import {createResearchPlan} from "../src/research/intuition-orchestrator";
 import {freezeLearningCycle,resolveLearningCycleSignal,assessCycleSignalLifecycle,fingerprintCycleHistory,type FrozenLearningCycle,type ResolvedCycleSignal} from "../src/research/cycle-learning";
 import {analyzePositionContextMemory} from "../src/research/position-context-memory";
+import {appendEvidence,assessSignal,type SignalRecord} from "../src/research/intuition-ledger";
 
 const input=process.argv[2];
 if(!input){console.error("Usage: npm run research:cycles -- <local-path-to-Tris.csv> [ledger-directory]");process.exit(2);}
@@ -60,6 +61,43 @@ for(const cycle of cycles){
 }
 if(newOutcomes.length)await appendFile(outcomesPath,newOutcomes.map(x=>JSON.stringify(x)).join("\n")+"\n","utf8");
 const allOutcomes=[...outcomes,...newOutcomes],lifecycle=assessCycleSignalLifecycle(allOutcomes);
+// Canonical signal ledger: append each newly resolved cycle batch exactly once.
+// Cycle outcomes remain the source of truth; this ledger is the evaluator projection.
+const signalsPath=resolve(ledgerDir,"signals.json");
+let signalRecords:SignalRecord[]=[];
+try{signalRecords=JSON.parse(await readFile(signalsPath,"utf8")) as SignalRecord[];}
+catch(error){if((error as NodeJS.ErrnoException).code!=="ENOENT")throw error;}
+const signalMap=new Map(signalRecords.map(record=>[record.id,record]));
+if(signalMap.size!==signalRecords.length)throw new Error("Duplicate candidate IDs in consolidated signal ledger.");
+const newByCandidate=new Map<string,ResolvedCycleSignal[]>();
+for(const row of newOutcomes){const batch=newByCandidate.get(row.candidateId)??[];batch.push(row);newByCandidate.set(row.candidateId,batch);}
+for(const [candidateId,rows] of newByCandidate){
+ const first=rows[0],existing=signalMap.get(candidateId);
+ const record:SignalRecord=existing??{
+  id:candidateId,description:"TRIS prospective cycle candidate: "+first.family,
+  status:"hypothesis",evidence:[],createdAt:first.generatedAt,updatedAt:first.generatedAt,
+  frozenConfig:first.frozenConfig
+ };
+ if(record.frozenConfig&&record.frozenConfig!==first.frozenConfig)throw new Error("Candidate frozen configuration changed in consolidated signal ledger: "+candidateId);
+ const evidenceId=sha(rows.map(row=>row.forecastId).sort().join("\n"));
+ if(!record.evidence.some(e=>e.id===evidenceId)){
+  const evidence={
+   id:evidenceId,phase:"prospective" as const,evaluatedAt:stamp,
+   n:rows.length,hits:rows.filter(row=>row.candidateHit).length,
+   baselineN:rows.length,baselineHits:rows.filter(row=>row.baselineHit).length,
+   discordantCandidateWins:rows.filter(row=>row.candidateHit&&!row.baselineHit).length,
+   discordantBaselineWins:rows.filter(row=>!row.candidateHit&&row.baselineHit).length,
+   testCount:100,
+   notes:"Append-only prospective evidence from frozen learning-cycle outcomes; multiplicity budget fixed at 100 candidates."
+  };
+  signalMap.set(candidateId,appendEvidence(record,evidence));
+ }
+ const updated=signalMap.get(candidateId)!;
+ const assessment=assessSignal(updated);
+ signalMap.set(candidateId,{...updated,status:assessment.status});
+}
+signalRecords=[...signalMap.values()].sort((a,b)=>a.id.localeCompare(b.id));
+await writeFile(signalsPath,JSON.stringify(signalRecords,null,2)+"\n","utf8");
 const nextTarget=latest.drawId+1,alreadyFrozen=cycles.some(c=>c.targetDrawId===nextTarget);
 let newCycle:FrozenLearningCycle|null=null;
 if(!alreadyFrozen){
@@ -102,6 +140,8 @@ const report=[
  "- Frozen cycles: "+(cycles.length+(newCycle?1:0)),
  "- Resolved signal outcomes: "+allOutcomes.length,
  "- Signals with lifecycle records: "+lifecycle.length,
+ "- Consolidated evaluator records: "+signalRecords.length,
+ "- Consolidated prospective evidence rows: "+signalRecords.reduce((n,r)=>n+r.evidence.filter(e=>e.phase==="prospective").reduce((m,e)=>m+e.n,0),0),
  "- Persistent: "+lifecycle.filter(x=>x.status==="persistent").length,
  "- Strengthening: "+lifecycle.filter(x=>x.status==="strengthening").length,
  "- Weakening: "+lifecycle.filter(x=>x.status==="weakening").length,
@@ -118,7 +158,7 @@ const report=[
  "- Hit rates are binary pool/outcome coverage, not calibrated probabilities.",
  "- Lifecycle labels are descriptive; they do not promote hypotheses or change candidate weights.",
  "- No APIs, network calls, polling or automatic downloads are used.","",
- "## Local files","- "+cyclesPath,"- "+outcomesPath,"- "+statePath,"- "+resolve(ledgerDir,"lifecycle.json"),"- "+resolve(ledgerDir,"position-context-memory.json")
+ "## Local files","- "+cyclesPath,"- "+outcomesPath,"- "+statePath,"- "+resolve(ledgerDir,"lifecycle.json"),"- "+resolve(ledgerDir,"position-context-memory.json"),"- "+signalsPath
 ].join("\n")+"\n";
 await writeFile(resolve(ledgerDir,"latest-report.md"),report,"utf8");
 const nextState:State={schemaVersion:1,processedThroughDrawId:latest.drawId,processedDrawCount:draws.length,processedPrefixSha256:fingerprintCycleHistory(draws),updatedAt:stamp};
