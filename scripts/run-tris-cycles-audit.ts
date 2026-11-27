@@ -61,6 +61,28 @@ if(JSON.stringify(actualSignals)!==JSON.stringify(expectedSignals))
  throw new Error("Consolidated signal ledger differs from the canonical projection of cycle outcomes.");
 if(cycles.length!==1)throw new Error("Smoke test expected exactly one bootstrap cycle; found "+cycles.length+".");
 const latest=draws.at(-1)!;
+const investigator=JSON.parse(await readFile(resolve(dir,"investigator-report.json"),"utf8")) as {
+ generatedAt:string;targetDrawId:number;historyThroughDrawId:number;catalogSize:number;budget:number;frozenCount:number;
+ explorationCount:number;exploitationCount:number;retiredExcluded:number;familyCounts:Record<string,number>;
+ selected:Array<{candidateId:string;family:string;config:Record<string,unknown>;priorityScore:number;reasons:string[]}>;
+ warnings:string[];
+};
+if(!Number.isFinite(Date.parse(investigator.generatedAt))||investigator.targetDrawId!==latest.drawId+1||investigator.historyThroughDrawId!==latest.drawId)
+ throw new Error("Adaptive investigator report has invalid timestamp or temporal boundary.");
+if(investigator.catalogSize<investigator.budget||investigator.budget!==100||investigator.selected.length!==100||investigator.frozenCount!==cycles[0].frozenCount)
+ throw new Error("Adaptive investigator report candidate budget does not reconcile.");
+if(investigator.explorationCount+investigator.exploitationCount!==investigator.selected.length||investigator.explorationCount!==50||investigator.exploitationCount!==50)
+ throw new Error("Bootstrap investigator must allocate 50 exploration and 50 exploitation slots.");
+for(const family of ["transition","position-mutation","absence-return","pool-ranking"])
+ if(investigator.familyCounts[family]!==25)throw new Error("Adaptive investigator family quota mismatch: "+family);
+if(investigator.retiredExcluded!==0)throw new Error("Fresh bootstrap should not exclude any previously retired candidates.");
+const selectedById=new Map(investigator.selected.map(x=>[x.candidateId,x]));
+if(selectedById.size!==investigator.selected.length)throw new Error("Adaptive investigator selected duplicate candidate IDs.");
+for(const signal of cycles[0].signals){
+ const selected=selectedById.get(signal.candidateId);
+ if(!selected||selected.priorityScore!==signal.priorityScore||JSON.stringify(selected.reasons)!==JSON.stringify(signal.priorityReasons))
+  throw new Error("Frozen signal does not match adaptive investigator report: "+signal.candidateId);
+}
 if(cycles[0].targetDrawId!==latest.drawId+1)throw new Error("Bootstrap cycle does not target the next contest.");
 if(outcomes.length!==0)throw new Error("Historical bootstrap must not manufacture resolved prospective outcomes.");
 console.log(JSON.stringify({status:"success",validatedDraws:draws.length,latestDrawId:latest.drawId,frozenCycles:cycles.length,frozenSignals:cycles.reduce((n,c)=>n+c.frozenCount,0),resolvedOutcomes:outcomes.length,checkpoint:"matched",prospectiveTarget:cycles[0].targetDrawId},null,2));
