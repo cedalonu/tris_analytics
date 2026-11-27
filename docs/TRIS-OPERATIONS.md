@@ -29,7 +29,7 @@ Abrir `http://localhost:3000`. Para una compilación de producción: `npm run bu
 
 ### 1. Obtener y validar el CSV
 
-La forma recomendada es ejecutar el ciclo directamente contra la fuente autorizada:
+La forma recomendada es ejecutar el ciclo directamente contra la fuente autorizada. En el CSV, `CONCURSO` identifica el sorteo y el resultado oficial para evaluación se toma exclusivamente de los cinco dígitos `R1`–`R5`, en ese orden. El campo `ID` del CSV se ignora por completo (no forma parte del resultado ni de la evaluación):
 
 ```bash
 npm run research:cycles:source
