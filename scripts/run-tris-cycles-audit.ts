@@ -59,7 +59,8 @@ const expectedSignals=projectCycleOutcomesToSignalLedger(outcomes);
 const actualSignals=JSON.parse(await readFile(resolve(dir,"signals.json"),"utf8"));
 if(JSON.stringify(actualSignals)!==JSON.stringify(expectedSignals))
  throw new Error("Consolidated signal ledger differs from the canonical projection of cycle outcomes.");
-if(cycles.length!==1)throw new Error("Smoke test expected exactly one bootstrap cycle; found "+cycles.length+".");
+if(cycles.length<1)throw new Error("Prospective ledger must contain at least one frozen cycle.");
+const latestCycle=cycles.at(-1)!;
 const latest=draws.at(-1)!;
 const investigator=JSON.parse(await readFile(resolve(dir,"investigator-report.json"),"utf8")) as {
  generatedAt:string;targetDrawId:number;historyThroughDrawId:number;catalogSize:number;baseCatalogSize?:number;
@@ -73,13 +74,13 @@ const investigator=JSON.parse(await readFile(resolve(dir,"investigator-report.js
 };
 if(!Number.isFinite(Date.parse(investigator.generatedAt))||investigator.targetDrawId!==latest.drawId+1||investigator.historyThroughDrawId!==latest.drawId)
  throw new Error("Adaptive investigator report has invalid timestamp or temporal boundary.");
-if(investigator.catalogSize<investigator.budget||investigator.budget!==100||investigator.selected.length!==100||investigator.frozenCount!==cycles[0].frozenCount)
+if(investigator.catalogSize<investigator.budget||investigator.budget!==100||investigator.selected.length!==100||investigator.frozenCount!==latestCycle.frozenCount)
  throw new Error("Adaptive investigator report candidate budget does not reconcile.");
 if(investigator.forecastEligibilityPolicy==="forecastable-preflight-v1"){
  if(investigator.forecastableCatalogSize!==investigator.catalogSize||
   investigator.forecastIneligibleCount!==(investigator.investigatorCatalogSize??0)-investigator.forecastableCatalogSize)
   throw new Error("Forecast-eligibility counts do not reconcile.");
- if(cycles[0].selectedCount!==investigator.selected.length||cycles[0].frozenCount!==investigator.selected.length)
+ if(latestCycle.selectedCount!==investigator.selected.length||latestCycle.frozenCount!==investigator.selected.length)
   throw new Error("Every selected candidate must produce one frozen prospective forecast.");
 }
 if(investigator.explorationCount+investigator.exploitationCount!==investigator.selected.length||investigator.explorationCount!==50||investigator.exploitationCount!==50)
@@ -89,7 +90,7 @@ if(Object.values(investigator.familyCounts).reduce((sum,count)=>sum+count,0)!==i
 for(const family of ["transition","position-mutation","absence-return","pool-ranking"])
  if(!Number.isInteger(investigator.familyCounts[family])||investigator.familyCounts[family]<0)
   throw new Error("Adaptive investigator family count is invalid: "+family);
-if(investigator.retiredExcluded!==0)throw new Error("Fresh bootstrap should not exclude any previously retired candidates.");
+if(investigator.retiredExcluded<0)throw new Error("Retired candidate exclusion count cannot be negative.");
 if((investigator.variantCount??0)!==(investigator.variants??[]).length)throw new Error("Adaptive variant count does not reconcile.");
 for(const variant of investigator.variants??[]){
  const parentRows=outcomes.filter(row=>row.candidateId===variant.parentCandidateId);
@@ -113,16 +114,16 @@ for(const variant of investigator.variants??[]){
 }
 const selectedById=new Map(investigator.selected.map(x=>[x.candidateId,x]));
 if(selectedById.size!==investigator.selected.length)throw new Error("Adaptive investigator selected duplicate candidate IDs.");
-const frozenCandidateIds=new Set(cycles[0].signals.map(signal=>signal.candidateId));
+const frozenCandidateIds=new Set(latestCycle.signals.map(signal=>signal.candidateId));
 if(investigator.forecastEligibilityPolicy==="forecastable-preflight-v1")
  for(const selectedCandidate of investigator.selected)
   if(!frozenCandidateIds.has(selectedCandidate.candidateId))
    throw new Error("Selected candidate was not frozen because it lacked a usable forecast: "+selectedCandidate.candidateId);
-for(const signal of cycles[0].signals){
+for(const signal of latestCycle.signals){
  const selected=selectedById.get(signal.candidateId);
  if(!selected||selected.priorityScore!==signal.priorityScore||JSON.stringify(selected.reasons)!==JSON.stringify(signal.priorityReasons))
   throw new Error("Frozen signal does not match adaptive investigator report: "+signal.candidateId);
 }
-if(cycles[0].targetDrawId!==latest.drawId+1)throw new Error("Bootstrap cycle does not target the next contest.");
-if(outcomes.length!==0)throw new Error("Historical bootstrap must not manufacture resolved prospective outcomes.");
-console.log(JSON.stringify({status:"success",validatedDraws:draws.length,latestDrawId:latest.drawId,frozenCycles:cycles.length,frozenSignals:cycles.reduce((n,c)=>n+c.frozenCount,0),resolvedOutcomes:outcomes.length,checkpoint:"matched",prospectiveTarget:cycles[0].targetDrawId},null,2));
+if(latestCycle.targetDrawId!==latest.drawId+1)throw new Error("Latest frozen cycle does not target the next contest.");
+
+console.log(JSON.stringify({status:"success",validatedDraws:draws.length,latestDrawId:latest.drawId,frozenCycles:cycles.length,frozenSignals:cycles.reduce((n,c)=>n+c.frozenCount,0),resolvedOutcomes:outcomes.length,checkpoint:"matched",prospectiveTarget:latestCycle.targetDrawId},null,2));
