@@ -1,5 +1,5 @@
 #!/usr/bin/env tsx
-/** Append-only prospective learning cycles. Reads only a manually supplied local CSV. */
+/** Append-only prospective learning cycles. Reads a validated local CSV snapshot; source acquisition is handled separately. */
 import {readFile,appendFile,writeFile,mkdir} from "node:fs/promises";
 import {resolve,basename} from "node:path";
 import {createHash} from "node:crypto";
@@ -155,7 +155,7 @@ const report=[
  "- Missed contests are never backfilled. Run after each CSV update to preserve prospective coverage.",
  "- Hit rates are binary pool/outcome coverage, not calibrated probabilities.",
  "- Lifecycle labels are descriptive; they do not promote hypotheses or change candidate weights.",
- "- No APIs, network calls, polling or automatic downloads are used.","",
+ "- No API calls or polling are used; this run consumes one validated local snapshot (which may have been fetched on demand from the authorized public CSV).","",
  "## Local files","- "+cyclesPath,"- "+outcomesPath,"- "+statePath,"- "+resolve(ledgerDir,"lifecycle.json"),"- "+resolve(ledgerDir,"position-context-memory.json"),"- "+signalsPath,"- "+resolve(ledgerDir,"investigator-report.json")
 ].join("\n")+"\n";
 await writeFile(resolve(ledgerDir,"latest-report.md"),report,"utf8");
