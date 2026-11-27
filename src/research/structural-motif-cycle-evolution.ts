@@ -1,0 +1,17 @@
+import type { MotifWindow } from "./structural-motifs";
+import type { MotifCycle } from "./structural-motif-cycles";
+import type { CycleSynchronization } from "./structural-motif-cycle-synchronization";
+import { buildCycleCommunities, type CycleCommunity } from "./structural-motif-cycle-communities";
+export type CommunitySnapshot = { window:number; startDate:string; endDate:string; communities:CycleCommunity[] };
+export type CommunityEvolutionTransition = {fromWindow:number;toWindow:number;fromId:string|null;toId:string|null;relation:"nueva"|"continua"|"dividida"|"fusionada"|"disuelta";sharedCycles:number;jaccard:number;addedCycles:number;lostCycles:number};
+function episodeId(c:MotifCycle){return [c.key,c.startWindow,c.endWindow,c.period,c.sequence.join(",")].join("|");}
+function overlap(a:CycleCommunity,b:CycleCommunity){const x=new Set(a.cycles.map(episodeId)),y=new Set(b.cycles.map(episodeId)),shared=[...x].filter(id=>y.has(id)).length;return{shared,jaccard:x.size+y.size-shared?shared/(x.size+y.size-shared):0,added:y.size-shared,lost:x.size-shared};}
+export function analyzeCycleCommunityEvolution(windows:MotifWindow[],cycles:MotifCycle[],pairs:CycleSynchronization[],minScore=.45){
+ const snapshots:CommunitySnapshot[]=[...windows].sort((a,b)=>a.index-b.index).map(w=>{const active=cycles.filter(c=>c.startWindow<=w.index&&c.endWindow>=w.index),ids=new Set(active.map(episodeId));return{window:w.index,startDate:w.startDate,endDate:w.endDate,communities:buildCycleCommunities(active,pairs.filter(p=>ids.has(episodeId(p.left))&&ids.has(episodeId(p.right))),minScore).communities};});
+ const transitions:CommunityEvolutionTransition[]=[];
+ for(let i=1;i<snapshots.length;i++){const prev=snapshots[i-1],next=snapshots[i],links=prev.communities.flatMap((a,ai)=>next.communities.map((b,bi)=>({ai,bi,...overlap(a,b)})).filter(x=>x.shared>0)),parents=next.communities.map((_,bi)=>links.filter(x=>x.bi===bi)),children=prev.communities.map((_,ai)=>links.filter(x=>x.ai===ai));
+  for(let bi=0;bi<next.communities.length;bi++){const candidates=parents[bi].sort((a,b)=>b.jaccard-a.jaccard),best=candidates[0],relation=candidates.length===0?"nueva":candidates.length>1?"fusionada":children[candidates[0].ai].length>1?"dividida":"continua";transitions.push({fromWindow:prev.window,toWindow:next.window,fromId:best?prev.communities[best.ai].id:null,toId:next.communities[bi].id,relation,sharedCycles:best?.shared??0,jaccard:best?.jaccard??0,addedCycles:best?.added??next.communities[bi].cycleCount,lostCycles:best?.lost??0});}
+  for(let ai=0;ai<prev.communities.length;ai++)if(children[ai].length===0)transitions.push({fromWindow:prev.window,toWindow:next.window,fromId:prev.communities[ai].id,toId:null,relation:"disuelta",sharedCycles:0,jaccard:0,addedCycles:0,lostCycles:prev.communities[ai].cycleCount});
+ }
+ return{snapshots,transitions,summary:{windows:snapshots.length,communityObservations:snapshots.reduce((s,p)=>s+p.communities.length,0),newCommunities:transitions.filter(t=>t.relation==="nueva").length,continuations:transitions.filter(t=>t.relation==="continua").length,splits:transitions.filter(t=>t.relation==="dividida").length,mergers:transitions.filter(t=>t.relation==="fusionada").length,dissolutions:transitions.filter(t=>t.relation==="disuelta").length,largestCommunity:snapshots.reduce((m,p)=>Math.max(m,...p.communities.map(c=>c.cycleCount),0),0)},settings:{minScore}};
+}
