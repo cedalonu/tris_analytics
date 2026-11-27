@@ -2,7 +2,7 @@
 
 ## Propósito y límites
 
-El laboratorio trabaja con resultados TRIS que el operador proporciona manualmente. La única fuente autorizada para actualizar el histórico es [Tris.csv de pakinja/pakin](https://github.com/pakinja/pakin/blob/master/Tris.csv). El repositorio no consulta ese enlace, no descarga datos, no hace polling y no llama APIs para obtener sorteos.
+El laboratorio usa como única fuente autorizada el archivo [Tris.csv de pakinja/pakin](https://github.com/pakinja/pakin/blob/master/Tris.csv). El comando `research:cycles:source` consulta ese archivo una sola vez cuando el operador lo ejecuta; no hay polling, tareas programadas ni llamadas a APIs. Cada descarga validada se conserva como snapshot inmutable con SHA-256 y metadatos de procedencia.
 
 El sistema produce hipótesis y pools experimentales congelados. No conoce el resultado futuro, no garantiza aciertos, no calcula rentabilidad ni convierte tasas de cobertura en probabilidades calibradas. Los informes retrospectivos no son evidencia prospectiva.
 
@@ -29,16 +29,19 @@ Abrir `http://localhost:3000`. Para una compilación de producción: `npm run bu
 
 ### 1. Obtener y validar el CSV
 
-Descargar manualmente el archivo autorizado y guardarlo localmente como `data/Tris.csv`. No modificar ni reordenar sorteos. Antes de interpretar resultados, el importador exige registros válidos, IDs consecutivos y al menos 200 sorteos para el ciclo prospectivo.
+La forma recomendada es ejecutar el ciclo directamente contra la fuente autorizada:
+
+```bash
+npm run research:cycles:source
+```
+
+El comando descarga una sola vez el CSV público, valida su estructura, continuidad de IDs y mínimo de 200 sorteos, calcula SHA-256, conserva el archivo original en `data/source-snapshots/` y registra un manifiesto `.json` con URL, hora de consulta, tamaño, rango de concursos y hash. Después ejecuta el ciclo y su auditoría sobre exactamente ese mismo snapshot. Si la fuente no responde o los datos no pasan la validación, el proceso se detiene sin alterar el ledger. No modifica ni reordena el CSV original.
+
+También se admite el flujo manual: descargar el archivo autorizado y guardarlo como `data/Tris.csv`.
 
 ### 2. Congelar y actualizar el ciclo de aprendizaje
 
-Después de cada sorteo, actualizar el CSV manualmente y ejecutar:
-
-```bash
-npm run research:cycles -- data/Tris.csv data/cycles
-npm run research:cycles-audit -- data/Tris.csv data/cycles
-```
+Después de cada sorteo, ejecutar `npm run research:cycles:source`. El comando toma una instantánea nueva de la fuente y ejecuta ciclo + auditoría. Si se trabaja con un archivo manual, usar:
 
 El ciclo:
 - resuelve únicamente pronósticos previamente congelados cuyo ID de sorteo aparece exactamente en el CSV;
@@ -102,7 +105,7 @@ El panel de intuición permite importar manualmente un ResearchPlan JSON, un led
 - No borrar el checkpoint para sortear un error de integridad.
 - Separar estrictamente discovery, validation, holdout y prospective.
 - No declarar una señal predictiva por una diferencia histórica aislada.
-- Un nuevo resultado prospectivo solo entra cuando el operador actualiza el CSV y vuelve a ejecutar el ciclo.
+- Un nuevo resultado prospectivo entra cuando el CSV publicado contiene el concurso y el operador vuelve a ejecutar el comando de fuente.
 
 ## Comandos útiles
 
@@ -111,7 +114,8 @@ El panel de intuición permite importar manualmente un ResearchPlan JSON, un led
 | Verificar tipos | `npm run lint` |
 | Pruebas unitarias | `npm run test:research` |
 | Compilar | `npm run build` |
-| Ciclo de memoria | `npm run research:cycles -- data/Tris.csv data/cycles` |
+| Ciclo desde la fuente autorizada | `npm run research:cycles:source` |
+| Ciclo de memoria manual | `npm run research:cycles -- data/Tris.csv data/cycles` |
 | Auditar ciclo | `npm run research:cycles-audit -- data/Tris.csv data/cycles` |
 | Validación histórica | `npm run research:validate -- data/Tris.csv data/historical-validation` |
 | Panel local | `npm run dev` |

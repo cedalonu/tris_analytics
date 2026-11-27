@@ -84,7 +84,8 @@
     "research:sync": "tsx scripts/run-tris-sync.ts",
     "research:validate": "tsx scripts/run-tris-validation.ts",
     "start": "node server.js",
-    "test:research": "tsx --test src/*.test.ts src/research/*.test.ts"
+    "test:research": "tsx --test src/*.test.ts src/research/*.test.ts",
+    "research:cycles:source": "tsx scripts/run-tris-cycles-source.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
