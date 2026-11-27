@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {compareExperimentSnapshots} from "./structural-motif-experiment-snapshot-comparison";
 import type {ExperimentRecord} from "./structural-motif-experiment-ledger";
 const phases=[94,95,96,97,98,99,101];
-const record=(runId:string):ExperimentRecord=>({schema:"tris-experiment-record-v1",runId,capturedAt:runId==="a"?"2026-01-01":"2026-01-02",gitRef:null,gitCommit:null,status:"complete",phaseRange:"94–101",artifacts:phases.map(phase=>({phase,kind:"json",sourcePath:"phase"+phase+".json",snapshotPath:"records/"+runId+"/artifacts/"+phase+"/json.json",sha256:"x",bytes:1,available:true})),missing:[],reproducibilityStatus:null,contentFingerprint:"x"});
+const record=(runId:string):ExperimentRecord=>({schema:"tris-experiment-record-v1",runId,capturedAt:runId==="a"?"2026-01-01":"2026-01-02",gitRef:null,gitCommit:null,status:"complete",phaseRange:"94–101",artifacts:phases.map(phase=>({phase,kind:"json",sourcePath:"reports/phase"+phase+".json",snapshotPath:"records/"+runId+"/artifacts/"+phase+"/json.json",sha256:"x",bytes:1,available:true})),missing:[],reproducibilityStatus:null,contentFingerprint:"x"});
 const docs=(change=false)=>({
  "phase94.json":JSON.stringify({method:"m94",rows:[{targetDrawId:1,family:"A",position:0,structuralHit:true,randomMean:.2+(change?.1:0)}]}),
  "phase95.json":JSON.stringify({method:"m95",settings:{blocks:4},metrics:[{family:"A",position:0,holdout:{deltaVsRandom:.1+(change?.1:0)}}]}),
