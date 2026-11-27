@@ -10,6 +10,9 @@ const order:Record<StabilityTier,number>={"high-documentary-stability":0,"repeat
 export function analyzeStabilityRanking(records:ExperimentRecord[],files:Record<string,SnapshotFileMap>):StabilityRankingReport{
  const sorted=[...records].sort((a,b)=>a.capturedAt.localeCompare(b.capturedAt)||a.runId.localeCompare(b.runId));
  const consensus=analyzeFindingConsensus(sorted,files),persistence=analyzeFindingPersistence(sorted,files),evolution=analyzeEvidenceEvolution(sorted,files);
+ const declaredContextChanges=new Set<string>();
+ for(const record of sorted){for(const phase of [95,96,97,98]){const artifact=record.artifacts.find(a=>a.phase===phase&&a.kind==="json"),raw=artifact?files[record.runId]?.[artifact.sourcePath]:undefined;if(!raw)continue;try{const root=JSON.parse(raw),doc=root?.report&&typeof root.report==="object"?root.report:root,signature=JSON.stringify({method:doc.method??null,settings:doc.settings??null,environment:doc.environment??null}),key=phase+"|"+signature,previous=(declaredContextChanges as any)["last-"+phase];if(previous!==undefined&&previous!==signature)declaredContextChanges.add(String(phase));(declaredContextChanges as any)["last-"+phase]=signature;}catch{/* unreadable context remains unknown */}}}
+
  const pMap=new Map(persistence.series.map(x=>[x.family+"|"+x.position+"|"+x.phase,x]));
  const cMap=new Map(consensus.groups.map(x=>[x.family+"|"+x.position,x])),eMap=new Map(evolution.groups.map(x=>[x.family+"|"+x.position,x]));
  const keys=new Set<string>([...cMap.keys(),...eMap.keys(),...persistence.series.map(x=>x.family+"|"+x.position)]);
@@ -17,7 +20,7 @@ export function analyzeStabilityRanking(records:ExperimentRecord[],files:Record<
  for(const k of keys){const [family,position]=k.split("|"),c=cMap.get(k),e=eMap.get(k),ps=[95,96,97,98].map(phase=>pMap.get(k+"|"+phase)).filter(Boolean) as typeof persistence.series;
   const persistentPhases=ps.filter(x=>x.status==="persistent").length,observations=ps.reduce((n,x)=>n+x.observations,0),missingSnapshots=ps.reduce((n,x)=>n+x.missingSnapshots,0);
   const transitions=e?.transitions.filter(x=>x.kind!=="unknown-gap").length??0,favorableToOther=e?.transitions.filter(x=>x.kind==="favorable-to-other").length??0,otherToFavorable=e?.transitions.filter(x=>x.kind==="other-to-favorable").length??0,crossPhaseConflicts=e?.conflicts.length??0,contextChanges=e?.transitions.filter(x=>x.contextChanged).length??0;
-  const changed=contextChanges>0||c?.status==="context-changed",contradictory=favorableToOther>0||otherToFavorable>0||crossPhaseConflicts>0||e?.status==="contradictory";
+  const changed=contextChanges>0||c?.status==="context-changed"||[95,96,97,98].some(phase=>declaredContextChanges.has(String(phase))),contradictory=favorableToOther>0||otherToFavorable>0||crossPhaseConflicts>0||e?.status==="contradictory";
   const complete=sorted.length>=3&&!!c&&!!e&&ps.length===4&&ps.every(x=>x.observations>=3&&x.missingSnapshots===0)&&missingSnapshots===0;
   let tier:StabilityTier;
   if(changed)tier="context-changed";else if(contradictory)tier="contradictory-or-changing";
