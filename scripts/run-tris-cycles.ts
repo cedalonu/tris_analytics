@@ -9,6 +9,7 @@ import {freezeLearningCycle,resolveLearningCycleSignal,assessCycleSignalLifecycl
 import {analyzePositionContextMemory} from "../src/research/position-context-memory";
 import {appendEvidence,assessSignal,type SignalRecord} from "../src/research/intuition-ledger";
 
+const sha=(value:string)=>createHash("sha256").update(value,"utf8").digest("hex");
 const input=process.argv[2];
 if(!input){console.error("Usage: npm run research:cycles -- <local-path-to-Tris.csv> [ledger-directory]");process.exit(2);}
 const csvPath=resolve(input),ledgerDir=resolve(process.argv[3]??"data/cycles");
