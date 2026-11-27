@@ -1,0 +1,10 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {compareExperimentRecords,compareExperimentSelection} from "./structural-motif-experiment-comparator";
+import type {ExperimentRecord} from "./structural-motif-experiment-ledger";
+const make=(runId:string,sha="a",status:"complete"|"incomplete"="complete"):ExperimentRecord=>({schema:"tris-experiment-record-v1",runId,capturedAt:runId==="r2"?"2026-02-02":"2026-02-01",gitRef:"refs/heads/main",gitCommit:"commit-"+runId,status,phaseRange:"94–101",artifacts:[{phase:94,kind:"json",sourcePath:"reports/94.json",snapshotPath:"records/"+runId+"/94.json",sha256:sha,bytes:12,available:true}],missing:status==="complete"?[]:["reports/95.json"],reproducibilityStatus:null,contentFingerprint:sha});
+test("identical bytes are reported without inferring reproducibility",()=>{const r=compareExperimentRecords(make("r1"),make("r2"));assert.equal(r.status,"identical-artifacts");assert.equal(r.sameFingerprint,true);assert.equal(r.summary.unchanged,1);});
+test("changed artifact hash is isolated from missing files",()=>{const r=compareExperimentRecords(make("r1"),make("r2","b"));assert.equal(r.status,"artifact-changes");assert.equal(r.summary.changed,1);});
+test("missing artifact in one capture is preserved",()=>{const a=make("r1"),b=make("r2");b.artifacts=[];b.missing=["reports/94.json"];b.status="incomplete";const r=compareExperimentRecords(a,b);assert.equal(r.status,"incomplete");assert.equal(r.summary.onlyBaseline,1);assert.equal(r.summary.missingCurrent,1);});
+test("multiple selection compares every later run to the earliest",()=>{const r=compareExperimentSelection([make("r2","b"),make("r1","a"),make("r3","c")]);assert.equal(r.length,2);assert.equal(r[0].baselineRunId,"r1");assert.equal(r[1].baselineRunId,"r1");});
+test("changed git context is exposed but not assigned causality",()=>{const a=make("r1"),b=make("r2");b.gitCommit="new-commit";const r=compareExperimentRecords(a,b);assert.equal(r.gitCommitChanged,true);assert.ok(r.limitations.some(x=>x.includes("no atribuye")));});
