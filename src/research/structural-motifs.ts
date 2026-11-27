@@ -4,12 +4,12 @@ export type TriadType="empty"|"single-edge"|"wedge"|"triangle";
 export type StructuralMotif={key:string;members:[string,string,string];type:TriadType};
 export type MotifWindow={index:number;startDate:string;endDate:string;packageCount:number;nodes:number;edges:number;motifs:StructuralMotif[];counts:Record<TriadType,number>;rates:Record<TriadType,number>};
 export type MotifTransition={fromWindow:number;toWindow:number;sharedMotifs:number;newMotifs:number;lostMotifs:number;motifJaccard:number;typeChanges:number};
-export type RecurrentMotif={key:string;members:[string,string,string];type:TriadType;windows:number[];frequency:number};
+export type RecurrentMotif={key:string;members:[string,string,string];type:TriadType;windows:number[];frequency:number;typeHistory:Array<{window:number;type:TriadType}>};
 const TYPES:TriadType[]=["empty","single-edge","wedge","triangle"];
 export function classifyTriad(members:[string,string,string],edges:NetworkEdge[]):StructuralMotif{
  const set=new Set(members),present=new Set<string>();
  for(const e of edges)if(set.has(e.left)&&set.has(e.right))present.add([e.left,e.right].sort().join("|"));
- const count=present.size,degree=members.map(n=>members.filter(x=>x!==n&&present.has([n,x].sort().join("|"))).length).sort((a,b)=>a-b);
+ const count=present.size;
  const type:TriadType=count===0?"empty":count===1?"single-edge":count===2?"wedge":count===3?"triangle":"empty";
  return{key:members.slice().sort().join("::"),members:members.slice().sort() as [string,string,string],type};
 }
