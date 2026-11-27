@@ -23,8 +23,9 @@ test("retired candidates are excluded and selection is deterministic",()=>{
 });
 
 test("default 100-candidate budget splits exactly 50 exploration and 50 exploitation",()=>{
- const result=selectAdaptiveIntuitionCandidates(candidates,[],{beforeDrawId:900,budget:100,familyCaps:{transition:25,"position-mutation":25,"absence-return":25,"pool-ranking":25},explorationFraction:.5});
- assert.equal(result.selected.length,candidates.length);
+ const fullCatalog=generateIntuitionCandidates();
+ const result=selectAdaptiveIntuitionCandidates(fullCatalog,[],{beforeDrawId:900,budget:100,familyCaps:{transition:25,"position-mutation":25,"absence-return":25,"pool-ranking":25},explorationFraction:.5});
+ assert.equal(result.selected.length,100);
  assert.equal(result.explorationCount,50);assert.equal(result.exploitationCount,50);
  assert.deepEqual(result.familyCounts,{transition:25,"position-mutation":25,"absence-return":25,"pool-ranking":25});
 });
