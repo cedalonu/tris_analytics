@@ -22,3 +22,7 @@ npm start          # sirve dist/ en el puerto 3000 (o $PORT)
 
 ## Dependencias de la app
 `react`, `react-dom`, `html2canvas`, `@google/genai`, `ml-random-forest`, `xlsx`.
+
+## Investigación TRIS
+
+La guía de operación, ciclos de aprendizaje, validación histórica y resguardo de memoria está en [docs/TRIS-OPERATIONS.md](docs/TRIS-OPERATIONS.md).
