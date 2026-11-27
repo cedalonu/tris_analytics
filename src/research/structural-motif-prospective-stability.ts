@@ -1,4 +1,4 @@
-import type {Draw} from "../research-core";
+import type {Draw,Pos} from "../research-core";
 import type {FrozenForecast,ResolvedForecast} from "./intuition-prospective";
 import type {StabilityRankingReport,StabilityRankRow} from "./structural-motif-stability-ranking";
 import {MODES,outcomeForMode} from "./draw-evolution";
@@ -9,7 +9,7 @@ const sha=(s:string)=>createHash("sha256").update(s,"utf8").digest("hex");
 const wilson=(hits:number,n:number)=>{if(!n)return{lower:null,upper:null};const z=1.959963984540054,p=hits/n,z2=z*z,d=1+z2/n,c=(p+z2/(2*n))/d,w=z*Math.sqrt((p*(1-p)+z2/(4*n))/n)/d;return{lower:Math.max(0,c-w),upper:Math.min(1,c+w)};};
 function positions(f:FrozenForecast):number[]{try{const c=JSON.parse(f.frozenConfig);if(c.family!==f.family)return[];if(f.family==="transition")return MODES.find(m=>m.mode===c.mode)?.positions??[];return Number.isInteger(c.position)&&c.position>=0&&c.position<=4?[c.position]:[];}catch{return[];}}
 function resolvedOutcome(f:FrozenForecast,d:Draw):string|null{try{const c=JSON.parse(f.frozenConfig);if(c.family!==f.family)return null;if(f.family==="transition")return MODES.some(m=>m.mode===c.mode)?outcomeForMode(d.digits,c.mode):null;return Number.isInteger(c.position)&&c.position>=0&&c.position<=4?String(d.digits[c.position]):null;}catch{return null;}}
-function tokens(f:FrozenForecast,p:number,baseline=false):string[]{const xs=baseline?f.baseline:f.prediction;if(f.family==="transition"){try{const c=JSON.parse(f.frozenConfig),m=MODES.find(x=>x.mode===c.mode),i=m?.positions.indexOf(p)??-1;return i<0?[]:xs.filter(x=>new RegExp("^[0-9]{"+m!.positions.length+"}$").test(x)).map(x=>x[i]);}catch{return[];}}return positions(f).includes(p)?xs.filter(x=>/^[0-9]$/.test(x)):[];}
+function tokens(f:FrozenForecast,p:number,baseline=false):string[]{const xs=baseline?f.baseline:f.prediction;if(f.family==="transition"){try{const c=JSON.parse(f.frozenConfig),m=MODES.find(x=>x.mode===c.mode),i=m?.positions.indexOf(p as Pos)??-1;return i<0?[]:xs.filter(x=>new RegExp("^[0-9]{"+m!.positions.length+"}$").test(x)).map(x=>x[i]);}catch{return[];}}return positions(f).includes(p)?xs.filter(x=>/^[0-9]$/.test(x)):[];}
 export function createProspectiveStabilityLock(ranking:StabilityRankingReport,draws:Draw[],lockedAt:string):ProspectiveStabilityLock{
  if(ranking.status!=="ready"||!ranking.ranking.length)throw Error("a populated phase-109 stability ranking is required");
  if(!draws.length)throw Error("official TRIS history is required to define the cutoff");
