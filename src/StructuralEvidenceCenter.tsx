@@ -2,7 +2,6 @@ import React,{useMemo,useState} from "react";
 type RecordItem={name:string;data:any};
 const phaseNames=[["p94","Control aleatorio emparejado"],["p95","Holdout y bloques cronológicos"],["p96","Bootstrap temporal"],["p97","Sensibilidad de bloques"],["p98","Estabilidad conjunta"],["p99","Auditoría de cadena"]] as const;
 const key=(x:any)=>x&&typeof x.family==="string"&&Number.isInteger(x.position)?x.family+"|"+x.position:null;
-const pct=(v:any)=>typeof v==="number"&&Number.isFinite(v)?(v*100).toFixed(2)+"%":"—";
 const pp=(v:any)=>typeof v==="number"&&Number.isFinite(v)?(v*100).toFixed(2)+" pp":"—";
 const unwrap=(x:any)=>x?.data?.report??x?.data??null;
 export default function StructuralEvidenceCenter({reports}:{reports:any}){
@@ -20,7 +19,6 @@ export default function StructuralEvidenceCenter({reports}:{reports:any}){
  const families=[...new Set(groups.map(g=>g.family))].sort();
  const positions=[...new Set(groups.filter(g=>family==="all"||g.family===family).map(g=>g.position))].sort((a,b)=>a-b);
  const filtered=groups.filter(g=>(family==="all"||g.family===family)&&(position==="all"||String(g.position)===position));
- const count=(field:string)=>groups.filter(g=>(g as any)[field]).length;
  const missingText=missing.map(x=>x[0].toUpperCase()).join(", ");
  const labels:any={"consistent-retrospective-support":"Consistencia retrospectiva","mixed-evidence":"Evidencia mixta","insufficient-evidence":"Evidencia insuficiente"};
  return <div className="space-y-5">
