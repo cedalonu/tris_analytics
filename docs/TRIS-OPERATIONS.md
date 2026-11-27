@@ -49,6 +49,7 @@ El ciclo:
 - proyecta los resultados en `signals.json`, el ledger del evaluador compartido con el panel;
 - selecciona el siguiente portafolio con el investigador adaptativo: mitad aproximada de cada cuota familiar para explorar candidatos menos observados y el resto para explotar ventajas pareadas históricas contra baseline, con contracción por muestra;
 - exporta `investigator-report.json` con candidatos, configuraciones, motivos, conteos y advertencias del concurso objetivo;
+- puede proponer hasta 20 variantes nuevas de una sola dimensión (ventana de pool o umbral de ausencia) a partir de padres con al menos 25 resultados prospectivos resueltos y ventaja pareada positiva contra baseline tras contracción; las variantes empiezan como hipótesis independientes y no heredan evidencia del padre;
 - no rellena sorteos perdidos ni reconstruye pronósticos retrospectivos.
 
 Guardar y respaldar íntegramente `data/cycles/` entre ejecuciones. Incluye `cycles.jsonl`, `outcomes.jsonl`, `state.json`, `signals.json`, `investigator-report.json`, `lifecycle.json`, `position-context-memory.json` y `latest-report.md`. El archivo `signals.json` es una proyección evaluada de `outcomes.jsonl`, no una segunda fuente de resultados: se reconstruye de forma determinista si una ejecución se interrumpe después de escribir resultados. Los archivos JSONL son registros append-only; no editarlos a mano.

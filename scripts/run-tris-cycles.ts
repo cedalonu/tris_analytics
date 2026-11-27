@@ -6,6 +6,7 @@ import {createHash} from "node:crypto";
 import {importTrisCsv} from "../src/research/data-adapter";
 import {generateIntuitionCandidates} from "../src/research/intuition-candidate-generator";
 import {selectAdaptiveIntuitionCandidates} from "../src/research/intuition-adaptive-investigator";
+import {proposeAdaptiveCandidateVariants} from "../src/research/intuition-adaptive-variants";
 import {freezeLearningCycle,resolveLearningCycleSignal,assessCycleSignalLifecycle,fingerprintCycleHistory,projectCycleOutcomesToSignalLedger,type FrozenLearningCycle,type ResolvedCycleSignal} from "../src/research/cycle-learning";
 import {analyzePositionContextMemory} from "../src/research/position-context-memory";
 import type {SignalRecord} from "../src/research/intuition-ledger";
@@ -77,7 +78,11 @@ let investigatorReport:ReturnType<typeof selectAdaptiveIntuitionCandidates>|null
 if(!alreadyFrozen){
  const retiredIds=lifecycle.filter(x=>x.status==="retired").map(x=>x.candidateId);
  const catalog=generateIntuitionCandidates();
- investigatorReport=selectAdaptiveIntuitionCandidates(catalog,allOutcomes,{
+ const variants=proposeAdaptiveCandidateVariants(catalog,allOutcomes,{
+  beforeDrawId:nextTarget,minResolvedDraws:25,priorStrength:20,maxVariants:20,retiredCandidateIds:retiredIds
+ });
+ const investigatorCatalog=[...catalog,...variants.map(v=>v.candidate)];
+ investigatorReport=selectAdaptiveIntuitionCandidates(investigatorCatalog,allOutcomes,{
   beforeDrawId:nextTarget,budget:100,explorationFraction:.5,priorStrength:20,recentWindow:25,
   familyCaps:{transition:25,"position-mutation":25,"absence-return":25,"pool-ranking":25},
   retiredCandidateIds:retiredIds
@@ -87,11 +92,13 @@ if(!alreadyFrozen){
  if(newCycle.frozenCount)await appendFile(cyclesPath,JSON.stringify(newCycle)+"\n","utf8");
  await writeFile(resolve(ledgerDir,"investigator-report.json"),JSON.stringify({
   generatedAt:stamp,targetDrawId:nextTarget,historyThroughDrawId:latest.drawId,
-  catalogSize:investigatorReport.catalogSize,budget:investigatorReport.budget,
+  catalogSize:investigatorReport.catalogSize,baseCatalogSize:catalog.length,variantCount:variants.length,
+  variants:variants.map(v=>({candidateId:v.candidate.id,parentCandidateId:v.parentCandidateId,changedParameter:v.changedParameter,fromValue:v.fromValue,toValue:v.toValue,parentResolvedDraws:v.parentResolvedDraws,parentPairedWins:v.parentPairedWins,parentPairedLosses:v.parentPairedLosses,parentShrunkAdvantage:v.parentShrunkAdvantage,proposalReason:v.proposalReason})),
+  budget:investigatorReport.budget,
   frozenCount:newCycle.frozenCount,explorationCount:investigatorReport.explorationCount,
   exploitationCount:investigatorReport.exploitationCount,retiredExcluded:investigatorReport.retiredExcluded,
   familyCounts:investigatorReport.familyCounts,
-  selected:investigatorReport.selected.map(x=>({candidateId:x.candidate.id,family:x.candidate.family,config:x.candidate.config,priorityScore:x.priorityScore,reasons:x.priorityReasons})),
+  selected:investigatorReport.selected.map(x=>({candidateId:x.candidate.id,family:x.candidate.family,config:x.candidate.config,priorityScore:x.priorityScore,reasons:x.priorityReasons,parentCandidateId:variants.find(v=>v.candidate.id===x.candidate.id)?.parentCandidateId??null})),
   warnings:investigatorReport.warnings
  },null,2)+"\n","utf8");
 }
