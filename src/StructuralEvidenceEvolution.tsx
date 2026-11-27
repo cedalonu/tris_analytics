@@ -1,6 +1,7 @@
 import React,{useMemo,useState} from "react";
 import {analyzeEvidenceEvolution} from "./research/structural-motif-evidence-evolution";
 import type {ExperimentRecord} from "./research/structural-motif-experiment-ledger";
+function Metric({label,value}:{label:string;value:number|string}){return <div className="rounded-xl border border-slate-800 bg-slate-900 p-3"><div className="text-xs text-slate-400">{label}</div><div className="mt-1 text-xl font-bold">{value}</div></div>;}
 export default function StructuralEvidenceEvolution({report}:{report:any}){
  const records=(report?.records??[]) as ExperimentRecord[],[files,setFiles]=useState<Record<string,Record<string,string>>>({}),[loading,setLoading]=useState(false),[error,setError]=useState(""),[family,setFamily]=useState("all"),[status,setStatus]=useState("all");
  const valid=useMemo(()=>records.filter(r=>r?.schema==="tris-experiment-record-v1"&&typeof r.runId==="string"),[records]);
