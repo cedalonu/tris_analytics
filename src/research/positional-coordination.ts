@@ -1,0 +1,27 @@
+import type {Draw} from "../research-core";
+export function analyzePositionalCoordination(draws:Draw[],firstTargetDrawId:number,lastTargetDrawId:number,o:{maxLag?:number;permutations?:number;seed?:number;minimumSupport?:number;fdr?:number}={}){
+ const maxLag=o.maxLag??3,permutations=o.permutations??999,seed=o.seed??1142026,min=o.minimumSupport??30,fdr=o.fdr??.05;
+ if(!Number.isInteger(maxLag)||maxLag<0||maxLag>20||!Number.isInteger(permutations)||permutations<99||!Number.isInteger(seed)||!Number.isInteger(min)||min<5||!Number.isFinite(fdr)||fdr<=0||fdr>=1)throw Error("invalid positional coordination options");
+ if(!Number.isInteger(firstTargetDrawId)||!Number.isInteger(lastTargetDrawId)||firstTargetDrawId>lastTargetDrawId)throw Error("invalid target draw range");
+ for(let i=0;i<draws.length;i++){const d=draws[i];if(!Number.isInteger(d.drawId)||!Array.isArray(d.digits)||d.digits.length!==5||d.digits.some(x=>!Number.isInteger(x)||x<0||x>9))throw Error("invalid draw");if(i&&d.drawId!==draws[i-1].drawId+1)throw Error("draws must be sorted and contiguous");}
+ const index=new Map(draws.map((d,i)=>[d.drawId,i])),start=index.get(firstTargetDrawId),end=index.get(lastTargetDrawId);if(start===undefined||end===undefined)throw Error("target draw range missing");if(start<1)throw Error("first target requires preceding draw");
+ const target=draws.slice(start,end+1),series=Array.from({length:5},(_,p)=>target.map((d,i)=>d.digits[p]!==draws[start+i-1].digits[p]?1:0));
+ if(target.length<min+maxLag)throw Error("insufficient target support for lag analysis");
+ const phi=(a:number[],b:number[])=>{let n11=0,n10=0,n01=0,n00=0;for(let i=0;i<a.length;i++){if(a[i]&&b[i])n11++;else if(a[i])n10++;else if(b[i])n01++;else n00++;}const den=Math.sqrt((n11+n10)*(n01+n00)*(n11+n01)*(n10+n00));return den?(n11*n00-n10*n01)/den:0;};
+ const lagged=(a:number[],b:number[],lag:number)=>{const x:number[]=[],y:number[]=[];for(let t=0;t<a.length;t++){const j=t+lag;if(j>=0&&j<b.length){x.push(a[t]);y.push(b[j]);}}return{x,y,coefficient:phi(x,y),support:x.length};};
+ let state=seed>>>0;const random=()=>{state=(state+0x6D2B79F5)>>>0;let t=state;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;};
+ const pairs:any[]=[];
+ for(let p=0;p<5;p++)for(let q=p+1;q<5;q++){const a=series[p],b=series[q],lags:any[]=[];
+  for(let lag=-maxLag;lag<=maxLag;lag++){const obs=lagged(a,b,lag);if(obs.support<min)continue;let extreme=0;
+   for(let r=0;r<permutations;r++){const offset=maxLag+1+Math.floor(random()*(b.length-2*maxLag-1)),rot=b.map((_,i)=>b[(i+offset)%b.length]);if(Math.abs(lagged(a,rot,lag).coefficient)>=Math.abs(obs.coefficient))extreme++;}
+   lags.push({lag,coefficient:obs.coefficient,support:obs.support,pValue:(extreme+1)/(permutations+1),qValue:1,significant:false,permutations});
+  }pairs.push({firstPosition:p+1,secondPosition:q+1,firstChangeRate:a.reduce((s,x)=>s+x,0)/a.length,secondChangeRate:b.reduce((s,x)=>s+x,0)/b.length,lags});
+ }
+ const tests=pairs.flatMap(pair=>pair.lags.map(x=>({pair,entry:x}))).sort((a,b)=>a.entry.pValue-b.entry.pValue);let cutoff=-1,prev=1;
+ for(let i=tests.length-1;i>=0;i--){const adjusted=Math.min(prev,tests[i].entry.pValue*tests.length/(i+1));prev=adjusted;tests[i].entry.qValue=Math.min(1,adjusted);}
+ for(let i=0;i<tests.length;i++)tests[i].entry.significant=tests[i].entry.qValue<=fdr;
+ const associations=tests.filter(x=>x.entry.significant).map(x=>({firstPosition:x.pair.firstPosition,secondPosition:x.pair.secondPosition,lag:x.entry.lag,coefficient:x.entry.coefficient,qValue:x.entry.qValue,support:x.entry.support,interpretation:x.entry.lag===0?"simultaneous-association":x.entry.lag>0?"first-position-leads-second":"second-position-leads-first"}));
+ const simultaneous=target.map((d,i)=>({drawId:d.drawId,positions:series.map((s,p)=>s[i]?p+1:null).filter((x):x is number=>x!==null)})).filter(x=>x.positions.length>=2);
+ const rates=series.map((s,p)=>({position:p+1,changedDraws:s.reduce((a,b)=>a+b,0),totalDraws:s.length,changeRate:s.reduce((a,b)=>a+b,0)/s.length}));
+ return{method:"tris-positional-coordination-circular-shift-v1",parameters:{firstTargetDrawId,lastTargetDrawId,maxLag,permutations,seed,minimumSupport:min,fdr},summary:{targetDraws:target.length,positionPairs:pairs.length,testedPairLags:tests.length,significantPairLags:associations.length,significantSimultaneous:associations.filter(x=>x.lag===0).length,significantDelayed:associations.filter(x=>x.lag!==0).length,drawsWithMultiplePositionsChanging:simultaneous.length},rates,pairs,simultaneous,significantAssociations:associations,limitations:["La variable indica cambio/no cambio respecto al concurso anterior; no modela dirección ni magnitud del salto.","La correlación phi ajusta las tasas marginales de cambio, pero no controla todas las covariables ni demuestra causalidad.","Los desplazamientos circulares conservan la secuencia marginal y su autocorrelación circular aproximada, pero rompen la alineación temporal; hay un efecto de borde.","Los p-valores empíricos se ajustan conjuntamente con Benjamini-Hochberg; esto no elimina toda selección exploratoria.","Lag positivo significa que la primera posición se asocia con el cambio de la segunda en concursos posteriores; no implica causalidad.","Las asociaciones no predicen dígitos futuros ni demuestran sesgo físico."]};
+}

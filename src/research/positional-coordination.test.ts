@@ -1,0 +1,9 @@
+import {strict as assert} from "node:assert";import {test} from "node:test";import {analyzePositionalCoordination} from "./positional-coordination";
+const make=(lag=0)=>{const n=500,a=Array.from({length:n},(_,i)=>((i*73+i*i*19+Math.floor(i/7)*31)%101)<17?1:0),b=Array(n).fill(0);for(let i=0;i<n;i++)if(i+lag>=0&&i+lag<n)b[i+lag]=a[i];return a.map((v,i)=>({drawId:i+1,digits:[v?1:0,b[i]?1:0,0,0,0] as any}));};
+test("finds same-draw coordination after marginal adjustment",()=>{const r=analyzePositionalCoordination(make(),2,500,{maxLag:2,permutations:199,minimumSupport:50});const x=r.pairs[0].lags.find((v:any)=>v.lag===0);assert.equal(x.coefficient,1);assert.ok(x.qValue<.05);});
+test("detects delayed association with positive lag convention",()=>{const r=analyzePositionalCoordination(make(2),2,500,{maxLag:3,permutations:199,minimumSupport:50});const x=r.pairs[0].lags.find((v:any)=>v.lag===2);assert.equal(x.coefficient,1);assert.ok(x.qValue<.05);});
+test("reports simultaneous position changes",()=>{const r=analyzePositionalCoordination(make(),2,500,{maxLag:1,permutations:99,minimumSupport:50});assert.ok(r.simultaneous.length>0);});
+test("is deterministic with fixed seed",()=>{const a=analyzePositionalCoordination(make(),2,500,{maxLag:2,permutations:99,minimumSupport:50});const b=analyzePositionalCoordination(make(),2,500,{maxLag:2,permutations:99,minimumSupport:50});assert.deepEqual(a,b);});
+test("rejects invalid permutation count",()=>assert.throws(()=>analyzePositionalCoordination(make(),2,500,{permutations:10}),/invalid positional/));
+test("rejects non-contiguous draws",()=>{const d=make();d.splice(20,1);assert.throws(()=>analyzePositionalCoordination(d,2,500),/contiguous/);});
+test("requires preceding draw",()=>assert.throws(()=>analyzePositionalCoordination(make(),1,20),/preceding draw/));
