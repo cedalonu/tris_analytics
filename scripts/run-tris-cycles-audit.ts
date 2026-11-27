@@ -69,7 +69,7 @@ const investigator=JSON.parse(await readFile(resolve(dir,"investigator-report.js
  explorationCount:number;exploitationCount:number;retiredExcluded:number;familyCounts:Record<string,number>;
  selected:Array<{candidateId:string;family:string;config:Record<string,unknown>;priorityScore:number;reasons:string[];parentCandidateId?:string|null}>;
  variants?:Array<{candidateId:string;parentCandidateId:string;changedParameter:"window"|"priorMisses";fromValue:number;toValue:number;config:Record<string,unknown>;frozenConfig:string;parentResolvedDraws:number;parentPairedWins:number;parentPairedLosses:number;parentShrunkAdvantage:number;proposalReason:string}>;
- variantCount?:number;baseCatalogSize?:number;warnings:string[];
+ variantCount?:number;warnings:string[];
 };
 if(!Number.isFinite(Date.parse(investigator.generatedAt))||investigator.targetDrawId!==latest.drawId+1||investigator.historyThroughDrawId!==latest.drawId)
  throw new Error("Adaptive investigator report has invalid timestamp or temporal boundary.");
