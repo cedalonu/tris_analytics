@@ -78,7 +78,8 @@
     "research:structural-degradation-monitor": "tsx scripts/run-tris-structural-degradation-monitor.ts",
     "research:historical-regime-comparison": "tsx scripts/run-tris-historical-regime-comparison.ts",
     "research:positional-change-points": "tsx scripts/run-tris-positional-change-points.ts",
-    "research:positional-coordination": "tsx scripts/run-tris-positional-coordination.ts"
+    "research:positional-coordination": "tsx scripts/run-tris-positional-coordination.ts",
+    "research:positional-sequences": "tsx scripts/run-tris-positional-sequences.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
