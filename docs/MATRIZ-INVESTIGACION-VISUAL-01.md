@@ -103,5 +103,5 @@ Este inventario es de componentes existentes, no una declaración de que cada un
 - [x] Discrepancias de fuente/ledger y pipelines identificadas.
 - [x] Familias de investigación relacionadas con representación actual.
 - [x] Bloqueos arquitectónicos documentados.
-- [ ] P0.2: reconciliación fase por fase y actualización del plan rector.
-- [ ] P0.3: ejecución y auditoría de CI/workflows.
+- [x] P0.2: reconciliación fase por fase y actualización del plan rector.
+- [x] P0.3: baseline CI/workflows auditado; quedan gates de integración real en P1–P6.
