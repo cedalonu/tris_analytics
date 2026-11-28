@@ -1,6 +1,6 @@
 # TRIS Analytics — Checklist maestro de control y continuidad
 
-**Versión:** 1.1  
+**Versión:** 1.2  
 **Fecha:** 2026-11-28 (actualización de control)  
 **Rama obligatoria:** `research-core-v1`  
 **Documento rector:** `docs/TRIS-MASTER-EXECUTION-PLAN-v2.md`  
@@ -80,11 +80,13 @@ Evidencia base: `src/research/ina-contracts.ts`, `src/research/ina-core.ts`, `sr
   - [x] Motor INA de estabilidad implementado.
   - [x] Panel de estabilidad/entropía conectado al Centro INA.
   - [x] Pruebas específicas añadidas al repositorio.
-  - [ ] Identificar con precisión el comparador heredado del overview y su implementación anterior; no confundir duplicación visual con duplicación de cálculo.
-  - [ ] Definir una prueba de equivalencia numérica entre la lógica heredada y `buildInaTransitionStability` para las mismas ventanas y el mismo snapshot.
-  - [ ] Solo después de aprobar equivalencia, retirar o sustituir el cálculo heredado sin cambiar resultados.
-  - [ ] Auditar ventanas completas/parciales, muestras cortas/vacías, denominadores, umbrales y falsos positivos.
-  - [ ] Actualizar documentación con resultados reales y cerrar P2.8 solo tras CI completa.
+  - [x] Identificar el comparador heredado del overview: top-10 de transiciones en ventanas 50/150/500, con ranking por conteo y desempate por clave.
+  - [x] Crear salida INA versionada `research.transition-window-comparison`, distinta del motor de estabilidad 50/50 y entropía.
+  - [x] Añadir pruebas de paridad del top-10 y ranking heredado para 0, 1, 49, 50, 149, 150, 499, 500 y 620 sorteos.
+  - [x] Sustituir el cálculo inline 50/150/500 por el output INA en la vista general.
+  - [x] Sustituir el recálculo inline de matrices 50/50 y entropía en Mapa INA por `stabilityOutput` compartido.
+  - [ ] Auditar ventanas completas/parciales, muestras cortas/vacías, denominadores, umbrales y falsos positivos con CI y snapshot real.
+  - [ ] Confirmar workflows completos y registrar equivalencia motor↔UI; cerrar P2.8 solo tras CI completa.
 
 **Gate G2:** cada migración preserva resultados o documenta diferencias justificadas; no se elimina lógica previa antes de probar equivalencia.
 
@@ -192,18 +194,18 @@ Añadir una entrada por cada entrega significativa, sin borrar entradas anterior
 | Fecha | Etapa/tarea | Commit | Archivos/entregables | Pruebas y resultado | Estado | Siguiente paso/bloqueo |
 |---|---|---|---|---|---|---|
 | 2026-11-28 | P0.1 / matriz visual | `772f5b51683598d4571a2f8b43a2d8ae833d44f8` | `docs/MATRIZ-INVESTIGACION-VISUAL-01.md` | Auditoría documental/estática; no equivale a validación integral de vistas | Entregada; matriz conservadora | Atender presencia/ausencia y brechas MV-01…MV-08 |
-| 2026-11-28 | Control G0.4 + auditoría de P2.8 | `68519b956ce4b72dea84a9611a5d480c92dc2a1f` (HEAD verificado antes de esta actualización) | Revisión de rama, checklist, plan, matriz, motores y workflow | Live cycle run `46167720603`: success; pruebas Research core `46128051599`, TRIS research `46128051604` e integración real `46128051633`: success en commit `283a3dcd`. Runs live intermedios cancelados por pushes posteriores; no se cuentan como fallos de pruebas. | P2.8 continúa parcial; no se modifica la lógica heredada sin localizar y comparar su implementación exacta | Identificar el comparador heredado y construir prueba de equivalencia; después cerrar P2.8 y avanzar V1 (presencia/ausencia) |
+| 2026-11-28 | Control G0.4 + auditoría de P2.8 | `68519b956ce4b72dea84a9611a5d480c92dc2a1f` (HEAD verificado antes de esta actualización) | Revisión de rama, checklist, plan, matriz, motores y workflow | Live cycle run `46167720603`: success; pruebas Research core `46128051599`, TRIS research `46128051604` e integración real `46128051633`: success en commit `283a3dcd`. | P2.8 parcial; siguiente tarea: migrar comparador top-10 de ventanas y probar equivalencia | Identificar comparador heredado y construir prueba de equivalencia |
 
 ## 5.1 Próximo bloque de trabajo (sin saltar gates)
 
-**Bloque activo: P2.8 — estabilidad temporal y entropía.**
+**Bloque activo: P2.8 — estabilidad temporal y entropía.** Implementación del comparador migrado en curso de validación CI.
 
-1. [ ] Localizar el cálculo heredado exacto que el checkpoint de migración identifica como redundante; documentar archivo, función, parámetros y consumidores.
-2. [ ] Confirmar si el cálculo heredado y el motor INA miden la misma magnitud. Si no son equivalentes por definición, registrar la diferencia y no forzar una equivalencia artificial.
-3. [ ] Crear fixtures deterministas que cubran ventanas completas, ventanas parciales, historial corto y vacío.
-4. [ ] Comparar los resultados heredados y los de INA sobre idénticos datos, cortes y parámetros.
-5. [ ] Retirar/sustituir solo después de aprobar la equivalencia o documentar explícitamente el cambio metodológico.
-6. [ ] Ejecutar suite relevante, TypeScript, build y workflows aplicables; actualizar matriz, plan y este checklist.
+1. [x] Localizar el cálculo heredado: top-10 por ventanas móviles 50/150/500 en `TrisOpsDashboard.tsx`.
+2. [x] Separar esa magnitud del contraste de dos ventanas 50/50 y entropía; no forzar equivalencia conceptual.
+3. [x] Crear fixtures deterministas para 0, 1, 49, 50, 149, 150, 499, 500 y 620 sorteos.
+4. [x] Implementar `buildInaTransitionWindowComparison` y prueba de paridad contra el ranking anterior.
+5. [x] Conectar la vista general al output INA y reutilizar `stabilityOutput` en el Mapa INA.
+6. [ ] Completar CI, revisar salida real y registrar equivalencia final motor↔UI.
 7. [ ] Al cerrar P2.8, iniciar V1: presencia/ausencia, con salida INA dedicada y visualización de timeline e intervalos.
 
 **Nota de auditoría:** en la inspección de esta sesión se confirmó que `TrisOpsDashboard.tsx` y `InaCommandCenter.tsx` comparten `transitionOutput` para la red posicional; esto demuestra reutilización de una salida, pero no identifica por sí solo el comparador heredado citado en el documento P2.8. Por ello, la tarea de localizarlo permanece abierta y no se elimina código por conjetura.
