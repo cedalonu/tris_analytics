@@ -9,6 +9,7 @@ import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { importTrisCsv } from "../src/research/data-adapter";
+import { fingerprintDraws, syncTrisCsvSnapshot } from "../src/research/tris-csv-sync";
 
 const SOURCE_URL = "https://raw.githubusercontent.com/pakinja/pakin/master/Tris.csv";
 const snapshotDir = resolve("data/source-snapshots");
@@ -33,6 +34,66 @@ if (draws.length < 200) throw new Error("At least 200 validated draws are requir
 
 const latest = draws.at(-1)!;
 const earliest = draws[0]!;
+
+// Protect the complete previously published canonical prefix before accepting
+// any new source snapshot. A changed historical draw is quarantined, not
+// silently rewritten as the latest official history.
+const canonicalCsvPath = resolve("data/canonical/Tris.csv");
+const canonicalManifestPath = resolve("data/canonical/source-manifest.json");
+let previousCheckpoint = null as {
+  schemaVersion: 1;
+  processedThroughDrawId: number;
+  processedDrawCount: number;
+  processedPrefixSha256: string;
+  updatedAt: string;
+} | null;
+try {
+  const previousBytes = await readFile(canonicalCsvPath);
+  const previousManifest = JSON.parse(await readFile(canonicalManifestPath, "utf8")) as {
+    schemaVersion?: number; sha256?: string; byteLength?: number; rowCount?: number;
+    earliestDrawId?: number; latestDrawId?: number;
+  };
+  const previousSha256 = createHash("sha256").update(previousBytes).digest("hex");
+  if (previousManifest.schemaVersion !== 1 ||
+      previousManifest.sha256?.toLowerCase() !== previousSha256 ||
+      previousManifest.byteLength !== previousBytes.byteLength) {
+    throw new Error("Previously published canonical snapshot does not match its manifest; refusing source update.");
+  }
+  const previousImported = importTrisCsv(previousBytes.toString("utf8"));
+  const previousGaps = previousImported.validation.warnings.filter(warning => warning.startsWith("draw gap "));
+  const previousDraws = previousImported.validation.valid;
+  if (previousImported.validation.errors.length || previousGaps.length ||
+      previousDraws.length !== previousManifest.rowCount ||
+      previousDraws[0]?.drawId !== previousManifest.earliestDrawId ||
+      previousDraws.at(-1)?.drawId !== previousManifest.latestDrawId) {
+    throw new Error("Previously published canonical history fails validation; refusing source update.");
+  }
+  previousCheckpoint = {
+    schemaVersion: 1,
+    processedThroughDrawId: previousDraws.at(-1)!.drawId,
+    processedDrawCount: previousDraws.length,
+    processedPrefixSha256: fingerprintDraws(previousDraws),
+    updatedAt: fetchedAt,
+  };
+} catch (error) {
+  if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  // A first-time bootstrap is allowed only when neither canonical file exists.
+  try {
+    await readFile(canonicalManifestPath);
+    throw new Error("Canonical manifest exists without its CSV; refusing bootstrap.");
+  } catch (manifestError) {
+    if ((manifestError as NodeJS.ErrnoException).code !== "ENOENT") throw manifestError;
+  }
+}
+const sync = syncTrisCsvSnapshot(draws, previousCheckpoint, fetchedAt);
+console.log("Canonical prefix guard:", JSON.stringify({
+  status: sync.status,
+  previousDrawId: sync.previousDrawId,
+  latestDrawId: sync.latestDrawId,
+  newDrawCount: sync.newDraws.length,
+  warnings: sync.warnings,
+}, null, 2));
+
 const sha256 = createHash("sha256").update(csv, "utf8").digest("hex");
 const snapshotName = "Tris-" + latest.drawId + "-" + sha256.slice(0, 12) + ".csv";
 const snapshotPath = resolve(snapshotDir, snapshotName);
