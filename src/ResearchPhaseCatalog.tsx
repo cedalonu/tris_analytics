@@ -1,4 +1,5 @@
-import React,{useMemo,useState} from "react";
+import React,{useEffect,useMemo,useState} from "react";
+type PhaseAuditReport={canonical:{drawCutoff:number;sampleSize:number;sha256:string};counts:{verified:number;partiallyVerified:number;unverified:number};phases:Array<{id:number;overall:string;engine:{state:string};output:{state:string};dashboardMount:{state:string};dataBinding:{state:string};numericalParity:{state:string}}>};
 
 export type Phase={id:number;title:string;artifact:string;area:string;visual?:string};
 export const PHASES:Phase[]=[
@@ -89,9 +90,17 @@ export const PHASES:Phase[]=[
 export default function ResearchPhaseCatalog(){
  const [query,setQuery]=useState("");
  const [filter,setFilter]=useState<"all"|"visual"|"audit">("all");
+ const [audit,setAudit]=useState<PhaseAuditReport|null>(null);
+ const [auditStatus,setAuditStatus]=useState("Auditoría de fases no publicada todavía.");
+ useEffect(()=>{let active=true;fetch("./research-data/research-phase-audit.json",{cache:"no-store"}).then(response=>{if(!response.ok)throw new Error("Informe de fases aún no publicado.");return response.json() as Promise<PhaseAuditReport>;}).then(report=>{if(!active)return;setAudit(report);setAuditStatus("Inventario actualizado desde el último ciclo live.");}).catch(error=>{if(active)setAuditStatus(error instanceof Error?error.message:"No se pudo cargar la auditoría.");});return()=>{active=false};},[]);
+ const auditById=useMemo(()=>new Map((audit?.phases??[]).map(row=>[row.id,row])),[audit]);
+ const verifiedCount=audit?.counts.verified??0;
+ const partialCount=audit?.counts.partiallyVerified??0;
+ const unverifiedCount=audit?.counts.unverified??PHASES.length;
  const rows=useMemo(()=>PHASES.filter(p=>(filter==="all"||(filter==="visual"&&!!p.visual)||(filter==="audit"&&!p.visual))&&(!query||String(p.id).includes(query)||p.title.toLowerCase().includes(query.toLowerCase())||p.area.toLowerCase().includes(query.toLowerCase()))),[filter,query]);
  const visualCount=PHASES.filter(p=>!!p.visual).length;
  const auditCount=PHASES.length-visualCount;
+ const liveCutoff=audit?.canonical.drawCutoff;
  return <section className="mt-5 rounded-2xl border border-cyan-900/60 bg-slate-900/70 p-4 md:p-5">
   <div className="flex flex-wrap items-start justify-between gap-3"><div><div className="text-[10px] font-black uppercase tracking-[.2em] text-cyan-300">Inventario maestro · trazabilidad</div><h2 className="mt-1 text-xl font-bold">Fases de investigación localizadas</h2><p className="mt-1 max-w-3xl text-xs text-slate-400">Registro inicial basado en expedientes y componentes identificados en research-core-v1. Distingue presencia documental de conexión funcional; no declara validación científica.</p></div><span className="rounded-full border border-amber-800 px-3 py-1 text-[11px] text-amber-300">{PHASES.length} expedientes; montaje y conexión por verificar</span></div>
   <div className="mt-4 grid grid-cols-2 gap-2 md:grid-cols-4"><div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3"><div className="text-[10px] text-slate-500">Expedientes listados</div><b className="text-2xl">{PHASES.length}</b></div><div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3"><div className="text-[10px] text-cyan-300">Componente visual localizado</div><b className="text-2xl">{visualCount}</b></div><div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3"><div className="text-[10px] text-amber-300">Sin componente visual catalogado</div><b className="text-2xl">{auditCount}</b></div><div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3"><div className="text-[10px] text-rose-300">Conexión funcional verificada</div><b className="text-2xl">0</b></div></div>
