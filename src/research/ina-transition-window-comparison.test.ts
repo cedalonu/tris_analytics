@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import type { Draw, Validation } from "../research-core";
+import type { Digit, Draw, Validation } from "../research-core";
 import { createInaContext, type DatasetSnapshot } from "./ina-contracts";
 import { buildInaTransitionWindowComparison } from "./ina-transition-window-comparison";
 
@@ -66,7 +66,7 @@ function makeDraws(count: number): Draw[] {
       (index * 7 + Math.floor(index / 11)) % 10,
       (index * 3 + Math.floor(index / 7)) % 10,
       (index * 9 + Math.floor(index / 13)) % 10,
-    ],
+    ] as Digit[],
   }));
 }
 
