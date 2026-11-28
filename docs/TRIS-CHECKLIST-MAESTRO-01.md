@@ -167,7 +167,8 @@ Evidencia: `src/research/ina-propagation-audit.ts`, `src/research/ina-propagatio
 - [x] Build y despliegue de vista previa en run `46182036297`: success.
 - [x] Ciclo live repetido en run `46182036283`: success; corte 37008, sin duplicar concursos, checkpoint `matched`.
 - [ ] Validación TRIS research run `46182275496` (calibración sintética final) y real-history run `46182275484` (validación cronológica extensa): esperar finalización; los pasos de TypeScript, build, auditoría INA y suite unitaria ya pasaron en ambos.
-- [ ] Prueba de rechazo de modificación retroactiva a nivel del runner live con fixture controlado; los tests del sincronizador cubren la protección de prefijo, pero aún no el workflow completo.
+- [x] Extraer la puerta de prefijo a `validateCanonicalPrefix`, invocada por el runner live, y añadir fixtures de append válido, mutación retroactiva, manifiesto ausente, snapshot corrupto e histórico truncado (`src/research/canonical-prefix-guard.test.ts`).
+- [ ] Confirmar CI verde para estos fixtures en el HEAD final; la prueba es sintética y no modifica el histórico oficial.
 - [x] Conectar `src/App.tsx` al cargador canónico compartido; caché local solo como fallback visible y advertido si la fuente no se verifica. Commit `a6f29bb7` + corrección `0cf9a450`; CI/build/browser pendientes.
 
 **Estado Etapa 1:** implementación reforzada y checks principales aprobados; cierre integral pendiente de las validaciones largas y de comprobar consumidores heredados.
