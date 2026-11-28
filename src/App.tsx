@@ -414,6 +414,7 @@ function ComparativaCellModal({
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { parseTrisCSV as parseCSV, type Draw } from './tris-csv';
+import { loadCanonicalTrisDataset } from './research/load-canonical-tris';
 import html2canvas from 'html2canvas';
 import { RandomForestClassifier } from 'ml-random-forest';
 // Sin soluciones.ts (datos del motor original): el export de Comparativa usa [] en Tris.
@@ -1554,9 +1555,36 @@ export default function App() {
                         if (k && k.startsWith('tris_pred_') && !k.startsWith('tris_pred_v7_')) localStorage.removeItem(k);
                     }
                 } catch (e) { /* ignorar */ }
-                const csvText = localStorage.getItem('tris_csv_cache');
-                if (csvText) {
-                    const parsed = parseCSV(csvText);
+
+                let parsed: Draw[] | null = null;
+                let canonicalFailure: string | null = null;
+                try {
+                    // La aplicación principal usa el mismo CSV canónico verificado que INA.
+                    const dataset = await loadCanonicalTrisDataset();
+                    parsed = dataset.draws.map(draw => ({
+                        num: draw.drawId,
+                        win: [...draw.digits],
+                        digits: [...draw.digits],
+                        date: draw.date || ''
+                    }));
+                    const canonicalCsv = [
+                        'CONCURSO,ID,R1,R2,R3,R4,R5,FECHA',
+                        ...parsed.map(draw => [draw.num, '', ...draw.digits, draw.date].join(','))
+                    ].join('\\n');
+                    try { localStorage.setItem('tris_csv_cache', canonicalCsv); } catch { /* la sesión puede continuar sin caché */ }
+                    setCsvImportError(null);
+                } catch (error) {
+                    canonicalFailure = error instanceof Error ? error.message : 'error desconocido';
+                    const cachedCsv = localStorage.getItem('tris_csv_cache');
+                    if (cachedCsv) {
+                        parsed = parseCSV(cachedCsv);
+                        setCsvImportError('Fuente canónica no verificable; se usa caché local que puede estar desactualizada. ' + canonicalFailure);
+                    } else {
+                        setCsvImportError('No se pudo cargar el histórico canónico verificado y no hay caché local. ' + canonicalFailure);
+                    }
+                }
+
+                if (parsed?.length) {
                     setAllDraws(parsed);
                     setSorteos(parsed.slice(-20));
                     const last = parsed[parsed.length - 1];
@@ -1575,11 +1603,12 @@ export default function App() {
                     predCacheMap.clear();
                     const livePools = getPoolsForDrawAllPos(parsed, null, poolSize);
                     buildPoolsList(livePools, poolSize);
+                    if (!canonicalFailure) showToast('Histórico canónico verificado: ' + parsed.length.toLocaleString('es-MX') + ' sorteos · corte #' + last.num);
                 }
-                // Sin CSV local, la aplicación espera a que el usuario importe su archivo.
                 setLoading(false);
             } catch (err) {
                 console.error(err);
+                setCsvImportError(err instanceof Error ? err.message : 'No se pudo inicializar el histórico.');
                 setLoading(false);
             }
         }
