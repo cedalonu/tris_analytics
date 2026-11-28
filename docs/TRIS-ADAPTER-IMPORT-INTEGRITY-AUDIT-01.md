@@ -94,15 +94,26 @@ Se reforzó `scripts/run-tris-cycles-source.ts` para:
 
 **CI:** los workflows de validación fueron iniciados para los cambios de esta etapa. Su estado final debe registrarse antes de cerrar la etapa; no se marca como exitoso mientras siga `in_progress` ni se oculta un fallo de un intento anterior.
 
-## 5. Pendientes para cerrar Etapa 1
+## 5. Refuerzo adicional de la puerta canónica (2026-11-28)
 
-- [ ] Obtener TypeScript, pruebas de investigación y build en estado exitoso sobre el HEAD final.
+Se detectó que el cargador compartido verificaba hash, bytes y número de filas, pero no contrastaba de forma explícita los límites de concurso ni las fechas de borde declaradas por el manifiesto. Se añadió `assertCanonicalManifestMatchesDraws` en `src/research/load-canonical-tris.ts` para comprobar:
+
+- Esquema, SHA-256 con formato válido, fecha de captura y metadatos numéricos.
+- Tamaño exacto en bytes y número exacto de filas.
+- `earliestDrawId` y `latestDrawId` contra el primer y último concurso importado.
+- `earliestDate` y `latestDate` contra las fechas de esos concursos.
+
+Se añadió `src/research/load-canonical-tris.test.ts` con pruebas de éxito y rechazo para conteo, rango, fechas, SHA-256, timestamp y tamaño. Esta puerta corre antes de construir el contexto INA; cualquier discordancia detiene la carga.
+
+## 6. Pendientes para cerrar Etapa 1
+
+- [ ] Obtener TypeScript, pruebas de investigación y build en estado exitoso sobre el HEAD final (commit `886b633e`).
 - [ ] Obtener resultado final del workflow de validación real-histórica.
 - [ ] Obtener resultado final del workflow de auditoría INA contra el snapshot canónico vigente.
 - [ ] Confirmar que la captura live más reciente conserva el mismo comportamiento tras los cambios.
 - [ ] Registrar el commit final y las ejecuciones exitosas.
 
-## 6. Límites de esta entrega
+## 7. Límites de esta entrega
 
 - Esta etapa no implementa todavía propagación completa a los 82 expedientes ni certifica que cada motor/gráfica esté al último concurso.
 - La captura horaria de Pakin ya existe; su operación se ha observado en una ejecución exitosa, pero la cobertura de cada publicación individual deberá verificarse en la siguiente etapa.
