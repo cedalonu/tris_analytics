@@ -13,6 +13,7 @@ import { buildInaAbsence } from "../src/research/ina-absence";
 import { buildInaTransitionStability } from "../src/research/ina-transition-stability";
 import { buildInaTransitionWindowComparison } from "../src/research/ina-transition-window-comparison";
 import { snapshotFromCanonicalManifest, type CanonicalSourceManifest } from "../src/research/ina-snapshot";
+import { auditInaPropagation, propagationEvidenceFromResearchOutputs } from "../src/research/ina-propagation-audit";
 
 const csvPath = resolve(process.argv[2] ?? "data/canonical/Tris.csv");
 const manifestPath = resolve(process.argv[3] ?? "data/canonical/source-manifest.json");
@@ -47,6 +48,21 @@ const windowComparison = buildInaTransitionWindowComparison(core.context);
 const absence = buildInaAbsence(core.context, { maxPriorMisses: 20, timelineLimit: 100 });
 
 const outputs = [stability, windowComparison, absence];
+const propagation = auditInaPropagation({
+  datasetVersionId: core.context.version.versionId,
+  snapshotSha256: actualSha256,
+  drawCutoff: manifest.latestDrawId,
+  sampleSize: manifest.rowCount,
+}, [
+  ...propagationEvidenceFromResearchOutputs([...core.outputs, ...outputs]),
+  {
+    outputKey: "ina.history",
+    datasetVersionId: core.context.version.versionId,
+    snapshotSha256: actualSha256,
+    drawCutoff: manifest.latestDrawId,
+    sampleSize: manifest.rowCount,
+  },
+], { generatedAt: manifest.fetchedAt });
 for (const output of outputs) {
   assert.equal(output.datasetVersionId, core.context.version.versionId, output.outputKey + " dataset version mismatch");
   assert.equal(output.snapshotSha256, actualSha256, output.outputKey + " SHA-256 mismatch");
@@ -115,6 +131,18 @@ const report = {
     digitReports: absence.result.positions.reduce((sum, position) => sum + position.digitReports.length, 0),
   },
   uiWiring,
+  propagation: {
+    totals: propagation.totals,
+    targets: propagation.targets.map(target => ({
+      moduleId: target.moduleId,
+      title: target.title,
+      state: target.state,
+      expectedOutputKeys: target.expectedOutputKeys,
+      missingOutputKeys: target.missingOutputKeys,
+      reasons: target.reasons,
+    })),
+    registryErrors: propagation.registryErrors,
+  },
   limitations: [
     "This audit verifies canonical bytes, INA output provenance and source-level dashboard wiring.",
     "It does not replace a browser-based visual inspection of rendered charts.",
@@ -137,6 +165,13 @@ const markdown = [
   "",
   "## Dashboard wiring",
   ...Object.entries(uiWiring).map(([name, passed]) => "- " + (passed ? "PASS" : "FAIL") + " — " + name),
+  "",
+  "## INA propagation audit",
+  "- Current: " + propagation.totals.current,
+  "- Stale: " + propagation.totals.stale,
+  "- Missing: " + propagation.totals.missing,
+  "- Blocked: " + propagation.totals.blocked,
+  ...propagation.targets.map(target => "- " + target.state.toUpperCase() + " — " + target.moduleId + (target.missingOutputKeys.length ? " (missing: " + target.missingOutputKeys.join(", ") + ")" : "")),
   "",
   "## Scope and limitations",
   ...report.limitations.map(item => "- " + item),
