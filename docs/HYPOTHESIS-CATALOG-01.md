@@ -60,3 +60,8 @@ Las referencias identifican código/documentación relacionados; no afirman que 
 - Datos: 7 hipótesis, 7 exploratorias, 0 validadas. La visualización representa inventario, no resultados ni probabilidad.
 - Enrutamiento en `ResearchDashboard.tsx` y entrada visual en `ResearchPhaseCatalog.tsx`.
 - Estado de cierre: código conectado; pendiente CI, deploy y prueba real de apertura/navegación. Sin verificación de navegador en este checkpoint.
+
+
+## Corrección visual 02-B — Enlace directo de cada ficha (2026-11-28)
+
+Se corrigió el comportamiento: los títulos del catálogo ahora seleccionan la ficha y el panel de evidencia expande la visualización asociada. La ficha 001 muestra conteos posicionales por dígito; 002 muestra un histograma de intervalos completos de ausencia; 003 muestra conteos de pares adyacentes observados. Las fichas 004–007 abren panel de estado con su gráfico empírico explícitamente pendiente, sin fabricar series. El panel está montado debajo del detalle seleccionado y recibe el ID de hipótesis. TypeScript/build/CI y publicación deben confirmarse antes de marcar runtime cerrado.
