@@ -178,7 +178,7 @@ export const INA_MODULE_DEFINITIONS: InaModuleDefinition[] = [
     engineId: "positional-transition-family",
     engineVersion: "1.0.0",
     consumes: ["ina.history", "ina.position-profile"],
-    produces: ["research.positional-transitions"],
+    produces: ["research.positional-transitions", "research.transition-stability"],
     status: "partial",
     sourceFiles: ["src/research/positional-transition-persistence.ts", "src/research/joint-positional-interactions.ts"],
   },
