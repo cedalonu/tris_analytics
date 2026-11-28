@@ -7,6 +7,7 @@
 import { readFile, mkdir, writeFile, stat } from "node:fs/promises";
 import { resolve } from "node:path";
 import { PHASES } from "../src/ResearchPhaseCatalog";
+import { findComponentReferences } from "../src/research/mount-audit";
 
 const manifestPath=resolve(process.argv[2]??"data/canonical/source-manifest.json");
 const reportDir=resolve(process.argv[3]??"reports/research-mount-audit");
@@ -18,11 +19,7 @@ function componentName(path:string){const basename=path.split("/").at(-1)!.repla
 const results=await Promise.all(PHASES.map(async phase=>{
  if(!phase.visual)return {phaseId:phase.id,title:phase.title,visualPath:null,component:null,componentState:"not_catalogued",mountState:"not_applicable",mountEvidence:[]};
  const name=componentName(phase.visual),exists=await fileExists(phase.visual);
- const evidence=dashboardContents.flatMap(({path,content})=>{
-  const imported=new RegExp(`import\\s+(?:[\\w{},*\\s]+\\s+from\\s+)?["']\\./(?:research/)?${name}["']|import\\s+${name}\\s+from\\s+["']\\./(?:research/)?${name}["']`).test(content);
-  const jsx=new RegExp(`<${name}(?:\\s|/|>)`).test(content);
-  return imported||jsx?[{file:path,imported,jsx}]:[];
- });
+ const evidence=findComponentReferences(name,dashboardContents);
  const mountState=!exists?"blocked":evidence.length?"reference_located":"not_located";
  return {phaseId:phase.id,title:phase.title,visualPath:phase.visual,component:name,componentState:exists?"located":"missing",mountState,mountEvidence:evidence};
 }));
