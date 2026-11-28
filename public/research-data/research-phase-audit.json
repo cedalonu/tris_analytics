@@ -1,0 +1,3585 @@
+{
+  "schemaVersion": 1,
+  "auditType": "research-phase-propagation-inventory",
+  "generatedAt": "2026-11-28T19:18:04.938Z",
+  "canonical": {
+    "snapshot": "Tris-37008-3a7c40e21738.csv",
+    "fetchedAt": "2026-11-28T19:18:04.938Z",
+    "sha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+    "sampleSize": 25976,
+    "drawStart": 11033,
+    "drawCutoff": 37008
+  },
+  "counts": {
+    "total": 82,
+    "documentationLocated": 82,
+    "documentationMissing": 0,
+    "visualizationLocated": 24,
+    "visualizationMissing": 0,
+    "visualizationNotCatalogued": 58,
+    "blocked": 0,
+    "verified": 0,
+    "partiallyVerified": 1,
+    "unverified": 81
+  },
+  "phase0Evidence": {
+    "schemaVersion": 1,
+    "phaseId": 0,
+    "phaseTitle": "Adaptador, importación e integridad",
+    "status": "partially_verified",
+    "generatedAt": "2026-11-28T19:18:04.938Z",
+    "canonical": {
+      "snapshot": "Tris-37008-3a7c40e21738.csv",
+      "datasetVersionId": "tris:3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2:37008",
+      "sourceUrl": "https://raw.githubusercontent.com/pakinja/pakin/master/Tris.csv",
+      "sha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+      "byteLength": 958288,
+      "sampleSize": 25976,
+      "drawStart": 11033,
+      "drawCutoff": 37008,
+      "fetchedAt": "2026-11-28T19:18:04.938Z"
+    },
+    "evidence": {
+      "engine": {
+        "state": "verified",
+        "path": "src/research/load-canonical-tris.ts",
+        "loaderStatus": "verified",
+        "inaStatus": "ready"
+      },
+      "canonicalInput": {
+        "state": "verified",
+        "manifestAndRowsMatch": true,
+        "sha256Matches": true,
+        "byteLengthMatches": true
+      },
+      "output": {
+        "state": "verified",
+        "key": "data.canonical-adapter",
+        "sampleSize": 25976,
+        "drawCutoff": 37008
+      },
+      "prefixGuard": {
+        "state": "verified",
+        "processedThroughDrawId": 37008,
+        "processedDrawCount": 25976,
+        "idempotent": true
+      },
+      "visualization": {
+        "state": "located",
+        "path": "src/App.tsx"
+      },
+      "dashboardMount": {
+        "state": "source_confirmed",
+        "mainApp": true,
+        "researchCenter": true,
+        "operationalDashboard": true
+      },
+      "dataBinding": {
+        "state": "source_confirmed",
+        "mapping": "mapCanonicalDrawsToApp",
+        "rows": 25976
+      },
+      "numericalParity": {
+        "state": "passed",
+        "comparedRows": 25976,
+        "allContestIdsDigitsAndDatesMatch": true
+      },
+      "wiring": {
+        "mainAppUsesSharedCanonicalLoader": true,
+        "mainAppUsesTestedLosslessAdapter": true,
+        "canonicalCutoffAndHashVisible": true,
+        "cacheFallbackWarnsThatItMayBeStale": true,
+        "researchCenterMountedByMainApp": true,
+        "operationalDashboardReachableFromResearchCenter": true,
+        "loaderIntegrityTestsLocated": true,
+        "retroactivePrefixTestsLocated": true,
+        "legacyAdapterParityTestsLocated": true
+      }
+    },
+    "remaining": [
+      "Browser inspection of canonical success indicator and stale-cache fallback.",
+      "Verify the same visible cutoff in the main dashboard and INA operational center after browser startup."
+    ],
+    "limitations": [
+      "This verifies the production loader and source-level UI wiring using the exact canonical snapshot; it does not simulate a real browser network session.",
+      "A successful phase-0 adapter audit does not verify the other 81 research dossiers."
+    ]
+  },
+  "phases": [
+    {
+      "id": 0,
+      "title": "Adaptador, importación e integridad",
+      "area": "Datos",
+      "documentation": {
+        "path": "docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "verified",
+        "evidence": {
+          "state": "verified",
+          "path": "src/research/load-canonical-tris.ts",
+          "loaderStatus": "verified",
+          "inaStatus": "ready"
+        }
+      },
+      "canonicalInput": {
+        "datasetVersionId": "tris:3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2:37008",
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "verified"
+      },
+      "output": {
+        "keys": [
+          "data.canonical-adapter"
+        ],
+        "state": "verified",
+        "evidence": {
+          "state": "verified",
+          "key": "data.canonical-adapter",
+          "sampleSize": 25976,
+          "drawCutoff": 37008
+        }
+      },
+      "visualization": {
+        "path": "src/App.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "source_confirmed",
+        "evidence": {
+          "state": "source_confirmed",
+          "mainApp": true,
+          "researchCenter": true,
+          "operationalDashboard": true
+        }
+      },
+      "dataBinding": {
+        "state": "source_confirmed",
+        "evidence": {
+          "state": "source_confirmed",
+          "mapping": "mapCanonicalDrawsToApp",
+          "rows": 25976
+        }
+      },
+      "numericalParity": {
+        "state": "passed",
+        "evidence": {
+          "state": "passed",
+          "comparedRows": 25976,
+          "allContestIdsDigitsAndDatesMatch": true
+        }
+      },
+      "overall": "partially_verified"
+    },
+    {
+      "id": 1,
+      "title": "Investigación descriptiva, pools y memoria",
+      "area": "INA",
+      "documentation": {
+        "path": "docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/TrisOpsDashboard.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 2,
+      "title": "Generación y selección de hipótesis",
+      "area": "Hipótesis",
+      "documentation": {
+        "path": "docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 3,
+      "title": "Memoria de señales y ciclos prospectivos",
+      "area": "Memoria",
+      "documentation": {
+        "path": "docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/InaProspectivePanel.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 4,
+      "title": "Memoria posicional y contextual",
+      "area": "Memoria",
+      "documentation": {
+        "path": "docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/InaMemoryPanel.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 5,
+      "title": "Cambios por posición y calibración nula",
+      "area": "Regímenes",
+      "documentation": {
+        "path": "docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 6,
+      "title": "Concordancia y evaluación integral",
+      "area": "Evaluación",
+      "documentation": {
+        "path": "docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 7,
+      "title": "Walk-forward de carteras estructurales",
+      "area": "Carteras",
+      "documentation": {
+        "path": "docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 8,
+      "title": "Benchmarks de presupuesto equivalente",
+      "area": "Carteras",
+      "documentation": {
+        "path": "docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 9,
+      "title": "Estabilidad temporal de carteras",
+      "area": "Carteras",
+      "documentation": {
+        "path": "docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 10,
+      "title": "Cartera prospectiva congelada",
+      "area": "Prospectiva",
+      "documentation": {
+        "path": "docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 11,
+      "title": "Concordancia prospectiva por familia",
+      "area": "Prospectiva",
+      "documentation": {
+        "path": "docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 12,
+      "title": "Calibración nula de concordancia",
+      "area": "Prospectiva",
+      "documentation": {
+        "path": "docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 13,
+      "title": "Auditoría concordancia observada vs. nula",
+      "area": "Prospectiva",
+      "documentation": {
+        "path": "docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 23,
+      "title": "Perfiles de regímenes posicionales",
+      "area": "Posicional",
+      "documentation": {
+        "path": "docs/phase-23-positional-regime-profiles.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 24,
+      "title": "Estabilidad de perfiles posicionales",
+      "area": "Posicional",
+      "documentation": {
+        "path": "docs/phase-24-positional-regime-stability.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 25,
+      "title": "Calibración de estabilidad posicional",
+      "area": "Posicional",
+      "documentation": {
+        "path": "docs/phase-25-positional-stability-calibration.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 26,
+      "title": "Contraste de perfiles entre regímenes",
+      "area": "Posicional",
+      "documentation": {
+        "path": "docs/phase-26-positional-regime-contrast.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 27,
+      "title": "Persistencia de transiciones posicionales",
+      "area": "Posicional",
+      "documentation": {
+        "path": "docs/phase-27-positional-transition-persistence.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 28,
+      "title": "Calibración de persistencia de transiciones",
+      "area": "Posicional",
+      "documentation": {
+        "path": "docs/phase-28-positional-transition-calibration.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 29,
+      "title": "Concordancia entre posición y pools",
+      "area": "Pools",
+      "documentation": {
+        "path": "docs/phase-29-positional-pool-concordance.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 30,
+      "title": "Estabilidad temporal de pools posicionales",
+      "area": "Pools",
+      "documentation": {
+        "path": "docs/phase-30-positional-pool-temporal-stability.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 59,
+      "title": "Registro de decisiones",
+      "area": "Decisiones",
+      "documentation": {
+        "path": "docs/research/phase-59-decision-log.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 60,
+      "title": "Comparación de decisiones",
+      "area": "Decisiones",
+      "documentation": {
+        "path": "docs/research/phase-60-decision-comparison.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 61,
+      "title": "Robustez de parámetros",
+      "area": "Decisiones",
+      "documentation": {
+        "path": "docs/research/phase-61-parameter-robustness.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 62,
+      "title": "Estabilidad de rankings",
+      "area": "Estabilidad",
+      "documentation": {
+        "path": "docs/research/phase-62-rank-stability.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 63,
+      "title": "Estabilidad temporal de rankings",
+      "area": "Estabilidad",
+      "documentation": {
+        "path": "docs/research/phase-63-temporal-rank-stability.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 64,
+      "title": "Degradación y recuperación",
+      "area": "Estabilidad",
+      "documentation": {
+        "path": "docs/research/phase-64-degradation-recovery.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 65,
+      "title": "Diagnósticos consolidados",
+      "area": "Auditoría",
+      "documentation": {
+        "path": "docs/research/phase-65-consolidated-diagnostics.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 66,
+      "title": "Auditoría cruzada",
+      "area": "Auditoría",
+      "documentation": {
+        "path": "docs/research/phase-66-cross-audit.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 67,
+      "title": "Reproducibilidad",
+      "area": "Reproducibilidad",
+      "documentation": {
+        "path": "docs/research/phase-67-reproducibility.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 68,
+      "title": "Comparación de reproducibilidad",
+      "area": "Reproducibilidad",
+      "documentation": {
+        "path": "docs/research/phase-68-reproducibility-compare.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 70,
+      "title": "Comparación histórica",
+      "area": "Evolución",
+      "documentation": {
+        "path": "docs/research/phase-70-historical-comparison.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 71,
+      "title": "Observador de evolución",
+      "area": "Evolución",
+      "documentation": {
+        "path": "docs/research/phase-71-evolution-observer.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 72,
+      "title": "Detector de ciclos",
+      "area": "Ciclos",
+      "documentation": {
+        "path": "docs/research/phase-72-cycle-detector.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 73,
+      "title": "Validación de ciclos",
+      "area": "Ciclos",
+      "documentation": {
+        "path": "docs/research/phase-73-cycle-validation.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 74,
+      "title": "Relaciones entre hipótesis",
+      "area": "Hipótesis",
+      "documentation": {
+        "path": "docs/research/phase-74-hypothesis-relations.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 75,
+      "title": "Red de hipótesis",
+      "area": "Hipótesis",
+      "documentation": {
+        "path": "docs/research/phase-75-hypothesis-network.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 76,
+      "title": "Comunidades de hipótesis",
+      "area": "Hipótesis",
+      "documentation": {
+        "path": "docs/research/phase-76-hypothesis-communities.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 77,
+      "title": "Evolución de comunidades",
+      "area": "Comunidades",
+      "documentation": {
+        "path": "docs/research/phase-77-community-evolution.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 78,
+      "title": "Regímenes de comunidades",
+      "area": "Comunidades",
+      "documentation": {
+        "path": "docs/research/phase-78-community-regimes.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 79,
+      "title": "Resiliencia de comunidades",
+      "area": "Comunidades",
+      "documentation": {
+        "path": "docs/research/phase-79-community-resilience.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 80,
+      "title": "Vulnerabilidad de comunidades",
+      "area": "Comunidades",
+      "documentation": {
+        "path": "docs/research/phase-80-community-vulnerability.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 81,
+      "title": "Propagación de comunidades",
+      "area": "Comunidades",
+      "documentation": {
+        "path": "docs/research/phase-81-community-propagation.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 82,
+      "title": "Estabilidad de propagación",
+      "area": "Comunidades",
+      "documentation": {
+        "path": "docs/research/phase-82-propagation-stability.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 83,
+      "title": "Motivos estructurales",
+      "area": "Estructuras",
+      "documentation": {
+        "path": "docs/research/phase-83-structural-motifs.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 84,
+      "title": "Transiciones de motivos",
+      "area": "Estructuras",
+      "documentation": {
+        "path": "docs/research/phase-84-motif-transitions.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 85,
+      "title": "Persistencia de motivos",
+      "area": "Estructuras",
+      "documentation": {
+        "path": "docs/research/phase-85-motif-persistence.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 86,
+      "title": "Ciclos de motivos",
+      "area": "Estructuras",
+      "documentation": {
+        "path": "docs/research/phase-86-motif-cycles.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 87,
+      "title": "Sincronización de ciclos",
+      "area": "Estructuras",
+      "documentation": {
+        "path": "docs/research/phase-87-cycle-synchronization.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 88,
+      "title": "Comunidades de ciclos",
+      "area": "Estructuras",
+      "documentation": {
+        "path": "docs/research/phase-88-cycle-communities.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 89,
+      "title": "Evolución de comunidades de ciclos",
+      "area": "Estructuras",
+      "documentation": {
+        "path": "docs/research/phase-89-cycle-community-evolution.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 90,
+      "title": "Linajes de comunidades de ciclos",
+      "area": "Estructuras",
+      "documentation": {
+        "path": "docs/research/phase-90-cycle-community-lineages.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 91,
+      "title": "Supervivencia de linajes",
+      "area": "Estructuras",
+      "documentation": {
+        "path": "docs/research/phase-91-cycle-lineage-survival.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 92,
+      "title": "Validación walk-forward",
+      "area": "Validación",
+      "documentation": {
+        "path": "docs/research/phase-92-walk-forward-validation.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 93,
+      "title": "Resultados prospectivos de motivos",
+      "area": "Prospectiva",
+      "documentation": {
+        "path": "docs/research/phase-93-structural-motifs-prospective-outcomes.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 94,
+      "title": "Control aleatorio emparejado",
+      "area": "Validación",
+      "documentation": {
+        "path": "docs/research/phase-94-structural-motif-random-control.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 95,
+      "title": "Robustez temporal de motivos",
+      "area": "Validación",
+      "documentation": {
+        "path": "docs/research/phase-95-structural-motif-temporal-robustness.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 96,
+      "title": "Bootstrap por bloques",
+      "area": "Validación",
+      "documentation": {
+        "path": "docs/research/phase-96-structural-motif-block-bootstrap.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 97,
+      "title": "Sensibilidad del bootstrap",
+      "area": "Validación",
+      "documentation": {
+        "path": "docs/research/phase-97-structural-motif-bootstrap-sensitivity.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 98,
+      "title": "Estabilidad conjunta de motivos",
+      "area": "Validación",
+      "documentation": {
+        "path": "docs/research/phase-98-structural-motif-joint-stability.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 99,
+      "title": "Auditoría de cadena de investigación",
+      "area": "Auditoría",
+      "documentation": {
+        "path": "docs/research/phase-99-structural-research-chain-audit.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": null,
+        "state": "not_catalogued"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 100,
+      "title": "Centro de evidencia TRIS",
+      "area": "Evidencia",
+      "documentation": {
+        "path": "docs/research/phase-100-evidence-center.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/StructuralEvidenceCenter.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 101,
+      "title": "Reproducibilidad estructural",
+      "area": "Reproducibilidad",
+      "documentation": {
+        "path": "docs/research/phase-101-reproducibility.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/StructuralReproducibility.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 102,
+      "title": "Registro de experimentos",
+      "area": "Experimentos",
+      "documentation": {
+        "path": "docs/research/phase-102-structural-experiment-ledger.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/StructuralExperimentLedger.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 103,
+      "title": "Comparador de experimentos",
+      "area": "Experimentos",
+      "documentation": {
+        "path": "docs/research/phase-103-experiment-comparator.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/StructuralExperimentComparator.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 104,
+      "title": "Comparación de snapshots",
+      "area": "Experimentos",
+      "documentation": {
+        "path": "docs/research/phase-104-experiment-snapshot-comparison.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/StructuralExperimentSnapshotComparator.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 105,
+      "title": "Evolución de experimentos",
+      "area": "Experimentos",
+      "documentation": {
+        "path": "docs/research/phase-105-experiment-evolution.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/StructuralExperimentEvolution.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 106,
+      "title": "Persistencia de hallazgos",
+      "area": "Hallazgos",
+      "documentation": {
+        "path": "docs/research/phase-106-finding-persistence.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/StructuralFindingPersistence.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 107,
+      "title": "Consenso de hallazgos",
+      "area": "Hallazgos",
+      "documentation": {
+        "path": "docs/research/phase-107-experiment-consensus.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/StructuralFindingConsensus.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 108,
+      "title": "Evolución y contradicciones de evidencia",
+      "area": "Evidencia",
+      "documentation": {
+        "path": "docs/research/phase-108-evidence-evolution.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/StructuralEvidenceEvolution.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 109,
+      "title": "Ranking de estabilidad",
+      "area": "Estabilidad",
+      "documentation": {
+        "path": "docs/research/phase-109-stability-ranking.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/StructuralStabilityRanking.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 110,
+      "title": "Estabilidad prospectiva",
+      "area": "Prospectiva",
+      "documentation": {
+        "path": "docs/research/phase-110-prospective-stability.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/StructuralProspectiveStability.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 111,
+      "title": "Degradación y recuperación prospectiva",
+      "area": "Prospectiva",
+      "documentation": {
+        "path": "docs/research/phase-111-prospective-degradation-monitor.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/StructuralProspectiveDegradation.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 112,
+      "title": "Comparación de regímenes históricos",
+      "area": "Regímenes",
+      "documentation": {
+        "path": "docs/research/phase-112-historical-regime-comparison.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/HistoricalRegimeComparison.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 113,
+      "title": "Puntos de cambio posicionales",
+      "area": "Posicional",
+      "documentation": {
+        "path": "docs/research/phase-113-positional-change-points.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/PositionalChangePointDetection.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 114,
+      "title": "Coordinación entre posiciones",
+      "area": "Posicional",
+      "documentation": {
+        "path": "docs/research/phase-114-positional-coordination.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/PositionalCoordination.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 115,
+      "title": "Patrones secuenciales posicionales",
+      "area": "Posicional",
+      "documentation": {
+        "path": "docs/research/phase-115-positional-sequences.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/PositionalSequences.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 116,
+      "title": "Cambios posicionales condicionales",
+      "area": "Posicional",
+      "documentation": {
+        "path": "docs/research/phase-116-conditional-position-changes.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/ConditionalPositionChanges.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 117,
+      "title": "Interacciones posicionales conjuntas",
+      "area": "Dependencia",
+      "documentation": {
+        "path": "docs/research/phase-117-joint-positional-interactions.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/JointPositionalInteractions.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 118,
+      "title": "Dependencia conjunta de dígitos",
+      "area": "Dependencia",
+      "documentation": {
+        "path": "docs/research/phase-118-joint-digit-dependence.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/JointDigitDependence.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    },
+    {
+      "id": 119,
+      "title": "Validación temporal de dependencias",
+      "area": "Dependencia",
+      "documentation": {
+        "path": "docs/research/phase-119-joint-digit-dependence-validation.md",
+        "state": "located"
+      },
+      "engine": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "canonicalInput": {
+        "datasetVersionId": null,
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976,
+        "state": "unverified"
+      },
+      "output": {
+        "keys": [],
+        "state": "unverified",
+        "evidence": null
+      },
+      "visualization": {
+        "path": "src/JointDigitDependenceValidation.tsx",
+        "state": "located"
+      },
+      "dashboardMount": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "dataBinding": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "numericalParity": {
+        "state": "unverified",
+        "evidence": null
+      },
+      "overall": "unverified"
+    }
+  ],
+  "limitations": [
+    "This inventory covers the 82 phase records currently listed in ResearchPhaseCatalog.",
+    "Located files do not prove that an engine ran, an output was generated, or a component is mounted.",
+    "Engine, output, dashboard mount, data binding and numerical parity remain unverified until explicit evidence is attached; phase 0 may be partially verified by its dedicated adapter audit.",
+    "This is not proof that all 82 dossiers have been refreshed by the latest draw."
+  ]
+}
