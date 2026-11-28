@@ -224,6 +224,8 @@
       "Numerical parity is partial; do not mark the whole phase fully verified."
     ]
   },
+  "phase3Evidence": null,
+  "phase4Evidence": null,
   "phases": [
     {
       "id": 0,
@@ -3777,7 +3779,7 @@
   "limitations": [
     "This inventory covers the 82 phase records currently listed in ResearchPhaseCatalog.",
     "Located files do not prove that an engine ran, an output was generated, or a component is mounted.",
-    "Engine, output, dashboard mount, data binding and numerical parity remain unverified until explicit evidence is attached; phases 0 and 1 may be partially verified by their dedicated audits.",
+    "Engine, output, dashboard mount, data binding and numerical parity remain unverified until explicit evidence is attached; phases 0, 1, 3 and 4 may be partially verified by their dedicated audits.",
     "This is not proof that all 82 dossiers have been refreshed by the latest draw."
   ]
 }
