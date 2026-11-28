@@ -58,6 +58,13 @@ const propagation = auditInaPropagation({
   sampleSize: manifest.rowCount,
 }, [
   ...propagationEvidenceFromResearchOutputs([...core.outputs, ...outputs]),
+  ...(["dataset.snapshot", "dataset.validated-draws"] as const).map(outputKey => ({
+    outputKey,
+    datasetVersionId: core.context.version.versionId,
+    snapshotSha256: actualSha256,
+    drawCutoff: manifest.latestDrawId,
+    sampleSize: manifest.rowCount,
+  })),
   {
     outputKey: "ina.history",
     datasetVersionId: core.context.version.versionId,
