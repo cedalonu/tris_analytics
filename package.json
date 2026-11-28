@@ -89,6 +89,8 @@
     "research:ina-canonical-audit": "tsx scripts/run-tris-ina-canonical-audit.ts",
     "research:phase-0-audit": "tsx scripts/run-tris-phase-0-adapter-audit.ts",
     "research:phase-1-audit": "tsx scripts/run-tris-phase-1-descriptive-audit.ts",
+    "research:phase-3-audit": "tsx scripts/run-tris-phase-3-prospective-audit.ts",
+    "research:phase-4-audit": "tsx scripts/run-tris-phase-4-memory-audit.ts",
     "research:phase-audit": "tsx scripts/run-tris-research-phase-audit.ts",
     "research:mount-audit": "tsx scripts/run-tris-research-mount-audit.ts"
   },
