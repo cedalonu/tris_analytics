@@ -1,7 +1,7 @@
 # TRIS Analytics — Checklist maestro de control y continuidad
 
-**Versión:** 1.0  
-**Fecha:** 2026-11-28  
+**Versión:** 1.1  
+**Fecha:** 2026-11-28 (actualización de control)  
 **Rama obligatoria:** `research-core-v1`  
 **Documento rector:** `docs/TRIS-MASTER-EXECUTION-PLAN-v2.md`  
 **Matriz visual:** `docs/MATRIZ-INVESTIGACION-VISUAL-01.md`
@@ -54,6 +54,7 @@ Al terminar cada tarea:
 - [x] P0.3 Línea base de CI documentada con sus límites.
   - Evidencia: `docs/TRIS-CI-BASELINE-AUDIT-01.md`.
 - [ ] G0.4 Confirmar que no existen cambios de rama o ejecuciones posteriores que invaliden la línea base antes de iniciar una nueva fase.
+  - Control de esta sesión: rama `research-core-v1`, HEAD `68519b956ce4b72dea84a9611a5d480c92dc2a1f`; workflow live run `46167720603` completado `success` (todos sus pasos completados). La comprobación se repite al iniciar cada sesión.
 
 **Gate G0:** inventario, conciliación y línea base documentados. P0.1–P0.3 constan como completados en el plan maestro; G0.4 se comprueba al inicio de cada ciclo, no se considera una tarea histórica cerrada.
 
@@ -79,9 +80,10 @@ Evidencia base: `src/research/ina-contracts.ts`, `src/research/ina-core.ts`, `sr
   - [x] Motor INA de estabilidad implementado.
   - [x] Panel de estabilidad/entropía conectado al Centro INA.
   - [x] Pruebas específicas añadidas al repositorio.
-  - [ ] Retirar o sustituir el comparador redundante del overview sin alterar resultados.
-  - [ ] Ejecutar equivalencia numérica entre lógica anterior y motor INA.
-  - [ ] Auditar ventanas, muestras cortas, umbrales y falsos positivos.
+  - [ ] Identificar con precisión el comparador heredado del overview y su implementación anterior; no confundir duplicación visual con duplicación de cálculo.
+  - [ ] Definir una prueba de equivalencia numérica entre la lógica heredada y `buildInaTransitionStability` para las mismas ventanas y el mismo snapshot.
+  - [ ] Solo después de aprobar equivalencia, retirar o sustituir el cálculo heredado sin cambiar resultados.
+  - [ ] Auditar ventanas completas/parciales, muestras cortas/vacías, denominadores, umbrales y falsos positivos.
   - [ ] Actualizar documentación con resultados reales y cerrar P2.8 solo tras CI completa.
 
 **Gate G2:** cada migración preserva resultados o documenta diferencias justificadas; no se elimina lógica previa antes de probar equivalencia.
@@ -190,6 +192,21 @@ Añadir una entrada por cada entrega significativa, sin borrar entradas anterior
 | Fecha | Etapa/tarea | Commit | Archivos/entregables | Pruebas y resultado | Estado | Siguiente paso/bloqueo |
 |---|---|---|---|---|---|---|
 | 2026-11-28 | P0.1 / matriz visual | `772f5b51683598d4571a2f8b43a2d8ae833d44f8` | `docs/MATRIZ-INVESTIGACION-VISUAL-01.md` | Auditoría documental/estática; no equivale a validación integral de vistas | Entregada; matriz conservadora | Atender presencia/ausencia y brechas MV-01…MV-08 |
+| 2026-11-28 | Control G0.4 + auditoría de P2.8 | `68519b956ce4b72dea84a9611a5d480c92dc2a1f` (HEAD verificado antes de esta actualización) | Revisión de rama, checklist, plan, matriz, motores y workflow | Live cycle run `46167720603`: success; pruebas Research core `46128051599`, TRIS research `46128051604` e integración real `46128051633`: success en commit `283a3dcd`. Runs live intermedios cancelados por pushes posteriores; no se cuentan como fallos de pruebas. | P2.8 continúa parcial; no se modifica la lógica heredada sin localizar y comparar su implementación exacta | Identificar el comparador heredado y construir prueba de equivalencia; después cerrar P2.8 y avanzar V1 (presencia/ausencia) |
+
+## 5.1 Próximo bloque de trabajo (sin saltar gates)
+
+**Bloque activo: P2.8 — estabilidad temporal y entropía.**
+
+1. [ ] Localizar el cálculo heredado exacto que el checkpoint de migración identifica como redundante; documentar archivo, función, parámetros y consumidores.
+2. [ ] Confirmar si el cálculo heredado y el motor INA miden la misma magnitud. Si no son equivalentes por definición, registrar la diferencia y no forzar una equivalencia artificial.
+3. [ ] Crear fixtures deterministas que cubran ventanas completas, ventanas parciales, historial corto y vacío.
+4. [ ] Comparar los resultados heredados y los de INA sobre idénticos datos, cortes y parámetros.
+5. [ ] Retirar/sustituir solo después de aprobar la equivalencia o documentar explícitamente el cambio metodológico.
+6. [ ] Ejecutar suite relevante, TypeScript, build y workflows aplicables; actualizar matriz, plan y este checklist.
+7. [ ] Al cerrar P2.8, iniciar V1: presencia/ausencia, con salida INA dedicada y visualización de timeline e intervalos.
+
+**Nota de auditoría:** en la inspección de esta sesión se confirmó que `TrisOpsDashboard.tsx` y `InaCommandCenter.tsx` comparten `transitionOutput` para la red posicional; esto demuestra reutilización de una salida, pero no identifica por sí solo el comparador heredado citado en el documento P2.8. Por ello, la tarea de localizarlo permanece abierta y no se elimina código por conjetura.
 
 ## 6. Formato de reporte al usuario
 
