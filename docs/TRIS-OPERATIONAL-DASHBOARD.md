@@ -66,3 +66,8 @@ Esta línea es **descriptiva y separada del modelo predictivo**. El campo `ID` p
 
 ### Próxima implementación visual
 Un panel independiente en el dashboard con búsqueda de combinación, tabla de frecuencia y aging, distribución de gaps, ranking por más repetidas y por mayor aging (solo descriptivo), y filtros por rango de concursos. Este panel no altera resultados, forecasts congelados ni ledger prospectivo.
+
+
+## Aging integrado al ranking (modo experimental)
+
+En Próximo sorteo se puede alternar entre Modelo base (frecuencia posicional 65% ventana 50 + 35% ventana 150) y Experimental (80% frecuencia + 20% aging posicional). El aging de cada dígito en posición se compara con su gap medio histórico, limitado a 2× para evitar escalas extremas. El backtest walk-forward usa el mismo modo seleccionado. Este modo es exploratorio: no cambia probabilidades teóricas, no reemplaza el modelo base ni se adopta como señal hasta evaluar resultados prospectivos y estabilidad.
