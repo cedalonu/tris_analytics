@@ -97,6 +97,7 @@ export function buildInaCore(input: InaContextInput): InaCoreResult {
 
   const output = createResearchOutput(context, {
     outputId: "ina-position-knowledge-v1",
+    outputKey: "ina.position-profile",
     moduleId: "ina-core",
     engineId: "ina-core-position-profile",
     engineVersion: "1.0.0",
