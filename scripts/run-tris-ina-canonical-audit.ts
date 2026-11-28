@@ -181,7 +181,7 @@ const uiWiring = {
   prospectivePanelImported: dashboard.includes('import InaProspectivePanel from "./InaProspectivePanel"'),
   prospectivePanelMountedInInaCenter: dashboard.includes("<InaProspectivePanel/>"),
   prospectivePanelLoadsStaticFrozenEvaluation: prospectivePanel.includes('fetch("./research-data/prospective-evaluation.json"'),
-  prospectivePanelDisplaysFrozenConfigurationGroups: prospectivePanel.includes("payload.result.performance.groups"),
+  prospectivePanelDisplaysFrozenConfigurationGroups: prospectivePanel.includes("result.performance.groups"),
   prospectiveLedgerOutputBuiltFromCycleFiles: prospective !== null,
   overviewOutputComputedFromSharedInaContext: dashboard.includes("buildInaDashboardOverview(inaResult.context,100)"),
   overviewOutputUsedByFrequencyCharts: dashboard.includes("positionCounts=overviewOutput?.result.positions.map"),
