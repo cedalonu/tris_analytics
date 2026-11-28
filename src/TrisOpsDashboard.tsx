@@ -1,6 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { importTrisCsv } from "./research/data-adapter";
-import { buildPool, evaluatePool, type Draw, type PoolMethod } from "./research-core";
+import { buildPool, evaluatePool, validateDraws, type Draw, type PoolMethod } from "./research-core";
+import { buildInaCore } from "./research/ina-core";
+import { snapshotFromCanonicalManifest, snapshotFromLocalCsv, verifySnapshotBytes, type CanonicalSourceManifest } from "./research/ina-snapshot";
+import type { InaCoreResult } from "./research/ina-core";
 import ResearchSignalOverview from "./ResearchSignalOverview";
 import "./tris-intel.css";
 
@@ -18,6 +21,9 @@ function DigitBalls({digits}:{digits:number[]}) { return <div className="flex ga
 function rankDigitsByPosition(train:Draw[],pos:number,agingMode:boolean){const recent=train.slice(-50),broad=train.slice(-150),latestId=train.at(-1)?.drawId??0;return Array.from({length:10},(_,digit)=>{const recentN=recent.filter(d=>d.digits[pos]===digit).length,broadN=broad.filter(d=>d.digits[pos]===digit).length,frequency=recentN/50*.65+broadN/150*.35;if(!agingMode)return {digit,score:frequency,frequency,agingScore:0};const ids=train.filter(d=>d.digits[pos]===digit).map(d=>d.drawId),gaps=ids.slice(1).map((id,i)=>id-ids[i]),meanGap=gaps.length?gaps.reduce((a,b)=>a+b,0)/gaps.length:0,aging=ids.length?latestId-ids[ids.length-1]:0,ratio=meanGap>0?Math.min(2,aging/meanGap):0,agingScore=ratio/2;return {digit,score:frequency*.8+agingScore*.2,frequency,agingScore};}).sort((a,b)=>b.score-a.score||a.digit-b.digit);}
 export default function TrisOpsDashboard() {
  const [draws,setDraws]=useState<Draw[]>([]);
+ const [inaResult,setInaResult]=useState<InaCoreResult|null>(null);
+ const [canonicalLoadComplete,setCanonicalLoadComplete]=useState(false);
+ const [canonicalLoaded,setCanonicalLoaded]=useState(false);
  const [nav,setNav]=useState<Nav>("overview");
  const [search,setSearch]=useState("");
  const [fileName,setFileName]=useState("");
