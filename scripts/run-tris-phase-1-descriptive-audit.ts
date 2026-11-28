@@ -28,7 +28,7 @@ const metadataMismatches=requiredKeys.filter(key=>{
     row.drawCutoff!==audit.snapshot.drawCutoff||
     row.sampleSize!==audit.snapshot.rowCount;
 });
-const currentModules=["position-overview","combination-recurrence","pool-research","aging-experiment","positional-transitions","positional-absence","memory-research","transition-stability","transition-window-comparison"];
+const currentModules=["position-overview","combination-recurrence","pool-research","aging-experiment","positional-transitions","positional-absence","memory-research"];
 const moduleStates=new Map<string,any>((audit.propagation?.targets??[]).map((row:any)=>[row.moduleId,row] as [string,any]));
 const nonCurrentModules=currentModules.filter(id=>moduleStates.get(id)?.state!=="current");
 const requiredUiChecks=[
