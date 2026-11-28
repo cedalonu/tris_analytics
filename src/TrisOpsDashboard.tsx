@@ -4,7 +4,7 @@ import { buildPool, evaluatePool, type Draw, type PoolMethod } from "./research-
 import "./tris-intel.css";
 
 const STORAGE_KEY = "tris-analytics-dashboard-csv-v1";
-type Nav = "overview" | "history" | "positions" | "integrity" | "prospective" | "nextdraw" | "recurrence" | "research";
+type Nav = "overview" | "history" | "positions" | "integrity" | "prospective" | "nextdraw" | "recurrence" | "research" | "ina";
 type CycleRecord={targetDrawId:number;generatedAt:string;historyThroughDrawId:number;selectedCount:number;frozenCount:number;signals:Array<{candidateId:string;forecast?:any;family?:string;position?:number|null;priorityScore?:number;priorityReasons?:string[]}>};
 type OutcomeRecord={targetDrawId:number;candidateId:string;family:string;forecastId:string;prediction:string[];baseline:string[];actual:string;candidateHit:boolean;baselineHit:boolean;position?:number|null;generatedAt:string;historyThroughDrawId:number;cycleId?:string};
 const LEDGER_KEY="tris-analytics-dashboard-prospective-v1";
