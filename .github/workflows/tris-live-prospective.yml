@@ -98,6 +98,10 @@ jobs:
         run: npm run research:ina-canonical-audit -- data/canonical/Tris.csv data/canonical/source-manifest.json reports/ina-canonical-audit data/cycles
       - name: Audit phase 1 descriptive INA outputs and dashboard bindings
         run: npm run research:phase-1-audit -- reports/ina-canonical-audit/latest.json reports/research-phase-audit/phase-1-descriptive-integrity.json
+      - name: Audit phase 3 frozen prospective signals and canonical resolutions
+        run: npm run research:phase-3-audit -- reports/ina-canonical-audit/latest.json reports/ina-canonical-audit/prospective-evaluation.json reports/research-phase-audit/phase-3-prospective-integrity.json
+      - name: Audit phase 4 temporal and contextual memory output and visualization
+        run: npm run research:phase-4-audit -- reports/ina-canonical-audit/latest.json reports/research-phase-audit/phase-4-memory-integrity.json
       - name: Audit phase 0 canonical adapter, integrity and main dashboard binding
         run: npm run research:phase-0-audit -- data/canonical/Tris.csv data/canonical/source-manifest.json reports/research-phase-audit/phase-0-adapter-integrity.json
       - name: Audit all catalogued research phases against the current snapshot
