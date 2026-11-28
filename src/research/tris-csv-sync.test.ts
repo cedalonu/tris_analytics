@@ -53,3 +53,12 @@ test("rejects malformed checkpoint hashes and invalid draw values", () => {
   invalid[2] = { ...invalid[2], digits: [1, 2, 3] as unknown as Draw["digits"] };
   assert.throws(() => syncTrisCsvSnapshot(invalid, null), /invalid validated draw/);
 });
+
+test("rejects draws without a valid date", () => {
+  const missingDate = [...draws];
+  missingDate[0] = { ...missingDate[0], date: undefined };
+  assert.throws(() => syncTrisCsvSnapshot(missingDate, null), /missing or invalid draw date/);
+  const invalidDate = [...draws];
+  invalidDate[0] = { ...invalidDate[0], date: "not-a-date" };
+  assert.throws(() => syncTrisCsvSnapshot(invalidDate, null), /missing or invalid draw date/);
+});
