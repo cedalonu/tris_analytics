@@ -167,3 +167,23 @@ Se detectó además que `TrisOpsDashboard.tsx` existía pero no estaba montado d
 **Ejecución live:** run `46184641716`, success. La auditoría de propagación registró **10 módulos current, 0 stale, 0 blocked y 1 missing**. El único módulo aún sin output es `prospective-evaluator` (`research.prospective-evaluation`). Se verificó por código que el dashboard operativo está montado y que el panel de memoria consume las dos ramas del output. El reporte de los 82 expedientes permanece conservador: 82 `unverified`, porque esa auditoría individual exige evidencia por expediente y no hereda el estado del registro INA.
 
 La suite de investigación, TypeScript, build y auditoría INA pasaron en el workflow `46184641679` hasta el paso de calibración sintética final; el real-history `46184641682` seguía con validación cronológica extendida. La inspección visual manual en navegador sigue pendiente. El módulo prospectivo tampoco se considera current hasta reconstruir su output desde el ledger congelado y verificar su vista.
+
+
+## Checkpoint 2026-11-28 — evaluador prospectivo y publicación estática
+
+Se integró `buildInaProspectiveEvaluation` (`research.prospective-evaluation`) como adaptador del ledger append-only real de `data/cycles/cycles.jsonl` y `outcomes.jsonl`. El adaptador:
+- reconstruye los pronósticos congelados desde cada señal del ciclo;
+- verifica que cada huella histórica corresponda exactamente al prefijo canónico anterior al concurso objetivo;
+- verifica que cada resultado resuelto coincida con los cinco dígitos del concurso canónico;
+- audita integridad, duplicados, huérfanos y configuraciones inmutables;
+- resume el desempeño por familia y configuración congelada, manteniendo separadas las tasas del candidato y su baseline.
+
+La vista `InaProspectivePanel.tsx` presenta ciclos, pronósticos congelados, resueltos, pendientes, integridad del ledger y comparación por configuración. Se monta dentro del Centro INA operativo y carga el JSON estático publicado en `public/research-data/prospective-evaluation.json`.
+
+El workflow live ahora reconstruye la evaluación sobre el mismo corte canónico, publica el payload solo cuando cambia el ledger y despacha `deploy.yml` mediante `workflow_dispatch`. Esto evita commits/despliegues horarios innecesarios cuando no aparece un nuevo sorteo ni se resuelve un pronóstico.
+
+**Ejecución live:** run `46185535779`, success. Snapshot 37008, 25,976 sorteos, SHA-256 `3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2`. Ledger: 7 ciclos, 689 pronósticos congelados, 589 resueltos, 100 pendientes, 191 configuraciones exactas evaluadas; integridad `clean`.
+
+La auditoría de propagación registró **11 módulos current, 0 stale, 0 missing y 0 blocked**. Todos los módulos de INA registrados tienen ahora evidencia de output o montaje en este corte. El despliegue combinado del dashboard y el payload estático terminó en success en run `46185535796`.
+
+**Límite importante:** este resultado cierra la propagación del catálogo de 11 módulos INA; no cierra los 82 expedientes de investigación. El auditor de fases sigue registrando 82 `unverified`, porque la verificación individual requiere identificar y probar motor, salida, montaje, binding y paridad por expediente. Tampoco se afirma ventaja predictiva, calibración probabilística ni rentabilidad; las métricas del panel son descriptivas. La inspección visual manual en navegador sigue pendiente.
