@@ -161,9 +161,12 @@ Evidencia: `src/research/ina-propagation-audit.ts`, `src/research/ina-propagatio
 - [x] Cargador canónico reforzado: coteja bytes, SHA-256, filas, rango de concursos y fechas de borde.
 - [x] Pruebas nuevas de metadatos canónicos: commit `886b633e`.
 - [x] TypeScript + suite de investigación en Research core run `46182036295`: success.
+- [x] En la validación de código posterior al cambio de `App.tsx` (run `46182275496`), TypeScript, build, auditoría INA y Research unit tests finalizaron success; el workflow seguía con la calibración sintética final en ejecución al último control.
+- [x] Despliegue combinado de aplicación principal y vista previa tras conectar `App.tsx`: run `46182275450` success.
+- [x] Ciclo live posterior a la conexión del dashboard: run `46182275590` success, histórico 37008 / 25,976 filas, 7 ciclos congelados, 689 señales, 589 outcomes resueltos, destino 37009.
 - [x] Build y despliegue de vista previa en run `46182036297`: success.
 - [x] Ciclo live repetido en run `46182036283`: success; corte 37008, sin duplicar concursos, checkpoint `matched`.
-- [ ] Validación TRIS research run `46182036294` y real-history run `46182036423`: esperar finalización; no cerrar Etapa 1 antes de sus resultados.
+- [ ] Validación TRIS research run `46182275496` (calibración sintética final) y real-history run `46182275484` (validación cronológica extensa): esperar finalización; los pasos de TypeScript, build, auditoría INA y suite unitaria ya pasaron en ambos.
 - [ ] Prueba de rechazo de modificación retroactiva a nivel del runner live con fixture controlado; los tests del sincronizador cubren la protección de prefijo, pero aún no el workflow completo.
 - [x] Conectar `src/App.tsx` al cargador canónico compartido; caché local solo como fallback visible y advertido si la fuente no se verifica. Commit `a6f29bb7` + corrección `0cf9a450`; CI/build/browser pendientes.
 
