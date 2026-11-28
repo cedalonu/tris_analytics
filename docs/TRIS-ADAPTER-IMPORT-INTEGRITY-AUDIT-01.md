@@ -131,3 +131,15 @@ Los fixtures sintéticos cubren cinco rutas: append válido, mutación de un sor
 - La captura horaria de Pakin ejecuta guard retroactivo, reconstrucción INA, evaluación prospectiva y auditoría de fases; cada ciclo conserva el snapshot y los reportes de evidencia.
 - El workflow real-histórico usa un snapshot fechado de noviembre 25 para pruebas reproducibles; no debe confundirse con el histórico canónico live.
 - No se altera `main`.
+
+
+## Evidencia específica de fase 0 (2026-11-28)
+
+El runner `scripts/run-tris-phase-0-adapter-audit.ts` ejecuta el mismo `loadCanonicalTrisDataset` de producción usando un fetcher controlado con los bytes oficiales y el manifiesto exacto. Además:
+- valida SHA-256, byteLength, rowCount, rangos de sorteo y fechas;
+- valida estado INA `ready`;
+- ejecuta el guard de prefijo contra el mismo snapshot y exige checkpoint idempotente;
+- prueba el mapeo lossless `mapCanonicalDrawsToApp` y compara 25,976 filas, IDs, cinco dígitos y fechas;
+- confirma por código el uso del loader, indicador de corte/hash y fallback de caché.
+
+El resultado se conserva en `reports/research-phase-audit/phase-0-adapter-integrity.json` y se publica como parte de `public/research-data/research-phase-audit.json`. En el corte 37008 la fase 0 aparece `partially_verified`: motor, entrada, output y paridad verificados; montaje y binding confirmados por código; la revisión visual real en navegador sigue pendiente. Esto no certifica los otros 81 expedientes.
