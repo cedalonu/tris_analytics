@@ -116,4 +116,4 @@ El programa no se declara cerrado hasta demostrar:
 - [x] Se relaciona cada fase con motores/ejecuciones y su estado real conocido.
 - [x] Se actualiza la regla de ingestión manual a automatización validada, sin relajar integridad.
 - [x] Se fija el manifiesto canónico observado como punto de referencia auditable.
-- [ ] P0.3: revisar ejecuciones recientes y cerrar baseline técnico.
+- [x] P0.3: revisar ejecuciones recientes y documentar baseline técnico; las limitaciones pendientes permanecen en el informe.
