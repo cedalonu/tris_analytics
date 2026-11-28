@@ -165,7 +165,7 @@ Evidencia: `src/research/ina-propagation-audit.ts`, `src/research/ina-propagatio
 - [x] Ciclo live repetido en run `46182036283`: success; corte 37008, sin duplicar concursos, checkpoint `matched`.
 - [ ] Validación TRIS research run `46182036294` y real-history run `46182036423`: esperar finalización; no cerrar Etapa 1 antes de sus resultados.
 - [ ] Prueba de rechazo de modificación retroactiva a nivel del runner live con fixture controlado; los tests del sincronizador cubren la protección de prefijo, pero aún no el workflow completo.
-- [ ] Probar que la carga del dashboard principal usa el cargador canónico común y no una ruta heredada de CSV local.
+- [x] Conectar `src/App.tsx` al cargador canónico compartido; caché local solo como fallback visible y advertido si la fuente no se verifica. Commit `a6f29bb7` + corrección `0cf9a450`; CI/build/browser pendientes.
 
 **Estado Etapa 1:** implementación reforzada y checks principales aprobados; cierre integral pendiente de las validaciones largas y de comprobar consumidores heredados.
 ### G5 — Centro operativo de predicción
