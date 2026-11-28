@@ -165,6 +165,8 @@ Cierre:
 
 **Primer checkpoint visual entregado (2026-11-28):** se añadió `src/InaCommandCenter.tsx` como pantalla `Centro INA`, conectada a la salida versionada `research.positional-transitions`, con grafo interactivo R1–R5, selección de nodos, panel de conexiones destacadas y procedencia del snapshot. Evidencia: `docs/INA-COMMAND-CENTER-VISUAL-01.md`. Esta entrega inicia P3, pero **no cierra P3**: faltan las vistas de las demás investigaciones y la migración de métricas duplicadas.
 
+**Segundo checkpoint visual entregado (2026-11-28):** se integró `HypothesisWorkspace.tsx` en el Monitor de hipótesis. Incluye siete hipótesis exploratorias pre-registradas, cada una con pregunta falsable, H0, diseño de prueba, evidencia requerida, salvaguarda interpretativa y referencias a artefactos existentes. El catálogo declara 7 exploratorias y 0 validadas; no fabrica historiales ni resultados. Pruebas del catálogo y type check aprobados en `Research core checks` (run `46174949543`). La validación real-histórica y la publicación Pages permanecen pendientes de sus workflows.
+
 Por cada fila de la matriz se construye o corrige una vista real:
 - Distribuciones: frecuencias, tasas, denominadores y comparación temporal.
 - Presencia/ausencia: línea de tiempo, edad actual, distribución de intervalos y referencia.
