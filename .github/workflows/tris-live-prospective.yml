@@ -85,13 +85,16 @@ jobs:
             git pull --rebase origin research-core-v1
             git push origin research-core-v1
           fi
-      - name: Record source freshness in job summary
+      - name: Rebuild and audit INA outputs against the newly validated canonical snapshot
+        run: npm run research:ina-canonical-audit -- data/canonical/Tris.csv data/canonical/source-manifest.json
+      - name: Record source freshness and INA propagation in job summary
         if: always()
         run: |
           echo "## TRIS — actualización de fuente Pakin" >> "$GITHUB_STEP_SUMMARY"
           echo "- Revisión programada: cada hora, minuto 25 (UTC)." >> "$GITHUB_STEP_SUMMARY"
           echo "- Fuente: https://raw.githubusercontent.com/pakinja/pakin/master/Tris.csv" >> "$GITHUB_STEP_SUMMARY"
           if [ -f data/cycles/latest-report.md ]; then cat data/cycles/latest-report.md >> "$GITHUB_STEP_SUMMARY"; fi
+          if [ -f reports/ina-canonical-audit/latest.md ]; then cat reports/ina-canonical-audit/latest.md >> "$GITHUB_STEP_SUMMARY"; fi
       - name: Publish current cycle summary
         run: |
           if [ -f data/cycles/latest-report.md ]; then
@@ -105,5 +108,7 @@ jobs:
             data/cycles/
             data/source-snapshots/Tris-*.csv
             data/source-snapshots/Tris-*.json
+          reports/ina-canonical-audit/latest.json
+          reports/ina-canonical-audit/latest.md
           if-no-files-found: error
           retention-days: 90
