@@ -108,18 +108,20 @@ jobs:
         run: |
           set -euo pipefail
           test -s reports/ina-canonical-audit/prospective-evaluation.json
+          test -s reports/research-phase-audit/latest.json
           mkdir -p public/research-data
           cp reports/ina-canonical-audit/prospective-evaluation.json public/research-data/prospective-evaluation.json
+          cp reports/research-phase-audit/latest.json public/research-data/research-phase-audit.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/research-data/prospective-evaluation.json
+          git add public/research-data/prospective-evaluation.json public/research-data/research-phase-audit.json
           if git diff --cached --quiet; then
-            echo "Frozen prospective dashboard payload unchanged; no publication commit required."
+            echo "Frozen prospective and phase audit dashboard payloads unchanged; no publication commit required."
           else
             git commit -m "research: publish frozen prospective evaluation"
             git pull --rebase origin research-core-v1
             git push origin research-core-v1
-            echo "Published new frozen prospective evaluation; dispatching Pages deployment."
+            echo "Published changed INA/phase audit payloads; dispatching Pages deployment."
             gh workflow run deploy.yml --repo "$GITHUB_REPOSITORY" --ref research-core-v1
           fi
       - name: Record source freshness and INA propagation in job summary
