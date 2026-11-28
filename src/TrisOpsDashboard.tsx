@@ -34,7 +34,8 @@ export default function TrisOpsDashboard() {
  const [forecastWindow,setForecastWindow]=useState<50|150|500>(150);
  const [forecastMethod,setForecastMethod]=useState<PoolMethod|"adaptive">("frequency");
  const [researchPosition,setResearchPosition]=useState<0|1|2|3|4>(0);
- const [researchWindow,setResearchWindow]=useState<50|150|500>(150);\n const [inaFocus,setInaFocus]=useState<string|null>(null);
+ const [researchWindow,setResearchWindow]=useState<50|150|500>(150);
+ const [inaFocus,setInaFocus]=useState<string|null>(null);
  useEffect(()=>{
   try {const saved=localStorage.getItem(STORAGE_KEY);if(saved){const parsed=JSON.parse(saved);if(Array.isArray(parsed.draws)){setDraws(parsed.draws);setFileName(parsed.fileName||"CSV guardado localmente");setImportMeta(parsed.meta||null);setStatus("Dataset local restaurado");}}}catch{setStatus("No se pudo restaurar el dataset local");}
  },[]);
