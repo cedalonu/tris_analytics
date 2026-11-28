@@ -2,7 +2,7 @@
 
 **Etapa:** P1.2 del plan maestro TRIS  
 **Rama:** `research-core-v1`  
-**Estado:** servicio puro implementado; validación CI pendiente.
+**Estado:** servicio puro implementado y validado en TypeScript, build y suite de pruebas.
 
 ## 1. Alcance
 
@@ -30,6 +30,10 @@ Si la versión del snapshot no coincide con conteo/rango o tiene errores de vali
 - Cuarentena ante metadatos inconsistentes.
 - Dataset vacío sin inventar frecuencias.
 
-## 5. Límites y siguiente paso
+## 5. Validación CI
+
+Run [46120748438](https://github.com/cedalonu/tris_analytics/actions/runs/46120748438), sobre el commit `f5d3b685a830bb5a60fa510a04ea927f64cb7b06`: TypeScript, 632 pruebas de investigación y build terminaron correctamente. El run [46120748358](https://github.com/cedalonu/tris_analytics/actions/runs/46120748358) también completó correctamente el type check y la suite de investigación. La validación extendida de calibraciones continúa en el workflow correspondiente.
+
+## 6. Límites y siguiente paso
 
 Este servicio es la primera fuente compartida de métricas descriptivas. Aún no incorpora memoria persistente, un registro de módulos, caché/versiones de salidas, invalidación de dependencias ni lectura del CSV desde el workflow. Esos aspectos siguen en P1.3/P2/P4.
