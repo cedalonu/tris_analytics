@@ -15,6 +15,7 @@ import { buildInaTransitionStability } from "../src/research/ina-transition-stab
 import { buildInaPositionalTransitions } from "../src/research/ina-positional-transitions";
 import { buildInaRecurrence } from "../src/research/ina-recurrence";
 import { buildInaDashboardOverview } from "../src/research/ina-dashboard-overview";
+import { buildInaMemoryState } from "../src/research/ina-memory-state";
 import { buildInaPoolEvaluation } from "../src/research/ina-pool-evaluation";
 import { buildInaPoolSelection } from "../src/research/ina-pool-selection";
 import { buildInaAgingComparison } from "../src/research/ina-aging-comparison";
@@ -50,6 +51,7 @@ assert.equal(core.context.version.drawCount, manifest.rowCount);
 assert.equal(core.context.version.drawStart, manifest.earliestDrawId);
 assert.equal(core.context.version.drawCutoff, manifest.latestDrawId);
 
+const memory = buildInaMemoryState(core.context);
 const overview = buildInaDashboardOverview(core.context, 100);
 const recurrence = buildInaRecurrence(core.context);
 const poolEvaluation = buildInaPoolEvaluation(core.context, { poolSize: 3, windowSize: 150, minTrain: 30, historyLimit: 500 });
@@ -60,7 +62,7 @@ const stability = buildInaTransitionStability(core.context, 50, 50);
 const windowComparison = buildInaTransitionWindowComparison(core.context);
 const absence = buildInaAbsence(core.context, { maxPriorMisses: 20, timelineLimit: 100 });
 
-const outputs = [overview, recurrence, poolEvaluation, poolSelection, aging, transitions, stability, windowComparison, absence];
+const outputs = [memory, overview, recurrence, poolEvaluation, poolSelection, aging, transitions, stability, windowComparison, absence];
 const propagation = auditInaPropagation({
   datasetVersionId: core.context.version.versionId,
   snapshotSha256: actualSha256,
@@ -90,6 +92,10 @@ for (const output of outputs) {
   assert.equal(output.sampleSize, manifest.rowCount, output.outputKey + " sample size mismatch");
 }
 
+assert.equal(memory.result.temporal.lastDrawId, manifest.latestDrawId);
+assert.equal(memory.result.contextual.lastDrawId, manifest.latestDrawId);
+assert.equal(memory.result.temporal.scopes[0].comparisons.length, 125);
+assert.equal(memory.result.contextual.scopes[0].comparisons.length, 250);
 assert.equal(overview.result.totalDraws, manifest.rowCount);
 assert.equal(overview.result.latestDrawId, manifest.latestDrawId);
 assert.deepEqual(
@@ -130,7 +136,14 @@ const absenceParityRows = absence.result.positions.flatMap(position => {
 
 const dashboard = await readFile(resolve("src/TrisOpsDashboard.tsx"), "utf8");
 const inaCenter = await readFile(resolve("src/InaCommandCenter.tsx"), "utf8");
+const memoryPanel = await readFile(resolve("src/InaMemoryPanel.tsx"), "utf8");
 const uiWiring = {
+  memoryOutputComputedFromSharedInaContext: dashboard.includes("buildInaMemoryState(inaResult.context)"),
+  memoryPanelImported: dashboard.includes('import InaMemoryPanel from "./InaMemoryPanel"'),
+  memoryPanelMountedInInaCenter: dashboard.includes("<InaMemoryPanel output={memoryOutput}/>"),
+  memoryPanelConsumesTemporalOutput: memoryPanel.includes("output.result.temporal.scopes"),
+  memoryPanelConsumesContextualOutput: memoryPanel.includes("output.result.contextual.scopes"),
+  memoryPanelShowsSnapshotProvenance: memoryPanel.includes("output.snapshotSha256") && memoryPanel.includes("output.drawCutoff"),
   overviewOutputComputedFromSharedInaContext: dashboard.includes("buildInaDashboardOverview(inaResult.context,100)"),
   overviewOutputUsedByFrequencyCharts: dashboard.includes("positionCounts=overviewOutput?.result.positions.map"),
   overviewProvenanceRendered: dashboard.includes("research.position-overview"),
@@ -184,6 +197,7 @@ const report = {
     sampleSize: output.sampleSize,
     evidenceStatus: output.evidence.status,
   })),
+  memory: { temporalScopes: memory.result.temporal.scopes.map(scope => ({ scope: scope.scope, comparisons: scope.comparisons.length })), contextualScopes: memory.result.contextual.scopes.map(scope => ({ scope: scope.scope, comparisons: scope.comparisons.length })) },
   overview: { totalDraws: overview.result.totalDraws, latestDrawId: overview.result.latestDrawId, windowSize: overview.result.windowSize },
   recurrence: { uniqueCombinations: recurrence.result.uniqueCombinations, recurrentCombinations: recurrence.result.recurrentCombinations },
   pools: { poolSize: poolSelection.result.poolSize, methods: poolSelection.result.selectedMethods, evaluationMethods: poolEvaluation.result.methods },
