@@ -87,7 +87,7 @@ test("INA rejects malformed source metadata and digest", () => {
   assert.throws(() => createInaContext({
     snapshot: { ...snapshot, sourceUrl: "file:///tmp/Tris.csv" },
     validation,
-  }), /HTTP(S)/);
+  }), /HTTP\\(S\\)/);
   assert.throws(() => createInaContext({
     snapshot: { ...snapshot, sha256: "not-a-digest" },
     validation,
