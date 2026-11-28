@@ -68,9 +68,17 @@ const manifest = {
   lastModified: response.headers.get("last-modified"),
 };
 const manifestPath = resolve(snapshotDir, "Tris-" + latest.drawId + "-" + sha256.slice(0, 12) + ".json");
-// Refresh observation metadata even when the CSV content is unchanged. The
-// CSV snapshot remains immutable; fetchedAt records the latest successful fetch.
-await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + "\n", "utf8");
+// Keep the content-addressed snapshot manifest immutable too. Repeated hourly
+// checks of unchanged CSV must not create a new canonical-data commit each hour.
+try {
+  await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + "\n", { encoding: "utf8", flag: "wx" });
+} catch (error) {
+  if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+  const existingManifest = JSON.parse(await readFile(manifestPath, "utf8")) as { sha256?: string; snapshot?: string };
+  if (existingManifest.sha256 !== sha256 || existingManifest.snapshot !== snapshotName) {
+    throw new Error("Existing snapshot manifest does not match the fetched content.");
+  }
+}
 
 console.log("Validated source snapshot:", JSON.stringify(manifest, null, 2));
 const tsxCli = resolve("node_modules/tsx/dist/cli.mjs");
