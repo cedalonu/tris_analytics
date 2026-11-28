@@ -109,7 +109,7 @@ function TemporalTimeline({windows,minimum}:{windows:any[];minimum:number}){
  </div>;
 }
 export default function ResearchDashboard({onBack,onOpenIntuition}:{onBack:()=>void;onOpenIntuition:()=>void}){
- const [showMonitor,setShowMonitor]=useState(false);
+ const [showMonitor, setShowMonitor] = useState<boolean>(false);
  const [showAdapterPanel,setShowAdapterPanel]=useState(false);
  const [showInaDashboard,setShowInaDashboard]=useState(false);
  const [reports,setReports]=useState<ReportRecord[]>([]);
@@ -131,7 +131,7 @@ export default function ResearchDashboard({onBack,onOpenIntuition}:{onBack:()=>v
  const summaries:any={ledger:ledger?.summary,coverage:coverage?.summary,performance:performance?.summary,stability:stability?.summary,sensitivity:sensitivity?.summary,structuralOutcome:structuralOutcome?.summary,structuralRandomControl:structuralRandomControl?.summary,structuralTemporalRobustness:byKind.structuralTemporalRobustness?.data?.summary,structuralBlockBootstrap:structuralBlockBootstrap?.summary,structuralBootstrapSensitivity:structuralBootstrapSensitivity?.summary,structuralJointStability:byKind.structuralJointStability?.data?.summary};
  const current=active==="structuralEvidenceCenter"?undefined:byKind[active]?.data;
  const performanceGroups=useMemo(()=>{const groups=performance?.groups??[];const q=performanceQuery.trim().toLowerCase();return groups.filter((g:any)=>(performanceFamily==="all"||g.family===performanceFamily)&&(!q||[g.family,g.method,g.mode,g.config].filter(Boolean).join(" ").toLowerCase().includes(q))).sort((a:any,b:any)=>performanceSort==="difference"?((b.pairedDifference??-Infinity)-(a.pairedDifference??-Infinity)):performanceSort==="sample"?(b.resolved-a.resolved):a.family.localeCompare(b.family));},[performance,performanceFamily,performanceQuery,performanceSort]);
- const performanceFamilies=useMemo(()=>[...new Set((performance?.groups??[]).map((g:any)=>g.family))].sort() as string[],[performance]);
+ const performanceFamilies = useMemo(() => Array.from(new Set((performance?.groups ?? []).map((g: any) => g.family))).sort() as string[], [performance]);
  if(showAdapterPanel)return <AdapterIntegrityPanel onClose={()=>setShowAdapterPanel(false)}/>;
  if(showMonitor)return <HypothesisMonitor onBack={()=>setShowMonitor(false)} />;
  if(showInaDashboard)return <div className="fixed inset-0 z-[120] overflow-y-auto bg-[#080d18] text-slate-100">
