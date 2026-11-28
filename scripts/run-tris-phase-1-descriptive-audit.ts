@@ -19,7 +19,7 @@ const requiredKeys=[
   "research.transition-window-comparison",
   "research.positional-absence",
 ];
-const outputs=new Map<string,any>((audit.outputs??[]).map((row:any)=>[row.outputKey,row]));
+const outputs=new Map<string,any>((audit.outputs??[]).map((row:any)=>[row.outputKey,row] as [string,any]));
 const missing=requiredKeys.filter(key=>!outputs.has(key));
 const metadataMismatches=requiredKeys.filter(key=>{
   const row=outputs.get(key);
@@ -29,7 +29,7 @@ const metadataMismatches=requiredKeys.filter(key=>{
     row.sampleSize!==audit.snapshot.rowCount;
 });
 const currentModules=["position-overview","combination-recurrence","pool-research","aging-experiment","positional-transitions","positional-absence","memory-research","transition-stability","transition-window-comparison"];
-const moduleStates=new Map<string,any>((audit.propagation?.targets??[]).map((row:any)=>[row.moduleId,row]));
+const moduleStates=new Map<string,any>((audit.propagation?.targets??[]).map((row:any)=>[row.moduleId,row] as [string,any]));
 const nonCurrentModules=currentModules.filter(id=>moduleStates.get(id)?.state!=="current");
 const requiredUiChecks=[
   "overviewOutputComputedFromSharedInaContext","overviewOutputUsedByFrequencyCharts","overviewProvenanceRendered",
