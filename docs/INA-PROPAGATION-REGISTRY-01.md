@@ -131,3 +131,28 @@ checkpoint; no se declaran aprobadas aquí.
 3. Incorporar adaptadores de salida y paridad para cada visualización, priorizando INA y presencia/ausencia.
 4. Publicar el índice del último audit como dato estático consumible por la vista previa, evitando importación manual.
 5. Probar la cuarentena de una mutación retroactiva con un fixture, sin modificar el histórico oficial.
+
+
+## Checkpoint 2026-11-28 — expansión de salidas INA verificadas
+
+El runner `scripts/run-tris-ina-canonical-audit.ts` ahora reconstruye los outputs descriptivos con el mismo `InaContext` derivado del snapshot canónico y comprueba su procedencia y binding en `TrisOpsDashboard.tsx`.
+
+**Ejecución live:** run `46183853597`, success. Snapshot `Tris-37008-3a7c40e21738.csv`, 25,976 sorteos, corte 37008, SHA-256 `3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2`.
+
+Outputs reconstruidos y alineados al mismo hash/corte/muestra:
+
+- `research.position-overview`
+- `research.combination-recurrence`
+- `research.pool-evaluation`
+- `research.pool-selection`
+- `research.aging-comparison`
+- `research.positional-transitions`
+- `research.transition-stability`
+- `research.transition-window-comparison`
+- `research.positional-absence`
+
+La auditoría de propagación reportó **8 módulos current, 0 stale, 0 blocked y 3 missing**. Los módulos current son `source-integrity`, `ina-core`, `positional-absence`, `position-overview`, `combination-recurrence`, `pool-research`, `aging-experiment` y `positional-transitions`. Los tres pendientes son `memory-research` (`research.memory-state`), `prospective-evaluator` (`research.prospective-evaluation`) y `operational-dashboard` (`ui.operational-dashboard`).
+
+La comprobación de presencia/ausencia comparó las 50 combinaciones posición/dígito con el analizador de referencia: 50/50 pasaron. Se comprobaron además los bindings fuente de los paneles. La frecuencia posicional ahora consume `research.position-overview` y presenta versión, SHA, corte y tamaño de muestra.
+
+**Límites:** `current` significa que el output esperado se reconstruyó y sus metadatos coinciden con el snapshot; no certifica ventaja predictiva. La inspección visual real en navegador sigue pendiente. El inventario de 82 expedientes tampoco se eleva automáticamente por estos ocho módulos.
