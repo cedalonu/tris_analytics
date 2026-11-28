@@ -1,6 +1,6 @@
 # TRIS Analytics — Checklist maestro de control y continuidad
 
-**Versión:** 1.2  
+**Versión:** 1.3  
 **Fecha:** 2026-11-28 (actualización de control)  
 **Rama obligatoria:** `research-core-v1`  
 **Documento rector:** `docs/TRIS-MASTER-EXECUTION-PLAN-v2.md`  
@@ -195,6 +195,7 @@ Añadir una entrada por cada entrega significativa, sin borrar entradas anterior
 |---|---|---|---|---|---|---|
 | 2026-11-28 | P0.1 / matriz visual | `772f5b51683598d4571a2f8b43a2d8ae833d44f8` | `docs/MATRIZ-INVESTIGACION-VISUAL-01.md` | Auditoría documental/estática; no equivale a validación integral de vistas | Entregada; matriz conservadora | Atender presencia/ausencia y brechas MV-01…MV-08 |
 | 2026-11-28 | Control G0.4 + auditoría de P2.8 | `68519b956ce4b72dea84a9611a5d480c92dc2a1f` (HEAD verificado antes de esta actualización) | Revisión de rama, checklist, plan, matriz, motores y workflow | Live cycle run `46167720603`: success; pruebas Research core `46128051599`, TRIS research `46128051604` e integración real `46128051633`: success en commit `283a3dcd`. | P2.8 parcial; siguiente tarea: migrar comparador top-10 de ventanas y probar equivalencia | Identificar comparador heredado y construir prueba de equivalencia |
+| 2026-11-28 | P2.8 / migración top-10 + reutilización de estabilidad | `e6706287` → `845b0ca4` → `14bc78c7` → `3719d981` → `46978ea8` → `75f4f066` → `2d3ef6d9` → `07b43362` → `d5523c83` → `49a3e50a` → `9a56c8dc` | Motor INA `ina-transition-window-comparison`, pruebas de paridad, registro, vista general conectada y Mapa INA reutilizando `stabilityOutput`; docs P2.8, checklist y plan actualizados | Research core run `46168800004`: success en `2d3ef6d9`; live cycle run `46168929607`: success en `9a56c8dc`. TRIS research `46168800000` y real-history `46168799988` (2d3ef6d9), además de TRIS research `46168837028` y real-history `46168837025` (07b43362), permanecen en ejecución al registrar este checkpoint. Un error inicial de tipado de fixtures se corrigió antes del run `2d3ef6d9`. | P2.8 parcial; paridad codificada y UI conectada, pendiente CI completa y revisión con snapshot real | Esperar resultados finales de validación, comprobar hash/corte/muestra en UI y cerrar solo con evidencia verde |
 
 ## 5.1 Próximo bloque de trabajo (sin saltar gates)
 
