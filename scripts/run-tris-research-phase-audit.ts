@@ -72,7 +72,7 @@ const counts = {
 };
 const report = {
   schemaVersion: 1, auditType: "research-phase-propagation-inventory",
-  generatedAt: new Date().toISOString(),
+  generatedAt: manifest.fetchedAt,
   canonical: {
     snapshot: manifest.snapshot, fetchedAt: manifest.fetchedAt,
     sha256: manifest.sha256, sampleSize: manifest.rowCount,
