@@ -74,3 +74,11 @@ Se corrigió el comportamiento: los títulos del catálogo ahora seleccionan la 
 - Gráficas por R1–R5: distancia local por sorteo; marcas de inicio de episodios; estado/episodios y retornos descriptivos.
 - Nivel de salida: **descriptivo, no calibrado**. No constituye prueba de cambio de régimen ni capacidad predictiva.
 - Pendiente: simulación nula y calibración de falsas alarmas, sensibilidad de parámetros, reporte INA versionado, holdout cronológico y runtime/browser.
+
+
+## Corrección 02-D — H-TRIS-005: panel de persistencia estructural (2026-11-28)
+
+- El catálogo monta un panel interactivo para H-TRIS-005 que importa un JSON de ventanas de motivos estructurales (array o `{windows:[...]}`), valida estructura básica y ejecuta `analyzeMotifPersistence`.
+- Visualiza resumen de ventanas, motivos, episodios, persistentes (mínimo 2 ventanas), tasas por categoría formación/disolución/reconfiguración y corridas estables.
+- Datos deben venir de artefacto real, no de valores de ejemplo. El panel marca el análisis como descriptivo.
+- Pendiente: automatizar conexión del expediente INA versionado; calibrar control aleatorio emparejado, bloques, sensibilidad, holdout, paridad, CI y runtime. Importar JSON es puente de integración, no cierre de validación.
