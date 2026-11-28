@@ -39,7 +39,7 @@ test("refuses changed historical rows", () => {
 test("refuses missing contest IDs and incomplete history", () => {
   const gap = draws.filter(draw => draw.drawId !== 505);
   assert.throws(() => syncTrisCsvSnapshot(gap, null), /missing contest ID/);
-  assert.throws(() => syncTrisCsvSnapshot(draws.slice(5), checkpoint(draws.slice(0, 10)), /complete processed prefix/);
+  assert.throws(() => syncTrisCsvSnapshot(draws.slice(5), checkpoint(draws.slice(0, 10))), /complete processed prefix/);
 });
 test("keeps all new draws and reports batches larger than five", () => {
   const result = syncTrisCsvSnapshot(draws, checkpoint(draws.slice(0, 6)));
