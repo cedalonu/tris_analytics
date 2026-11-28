@@ -22,7 +22,7 @@ export function buildInaMemoryState(context: InaContext): ResearchOutput<InaMemo
     outputId: "ina-memory-state-v1",
     outputKey: "research.memory-state",
     moduleId: "memory-research",
-    engineId: "ina-memory-state",
+    engineId: "research-memory-family",
     engineVersion: "1.0.0",
     parameters: {
       lags: "1-5 exact contest offsets",
