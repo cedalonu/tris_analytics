@@ -16,6 +16,8 @@ import { buildInaPositionalTransitions } from "../src/research/ina-positional-tr
 import { buildInaRecurrence } from "../src/research/ina-recurrence";
 import { buildInaDashboardOverview } from "../src/research/ina-dashboard-overview";
 import { buildInaMemoryState } from "../src/research/ina-memory-state";
+import { buildInaProspectiveEvaluation } from "../src/research/ina-prospective-evaluation";
+import type { FrozenLearningCycle, ResolvedCycleSignal } from "../src/research/cycle-learning";
 import { buildInaPoolEvaluation } from "../src/research/ina-pool-evaluation";
 import { buildInaPoolSelection } from "../src/research/ina-pool-selection";
 import { buildInaAgingComparison } from "../src/research/ina-aging-comparison";
@@ -26,6 +28,7 @@ import { auditInaPropagation, propagationEvidenceFromResearchOutputs } from "../
 const csvPath = resolve(process.argv[2] ?? "data/canonical/Tris.csv");
 const manifestPath = resolve(process.argv[3] ?? "data/canonical/source-manifest.json");
 const reportDir = resolve(process.argv[4] ?? "reports/ina-canonical-audit");
+const ledgerDir = process.argv[5] ? resolve(process.argv[5]) : null;
 const csv = await readFile(csvPath, "utf8");
 const bytes = Buffer.from(csv, "utf8");
 const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as CanonicalSourceManifest;
@@ -62,7 +65,20 @@ const stability = buildInaTransitionStability(core.context, 50, 50);
 const windowComparison = buildInaTransitionWindowComparison(core.context);
 const absence = buildInaAbsence(core.context, { maxPriorMisses: 20, timelineLimit: 100 });
 
-const outputs = [memory, overview, recurrence, poolEvaluation, poolSelection, aging, transitions, stability, windowComparison, absence];
+const baseOutputs = [memory, overview, recurrence, poolEvaluation, poolSelection, aging, transitions, stability, windowComparison, absence];
+async function readJsonl<T>(path: string): Promise<T[]> {
+  try { return (await readFile(path, "utf8")).split(/\\r?\\n/).filter(Boolean).map(line => JSON.parse(line) as T); }
+  catch (error) { if ((error as NodeJS.ErrnoException).code === "ENOENT") return []; throw error; }
+}
+let prospective: ReturnType<typeof buildInaProspectiveEvaluation> | null = null;
+let prospectiveCycles: FrozenLearningCycle[] = [];
+let prospectiveOutcomes: ResolvedCycleSignal[] = [];
+if (ledgerDir) {
+  prospectiveCycles = await readJsonl<FrozenLearningCycle>(resolve(ledgerDir, "cycles.jsonl"));
+  prospectiveOutcomes = await readJsonl<ResolvedCycleSignal>(resolve(ledgerDir, "outcomes.jsonl"));
+  prospective = buildInaProspectiveEvaluation(core.context, prospectiveCycles, prospectiveOutcomes);
+}
+const outputs = [...baseOutputs, ...(prospective ? [prospective] : [])];
 const appSource = await readFile(resolve("src/App.tsx"), "utf8");
 const researchDashboardSource = await readFile(resolve("src/ResearchDashboard.tsx"), "utf8");
 const operationalDashboardSourceMounted =
@@ -227,6 +243,14 @@ const report = {
     positionalEntropyRows: stability.result.digitEntropy.length,
   },
   transitionWindows: windowComparison.result.windows,
+  prospective: prospective ? {
+    cycles: prospective.result.cycles,
+    frozenForecasts: prospective.result.frozenForecasts,
+    resolvedForecasts: prospective.result.resolvedForecasts,
+    pendingForecasts: prospective.result.pendingForecasts,
+    integrity: prospective.result.ledgerAudit.summary.integrity,
+    groups: prospective.result.performance.summary.groups,
+  } : null,
   absence: {
     positions: absence.result.positions.length,
     digitReports: absence.result.positions.reduce((sum, position) => sum + position.digitReports.length, 0),
@@ -267,6 +291,14 @@ const markdown = [
   "## Outputs",
   ...outputs.map(output => "- " + output.outputKey + ": " + output.sampleSize + " draws, cutoff " + output.drawCutoff + ", same snapshot SHA-256"),
   "",
+  ...(prospective ? [
+    "## Frozen prospective evaluation",
+    "- Cycles: " + prospective.result.cycles + "; frozen forecasts: " + prospective.result.frozenForecasts,
+    "- Resolved: " + prospective.result.resolvedForecasts + "; pending: " + prospective.result.pendingForecasts,
+    "- Ledger integrity: " + prospective.result.ledgerAudit.summary.integrity,
+    "- Exact frozen configurations evaluated: " + prospective.result.performance.summary.groups,
+    "",
+  ] : ["## Frozen prospective evaluation", "- Not included in this run: no ledger directory was supplied.", ""]),
   "## V1 presence/absence numeric parity",
   "- Compared every R1–R5 × digit 0–9 report against the independent position analyzer: " + absenceParityRows.length + " / 50 passed.",
   "- Verified occurrences, observed rate, current absence, complete intervals, conditional return denominators and timeline draw IDs.",
