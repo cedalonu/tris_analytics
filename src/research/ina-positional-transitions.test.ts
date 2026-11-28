@@ -53,6 +53,7 @@ test("transition engine honors trailing window and returns no fabricated edges f
   assert.equal(emptyOutput.result.sampleSize, 0);
   assert.equal(emptyOutput.result.edges.length, 0);
   assert.equal(emptyOutput.result.maxCount, 1);
+  assert.equal(emptyOutput.result.edgeTimeline.length, 0);
 });
 
 test("transition engine refuses invalid INA context", () => {
