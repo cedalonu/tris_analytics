@@ -312,7 +312,7 @@ Continuar automáticamente con la siguiente tarea aprobada y desbloqueada. Si ap
 - [x] Despliegue posterior a la asignación de visualizaciones por fase: run `46185821059`, success.
 - [ ] Terminar validaciones extendidas del commit final del evaluador prospectivo: TRIS research `46185535815` y real-history `46185535816`; no marcar hasta que concluyan.
 - [ ] Inspección visual manual en navegador; CI/build no sustituyen esta comprobación.
-- [x] Auditoría de fases live run `46186996596`: 82 documentos localizados; 24 visualizaciones localizadas; 58 sin ruta visual catalogada; 0 bloqueados; 0 plenamente verificados; 1 `partially_verified` (fase 0); 81 `unverified`.
+- [x] Auditoría de fases live run `46188347254`: 82 documentos localizados; 24 visualizaciones localizadas; 58 sin ruta visual catalogada; 0 bloqueados; 0 plenamente verificados; 4 `partially_verified` (fases 0, 1, 3 y 4); 78 `unverified`.
 
 **Estado INA:** los 11 módulos registrados están `current` en el corte 37008. Los 82 expedientes siguen con su auditoría individual; el último phase audit los mantiene `unverified` hasta probar motor, output, montaje, binding y paridad por expediente.
 
@@ -341,5 +341,17 @@ Continuar automáticamente con la siguiente tarea aprobada y desbloqueada. Si ap
 - [x] Ejecutar el guard del prefijo contra el mismo histórico; checkpoint idempotente hasta el corte.
 - [x] Confirmar binding del dashboard principal y acceso al dashboard INA operativo por código.
 - [x] Publicar evidencia en `public/research-data/research-phase-audit.json`.
-- [x] Resultado: fase 0 `partially_verified`; motor/output/paridad verificados, montaje/binding source-confirmed, vista localizada.
+- [x] Resultado: fases 0, 1, 3 y 4 `partially_verified`; motor/output verificados, montaje/binding source-confirmed, vista localizada; paridad total aún incompleta.
 - [ ] Inspección visual manual de éxito, caché fallback y corte visible en navegador.
+
+
+## 5.5 Evidencia fases 1, 3 y 4
+
+- [x] Fase 1: 10 outputs INA con metadatos alineados al corte; 7 módulos registrados current; binding de frecuencia, recurrencia, pools, aging, transiciones, ausencia y memoria comprobado por auditoría.
+- [x] Fase 1: paridad parcial (overview y ausencia); falta paridad numérica independiente para recurrencia, pools, aging y transiciones.
+- [x] Fase 3: adaptador del ledger congelado, integridad clean, 689 pronósticos, 589 resueltos, 100 pendientes; cada resolución cotejada con el resultado canónico.
+- [x] Fase 3: panel prospectivo estático publicado y despliegue automático cuando cambia el ledger.
+- [x] Fase 4: memoria temporal/contextual generada desde el contexto INA compartido y panel con selectores de alcance, rezago, posiciones y contexto.
+- [x] Fase 4: pruebas sintéticas; paridad numérica independiente sobre el histórico completo pendiente.
+- [x] Auditoría de fases live `46188347254`: 4 parciales, 78 sin verificar, 0 bloqueados.
+- [x] Despliegue de la vista previa con el índice público de auditoría: run `46188347255`, success.
