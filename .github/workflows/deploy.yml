@@ -33,7 +33,7 @@ jobs:
 
       - name: Install main dependencies
         working-directory: main-source
-        run: npm ci --legacy-peer-deps
+        run: npm install --legacy-peer-deps
 
       - name: Build production site from main
         working-directory: main-source
