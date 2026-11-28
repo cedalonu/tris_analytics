@@ -1,7 +1,7 @@
 # TRIS Analytics — Checklist maestro de control y continuidad
 
-**Versión:** 1.4  
-**Fecha:** 2026-11-28 (cierre P2.8 e inicio V1)  
+**Versión:** 1.5  
+**Fecha:** 2026-11-28 (Etapa 1: validaciones ampliadas aprobadas)  
 **Rama obligatoria:** `research-core-v1`  
 **Documento rector:** `docs/TRIS-MASTER-EXECUTION-PLAN-v2.md`  
 **Matriz visual:** `docs/MATRIZ-INVESTIGACION-VISUAL-01.md`
@@ -167,7 +167,8 @@ Evidencia: `src/research/ina-propagation-audit.ts`, `src/research/ina-propagatio
 - [x] Build y despliegue de vista previa en run `46182036297`: success.
 - [x] Ciclo live repetido en run `46182036283`: success; corte 37008, sin duplicar concursos, checkpoint `matched`.
 - [x] Ciclo live tras extraer el guard (run `46182612431`): success; Pakin sigue en corte 37008, `status: unchanged`, `newDrawCount: 0`; auditoría de 82 expedientes ejecutada sobre SHA `3a7c40e2…`.
-- [ ] Validación TRIS research run `46182581029` (calibración sintética final) y real-history run `46182581042` (validación cronológica extensa): siguen en ejecución; TypeScript, build/auditoría INA (research) y suite unitaria han pasado.
+- [x] Validación TRIS research run `46182720872`: success; TypeScript, build, auditoría INA, suite unitaria y calibraciones sintéticas completadas.
+- [x] Validación real-history run `46182720859`: success; TypeScript, pruebas, build, checkpoint exacto del histórico y validaciones cronológicas congeladas completadas.
 - [x] Extraer la puerta de prefijo a `validateCanonicalPrefix`, invocada por el runner live, y añadir fixtures de append válido, mutación retroactiva, manifiesto ausente, snapshot corrupto e histórico truncado (`src/research/canonical-prefix-guard.test.ts`).
 - [x] CI verde para los fixtures retroactivos: Research core checks run `46182581025` success; el log confirma `ok 24` para mutación histórica rechazada y `ok 23`, `25`–`27` para append, manifiesto ausente, snapshot corrupto e histórico truncado.
 - [x] Conectar `src/App.tsx` al cargador canónico compartido; caché local solo como fallback visible y advertido si la fuente no se verifica. Commit `a6f29bb7` + corrección `0cf9a450`.
@@ -235,6 +236,7 @@ Añadir una entrada por cada entrega significativa, sin borrar entradas anterior
 | 2026-11-28 | P0.1 / matriz visual | `772f5b51683598d4571a2f8b43a2d8ae833d44f8` | `docs/MATRIZ-INVESTIGACION-VISUAL-01.md` | Auditoría documental/estática; no equivale a validación integral de vistas | Entregada; matriz conservadora | Atender presencia/ausencia y brechas MV-01…MV-08 |
 | 2026-11-28 | Control G0.4 + auditoría de P2.8 | `68519b956ce4b72dea84a9611a5d480c92dc2a1f` (HEAD verificado antes de esta actualización) | Revisión de rama, checklist, plan, matriz, motores y workflow | Live cycle run `46167720603`: success; pruebas Research core `46128051599`, TRIS research `46128051604` e integración real `46128051633`: success en commit `283a3dcd`. | P2.8 parcial; siguiente tarea: migrar comparador top-10 de ventanas y probar equivalencia | Identificar comparador heredado y construir prueba de equivalencia |
 | 2026-11-28 | P2.8 / migración top-10 + reutilización de estabilidad | `e6706287` → `845b0ca4` → `14bc78c7` → `3719d981` → `46978ea8` → `75f4f066` → `2d3ef6d9` → `07b43362` → `d5523c83` → `49a3e50a` → `9a56c8dc` | Motor INA `ina-transition-window-comparison`, pruebas de paridad, registro, vista general conectada y Mapa INA reutilizando `stabilityOutput`; docs P2.8, checklist y plan actualizados | Research core run `46168800004`: success en `2d3ef6d9`; live cycle run `46168929607`: success en `9a56c8dc`. TRIS research `46168800000` y real-history `46168799988` (2d3ef6d9), además de TRIS research `46168837028` y real-history `46168837025` (07b43362), permanecen en ejecución al registrar este checkpoint. Un error inicial de tipado de fixtures se corrigió antes del run `2d3ef6d9`. | P2.8 parcial; paridad codificada y UI conectada, pendiente CI completa y revisión con snapshot real | Esperar resultados finales de validación, comprobar hash/corte/muestra en UI y cerrar solo con evidencia verde |
+| 2026-11-28 | Etapa 1 / validación ampliada y guard retroactivo | `526a82d3` + `44d5134c` + `3cd52038` | `canonical-prefix-guard.ts`, fixtures, `App.tsx` indicador canónico, checklist y auditoría de integridad | Research core `46182581025`: success, fixtures retroactivos aprobados; TRIS research `46182720872`: success; real-history `46182720859`: success; live `46182729828`: success, corte 37008, sin cambios; deploy `46182694364`: success para código anterior al indicador. | Validación automatizada aprobada; despliegue del commit final y navegador pendientes | Publicar HEAD actualizado; comprobar UI principal y fallback; después auditar V1 contra snapshot vigente |
 | 2026-11-28 | Cierre P2.8 + V1 presencia/ausencia | `f8d8e168c6732f30d2023e5e9215a4fff6c8d086` (HEAD de código V1) | `ina-absence.ts`, `ina-absence.test.ts`, registry, `TrisOpsDashboard.tsx`, `docs/V1-INA-PRESENCIA-AUSENCIA-01.md`, plan, matriz y migración P2.8 | P2.8: Research core `46168800004` success; TRIS research `46168837028` success; real-history `46168837025` success (44/44 pasos); live prospective `46168837068` success. V1 en commit `cbf94425`: TypeScript/build/tests completados en TRIS research `46169599330` (calibración sintética aún ejecutándose al registrar); real-history `46169599289` en curso. | P2.8 cerrado; V1 implementado y pendiente de CI integral y reconciliación con snapshot canónico 37007 | Esperar workflows V1, resolver fallos si aparecen y auditar valores motor↔UI con hash/corte del manifiesto vigente |
 
 ## 5.1 Próximo bloque de trabajo (sin saltar gates)
@@ -271,7 +273,7 @@ Continuar automáticamente con la siguiente tarea aprobada y desbloqueada. Si ap
 
 ## 5.2 Etapa 1 — Adaptador, importación e integridad (2026-11-28)
 
-**Estado: implementación y pruebas base completadas; cierre de validación ampliada pendiente.**
+**Estado: implementación y validaciones automatizadas ampliadas aprobadas; cierre visual de navegador pendiente.**
 
 - [x] Auditar la captura automática existente: `.github/workflows/tris-live-prospective.yml` consulta Pakin cada hora al minuto 25 UTC y también se ejecuta en push/manual.
 - [x] Confirmar que `scripts/run-tris-cycles-source.ts` descarga, valida, crea snapshot con SHA-256 y ejecuta ciclo + auditoría sobre el mismo snapshot.
@@ -283,9 +285,9 @@ Continuar automáticamente con la siguiente tarea aprobada y desbloqueada. Si ap
 - [x] TypeScript, pruebas base y checks de Research Core: run `46179218631`, success, commit `413719a4`.
 - [x] Captura live y ciclo/auditoría de fuente: run `46179218559`, success; 25,975 registros, corte 37007, SHA-256 `e77a3ef65259bff02fded5490714edf8caf5e6c4f1bd854f6f457918f948c1a6`.
 - [x] Build, auditoría INA contra histórico canónico y pruebas de investigación: completados con success dentro del run `46179218581`; calibración sintética final todavía en ejecución al registrar.
-- [ ] Cierre del workflow de calibración TRIS research `46179218581`.
-- [ ] Cierre del workflow de integración real-histórica `46179218515`.
-- [ ] Registrar resultado final de ambas ejecuciones antes de cerrar Etapa 1.
+- [x] Cierre del workflow de calibración TRIS research `46182720872`: success.
+- [x] Cierre del workflow de integración real-histórica `46182720859`: success.
+- [x] Registrar resultado final de ambas ejecuciones: research `46182720872` y real-history `46182720859`, ambas success.
 
 **Evidencia documental:** `docs/TRIS-ADAPTER-IMPORT-INTEGRITY-AUDIT-01.md`.
 
