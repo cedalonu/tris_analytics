@@ -108,7 +108,7 @@ jobs:
             data/cycles/
             data/source-snapshots/Tris-*.csv
             data/source-snapshots/Tris-*.json
-          reports/ina-canonical-audit/latest.json
-          reports/ina-canonical-audit/latest.md
+            reports/ina-canonical-audit/latest.json
+            reports/ina-canonical-audit/latest.md
           if-no-files-found: error
           retention-days: 90
