@@ -169,6 +169,7 @@ const absenceParityRows = absence.result.positions.flatMap(position => {
 const dashboard = await readFile(resolve("src/TrisOpsDashboard.tsx"), "utf8");
 const inaCenter = await readFile(resolve("src/InaCommandCenter.tsx"), "utf8");
 const memoryPanel = await readFile(resolve("src/InaMemoryPanel.tsx"), "utf8");
+const prospectivePanel = await readFile(resolve("src/InaProspectivePanel.tsx"), "utf8");
 const uiWiring = {
   operationalDashboardMountedThroughResearchCenter: operationalDashboardSourceMounted,
   memoryOutputComputedFromSharedInaContext: dashboard.includes("buildInaMemoryState(inaResult.context)"),
@@ -177,6 +178,11 @@ const uiWiring = {
   memoryPanelConsumesTemporalOutput: memoryPanel.includes("result.temporal.scopes"),
   memoryPanelConsumesContextualOutput: memoryPanel.includes("result.contextual.scopes"),
   memoryPanelShowsSnapshotProvenance: memoryPanel.includes("output.snapshotSha256") && memoryPanel.includes("output.drawCutoff"),
+  prospectivePanelImported: dashboard.includes('import InaProspectivePanel from "./InaProspectivePanel"'),
+  prospectivePanelMountedInInaCenter: dashboard.includes("<InaProspectivePanel/>"),
+  prospectivePanelLoadsStaticFrozenEvaluation: prospectivePanel.includes('fetch("./research-data/prospective-evaluation.json"'),
+  prospectivePanelDisplaysFrozenConfigurationGroups: prospectivePanel.includes("payload.result.performance.groups"),
+  prospectiveLedgerOutputBuiltFromCycleFiles: prospective !== null,
   overviewOutputComputedFromSharedInaContext: dashboard.includes("buildInaDashboardOverview(inaResult.context,100)"),
   overviewOutputUsedByFrequencyCharts: dashboard.includes("positionCounts=overviewOutput?.result.positions.map"),
   overviewProvenanceRendered: dashboard.includes("research.position-overview"),
