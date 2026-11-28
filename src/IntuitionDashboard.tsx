@@ -1,6 +1,8 @@
 import React,{useMemo,useState} from "react";
 import type {Draw} from "./tris-csv";
 import {assessSignal,type SignalRecord,type SignalStatus} from "./research/intuition-ledger";
+import {analyzeTemporalMemory,type MemoryScope} from "./research/temporal-memory";
+import {analyzeContextualMemory} from "./research/contextual-memory";
 import type {ResearchPlan,PlannedHypothesis} from "./research/intuition-orchestrator";
 
 type Props={draws:Draw[];onBack:()=>void;onOpenResearch:()=>void};
@@ -71,6 +73,8 @@ export default function IntuitionDashboard({draws,onBack,onOpenResearch}:Props){
  const [ledger,setLedger]=useState<SignalRecord[]>([]);
  const [ledgerName,setLedgerName]=useState("");
  const [ledgerError,setLedgerError]=useState("");
+ const [memoryScope,setMemoryScope]=useState<MemoryScope>("all-history");
+ const [memoryLag,setMemoryLag]=useState<1|2|3|4|5>(1);
  const [selectedSignal,setSelectedSignal]=useState<string>("");
  const [statusFilter,setStatusFilter]=useState<SignalStatus|"all">("all");
  const [researchPlan,setResearchPlan]=useState<ResearchPlan|null>(null);
@@ -86,6 +90,18 @@ export default function IntuitionDashboard({draws,onBack,onOpenResearch}:Props){
  const [investigatorName,setInvestigatorName]=useState("");
  const [investigatorError,setInvestigatorError]=useState("");
  const sorted=useMemo(()=>[...draws].sort((a,b)=>a.num-b.num),[draws]);
+ const memoryDraws=useMemo(()=>sorted.map(d=>({drawId:d.num,digits:d.digits})),[sorted]);
+ const memoryAnalysis=useMemo(()=>{
+  if(memoryDraws.length<2)return null;
+  try{return {temporal:analyzeTemporalMemory(memoryDraws),contextual:analyzeContextualMemory(memoryDraws),error:""};}
+  catch(error){return {temporal:null,contextual:null,error:error instanceof Error?error.message:"No fue posible calcular la memoria."};}
+ },[memoryDraws]);
+ const temporalScope=memoryAnalysis?.temporal?.scopes.find(s=>s.scope===memoryScope)??memoryAnalysis?.temporal?.scopes[0]??null;
+ const contextualScope=memoryAnalysis?.contextual?.scopes.find(s=>s.scope===memoryScope)??memoryAnalysis?.contextual?.scopes[0]??null;
+ const temporalSignals=(temporalScope?.comparisons??[]).filter(x=>x.lag===memoryLag).sort((a,b)=>b.mutualInformationBits-a.mutualInformationBits).slice(0,10);
+ const contextualSignals=(contextualScope?.comparisons??[]).filter(x=>x.lag===memoryLag).sort((a,b)=>b.contextMutualInformationBits-a.contextMutualInformationBits).slice(0,10);
+ const maxTemporalMi=Math.max(0.000001,...temporalSignals.map(x=>x.mutualInformationBits));
+ const maxContextMi=Math.max(0.000001,...contextualSignals.map(x=>x.contextMutualInformationBits));
  const last20=sorted.slice(-20),last50=sorted.slice(-50);
  const matrix=useMemo(()=>Array.from({length:5},(_,pos)=>digits.map(d=>last20.filter(x=>x.digits[pos]===d).length)),[last20]);
  const matrix50=useMemo(()=>Array.from({length:5},(_,pos)=>digits.map(d=>last50.filter(x=>x.digits[pos]===d).length)),[last50]);
@@ -192,11 +208,42 @@ export default function IntuitionDashboard({draws,onBack,onOpenResearch}:Props){
     <Panel title="Actividad reciente" sub="Últimos sorteos del archivo local, en orden cronológico"><div className="overflow-x-auto"><table className="w-full text-left text-xs"><thead className="text-slate-500"><tr><th className="p-2">Concurso</th><th className="p-2">Fecha</th><th className="p-2">Resultado</th></tr></thead><tbody>{sorted.slice(-8).reverse().map(d=><tr key={d.num} className="border-t border-slate-800"><td className="p-2 font-bold text-cyan-300">#{d.num}</td><td className="p-2 text-slate-400">{d.date}</td><td className="p-2 font-mono tracking-widest">{d.digits.join(" ")}</td></tr>)}</tbody></table>{!available&&<p className="p-3 text-xs text-slate-500">No hay sorteos para mostrar.</p>}</div></Panel>
    </div>}
    {tab==="memory"&&<div className="space-y-4">
-    <Panel title="Memoria de señales" sub="Importación local, validación de estructura y evaluación de estados desde el ledger original">
-     <div className="flex flex-wrap items-center gap-3"><label className="cursor-pointer rounded-lg border border-violet-700 bg-violet-950/40 px-4 py-2 text-xs font-bold text-violet-200 hover:bg-violet-900/50">Importar ledger JSON<input type="file" accept=".json,application/json" className="hidden" onChange={e=>{void importLedger(e.target.files?.[0]);e.currentTarget.value="";}}/></label><span className="text-xs text-slate-400">{ledgerName||"Ningún ledger importado"}</span><span className="text-[10px] text-slate-500">Solo lectura · permanece en memoria mientras la pantalla está abierta</span>{ledger.length>0&&<button type="button" onClick={()=>{setLedger([]);setLedgerName("");setLedgerError("");setSelectedSignal("");}} className="rounded-lg border border-slate-700 px-3 py-2 text-xs text-slate-300 hover:border-rose-700 hover:text-rose-200">Limpiar ledger</button>}</div>
+    <Panel title="Memoria calculada desde el histórico" sub="Motores temporal y contextual conectados al CSV cargado. Resultados descriptivos exploratorios; no son señales predictivas ni evidencia de validación.">
+     <div className="mb-4 flex flex-wrap items-center gap-3">
+      <label className="text-xs text-slate-400">Alcance <select value={temporalScope?.scope??memoryScope} onChange={e=>setMemoryScope(e.target.value as MemoryScope)} className="ml-2 rounded-lg border border-slate-700 bg-slate-950 px-2 py-1.5 text-slate-100"><option value="all-history">Todo el histórico</option>{memoryAnalysis?.temporal?.scopes.some(s=>s.scope==="last-200")&&<option value="last-200">Últimos 200</option>}{memoryAnalysis?.temporal?.scopes.some(s=>s.scope==="last-1000")&&<option value="last-1000">Últimos 1,000</option>}</select></label>
+      <label className="text-xs text-slate-400">Retardo <select value={memoryLag} onChange={e=>setMemoryLag(Number(e.target.value) as 1|2|3|4|5)} className="ml-2 rounded-lg border border-slate-700 bg-slate-950 px-2 py-1.5 text-slate-100">{[1,2,3,4,5].map(x=><option key={x} value={x}>t−{x}</option>)}</select></label>
+      <span className="text-[10px] text-slate-500">Corte #{memoryAnalysis?.temporal?.lastDrawId??"—"} · N={temporalScope?.draws??0}</span>
+     </div>
+     {memoryAnalysis?.error&&<div role="alert" className="rounded-lg border border-rose-800 bg-rose-950/30 p-3 text-xs text-rose-200">{memoryAnalysis.error}</div>}
+     {!memoryAnalysis&&<div className="rounded-xl border border-dashed border-slate-700 p-5 text-center text-xs text-slate-400">Se requieren al menos 2 sorteos válidos y consecutivos para calcular memoria temporal y contextual. Histórico disponible: {sorted.length}.</div>}
+     {memoryAnalysis&&!memoryAnalysis.error&&<div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4"><Stat label="Sorteos analizados" value={temporalScope?.draws??0} detail="Mismo corte para ambos motores"/><Stat label="Comparaciones temporales" value={temporalScope?.comparisons.filter(x=>x.lag===memoryLag).length??0} detail="5×5 pares posicionales"/><Stat label="Comparaciones contextuales" value={contextualScope?.comparisons.filter(x=>x.lag===memoryLag).length??0} detail="Pool y duplicados"/><Stat label="Señales de ledger" value={ledger.length} detail="Registros con evidencia importada"/></div>
+      <div className="grid gap-4 xl:grid-cols-2">
+       <Panel title="Memoria temporal · dependencias entre posiciones" sub="Top 10 por información mutua (bits). Incluye pares de la misma posición y entre posiciones distintas.">
+        <div className="space-y-2">{temporalSignals.map((x,i)=><div key={x.sourcePosition+"-"+x.targetPosition+"-"+x.lag} className="rounded-lg bg-slate-950/70 p-2">
+         <div className="flex items-center justify-between gap-2 text-xs"><b className="font-mono text-cyan-200">R{x.sourcePosition+1} → R{x.targetPosition+1}</b><span className="tabular-nums text-slate-300">{x.mutualInformationBits.toFixed(4)} bits</span></div>
+         <div className="mt-1.5 h-2 overflow-hidden rounded bg-slate-800"><div className="h-full rounded bg-cyan-400" style={{width:(x.mutualInformationBits/maxTemporalMi*100)+"%"}}/></div>
+         <div className="mt-1 flex flex-wrap justify-between gap-2 text-[10px] text-slate-500"><span>n={x.observations} · entropía cond. {x.conditionalEntropyBits.toFixed(3)} bits</span><span>{x.sourcePosition===x.targetPosition?"Coincidencia dígito: "+(x.sameDigitRate*100).toFixed(1)+"%":"Dependencia cruzada"}</span></div>
+         {x.strongestTransitions.length>0&&<div className="mt-1 flex flex-wrap gap-1">{x.strongestTransitions.slice(0,4).map(t=><span key={t.from+"-"+t.to} className="rounded border border-slate-800 px-1.5 py-0.5 text-[10px] text-teal-200">{t.from}→{t.to} · {t.count} · {t.liftVsTargetMarginal.toFixed(2)}×</span>)}</div>}
+        </div>)}{!temporalSignals.length&&<p className="text-xs text-slate-500">Sin comparaciones para este alcance y retardo.</p>}</div>
+       </Panel>
+       <Panel title="Memoria contextual · estructura del sorteo previo" sub="Información mutua entre el tamaño del pool / duplicados del sorteo t−lag y el dígito objetivo.">
+        <div className="space-y-2">{contextualSignals.map(x=><div key={x.context+"-"+x.sourcePosition+"-"+x.targetPosition+"-"+x.lag} className="rounded-lg bg-slate-950/70 p-2">
+         <div className="flex flex-wrap items-center justify-between gap-2 text-xs"><b className="text-violet-200">{x.context==="source-pool-size"?"Tamaño de pool":"Conteo de duplicados"} · R{x.sourcePosition+1} → R{x.targetPosition+1}</b><span className="tabular-nums text-slate-300">{x.contextMutualInformationBits.toFixed(4)} bits</span></div>
+         <div className="mt-1.5 h-2 overflow-hidden rounded bg-slate-800"><div className="h-full rounded bg-violet-400" style={{width:(x.contextMutualInformationBits/maxContextMi*100)+"%"}}/></div>
+         <div className="mt-1 text-[10px] text-slate-500">n={x.observations} · grupos con soporte ≥20: {x.eligibleBuckets}</div>
+         <div className="mt-1 flex flex-wrap gap-1">{x.buckets.map(b=><span key={b.contextValue} className="rounded border border-slate-800 px-1.5 py-0.5 text-[10px] text-slate-300">Contexto {b.contextValue}: n={b.observations}, TV={b.totalVariationVsMarginal.toFixed(3)}</span>)}</div>
+        </div>)}{!contextualSignals.length&&<p className="text-xs text-slate-500">Sin comparaciones contextuales para este alcance y retardo.</p>}</div>
+       </Panel>
+      </div>
+      <div className="rounded-lg border border-amber-900/50 bg-amber-950/10 p-3 text-[10px] leading-relaxed text-amber-200/80">{memoryAnalysis.temporal?.warnings.slice(0,3).map(x=><p key={x}>• {x}</p>)}{memoryAnalysis.contextual?.warnings.slice(0,3).map(x=><p key={x}>• {x}</p>)}</div>
+     </div>}
+    </Panel>
+    <Panel title="Ledger de evidencia · memoria persistente de señales" sub="Registros importados, evaluación de estado y trazabilidad de evidencia. Este ledger es distinto de los patrones descriptivos calculados arriba.">
+     <div className="flex flex-wrap items-center gap-3"><label className="cursor-pointer rounded-lg border border-violet-700 bg-violet-950/40 px-4 py-2 text-xs font-bold text-violet-200 hover:bg-violet-900/50">Importar ledger de evidencia JSON<input type="file" accept=".json,application/json" className="hidden" onChange={e=>{void importLedger(e.target.files?.[0]);e.currentTarget.value="";}}/></label><span className="text-xs text-slate-400">{ledgerName||"Ningún ledger importado"}</span><span className="text-[10px] text-slate-500">Solo lectura · permanece en memoria mientras la pantalla está abierta</span>{ledger.length>0&&<button type="button" onClick={()=>{setLedger([]);setLedgerName("");setLedgerError("");setSelectedSignal("");}} className="rounded-lg border border-slate-700 px-3 py-2 text-xs text-slate-300 hover:border-rose-700 hover:text-rose-200">Limpiar ledger</button>}</div>
      {ledgerError&&<div role="alert" className="mt-3 rounded-lg border border-rose-800 bg-rose-950/30 p-3 text-xs text-rose-200">{ledgerError}</div>}
      <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4"><Stat label="Señales importadas" value={ledger.length} detail="Registros del archivo"/><Stat label="Evidencias" value={ledgerEvidence} detail="Entradas append-only leídas"/><Stat label="Provisionales" value={ledgerRows.filter(x=>x.assessment.status==="provisional").length} detail="Según reglas del motor"/><Stat label="Activas" value={ledgerRows.filter(x=>x.assessment.status==="active").length} detail="Requieren evidencia prospectiva"/></div>
-     {!ledger.length&&<div className="mt-4 rounded-xl border border-dashed border-slate-700 p-6 text-center"><div className="text-2xl">⌁</div><b className="mt-2 block text-sm">Ledger pendiente de importar</b><p className="mx-auto mt-2 max-w-xl text-xs text-slate-400">Selecciona un JSON que contenga un arreglo de señales o un objeto con signals[] o records[]. El archivo se valida y se lee localmente; esta pantalla no modifica ni guarda el ledger.</p></div>}
+     {!ledger.length&&<div className="mt-4 rounded-xl border border-dashed border-slate-700 p-6 text-center"><div className="text-2xl">⌁</div><b className="mt-2 block text-sm">Ledger de evidencia pendiente de importar</b><p className="mx-auto mt-2 max-w-xl text-xs text-slate-400">La memoria calculada desde el histórico ya está visible arriba. Para ver estados de hipótesis con evidencia de validación o prospectiva, importa el archivo ledger JSON correspondiente; no se generan evidencias automáticamente.</p></div>}
     </Panel>
     {ledger.length>0&&<div className="grid gap-4 xl:grid-cols-[1.15fr_.85fr]">
      <Panel title="Registro de señales" sub="Filtra por el estado recalculado por las reglas del ledger"><div className="mb-3 flex flex-wrap gap-2"><select value={statusFilter} onChange={e=>setStatusFilter(e.target.value as SignalStatus|"all")} className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs"><option value="all">Todos los estados</option>{Object.entries(statusLabels).map(([v,l])=><option key={v} value={v}>{l}</option>)}</select><span className="self-center text-[10px] text-slate-500">{filteredLedger.length} de {ledger.length} señales</span></div>
