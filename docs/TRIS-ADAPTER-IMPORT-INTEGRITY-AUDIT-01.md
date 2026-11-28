@@ -117,16 +117,17 @@ Los fixtures sintéticos cubren cinco rutas: append válido, mutación de un sor
 
 - [x] TypeScript, pruebas del núcleo y fixture de mutación retroactiva en verde: Research core run `46182581025` (HEAD de código `526a82d3`).
 - [x] Build y despliegue de la vista previa en verde: run `46182580991`.
-- [ ] Obtener resultado final del workflow de validación real-histórica.
-- [ ] Obtener resultado final del workflow de auditoría INA contra el snapshot canónico vigente.
-- [x] Captura live posterior a la extracción del guard: run `46182612431`, success, histórico sin cambios en 37008 y auditoría de fases completada.
-- [ ] Registrar el commit final y las ejecuciones exitosas.
+- [x] Validación real-histórica extensa completada en run `46182720859`: success.
+- [x] Auditoría INA y construcción del dashboard verificadas; runs posteriores `46185535815` completaron TypeScript/build/auditoría de wiring antes de calibración sintética final.
+- [x] Captura live y auditoría del corte 37008 completadas: run `46185535779`, success; 25,976 filas, hash canónico coincidente.
+- [x] Despliegue combinado del dashboard y payload estático: run `46185535796`, success.
+- [ ] Inspección visual manual en navegador del loader, indicador de corte y fallback de caché.
 
 ## 8. Límites de esta entrega
 
 - La carga inicial de `App.tsx` ahora usa el loader canónico, pero la ruta manual de importación CSV sigue disponible y puede sustituir el conjunto de datos durante la sesión.
-- La conexión de la aplicación principal al loader canónico está pendiente de CI/build final y comprobación en navegador.
-- Esta etapa no implementa todavía propagación completa a los 82 expedientes ni certifica que cada motor/gráfica esté al último concurso.
-- La captura horaria de Pakin ya existe; su operación se ha observado en una ejecución exitosa, pero la cobertura de cada publicación individual deberá verificarse en la siguiente etapa.
+- `App.tsx` y `TrisOpsDashboard.tsx` usan el loader canónico; el indicador de corte, fecha de captura y SHA está integrado. La inspección manual de navegador permanece pendiente.
+- La propagación INA está verificada para 11 módulos en corte 37008; la auditoría de los 82 expedientes sigue separada y todavía reporta 82 `unverified`.
+- La captura horaria de Pakin ejecuta guard retroactivo, reconstrucción INA, evaluación prospectiva y auditoría de fases; cada ciclo conserva el snapshot y los reportes de evidencia.
 - El workflow real-histórico usa un snapshot fechado de noviembre 25 para pruebas reproducibles; no debe confundirse con el histórico canónico live.
 - No se altera `main`.
