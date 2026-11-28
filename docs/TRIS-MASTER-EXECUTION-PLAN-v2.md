@@ -312,7 +312,11 @@ La secuencia de trabajo vigente queda fijada así:
 - [ ] **P5** Cerrar el centro de predicción respaldado por INA.
 - [ ] **P6** Ejecutar auditoría integral y documentar operación.
 
-**P0 completada:** inventario, reconciliación de fases y baseline CI están documentados. La etapa P1 (contratos, servicio central y registro de módulos) está completada y validada. La siguiente tarea activa es **P2: migrar el primer conjunto de cálculos existentes para que consuma INA Core**, continuando con estabilidad temporal, entropía y detección de cambios; después memorias y evaluación prospectiva. Los pendientes de ejecución sobre el snapshot actual y la propagación se conservan como gates de P4/P6; no se declaran resueltos por el baseline.
+**Estado actualizado al 2026-11-28:** P0 y P1 están completadas. En P2 están cerradas P2.1–P2.7: resumen y frecuencias posicionales, recurrencia, evaluación y selección de pools, comparador experimental de aging y conteos base de transiciones posicionales. P2.7 quedó respaldada por `docs/P2-7-INA-POSITIONAL-TRANSITIONS-MIGRATION.md` y CI aprobada (runs 46123062039 y 46122998490). La red principal y el mapa INA reutilizan el mismo output versionado de transiciones.
+
+**Siguiente tarea activa: P2.8.** Ya existe `src/research/ina-transition-stability.ts` con salida INA versionada para diferencias entre ventanas y entropía, y hay CI aprobada para el commit que incorporó ese motor (run 46123239612). Sin embargo, la interfaz aún recalcula estabilidad, matrices comparativas y entropía dentro de React; por tanto P2.8 **no se marca como completada**. Falta migrar esos paneles a la salida INA, añadir/verificar pruebas de equivalencia e integración, y retirar los cálculos duplicados de la UI. Después continúan las memorias y el evaluador prospectivo dentro de P2.
+
+Los gates de propagación automática de la fuente a todos los consumidores, persistencia integral y auditoría extremo a extremo permanecen pendientes de P4/P6. No se declaran resueltos por la existencia del workflow ni por CI de módulos aislados.
 
 ## 10. Criterio final del proyecto
 
