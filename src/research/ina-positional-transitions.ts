@@ -22,6 +22,7 @@ export interface InaTransitionKnowledge {
   maxCount: number;
   edges: InaTransitionEdge[];
   nodeCounts: number[][];
+  edgeTimeline: Array<{ key: string; from: string; to: string; values: number[] }>;
 }
 
 /** Adjacent-position transition counts over a single INA snapshot and trailing window. */
@@ -52,6 +53,16 @@ export function buildInaPositionalTransitions(
       to: "R" + (position + 2) + "-" + toDigit,
     }] : [])),
   );
+  const topKeys = edges.slice().sort((a, b) => b.n - a.n || a.key.localeCompare(b.key)).slice(0, 5);
+  const segmentCount = Math.min(8, Math.max(1, sampleSize));
+  const edgeTimeline = topKeys.map(edge => {
+    const values = Array(segmentCount).fill(0) as number[];
+    draws.forEach((draw, index) => {
+      const segment = Math.min(segmentCount - 1, Math.floor(index * segmentCount / Math.max(1, sampleSize)));
+      if (draw.digits[edge.p] === edge.a && draw.digits[edge.p + 1] === edge.b) values[segment]++;
+    });
+    return { key: edge.key, from: edge.from, to: edge.to, values };
+  });
   const knowledge: InaTransitionKnowledge = {
     windowSize,
     sampleSize,
@@ -61,6 +72,7 @@ export function buildInaPositionalTransitions(
     maxCount: Math.max(1, ...edges.map(edge => edge.n)),
     edges,
     nodeCounts,
+    edgeTimeline,
   };
   const output = createResearchOutput(context, {
     outputId: "ina-positional-transitions-" + windowSize,
