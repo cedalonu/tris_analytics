@@ -35,12 +35,12 @@ El programa denominado “fase 120” está descrito en `docs/TRIS-FASE-RECONCIL
 ## Estado de integración — lectura conservadora
 
 - 82 expedientes documentales localizados.
-- 20 componentes visuales localizados para el bloque 100–119.
-- 0 conexiones funcionales declaradas como verificadas por este catálogo.
-- 62 expedientes todavía sin una ruta visual específica registrada aquí; esto significa **sin correspondencia catalogada**, no que no exista ninguna visualización en el repositorio.
+- 24 rutas visuales localizadas en el catálogo; se añadieron referencias específicas para fase 0 (`src/App.tsx`), fase 1 (`src/TrisOpsDashboard.tsx`), fase 3 (`src/InaProspectivePanel.tsx`) y fase 4 (`src/InaMemoryPanel.tsx`).
+- 0 expedientes declarados `verified`; los 82 permanecen `unverified` porque la auditoría individual aún no adjunta motor, output, montaje, binding y paridad por expediente.
+- 58 expedientes todavía sin una ruta visual específica registrada aquí; esto significa **sin correspondencia catalogada**, no que no exista ninguna visualización en el repositorio.
 - La matriz `docs/MATRIZ-INVESTIGACION-VISUAL-01.md` continúa siendo la autoridad para el estado investigación → motor → salida → visualización y sus brechas.
 
-La integración automática de los informes sigue pendiente. El workflow de historia real genera informes bajo `reports/**` y los conserva como artefacto de Actions; el dashboard actual todavía recibe varios de esos informes mediante selección manual de JSON. La siguiente tarea debe publicar un índice de informes versionado (corte, hash, workflow run, fecha, ruta y estado de disponibilidad) y hacer que la UI consuma ese índice sin confundir informes faltantes con resultados cero.
+La publicación automática ya se implementó para el informe prospectivo: `public/research-data/prospective-evaluation.json` se actualiza cuando cambia el ledger congelado y el workflow despacha un despliegue. La integración automática de los demás informes `reports/**` sigue pendiente; se requiere un índice público versionado (corte, hash, workflow run, fecha, ruta y estado) y consumo automático en UI sin confundir informes faltantes con resultados cero.
 
 ## Evidencia y límites
 
@@ -60,3 +60,10 @@ La integración automática de los informes sigue pendiente. El workflow de hist
 ## Siguiente tarea
 
 Diseñar y ejecutar la publicación automática de informes de GitHub Actions para el dashboard: índice público versionado, archivos JSON realmente producidos por workflows, procedencia completa y consumo automático en UI. Después, reconciliar los huecos numéricos con evidencia histórica y completar el mapeo visual de los expedientes 0–99.
+
+
+## Checkpoint de visualización — 2026-11-28
+
+Live run `46185821125` confirmó sobre el snapshot 37008: 82 documentos localizados, 24 visualizaciones localizadas, 58 sin ruta visual catalogada, 0 referencias visuales rotas, 0 expedientes verificados y 82 `unverified`. El despliegue de la vista previa con las cuatro rutas nuevas terminó en success en run `46185821059`.
+
+El catálogo ahora reconoce explícitamente las vistas de fases 0, 1, 3 y 4. La publicación automática del evaluador prospectivo está activa, pero no se extiende a todos los informes de las 82 investigaciones. La siguiente tarea sigue siendo construir el índice público general de informes y conectar las vistas específicas, sin marcar como actuales los expedientes que no tienen prueba de paridad.
