@@ -3,6 +3,10 @@ name: TRIS live prospective cycle
 on:
   push:
     branches: [research-core-v1]
+  schedule:
+    # Revisa Pakin cada hora; captura las cinco actualizaciones diarias sin depender de commits.
+    - cron: '25 * * * *'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -59,6 +63,13 @@ jobs:
           fi
       - name: Fetch, validate, run and audit latest official CSV
         run: npm run research:cycles:source
+      - name: Record source freshness in job summary
+        if: always()
+        run: |
+          echo "## TRIS — actualización de fuente Pakin" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Revisión programada: cada hora, minuto 25 (UTC)." >> "$GITHUB_STEP_SUMMARY"
+          echo "- Fuente: https://raw.githubusercontent.com/pakinja/pakin/master/Tris.csv" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f data/cycles/latest-report.md ]; then cat data/cycles/latest-report.md >> "$GITHUB_STEP_SUMMARY"; fi
       - name: Publish current cycle summary
         run: |
           if [ -f data/cycles/latest-report.md ]; then
