@@ -48,6 +48,7 @@ export interface ResearchOutput<T> {
   moduleId: string;
   engineId: string;
   engineVersion: string;
+  outputKey: string;
   datasetVersionId: string;
   snapshotSha256: string;
   drawCutoff: number | null;
@@ -66,6 +67,8 @@ export interface InaModuleDefinition {
   engineVersion: string;
   consumes: string[];
   produces: string[];
+  status: "implemented" | "partial" | "planned";
+  sourceFiles: string[];
 }
 
 export interface InaContext {
@@ -153,8 +156,8 @@ export function createResearchOutput<T>(
   input: Omit<ResearchOutput<T>, "datasetVersionId" | "snapshotSha256" | "drawCutoff" | "sampleSize">
 ): ResearchOutput<T> {
   if (!context.quality.valid) throw new Error("cannot publish research output from an invalid INA context");
-  if (!input.outputId.trim() || !input.moduleId.trim() || !input.engineId.trim() || !input.engineVersion.trim()) {
-    throw new Error("outputId, moduleId, engineId and engineVersion are required");
+  if (!input.outputId.trim() || !input.moduleId.trim() || !input.engineId.trim() || !input.engineVersion.trim() || !input.outputKey.trim()) {
+    throw new Error("outputId, moduleId, engineId, engineVersion and outputKey are required");
   }
   if (!Number.isFinite(Date.parse(input.generatedAt))) throw new Error("generatedAt must be a valid timestamp");
   return {
