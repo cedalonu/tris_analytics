@@ -149,7 +149,7 @@ export const INA_MODULE_DEFINITIONS: InaModuleDefinition[] = [
     engineVersion: "1.0.0",
     consumes: ["ina.history"],
     produces: ["research.combination-recurrence"],
-    status: "partial",
+    status: "implemented",
     sourceFiles: ["src/research/ina-recurrence.ts", "src/TrisOpsDashboard.tsx"],
   },
   {
