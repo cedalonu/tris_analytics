@@ -1,9 +1,10 @@
-import React,{useMemo,useState} from "react";
+import React,{useEffect,useMemo,useState} from "react";
 import type {Draw} from "./tris-csv";
 import type {Digit} from "./research-core";
 import {assessSignal,type SignalRecord,type SignalStatus} from "./research/intuition-ledger";
 import {analyzeTemporalMemory,type MemoryScope} from "./research/temporal-memory";
 import {analyzeContextualMemory} from "./research/contextual-memory";
+import {loadCanonicalTrisDataset} from "./research/load-canonical-tris";
 import type {ResearchPlan,PlannedHypothesis} from "./research/intuition-orchestrator";
 
 type Props={draws:Draw[];onBack:()=>void;onOpenResearch:()=>void};
@@ -74,6 +75,9 @@ export default function IntuitionDashboard({draws,onBack,onOpenResearch}:Props){
  const [ledger,setLedger]=useState<SignalRecord[]>([]);
  const [ledgerName,setLedgerName]=useState("");
  const [ledgerError,setLedgerError]=useState("");
+ const [canonicalDraws,setCanonicalDraws]=useState<Draw[]|null>(null);
+ const [canonicalStatus,setCanonicalStatus]=useState("Conectando con el histórico canónico…");
+ const [canonicalError,setCanonicalError]=useState("");
  const [memoryScope,setMemoryScope]=useState<MemoryScope>("all-history");
  const [memoryLag,setMemoryLag]=useState<1|2|3|4|5>(1);
  const [selectedSignal,setSelectedSignal]=useState<string>("");
@@ -90,7 +94,22 @@ export default function IntuitionDashboard({draws,onBack,onOpenResearch}:Props){
  const [investigator,setInvestigator]=useState<InvestigatorPayload|null>(null);
  const [investigatorName,setInvestigatorName]=useState("");
  const [investigatorError,setInvestigatorError]=useState("");
- const sorted=useMemo(()=>[...draws].sort((a,b)=>a.num-b.num),[draws]);
+ useEffect(()=>{
+  let cancelled=false;
+  loadCanonicalTrisDataset().then(dataset=>{
+   if(cancelled)return;
+   setCanonicalDraws(dataset.draws.map(d=>({num:d.drawId,win:[...d.digits],digits:[...d.digits],date:d.date??""})));
+   setCanonicalStatus("Histórico canónico verificado · "+dataset.draws.length.toLocaleString("es-MX")+" sorteos · corte #"+dataset.ina.context.snapshot.latestDrawId);
+   setCanonicalError("");
+  }).catch(error=>{
+   if(cancelled)return;
+   setCanonicalError(error instanceof Error?error.message:"No fue posible cargar el histórico canónico.");
+   setCanonicalStatus(draws.length?"Usando histórico heredado del panel principal":"Histórico canónico no disponible");
+  });
+  return ()=>{cancelled=true;};
+ },[]);
+ const sourceDraws=canonicalDraws??draws;
+ const sorted=useMemo(()=>[...sourceDraws].sort((a,b)=>a.num-b.num),[sourceDraws]);
  const memoryDraws=useMemo(()=>sorted.map(d=>({drawId:d.num,digits:d.digits as Digit[]})),[sorted]);
  const memoryAnalysis=useMemo(()=>{
   if(memoryDraws.length<2)return null;
@@ -196,10 +215,14 @@ export default function IntuitionDashboard({draws,onBack,onOpenResearch}:Props){
      <div><div className="text-[10px] font-black uppercase tracking-[.32em] text-violet-300">INTUICIÓN ARTIFICIAL · TRIS</div><h1 className="mt-2 text-3xl font-black md:text-4xl">Memoria y razonamiento</h1><p className="mt-2 max-w-2xl text-sm text-slate-300">Un espacio para observar señales, organizar hipótesis y comparar patrones por posición sin confundir descripción con capacidad predictiva.</p></div>
      <div className="flex flex-wrap gap-2"><button onClick={onOpenResearch} className="rounded-xl border border-cyan-700/70 bg-cyan-950/30 px-4 py-2.5 text-sm font-bold text-cyan-200 hover:bg-cyan-900/40">🔬 Centro de investigación</button><button onClick={onBack} className="rounded-xl border border-violet-700/70 bg-slate-950/50 px-4 py-2.5 text-sm font-bold text-violet-200 hover:bg-slate-800">← Panel principal</button></div>
     </div>
-    <div className="relative mt-5 flex flex-wrap gap-2 text-[10px] font-semibold"><span className="rounded-full border border-emerald-800 bg-emerald-950/50 px-3 py-1.5 text-emerald-300">● Cálculo local</span><span className="rounded-full border border-slate-700 bg-slate-950/50 px-3 py-1.5 text-slate-300">Historial {available?"disponible":"no cargado"}</span><span className="rounded-full border border-slate-700 bg-slate-950/50 px-3 py-1.5 text-slate-300">Sin pronósticos automáticos en este panel</span></div>
+    <div className="relative mt-5 flex flex-wrap gap-2 text-[10px] font-semibold"><span className="rounded-full border border-emerald-800 bg-emerald-950/50 px-3 py-1.5 text-emerald-300">● Cálculo local</span><span className="rounded-full border border-slate-700 bg-slate-950/50 px-3 py-1.5 text-slate-300">{canonicalDraws?"Histórico canónico verificado":available?"Histórico del panel principal":"Historial no cargado"}</span><span className="rounded-full border border-slate-700 bg-slate-950/50 px-3 py-1.5 text-slate-300">Sin pronósticos automáticos en este panel</span></div>
    </header>
    <nav aria-label="Secciones de intuición artificial" className="my-5 grid grid-cols-2 gap-2 md:grid-cols-4">{tabs.map(t=><button key={t.id} type="button" aria-pressed={tab===t.id} onClick={()=>setTab(t.id)} className={`min-h-16 rounded-xl border p-3 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400 ${tab===t.id?"border-violet-500/80 bg-violet-950/40 text-violet-200":"border-slate-800 bg-slate-900/60 text-slate-400 hover:border-slate-600"}`}><div className="text-lg">{t.icon}</div><div className="mt-1 text-xs font-bold">{t.label}</div></button>)}</nav>
-   {noData&&<div className="mb-5 rounded-xl border border-amber-800/70 bg-amber-950/20 p-4 text-sm text-amber-200"><b>Historial pendiente.</b> Importa manualmente Tris.csv desde el panel principal. No se generan frecuencias ni señales con datos vacíos.</div>}
+   <div className="mb-5 rounded-xl border border-slate-800 bg-slate-950/70 p-3 text-xs">
+    <div className="flex flex-wrap items-center justify-between gap-2"><b className={canonicalDraws?"text-emerald-300":"text-cyan-200"}>{canonicalStatus}</b><span className="text-slate-500">{sorted.length?"Memoria alimentada por "+(canonicalDraws?"fuente canónica compartida":"datos heredados"):"Cargando fuente verificada"}</span></div>
+    {canonicalError&&<p className="mt-2 text-amber-300">No se pudo verificar el origen canónico: {canonicalError}{draws.length?" Se mantiene visible el histórico ya cargado en el panel principal.":"."}</p>}
+   </div>
+   {noData&&<div className="mb-5 rounded-xl border border-amber-800/70 bg-amber-950/20 p-4 text-sm text-amber-200"><b>Historial no disponible.</b> La memoria permanece sin calcular porque no hay sorteos verificados ni datos heredados. Revisa la conexión al archivo canónico y el manifiesto SHA-256.</div>}
    {tab==="overview"&&<div className="space-y-4">
     <div className="grid grid-cols-2 gap-3 md:grid-cols-4"><Stat label="Sorteos disponibles" value={sorted.length} detail="Filas válidas en memoria"/><Stat label="Último concurso" value={latest?("#"+latest.num):"—"} detail={latest?.date??"Sin fecha"}/><Stat label="Ventana corta" value={last20.length+"/20"} detail="Sorteos usados en matriz"/><Stat label="Ventana amplia" value={last50.length+"/50"} detail="Referencia descriptiva"/></div>
     <div className="grid gap-4 lg:grid-cols-2">
