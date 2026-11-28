@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import type { Validation } from "../research-core";
 import {
   computeSha256Hex,
   snapshotFromCanonicalManifest,
@@ -32,7 +33,7 @@ test("canonical manifest maps to a remote immutable snapshot", () => {
 
 test("local CSV snapshot carries its own digest and no fabricated remote URL", async () => {
   const csv = "CONCURSO,ID,R1,R2,R3,R4,R5,FECHA\n100,1,0,1,2,3,4,2026-01-01";
-  const validation = { valid: [{ drawId: 100, digits: [0, 1, 2, 3, 4] as const, date: "2026-01-01" }], errors: [], warnings: [] };
+  const validation: Validation = { valid: [{ drawId: 100, digits: [0, 1, 2, 3, 4], date: "2026-01-01" }], errors: [], warnings: [] };
   const snapshot = await snapshotFromLocalCsv(csv, validation, "my-tris.csv", "2026-01-02T00:00:00.000Z");
   assert.equal(snapshot.sourceType, "local");
   assert.equal(snapshot.sourceUrl, null);
