@@ -31,6 +31,22 @@ export interface InaPoolSelectionKnowledge {
   historyCount: number;
 }
 
+export function rankPoolCombinations(pools: number[][], poolSize: number): InaPoolCandidateCombination[] {
+  if (pools.length !== 5 || pools.some(pool => pool.length !== poolSize)) {
+    throw new Error("five pools of the declared size are required");
+  }
+  return Array.from({ length: poolSize ** 5 }, (_, index) => {
+    let remaining = index;
+    const digits: number[] = [];
+    for (let position = 0; position < 5; position++) {
+      digits.push(pools[position][remaining % poolSize]);
+      remaining = Math.floor(remaining / poolSize);
+    }
+    const score = digits.reduce((sum, digit, position) => sum + (poolSize - pools[position].indexOf(digit)), 0);
+    return { digits, score };
+  }).sort((a, b) => b.score - a.score || a.digits.join("").localeCompare(b.digits.join(""))).slice(0, 12);
+}
+
 /** Creates the unchanged base pools from the INA snapshot and existing research methods. */
 export function buildInaPoolSelection(
   context: InaContext,
@@ -53,16 +69,7 @@ export function buildInaPoolSelection(
     buildPool(train.map(draw => draw.digits[position]), method, poolSize, windowSize),
   );
   const primary = pools.map(pool => pool[0]).join("");
-  const combinations = Array.from({ length: poolSize ** 5 }, (_, index) => {
-    let remaining = index;
-    const digits: number[] = [];
-    for (let position = 0; position < 5; position++) {
-      digits.push(pools[position][remaining % poolSize]);
-      remaining = Math.floor(remaining / poolSize);
-    }
-    const score = digits.reduce((sum, digit, position) => sum + (poolSize - pools[position].indexOf(digit)), 0);
-    return { digits, score };
-  }).sort((a, b) => b.score - a.score || a.digits.join("").localeCompare(b.digits.join(""))).slice(0, 12);
+  const combinations = rankPoolCombinations(pools, poolSize);
 
   const output = createResearchOutput(context, {
     outputId: "ina-pool-selection-" + poolSize + "-" + windowSize + "-" + parameters.method,
