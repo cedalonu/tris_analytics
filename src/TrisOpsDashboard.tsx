@@ -47,27 +47,52 @@ export default function TrisOpsDashboard() {
   let cancelled=false;
   const loadCanonical=async()=>{
    try {
-    const response=await fetch("https://raw.githubusercontent.com/cedalonu/tris_analytics/research-core-v1/data/canonical/Tris.csv",{cache:"no-store"});
-    if(!response.ok) throw new Error("HTTP "+response.status);
-    const csv=await response.text();
-    const imported=importTrisCsv(csv);
+    const [response,manifestResponse]=await Promise.all([
+     fetch("https://raw.githubusercontent.com/cedalonu/tris_analytics/research-core-v1/data/canonical/Tris.csv",{cache:"no-store"}),
+     fetch("https://raw.githubusercontent.com/cedalonu/tris_analytics/research-core-v1/data/canonical/source-manifest.json",{cache:"no-store"})
+    ]);
+    if(!response.ok) throw new Error("CSV HTTP "+response.status);
+    if(!manifestResponse.ok) throw new Error("Manifiesto HTTP "+manifestResponse.status);
+    const bytes=new Uint8Array(await response.arrayBuffer());
+    const manifest=await manifestResponse.json() as CanonicalSourceManifest;
+    const snapshot=snapshotFromCanonicalManifest(manifest);
+    if(!(await verifySnapshotBytes(bytes,snapshot))) throw new Error("El SHA-256 del CSV no coincide con el manifiesto canónico.");
+    const csv=new TextDecoder().decode(bytes);
+    const imported=importTrisCsv(csv,manifest.fetchedAt);
     const gaps=imported.validation.warnings.filter(w=>w.startsWith("draw gap "));
     if(imported.validation.errors.length||gaps.length) throw new Error("El histórico canónico no superó la validación.");
+    const ina=buildInaCore({snapshot,validation:imported.validation});
+    if(ina.status!=="ready") throw new Error("INA puso el histórico canónico en cuarentena: "+ina.blockers.join("; "));
     if(cancelled)return;
     const ds=imported.validation.valid;
-    const meta={importedAt:new Date().toISOString(),warnings:imported.validation.warnings,errors:[] as string[]};
-    setDraws(ds);setFileName("Pakin · histórico canónico research-core-v1");setImportMeta(meta);setStatus("Histórico oficial sincronizado automáticamente · "+ds.length+" sorteos");
-    localStorage.setItem(STORAGE_KEY,JSON.stringify({draws:ds,fileName:"Pakin · histórico canónico",meta}));
+    const meta={importedAt:manifest.fetchedAt,warnings:imported.validation.warnings,errors:[] as string[]};
+    setDraws(ds);setInaResult(ina);setCanonicalLoaded(true);setFileName("Pakin · histórico canónico research-core-v1");setImportMeta(meta);setStatus("Histórico oficial verificado por SHA-256 · "+ds.length+" sorteos");
+    localStorage.setItem(STORAGE_KEY,JSON.stringify({draws:ds,snapshot,fileName:"Pakin · histórico canónico",meta}));
    } catch(error) {
-    if(!cancelled) setStatus(current=>current==="Sin CSV importado"?"No se pudo cargar el histórico automático; puedes importar el CSV manualmente.":current);
+    if(!cancelled) setStatus(current=>current==="Sin CSV importado"?"No se pudo verificar el histórico automático; se intentará restaurar una caché local con huella.":current);
+   } finally {
+    if(!cancelled)setCanonicalLoadComplete(true);
    }
   };
   loadCanonical();
   return ()=>{cancelled=true;};
  },[]);
  useEffect(()=>{
-  try {const saved=localStorage.getItem(STORAGE_KEY);if(saved){const parsed=JSON.parse(saved);if(Array.isArray(parsed.draws)){setDraws(parsed.draws);setFileName(parsed.fileName||"CSV guardado localmente");setImportMeta(parsed.meta||null);setStatus("Dataset local restaurado");}}}catch{setStatus("No se pudo restaurar el dataset local");}
- },[]);
+  if(!canonicalLoadComplete||canonicalLoaded)return;
+  try {
+   const saved=localStorage.getItem(STORAGE_KEY);
+   if(saved){
+    const parsed=JSON.parse(saved);
+    if(Array.isArray(parsed.draws)&&parsed.snapshot){
+     const validation=validateDraws(parsed.draws as Draw[]);
+     const ina=buildInaCore({snapshot:parsed.snapshot,validation});
+     if(ina.status==="ready"){
+      setDraws(validation.valid);setInaResult(ina);setFileName(parsed.fileName||"CSV guardado localmente");setImportMeta(parsed.meta||null);setStatus("Caché local restaurada y validada · "+validation.valid.length+" sorteos");
+     }else setStatus("Caché local en cuarentena: "+ina.blockers.join("; "));
+    }else setStatus("Caché local antigua sin snapshot verificable; se requiere sincronizar o importar de nuevo.");
+   }
+  }catch{setStatus("No se pudo restaurar la caché local validada");}
+ },[canonicalLoadComplete,canonicalLoaded]);
  const sorted=useMemo(()=>[...draws].sort((a,b)=>a.drawId-b.drawId),[draws]);
  const latest=sorted.at(-1);
  const gaps=useMemo(()=>{const g:string[]=[];for(let i=1;i<sorted.length;i++)if(sorted[i].drawId!==sorted[i-1].drawId+1)g.push(sorted[i-1].drawId+" → "+sorted[i].drawId);return g;},[sorted]);
