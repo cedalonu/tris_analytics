@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "sourceUrl": "https://raw.githubusercontent.com/pakinja/pakin/master/Tris.csv",
+  "fetchedAt": "2026-11-28T01:46:02.148Z",
+  "sha256": "9ec6c5c4db2a0e3efcc8a36eae3fd58ed51cb4a807736eec3573aae1fb78b040",
+  "byteLength": 958214,
+  "rowCount": 25974,
+  "earliestDrawId": 11033,
+  "latestDrawId": 37006,
+  "earliestDate": "2007-09-03",
+  "latestDate": "2026-11-27",
+  "snapshot": "Tris-37006-9ec6c5c4db2a.csv",
+  "etag": "W/\"11c8eeefdc50f70efc2005d36de44c3185cae4968cbf48f84721192197a333d0\"",
+  "lastModified": null
+}
