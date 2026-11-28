@@ -26,3 +26,8 @@ npm start          # sirve dist/ en el puerto 3000 (o $PORT)
 ## Investigación TRIS
 
 La guía de operación, ciclos de aprendizaje, validación histórica y resguardo de memoria está en [docs/TRIS-OPERATIONS.md](docs/TRIS-OPERATIONS.md).
+
+
+## Plan maestro vigente
+
+El desarrollo integral, las etapas de INA, los criterios de cierre y la secuencia obligatoria de trabajo están definidos en [TRIS-MASTER-EXECUTION-PLAN-v2.md](docs/TRIS-MASTER-EXECUTION-PLAN-v2.md). Este documento coordina el roadmap de investigación anterior y los checkpoints de integración y visualización.
