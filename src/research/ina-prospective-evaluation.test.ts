@@ -74,3 +74,11 @@ test("INA prospective evaluator rejects a resolution that disagrees with canonic
   const resolution = resolveLearningCycleSignal(cycle, cycle.signals[0], actual, history, "2026-11-28T00:03:00.000Z");
   assert.throws(() => buildInaProspectiveEvaluation(contextFor([...history, actual]), [cycle], [{ ...resolution, actual: "99999" }]), /differs from canonical draw/);
 });
+
+test("INA prospective evaluator refuses to certify an empty ledger", () => {
+  const draws: Draw[] = Array.from({ length: 220 }, (_, index) => ({
+    drawId: 4000 + index,
+    digits: [0,1,2,3,4].map((offset, position) => (index * (position + 1) + offset) % 10) as Draw["digits"],
+  }));
+  assert.throws(() => buildInaProspectiveEvaluation(contextFor(draws), [], []), /no frozen prospective cycles/);
+});
