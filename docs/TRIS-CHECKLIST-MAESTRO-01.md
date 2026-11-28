@@ -236,3 +236,26 @@ Cada checkpoint se comunicará con esta estructura:
 ## 7. Regla de continuidad
 
 Continuar automáticamente con la siguiente tarea aprobada y desbloqueada. Si aparece una decisión que cambia el alcance, compromete datos históricos, modifica la metodología predictiva o contradice una regla permanente, detener solo esa decisión, documentar el conflicto y solicitar aprobación. En los demás casos, avanzar sin reabrir decisiones ya aprobadas.
+
+
+## 5.2 Etapa 1 — Adaptador, importación e integridad (2026-11-28)
+
+**Estado: implementación y pruebas base completadas; cierre de validación ampliada pendiente.**
+
+- [x] Auditar la captura automática existente: `.github/workflows/tris-live-prospective.yml` consulta Pakin cada hora al minuto 25 UTC y también se ejecuta en push/manual.
+- [x] Confirmar que `scripts/run-tris-cycles-source.ts` descarga, valida, crea snapshot con SHA-256 y ejecuta ciclo + auditoría sobre el mismo snapshot.
+- [x] Endurecer el adaptador CSV: comillas, encabezados requeridos únicos, filas incompletas, fechas inválidas/imposibles, dígitos y duplicados.
+- [x] Mantener `CONCURSO` como clave y excluir `ID` del modelo.
+- [x] Endurecer el sincronizador incremental: validar registros, fechas, checkpoint y hash; proteger el prefijo histórico.
+- [x] Verificar snapshot ya existente contra su SHA-256 y conservar snapshot/manifiesto content-addressed inmutables.
+- [x] Ampliar pruebas de adaptador y sincronizador.
+- [x] TypeScript, pruebas base y checks de Research Core: run `46179218631`, success, commit `413719a4`.
+- [x] Captura live y ciclo/auditoría de fuente: run `46179218559`, success; 25,975 registros, corte 37007, SHA-256 `e77a3ef65259bff02fded5490714edf8caf5e6c4f1bd854f6f457918f948c1a6`.
+- [x] Build, auditoría INA contra histórico canónico y pruebas de investigación: completados con success dentro del run `46179218581`; calibración sintética final todavía en ejecución al registrar.
+- [ ] Cierre del workflow de calibración TRIS research `46179218581`.
+- [ ] Cierre del workflow de integración real-histórica `46179218515`.
+- [ ] Registrar resultado final de ambas ejecuciones antes de cerrar Etapa 1.
+
+**Evidencia documental:** `docs/TRIS-ADAPTER-IMPORT-INTEGRITY-AUDIT-01.md`.
+
+**Límite:** la ejecución live confirmó el snapshot 37007, pero no incorporó un sorteo nuevo en ese ciclo. La propagación de un nuevo concurso a todos los motores, expedientes y visualizaciones sigue siendo parte de G4/Etapas 2–5; no se declara completada aquí.
