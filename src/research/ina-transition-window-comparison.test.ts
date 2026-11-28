@@ -48,7 +48,7 @@ function legacyInlineComparison(draws: Draw[]) {
     )
     .slice(0, 12);
   return {
-    windows: perWindow.map(({ w, n, top }) => ({ windowSize: w, sampleSize: n, topKeys: [...top].map(([key]) => key) })),
+    windows: perWindow.map(({ w, n, top }) => ({ windowSize: w, sampleSize: n, topKeys: [...top] })),
     ranked: ranked.map(row => ({
       key: row.key,
       topTenAppearances: row.seen,
