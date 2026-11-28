@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   actions: read
 
 concurrency:
@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   cycle:
-    if: github.ref == 'refs/heads/research-core-v1'
+    if: github.ref == 'refs/heads/research-core-v1' && (github.event_name != 'push' || github.actor != 'github-actions[bot]')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -63,6 +63,25 @@ jobs:
           fi
       - name: Fetch, validate, run and audit latest official CSV
         run: npm run research:cycles:source
+      - name: Publish validated canonical historical dataset
+        run: |
+          set -euo pipefail
+          mkdir -p data/canonical
+          snapshot=$(find data/source-snapshots -maxdepth 1 -type f -name 'Tris-*.csv' | sort -V | tail -n 1)
+          test -n "$snapshot"
+          manifest="${snapshot%.csv}.json"
+          test -f "$manifest"
+          cp "$snapshot" data/canonical/Tris.csv
+          cp "$manifest" data/canonical/source-manifest.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/canonical/Tris.csv data/canonical/source-manifest.json
+          if git diff --cached --quiet; then
+            echo "Canonical TRIS dataset is unchanged; no commit required."
+          else
+            git commit -m "data(tris): refresh validated canonical history"
+            git push origin research-core-v1
+          fi
       - name: Record source freshness in job summary
         if: always()
         run: |
