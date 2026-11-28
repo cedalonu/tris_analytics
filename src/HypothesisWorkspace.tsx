@@ -22,6 +22,6 @@ export default function HypothesisWorkspace(){
     <div className="mt-4 rounded-lg border border-rose-900/50 bg-rose-950/20 p-3"><div className="text-[10px] font-bold uppercase tracking-wider text-rose-300">Salvaguarda interpretativa</div><p className="mt-1 text-xs text-slate-300">{active.guardrail}</p></div>
    </div>}
   </div>
-  <div className="mt-4 border-t border-slate-800 pt-3 text-[10px] text-slate-500">Ciclo obligatorio: preregistro → descubrimiento → validación cronológica → holdout → prospectiva. Ninguna hipótesis cambia de estado por tener un motor o una gráfica; requiere evidencia adjunta, denominadores, controles y revisión.</div>
+  <HypothesisEvidencePanel selectedHypothesis={active?.id}/>\n  <div className="mt-4 border-t border-slate-800 pt-3 text-[10px] text-slate-500">Ciclo obligatorio: preregistro → descubrimiento → validación cronológica → holdout → prospectiva. Ninguna hipótesis cambia de estado por tener un motor o una gráfica; requiere evidencia adjunta, denominadores, controles y revisión.</div>
  </section>;
 }
