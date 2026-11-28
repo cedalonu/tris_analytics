@@ -110,7 +110,7 @@ const rows = await Promise.all(PHASES.map(async phase => {
       drawCutoff: manifest.latestDrawId, sampleSize: manifest.rowCount,
       state: verifiedEvidence ? "verified" : "unverified",
     },
-    output: { keys: verifiedEvidence?.output?.keys ?? (verifiedPhase0 ? [phase0Checks.output.key] : []), state: verifiedEvidence ? "verified" : "unverified", evidence: verifiedEvidence?.output ?? null },
+    output: { keys: verifiedEvidence?.output?.keys ?? (verifiedPhase0 ? [phase0Checks.output.key] : verifiedPhase3 ? ["research.prospective-evaluation"] : verifiedPhase4 ? ["research.memory-state"] : []), state: verifiedEvidence ? "verified" : "unverified", evidence: verifiedEvidence?.output ?? null },
     visualization: { path: phase.visual ?? null, state: phase.visual ? (visualExists ? "located" : "missing") : "not_catalogued" },
     dashboardMount: { state: verifiedEvidence ? "source_confirmed" : "unverified", evidence: verifiedEvidence?.dashboardMount ?? null },
     dataBinding: { state: verifiedEvidence ? "source_confirmed" : "unverified", evidence: verifiedEvidence?.dataBinding ?? null },
