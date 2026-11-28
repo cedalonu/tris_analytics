@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { importTrisCsv } from "./data-adapter";
-import { fingerprintDraws, type TrisSyncCheckpoint } from "./tris-csv-sync";
+import { fingerprintDraws, syncTrisCsvSnapshot, type TrisSyncCheckpoint } from "./tris-csv-sync";
 import type { Draw } from "../research-core";
 
 export interface CanonicalPrefixManifest {
@@ -56,13 +56,6 @@ export function validateCanonicalPrefix(
   };
   // syncTrisCsvSnapshot is the single authority for append-only prefix checks.
   // It compares every historical row, not only the latest contest or count.
-  const { syncTrisCsvSnapshot } = requireSyncModule();
   syncTrisCsvSnapshot(incomingDraws, checkpoint, fetchedAt);
   return checkpoint;
 }
-
-function requireSyncModule(): typeof import("./tris-csv-sync") {
-  // Kept as a small indirection to make the dependency explicit to bundlers.
-  return syncModule;
-}
-import * as syncModule from "./tris-csv-sync";
