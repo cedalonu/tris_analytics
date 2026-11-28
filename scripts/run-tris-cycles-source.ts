@@ -9,7 +9,8 @@ import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { importTrisCsv } from "../src/research/data-adapter";
-import { fingerprintDraws, syncTrisCsvSnapshot } from "../src/research/tris-csv-sync";
+import { syncTrisCsvSnapshot } from "../src/research/tris-csv-sync";
+import { validateCanonicalPrefix } from "../src/research/canonical-prefix-guard";
 
 const SOURCE_URL = "https://raw.githubusercontent.com/pakinja/pakin/master/Tris.csv";
 const snapshotDir = resolve("data/source-snapshots");
@@ -40,13 +41,6 @@ const earliest = draws[0]!;
 // silently rewritten as the latest official history.
 const canonicalCsvPath = resolve("data/canonical/Tris.csv");
 const canonicalManifestPath = resolve("data/canonical/source-manifest.json");
-let previousCheckpoint = null as {
-  schemaVersion: 1;
-  processedThroughDrawId: number;
-  processedDrawCount: number;
-  processedPrefixSha256: string;
-  updatedAt: string;
-} | null;
 let previousBytes: Buffer | null = null;
 let previousManifestText: string | null = null;
 try { previousBytes = await readFile(canonicalCsvPath); }
@@ -54,37 +48,12 @@ catch (error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw er
 try { previousManifestText = await readFile(canonicalManifestPath, "utf8"); }
 catch (error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error; }
 
-if (Boolean(previousBytes) !== Boolean(previousManifestText)) {
-  throw new Error("Canonical CSV and manifest must either both exist or both be absent; refusing update.");
-}
-if (previousBytes && previousManifestText) {
-  const previousManifest = JSON.parse(previousManifestText) as {
-    schemaVersion?: number; sha256?: string; byteLength?: number; rowCount?: number;
-    earliestDrawId?: number; latestDrawId?: number;
-  };
-  const previousSha256 = createHash("sha256").update(previousBytes).digest("hex");
-  if (previousManifest.schemaVersion !== 1 ||
-      previousManifest.sha256?.toLowerCase() !== previousSha256 ||
-      previousManifest.byteLength !== previousBytes.byteLength) {
-    throw new Error("Previously published canonical snapshot does not match its manifest; refusing source update.");
-  }
-  const previousImported = importTrisCsv(previousBytes.toString("utf8"));
-  const previousGaps = previousImported.validation.warnings.filter(warning => warning.startsWith("draw gap "));
-  const previousDraws = previousImported.validation.valid;
-  if (previousImported.validation.errors.length || previousGaps.length ||
-      previousDraws.length !== previousManifest.rowCount ||
-      previousDraws[0]?.drawId !== previousManifest.earliestDrawId ||
-      previousDraws.at(-1)?.drawId !== previousManifest.latestDrawId) {
-    throw new Error("Previously published canonical history fails validation; refusing source update.");
-  }
-  previousCheckpoint = {
-    schemaVersion: 1,
-    processedThroughDrawId: previousDraws.at(-1)!.drawId,
-    processedDrawCount: previousDraws.length,
-    processedPrefixSha256: fingerprintDraws(previousDraws),
-    updatedAt: fetchedAt,
-  };
-}
+const previousCheckpoint = validateCanonicalPrefix(
+  previousBytes?.toString("utf8") ?? null,
+  previousManifestText,
+  draws,
+  fetchedAt,
+);
 const sync = syncTrisCsvSnapshot(draws, previousCheckpoint, fetchedAt);
 console.log("Canonical prefix guard:", JSON.stringify({
   status: sync.status,
