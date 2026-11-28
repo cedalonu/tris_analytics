@@ -159,6 +159,8 @@ Cierre:
 
 **Objetivo:** eliminar la disparidad entre lo investigado y lo que el usuario puede ver e interpretar.
 
+**Primer checkpoint visual entregado (2026-11-28):** se añadió `src/InaCommandCenter.tsx` como pantalla `Centro INA`, conectada a la salida versionada `research.positional-transitions`, con grafo interactivo R1–R5, selección de nodos, panel de conexiones destacadas y procedencia del snapshot. Evidencia: `docs/INA-COMMAND-CENTER-VISUAL-01.md`. Esta entrega inicia P3, pero **no cierra P3**: faltan las vistas de las demás investigaciones y la migración de métricas duplicadas.
+
 Por cada fila de la matriz se construye o corrige una vista real:
 - Distribuciones: frecuencias, tasas, denominadores y comparación temporal.
 - Presencia/ausencia: línea de tiempo, edad actual, distribución de intervalos y referencia.
