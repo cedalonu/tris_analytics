@@ -80,6 +80,7 @@ const report = {
   generatedAt: manifest.fetchedAt,
   canonical: {
     snapshot: manifest.snapshot,
+    datasetVersionId: dataset.ina.context.version.versionId,
     sourceUrl: manifest.sourceUrl,
     sha256,
     byteLength: bytes.byteLength,
