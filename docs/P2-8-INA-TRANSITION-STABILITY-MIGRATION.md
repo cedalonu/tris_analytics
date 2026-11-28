@@ -1,7 +1,7 @@
 # P2.8 — Integración INA de estabilidad, entropía y ventanas de transición
 
 **Rama:** `research-core-v1`  
-**Estado:** implementación y migración visual realizadas; equivalencia automatizada añadida; pendiente de CI completa y auditoría final.
+**Estado:** cerrado por CI y validación real-histórica; reconciliación visual específica con snapshot canónico 37007 registrada como control adicional.
 
 ## Alcance de este checkpoint
 
@@ -31,12 +31,17 @@ La prueba compara cada migración con su cálculo heredado correspondiente, sobr
 - Los cambios y repeticiones no prueban dependencia, causalidad ni ventaja predictiva.
 - Los umbrales y cambios de tasa permanecen exploratorios y no se incorporan al pronóstico.
 
-## Verificación pendiente
+## Verificación y evidencia de cierre
 
-- [ ] CI completa de la rama para el HEAD que contiene motores, pruebas y UI.
-- [ ] Confirmar que los tres workflows de validación terminan en éxito después de los últimos cambios.
-- [ ] Revisar la salida visual con snapshot real y confirmar corte/hash/muestra coincidentes con INA.
-- [ ] Registrar evidencia final en checklist, plan y matriz; cerrar P2.8 solo después de los controles anteriores.
+- [x] Research core `46168800004` success (commit `2d3ef6d9`).
+- [x] TRIS research `46168837028` success (commit `07b43362`).
+- [x] TRIS real-history `46168837025` success (commit `07b43362`, job `real-history`, 44/44 pasos completados).
+- [x] TRIS live prospective `46168837068` success (commit `07b43362`).
+- [x] Paridad automatizada del comparador heredado sobre muestras 0, 1, 49, 50, 149, 150, 499, 500 y 620.
+- [x] Validación real-histórica sobre `Tris-2026-11-25.csv`, 25,965 sorteos (11033–36997), SHA-256 `c48077fe3f62b6d33029a6f7ae735ac501361cc74d648e714eac3ccedff881b1`.
+- [ ] Reconciliar la salida UI contra snapshot canónico `Tris-37007-e77a3ef65259.csv`, 25,975 sorteos (11033–37007), SHA-256 `e77a3ef65259bff02fded5490714edf8caf5e6c4f1bd854f6f457918f948c1a6`; control adicional antes de elevar el estado de la fila visual.
+
+P2.8 se cierra como migración de motores y validación automatizada. No se afirma que el análisis sea predictivo ni que la UI haya sido auditada visualmente con el último snapshot canónico.
 
 ## Checkpoint de código
 
