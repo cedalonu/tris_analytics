@@ -12,9 +12,9 @@
     "total": 82,
     "documentationLocated": 82,
     "documentationMissing": 0,
-    "visualizationLocated": 24,
+    "visualizationLocated": 25,
     "visualizationMissing": 0,
-    "visualizationNotCatalogued": 58,
+    "visualizationNotCatalogued": 57,
     "blocked": 0,
     "verified": 0,
     "partiallyVerified": 4,
@@ -622,7 +622,7 @@
       "title": "Generación y selección de hipótesis",
       "area": "Hipótesis",
       "documentation": {
-        "path": "docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",
+        "path": "docs/HYPOTHESIS-CATALOG-01.md",
         "state": "located"
       },
       "engine": {
@@ -642,8 +642,8 @@
         "evidence": null
       },
       "visualization": {
-        "path": null,
-        "state": "not_catalogued"
+        "path": "src/HypothesisPhasePanel.tsx",
+        "state": "located"
       },
       "dashboardMount": {
         "state": "unverified",
