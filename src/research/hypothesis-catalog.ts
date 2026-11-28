@@ -1,3 +1,4 @@
+import type { HypothesisStatus } from "./hypothesis-registry";
 export type HypothesisStage = "positional" | "temporal" | "dependence" | "structure" | "prospective";
 export interface ResearchHypothesis {
   id: string;
@@ -9,7 +10,7 @@ export interface ResearchHypothesis {
   relatedArtifacts: string[];
   phases: string[];
   stage: HypothesisStage;
-  status: "Exploratory";
+  status: HypothesisStatus;
   guardrail: string;
 }
 export const RESEARCH_HYPOTHESES: readonly ResearchHypothesis[] = [
