@@ -1,0 +1,5570 @@
+{
+  "schemaVersion": 1,
+  "datasetVersionId": "tris:3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2:37008",
+  "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+  "drawCutoff": 37008,
+  "sampleSize": 25976,
+  "generatedAt": "2026-11-28T19:18:05.459Z",
+  "result": {
+    "cycles": 7,
+    "frozenForecasts": 689,
+    "resolvedForecasts": 589,
+    "pendingForecasts": 100,
+    "lastFrozenTargetDrawId": 37009,
+    "lastResolvedTargetDrawId": 37008,
+    "ledgerAudit": {
+      "method": "read-only-prospective-ledger-integrity-v1",
+      "summary": {
+        "forecasts": 689,
+        "resolutions": 589,
+        "pending": 100,
+        "resolved": 589,
+        "orphanResolutions": 0,
+        "duplicateForecastIds": 0,
+        "duplicateCandidateTargets": 0,
+        "issues": 0,
+        "integrity": "clean"
+      },
+      "coverage": [
+        {
+          "targetDrawId": 37003,
+          "forecasts": 89,
+          "resolved": 89,
+          "pending": 0
+        },
+        {
+          "targetDrawId": 37004,
+          "forecasts": 100,
+          "resolved": 100,
+          "pending": 0
+        },
+        {
+          "targetDrawId": 37005,
+          "forecasts": 100,
+          "resolved": 100,
+          "pending": 0
+        },
+        {
+          "targetDrawId": 37006,
+          "forecasts": 100,
+          "resolved": 100,
+          "pending": 0
+        },
+        {
+          "targetDrawId": 37007,
+          "forecasts": 100,
+          "resolved": 100,
+          "pending": 0
+        },
+        {
+          "targetDrawId": 37008,
+          "forecasts": 100,
+          "resolved": 100,
+          "pending": 0
+        },
+        {
+          "targetDrawId": 37009,
+          "forecasts": 100,
+          "resolved": 0,
+          "pending": 100
+        }
+      ],
+      "issues": [],
+      "limitations": [
+        "La auditoría es de integridad estructural; no valida si un método predice mejor que el azar.",
+        "No puede verificar que generatedAt preceda al sorteo si el CSV solo conserva fecha sin hora oficial.",
+        "Los indicadores candidateHit y baselineHit se verifican por tipo, no se recalculan sin reinterpretar la configuración histórica.",
+        "No reconstruye pronósticos faltantes, no corrige ni modifica archivos y no altera candidatos, pesos, señales o portafolios."
+      ]
+    },
+    "performance": {
+      "method": "prospective-performance-by-config-v1",
+      "summary": {
+        "forecastRecords": 689,
+        "resolvedRecords": 589,
+        "pendingRecords": 100,
+        "groups": 191,
+        "groupsWithEvidence": 177,
+        "duplicateForecastIds": 0,
+        "duplicateOrMismatchedResolutions": 0
+      },
+      "groups": [
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":0}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":0}",
+          "position": 0,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":1}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":1}",
+          "position": 0,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 0,
+          "candidateRate": 0.16666666666666666,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 5,
+          "pairedDifference": 0.16666666666666666
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":2}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":2}",
+          "position": 0,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 6,
+          "resolved": 5,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.43448246478317476
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.43448246478317476
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 5,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":20}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":20}",
+          "position": 0,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":3}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":3}",
+          "position": 0,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 6,
+          "resolved": 6,
+          "pending": 0,
+          "candidateHits": 2,
+          "baselineHits": 0,
+          "candidateRate": 0.3333333333333333,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.09677141110578041,
+            "upper": 0.700006684861608
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 2,
+          "baselineOnlyWins": 0,
+          "ties": 4,
+          "pairedDifference": 0.3333333333333333
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":5}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":5}",
+          "position": 0,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 4,
+          "resolved": 4,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 4,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":8}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":8}",
+          "position": 0,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 3,
+          "resolved": 2,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.6576197724933469
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.6576197724933469
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 2,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":1,\"priorMisses\":0}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":1,\"priorMisses\":0}",
+          "position": 1,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 0,
+          "candidateRate": 0.16666666666666666,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 5,
+          "pairedDifference": 0.16666666666666666
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":1,\"priorMisses\":1}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":1,\"priorMisses\":1}",
+          "position": 1,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 5,
+          "resolved": 4,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 4,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":1,\"priorMisses\":13}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":1,\"priorMisses\":13}",
+          "position": 1,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":1,\"priorMisses\":2}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":1,\"priorMisses\":2}",
+          "position": 1,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 5,
+          "resolved": 4,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 4,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":1,\"priorMisses\":20}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":1,\"priorMisses\":20}",
+          "position": 1,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 1,
+          "baselineHits": 0,
+          "candidateRate": 1,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": 1
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":1,\"priorMisses\":3}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":1,\"priorMisses\":3}",
+          "position": 1,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 5,
+          "resolved": 4,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 4,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":1,\"priorMisses\":5}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":1,\"priorMisses\":5}",
+          "position": 1,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 5,
+          "resolved": 4,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 4,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":1,\"priorMisses\":8}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":1,\"priorMisses\":8}",
+          "position": 1,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 3,
+          "resolved": 2,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.6576197724933469
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.6576197724933469
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 2,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":2,\"priorMisses\":0}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":2,\"priorMisses\":0}",
+          "position": 2,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":2,\"priorMisses\":1}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":2,\"priorMisses\":1}",
+          "position": 2,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 0,
+          "candidateRate": 0.16666666666666666,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 5,
+          "pairedDifference": 0.16666666666666666
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":2,\"priorMisses\":13}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":2,\"priorMisses\":13}",
+          "position": 2,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 2,
+          "resolved": 2,
+          "pending": 0,
+          "candidateHits": 1,
+          "baselineHits": 0,
+          "candidateRate": 0.5,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.09453120573423074,
+            "upper": 0.9054687942657693
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.6576197724933469
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0.5
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":2,\"priorMisses\":2}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":2,\"priorMisses\":2}",
+          "position": 2,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 6,
+          "resolved": 6,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":2,\"priorMisses\":3}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":2,\"priorMisses\":3}",
+          "position": 2,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":2,\"priorMisses\":5}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":2,\"priorMisses\":5}",
+          "position": 2,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 2,
+          "baselineHits": 0,
+          "candidateRate": 0.3333333333333333,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.09677141110578041,
+            "upper": 0.700006684861608
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 2,
+          "baselineOnlyWins": 0,
+          "ties": 4,
+          "pairedDifference": 0.3333333333333333
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":2,\"priorMisses\":8}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":2,\"priorMisses\":8}",
+          "position": 2,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":0}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":0}",
+          "position": 3,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":1}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":1}",
+          "position": 3,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":2}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":2}",
+          "position": 3,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":3}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":3}",
+          "position": 3,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 6,
+          "resolved": 5,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.43448246478317476
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.43448246478317476
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 5,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":5}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":5}",
+          "position": 3,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 5,
+          "resolved": 4,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 4,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":8}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":8}",
+          "position": 3,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 3,
+          "resolved": 2,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 0,
+          "candidateRate": 0.5,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.09453120573423074,
+            "upper": 0.9054687942657693
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.6576197724933469
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0.5
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":0}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":0}",
+          "position": 4,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 6,
+          "resolved": 5,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 1,
+          "candidateRate": 0.2,
+          "baselineRate": 0.2,
+          "candidateWilson": {
+            "lower": 0.03622410863243014,
+            "upper": 0.6244653702374747
+          },
+          "baselineWilson": {
+            "lower": 0.03622410863243014,
+            "upper": 0.6244653702374747
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 1,
+          "ties": 3,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":1}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":1}",
+          "position": 4,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 5,
+          "resolved": 4,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 4,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":13}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":13}",
+          "position": 4,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":2}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":2}",
+          "position": 4,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 5,
+          "resolved": 5,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 1,
+          "candidateRate": 0,
+          "baselineRate": 0.2,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.43448246478317476
+          },
+          "baselineWilson": {
+            "lower": 0.03622410863243014,
+            "upper": 0.6244653702374747
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 1,
+          "ties": 4,
+          "pairedDifference": -0.2
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":20}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":20}",
+          "position": 4,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":3}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":3}",
+          "position": 4,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 6,
+          "resolved": 5,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 1,
+          "candidateRate": 0,
+          "baselineRate": 0.2,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.43448246478317476
+          },
+          "baselineWilson": {
+            "lower": 0.03622410863243014,
+            "upper": 0.6244653702374747
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 1,
+          "ties": 4,
+          "pairedDifference": -0.2
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":5}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":5}",
+          "position": 4,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 4,
+          "resolved": 3,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.5614970317550454
+          },
+          "baselineWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.5614970317550454
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 3,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":8}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":8}",
+          "position": 4,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 3,
+          "resolved": 2,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.6576197724933469
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.6576197724933469
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 2,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":1,\"position\":0,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":1,\"position\":0,\"window\":100}",
+          "position": 0,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 1,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":1,\"position\":0,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":1,\"position\":0,\"window\":50}",
+          "position": 0,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":1,\"position\":1,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":1,\"position\":1,\"window\":50}",
+          "position": 1,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":1,\"position\":2,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":1,\"position\":2,\"window\":50}",
+          "position": 2,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":1,\"position\":3,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":1,\"position\":3,\"window\":50}",
+          "position": 3,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":1,\"position\":4,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":1,\"position\":4,\"window\":50}",
+          "position": 4,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":2,\"position\":0,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":2,\"position\":0,\"window\":100}",
+          "position": 0,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 2,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":2,\"position\":0,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":2,\"position\":0,\"window\":50}",
+          "position": 0,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":2,\"position\":1,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":2,\"position\":1,\"window\":50}",
+          "position": 1,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":2,\"position\":2,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":2,\"position\":2,\"window\":50}",
+          "position": 2,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":2,\"position\":3,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":2,\"position\":3,\"window\":50}",
+          "position": 3,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":2,\"position\":4,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":2,\"position\":4,\"window\":50}",
+          "position": 4,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":3,\"position\":0,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":3,\"position\":0,\"window\":100}",
+          "position": 0,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 3,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":3,\"position\":0,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":3,\"position\":0,\"window\":50}",
+          "position": 0,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":3,\"position\":1,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":3,\"position\":1,\"window\":50}",
+          "position": 1,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":3,\"position\":2,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":3,\"position\":2,\"window\":50}",
+          "position": 2,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":3,\"position\":3,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":3,\"position\":3,\"window\":50}",
+          "position": 3,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":3,\"position\":4,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":3,\"position\":4,\"window\":50}",
+          "position": 4,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":0,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":0,\"window\":100}",
+          "position": 0,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 1,
+          "window": 100,
+          "forecasts": 4,
+          "resolved": 4,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 4,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":0,\"window\":20}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":0,\"window\":20}",
+          "position": 0,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 1,
+          "window": 20,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":0,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":0,\"window\":50}",
+          "position": 0,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":1,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":1,\"window\":100}",
+          "position": 1,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 1,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":1,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":1,\"window\":50}",
+          "position": 1,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 5,
+          "resolved": 5,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 1,
+          "candidateRate": 0,
+          "baselineRate": 0.2,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.43448246478317476
+          },
+          "baselineWilson": {
+            "lower": 0.03622410863243014,
+            "upper": 0.6244653702374747
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 1,
+          "ties": 4,
+          "pairedDifference": -0.2
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":2,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":2,\"window\":100}",
+          "position": 2,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 1,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":2,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":2,\"window\":50}",
+          "position": 2,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":3,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":3,\"window\":100}",
+          "position": 3,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 1,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 1,
+          "candidateRate": 0,
+          "baselineRate": 1,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 1,
+          "ties": 0,
+          "pairedDifference": -1
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":3,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":3,\"window\":50}",
+          "position": 3,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 1,
+          "candidateRate": 0,
+          "baselineRate": 1,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 1,
+          "ties": 0,
+          "pairedDifference": -1
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":4,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":4,\"window\":100}",
+          "position": 4,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 1,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":4,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":4,\"window\":50}",
+          "position": 4,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 6,
+          "resolved": 6,
+          "pending": 0,
+          "candidateHits": 1,
+          "baselineHits": 1,
+          "candidateRate": 0.16666666666666666,
+          "baselineRate": 0.16666666666666666,
+          "candidateWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "baselineWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 1,
+          "ties": 4,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":0,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":0,\"window\":100}",
+          "position": 0,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 2,
+          "window": 100,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 3,
+          "baselineHits": 1,
+          "candidateRate": 0.5,
+          "baselineRate": 0.16666666666666666,
+          "candidateWilson": {
+            "lower": 0.18761630648265054,
+            "upper": 0.8123836935173494
+          },
+          "baselineWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "candidateOnlyWins": 3,
+          "baselineOnlyWins": 1,
+          "ties": 2,
+          "pairedDifference": 0.3333333333333333
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":0,\"window\":20}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":0,\"window\":20}",
+          "position": 0,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 2,
+          "window": 20,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":0,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":0,\"window\":50}",
+          "position": 0,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 3,
+          "baselineHits": 0,
+          "candidateRate": 0.5,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.18761630648265054,
+            "upper": 0.8123836935173494
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 3,
+          "baselineOnlyWins": 0,
+          "ties": 3,
+          "pairedDifference": 0.5
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":1,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":1,\"window\":100}",
+          "position": 1,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 2,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":1,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":1,\"window\":50}",
+          "position": 1,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 4,
+          "resolved": 4,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 1,
+          "candidateRate": 0,
+          "baselineRate": 0.25,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "baselineWilson": {
+            "lower": 0.04558726080970055,
+            "upper": 0.6993581574175981
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 1,
+          "ties": 3,
+          "pairedDifference": -0.25
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":2,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":2,\"window\":100}",
+          "position": 2,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 2,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":2,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":2,\"window\":50}",
+          "position": 2,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 2,
+          "resolved": 2,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 1,
+          "candidateRate": 0,
+          "baselineRate": 0.5,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.6576197724933469
+          },
+          "baselineWilson": {
+            "lower": 0.09453120573423074,
+            "upper": 0.9054687942657693
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 1,
+          "ties": 1,
+          "pairedDifference": -0.5
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":3,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":3,\"window\":100}",
+          "position": 3,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 2,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":3,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":3,\"window\":50}",
+          "position": 3,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 1,
+          "candidateRate": 0,
+          "baselineRate": 1,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 1,
+          "ties": 0,
+          "pairedDifference": -1
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":4,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":4,\"window\":100}",
+          "position": 4,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 2,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":4,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":4,\"window\":50}",
+          "position": 4,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 6,
+          "resolved": 6,
+          "pending": 0,
+          "candidateHits": 1,
+          "baselineHits": 1,
+          "candidateRate": 0.16666666666666666,
+          "baselineRate": 0.16666666666666666,
+          "candidateWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "baselineWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 1,
+          "ties": 4,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":0,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":0,\"window\":100}",
+          "position": 0,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 3,
+          "window": 100,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 4,
+          "baselineHits": 1,
+          "candidateRate": 0.6666666666666666,
+          "baselineRate": 0.16666666666666666,
+          "candidateWilson": {
+            "lower": 0.299993315138392,
+            "upper": 0.9032285888942195
+          },
+          "baselineWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "candidateOnlyWins": 3,
+          "baselineOnlyWins": 0,
+          "ties": 3,
+          "pairedDifference": 0.5
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":0,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":0,\"window\":50}",
+          "position": 0,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 4,
+          "baselineHits": 0,
+          "candidateRate": 0.6666666666666666,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.299993315138392,
+            "upper": 0.9032285888942195
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 4,
+          "baselineOnlyWins": 0,
+          "ties": 2,
+          "pairedDifference": 0.6666666666666666
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":1,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":1,\"window\":100}",
+          "position": 1,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 3,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":1,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":1,\"window\":50}",
+          "position": 1,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 3,
+          "baselineHits": 2,
+          "candidateRate": 0.5,
+          "baselineRate": 0.3333333333333333,
+          "candidateWilson": {
+            "lower": 0.18761630648265054,
+            "upper": 0.8123836935173494
+          },
+          "baselineWilson": {
+            "lower": 0.09677141110578041,
+            "upper": 0.700006684861608
+          },
+          "candidateOnlyWins": 3,
+          "baselineOnlyWins": 2,
+          "ties": 1,
+          "pairedDifference": 0.16666666666666666
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":2,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":2,\"window\":100}",
+          "position": 2,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 3,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":2,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":2,\"window\":50}",
+          "position": 2,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 2,
+          "resolved": 2,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 1,
+          "candidateRate": 0,
+          "baselineRate": 0.5,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.6576197724933469
+          },
+          "baselineWilson": {
+            "lower": 0.09453120573423074,
+            "upper": 0.9054687942657693
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 1,
+          "ties": 1,
+          "pairedDifference": -0.5
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":3,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":3,\"window\":100}",
+          "position": 3,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 3,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":3,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":3,\"window\":50}",
+          "position": 3,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 1,
+          "candidateRate": 0,
+          "baselineRate": 1,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 1,
+          "ties": 0,
+          "pairedDifference": -1
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":4,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":4,\"window\":100}",
+          "position": 4,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 3,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":4,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":4,\"window\":50}",
+          "position": 4,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 4,
+          "resolved": 4,
+          "pending": 0,
+          "candidateHits": 1,
+          "baselineHits": 1,
+          "candidateRate": 0.25,
+          "baselineRate": 0.25,
+          "candidateWilson": {
+            "lower": 0.04558726080970055,
+            "upper": 0.6993581574175981
+          },
+          "baselineWilson": {
+            "lower": 0.04558726080970055,
+            "upper": 0.6993581574175981
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 1,
+          "ties": 2,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":4,\"position\":0,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":4,\"position\":0,\"window\":50}",
+          "position": 0,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 4,
+          "window": 50,
+          "forecasts": 2,
+          "resolved": 1,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 0,
+          "candidateRate": 1,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": 1
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":4,\"position\":1,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":4,\"position\":1,\"window\":50}",
+          "position": 1,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 4,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":4,\"position\":2,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":4,\"position\":2,\"window\":50}",
+          "position": 2,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 4,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":4,\"position\":3,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":4,\"position\":3,\"window\":50}",
+          "position": 3,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 4,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":4,\"position\":4,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":4,\"position\":4,\"window\":50}",
+          "position": 4,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 4,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":5,\"position\":0,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":5,\"position\":0,\"window\":50}",
+          "position": 0,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 5,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":5,\"position\":1,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":5,\"position\":1,\"window\":50}",
+          "position": 1,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 5,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":5,\"position\":2,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":5,\"position\":2,\"window\":50}",
+          "position": 2,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 5,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":5,\"position\":3,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":5,\"position\":3,\"window\":50}",
+          "position": 3,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 5,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":5,\"position\":4,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":5,\"position\":4,\"window\":50}",
+          "position": 4,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 5,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":1,\"position\":0,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":1,\"position\":0,\"window\":50}",
+          "position": 0,
+          "mode": null,
+          "method": "long-absence",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":1,\"position\":1,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":1,\"position\":1,\"window\":50}",
+          "position": 1,
+          "mode": null,
+          "method": "long-absence",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":1,\"position\":2,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":1,\"position\":2,\"window\":50}",
+          "position": 2,
+          "mode": null,
+          "method": "long-absence",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":1,\"position\":3,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":1,\"position\":3,\"window\":50}",
+          "position": 3,
+          "mode": null,
+          "method": "long-absence",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 3,
+          "resolved": 2,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 0,
+          "candidateRate": 0.5,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.09453120573423074,
+            "upper": 0.9054687942657693
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.6576197724933469
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0.5
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":1,\"position\":4,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":1,\"position\":4,\"window\":50}",
+          "position": 4,
+          "mode": null,
+          "method": "long-absence",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":2,\"position\":0,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":2,\"position\":0,\"window\":50}",
+          "position": 0,
+          "mode": null,
+          "method": "long-absence",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":2,\"position\":1,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":2,\"position\":1,\"window\":50}",
+          "position": 1,
+          "mode": null,
+          "method": "long-absence",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":2,\"position\":2,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":2,\"position\":2,\"window\":50}",
+          "position": 2,
+          "mode": null,
+          "method": "long-absence",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":2,\"position\":3,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":2,\"position\":3,\"window\":50}",
+          "position": 3,
+          "mode": null,
+          "method": "long-absence",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 3,
+          "resolved": 2,
+          "pending": 1,
+          "candidateHits": 2,
+          "baselineHits": 0,
+          "candidateRate": 1,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.34238022750665303,
+            "upper": 1
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.6576197724933469
+          },
+          "candidateOnlyWins": 2,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": 1
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":2,\"position\":4,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":2,\"position\":4,\"window\":50}",
+          "position": 4,
+          "mode": null,
+          "method": "long-absence",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 2,
+          "resolved": 1,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 0,
+          "candidateRate": 1,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": 1
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":3,\"position\":0,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":3,\"position\":0,\"window\":50}",
+          "position": 0,
+          "mode": null,
+          "method": "long-absence",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 6,
+          "resolved": 5,
+          "pending": 1,
+          "candidateHits": 2,
+          "baselineHits": 0,
+          "candidateRate": 0.4,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.11762077423264783,
+            "upper": 0.769275718723987
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.43448246478317476
+          },
+          "candidateOnlyWins": 2,
+          "baselineOnlyWins": 0,
+          "ties": 3,
+          "pairedDifference": 0.4
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":3,\"position\":1,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":3,\"position\":1,\"window\":50}",
+          "position": 1,
+          "mode": null,
+          "method": "long-absence",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":3,\"position\":2,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":3,\"position\":2,\"window\":50}",
+          "position": 2,
+          "mode": null,
+          "method": "long-absence",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":3,\"position\":3,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":3,\"position\":3,\"window\":50}",
+          "position": 3,
+          "mode": null,
+          "method": "long-absence",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 3,
+          "resolved": 2,
+          "pending": 1,
+          "candidateHits": 2,
+          "baselineHits": 0,
+          "candidateRate": 1,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.34238022750665303,
+            "upper": 1
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.6576197724933469
+          },
+          "candidateOnlyWins": 2,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": 1
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":3,\"position\":4,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":3,\"position\":4,\"window\":50}",
+          "position": 4,
+          "mode": null,
+          "method": "long-absence",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 2,
+          "resolved": 1,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 0,
+          "candidateRate": 1,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": 1
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":1,\"position\":0,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":1,\"position\":0,\"window\":50}",
+          "position": 0,
+          "mode": null,
+          "method": "recent-frequency",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":1,\"position\":1,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":1,\"position\":1,\"window\":50}",
+          "position": 1,
+          "mode": null,
+          "method": "recent-frequency",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":1,\"position\":2,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":1,\"position\":2,\"window\":50}",
+          "position": 2,
+          "mode": null,
+          "method": "recent-frequency",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":1,\"position\":3,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":1,\"position\":3,\"window\":50}",
+          "position": 3,
+          "mode": null,
+          "method": "recent-frequency",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":1,\"position\":4,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":1,\"position\":4,\"window\":50}",
+          "position": 4,
+          "mode": null,
+          "method": "recent-frequency",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":2,\"position\":0,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":2,\"position\":0,\"window\":50}",
+          "position": 0,
+          "mode": null,
+          "method": "recent-frequency",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":2,\"position\":1,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":2,\"position\":1,\"window\":50}",
+          "position": 1,
+          "mode": null,
+          "method": "recent-frequency",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":2,\"position\":2,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":2,\"position\":2,\"window\":50}",
+          "position": 2,
+          "mode": null,
+          "method": "recent-frequency",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":2,\"position\":3,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":2,\"position\":3,\"window\":50}",
+          "position": 3,
+          "mode": null,
+          "method": "recent-frequency",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":2,\"position\":4,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":2,\"position\":4,\"window\":50}",
+          "position": 4,
+          "mode": null,
+          "method": "recent-frequency",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":3,\"position\":0,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":3,\"position\":0,\"window\":50}",
+          "position": 0,
+          "mode": null,
+          "method": "recent-frequency",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":3,\"position\":1,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":3,\"position\":1,\"window\":50}",
+          "position": 1,
+          "mode": null,
+          "method": "recent-frequency",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":3,\"position\":2,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":3,\"position\":2,\"window\":50}",
+          "position": 2,
+          "mode": null,
+          "method": "recent-frequency",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":3,\"position\":3,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":3,\"position\":3,\"window\":50}",
+          "position": 3,
+          "mode": null,
+          "method": "recent-frequency",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":3,\"position\":4,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":3,\"position\":4,\"window\":50}",
+          "position": 4,
+          "mode": null,
+          "method": "recent-frequency",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":1,\"position\":0,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":1,\"position\":0,\"window\":50}",
+          "position": 0,
+          "mode": null,
+          "method": "short-absence",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":1,\"position\":1,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":1,\"position\":1,\"window\":50}",
+          "position": 1,
+          "mode": null,
+          "method": "short-absence",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 3,
+          "resolved": 3,
+          "pending": 0,
+          "candidateHits": 1,
+          "baselineHits": 1,
+          "candidateRate": 0.3333333333333333,
+          "baselineRate": 0.3333333333333333,
+          "candidateWilson": {
+            "lower": 0.06149194472039621,
+            "upper": 0.7923403991979522
+          },
+          "baselineWilson": {
+            "lower": 0.06149194472039621,
+            "upper": 0.7923403991979522
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 1,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":1,\"position\":2,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":1,\"position\":2,\"window\":50}",
+          "position": 2,
+          "mode": null,
+          "method": "short-absence",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":1,\"position\":3,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":1,\"position\":3,\"window\":50}",
+          "position": 3,
+          "mode": null,
+          "method": "short-absence",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":1,\"position\":4,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":1,\"position\":4,\"window\":50}",
+          "position": 4,
+          "mode": null,
+          "method": "short-absence",
+          "poolSize": 1,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":2,\"position\":0,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":2,\"position\":0,\"window\":50}",
+          "position": 0,
+          "mode": null,
+          "method": "short-absence",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":2,\"position\":1,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":2,\"position\":1,\"window\":50}",
+          "position": 1,
+          "mode": null,
+          "method": "short-absence",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 1,
+          "candidateRate": 0,
+          "baselineRate": 1,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 1,
+          "ties": 0,
+          "pairedDifference": -1
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":2,\"position\":2,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":2,\"position\":2,\"window\":50}",
+          "position": 2,
+          "mode": null,
+          "method": "short-absence",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":2,\"position\":3,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":2,\"position\":3,\"window\":50}",
+          "position": 3,
+          "mode": null,
+          "method": "short-absence",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":2,\"position\":4,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":2,\"position\":4,\"window\":50}",
+          "position": 4,
+          "mode": null,
+          "method": "short-absence",
+          "poolSize": 2,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":3,\"position\":0,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":3,\"position\":0,\"window\":50}",
+          "position": 0,
+          "mode": null,
+          "method": "short-absence",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":3,\"position\":1,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":3,\"position\":1,\"window\":50}",
+          "position": 1,
+          "mode": null,
+          "method": "short-absence",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 1,
+          "candidateRate": 0,
+          "baselineRate": 1,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 1,
+          "ties": 0,
+          "pairedDifference": -1
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":3,\"position\":2,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":3,\"position\":2,\"window\":50}",
+          "position": 2,
+          "mode": null,
+          "method": "short-absence",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":3,\"position\":3,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":3,\"position\":3,\"window\":50}",
+          "position": 3,
+          "mode": null,
+          "method": "short-absence",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":3,\"position\":4,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":3,\"position\":4,\"window\":50}",
+          "position": 4,
+          "mode": null,
+          "method": "short-absence",
+          "poolSize": 3,
+          "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":1,\"position\":0}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":1,\"position\":0}",
+          "position": 0,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 0,
+          "candidateRate": 0.16666666666666666,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 5,
+          "pairedDifference": 0.16666666666666666
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":1,\"position\":1}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":1,\"position\":1}",
+          "position": 1,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 0,
+          "candidateRate": 0.16666666666666666,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 5,
+          "pairedDifference": 0.16666666666666666
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":1,\"position\":2}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":1,\"position\":2}",
+          "position": 2,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":1,\"position\":3}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":1,\"position\":3}",
+          "position": 3,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 0,
+          "candidateRate": 0.16666666666666666,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 5,
+          "pairedDifference": 0.16666666666666666
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":1,\"position\":4}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":1,\"position\":4}",
+          "position": 4,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 1,
+          "candidateRate": 0,
+          "baselineRate": 0.16666666666666666,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 1,
+          "ties": 5,
+          "pairedDifference": -0.16666666666666666
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":2,\"position\":0}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":2,\"position\":0}",
+          "position": 0,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 0,
+          "candidateRate": 0.16666666666666666,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 5,
+          "pairedDifference": 0.16666666666666666
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":2,\"position\":1}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":2,\"position\":1}",
+          "position": 1,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":2,\"position\":2}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":2,\"position\":2}",
+          "position": 2,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":2,\"position\":3}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":2,\"position\":3}",
+          "position": 3,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":2,\"position\":4}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":2,\"position\":4}",
+          "position": 4,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 2,
+          "baselineHits": 1,
+          "candidateRate": 0.3333333333333333,
+          "baselineRate": 0.16666666666666666,
+          "candidateWilson": {
+            "lower": 0.09677141110578041,
+            "upper": 0.700006684861608
+          },
+          "baselineWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 5,
+          "pairedDifference": 0.16666666666666666
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":3,\"position\":0}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":3,\"position\":0}",
+          "position": 0,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 2,
+          "baselineHits": 0,
+          "candidateRate": 0.3333333333333333,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.09677141110578041,
+            "upper": 0.700006684861608
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 2,
+          "baselineOnlyWins": 0,
+          "ties": 4,
+          "pairedDifference": 0.3333333333333333
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":3,\"position\":1}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":3,\"position\":1}",
+          "position": 1,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 0,
+          "candidateRate": 0.16666666666666666,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 5,
+          "pairedDifference": 0.16666666666666666
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":3,\"position\":2}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":3,\"position\":2}",
+          "position": 2,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":3,\"position\":3}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":3,\"position\":3}",
+          "position": 3,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":3,\"position\":4}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":3,\"position\":4}",
+          "position": 4,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 1,
+          "candidateRate": 0,
+          "baselineRate": 0.16666666666666666,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 1,
+          "ties": 5,
+          "pairedDifference": -0.16666666666666666
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":4,\"position\":0}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":4,\"position\":0}",
+          "position": 0,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":4,\"position\":1}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":4,\"position\":1}",
+          "position": 1,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 0,
+          "candidateRate": 0.16666666666666666,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 5,
+          "pairedDifference": 0.16666666666666666
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":4,\"position\":2}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":4,\"position\":2}",
+          "position": 2,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":4,\"position\":3}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":4,\"position\":3}",
+          "position": 3,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":4,\"position\":4}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":4,\"position\":4}",
+          "position": 4,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 1,
+          "candidateRate": 0.16666666666666666,
+          "baselineRate": 0.16666666666666666,
+          "candidateWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "baselineWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":5,\"position\":0}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":5,\"position\":0}",
+          "position": 0,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":5,\"position\":1}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":5,\"position\":1}",
+          "position": 1,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 0,
+          "candidateRate": 0.16666666666666666,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 5,
+          "pairedDifference": 0.16666666666666666
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":5,\"position\":2}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":5,\"position\":2}",
+          "position": 2,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":5,\"position\":3}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":5,\"position\":3}",
+          "position": 3,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":5,\"position\":4}",
+          "family": "position-mutation",
+          "config": "{\"family\":\"position-mutation\",\"lag\":5,\"position\":4}",
+          "position": 4,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 1,
+          "candidateRate": 0.16666666666666666,
+          "baselineRate": 0.16666666666666666,
+          "candidateWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "baselineWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 1,
+          "ties": 4,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":1,\"mode\":\"first2\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":1,\"mode\":\"first2\"}",
+          "position": null,
+          "mode": "first2",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":1,\"mode\":\"firstLast\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":1,\"mode\":\"firstLast\"}",
+          "position": null,
+          "mode": "firstLast",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":1,\"mode\":\"last2\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":1,\"mode\":\"last2\"}",
+          "position": null,
+          "mode": "last2",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":1,\"mode\":\"last3\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":1,\"mode\":\"last3\"}",
+          "position": null,
+          "mode": "last3",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":1,\"mode\":\"last4\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":1,\"mode\":\"last4\"}",
+          "position": null,
+          "mode": "last4",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 4,
+          "resolved": 4,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 4,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":2,\"mode\":\"first2\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":2,\"mode\":\"first2\"}",
+          "position": null,
+          "mode": "first2",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 0,
+          "candidateRate": 0.16666666666666666,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 5,
+          "pairedDifference": 0.16666666666666666
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":2,\"mode\":\"firstLast\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":2,\"mode\":\"firstLast\"}",
+          "position": null,
+          "mode": "firstLast",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":2,\"mode\":\"last2\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":2,\"mode\":\"last2\"}",
+          "position": null,
+          "mode": "last2",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":2,\"mode\":\"last3\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":2,\"mode\":\"last3\"}",
+          "position": null,
+          "mode": "last3",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":2,\"mode\":\"last4\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":2,\"mode\":\"last4\"}",
+          "position": null,
+          "mode": "last4",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 4,
+          "resolved": 4,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 4,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":3,\"mode\":\"first2\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":3,\"mode\":\"first2\"}",
+          "position": null,
+          "mode": "first2",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":3,\"mode\":\"firstLast\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":3,\"mode\":\"firstLast\"}",
+          "position": null,
+          "mode": "firstLast",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":3,\"mode\":\"last2\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":3,\"mode\":\"last2\"}",
+          "position": null,
+          "mode": "last2",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":3,\"mode\":\"last3\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":3,\"mode\":\"last3\"}",
+          "position": null,
+          "mode": "last3",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":3,\"mode\":\"last4\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":3,\"mode\":\"last4\"}",
+          "position": null,
+          "mode": "last4",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 4,
+          "resolved": 3,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.5614970317550454
+          },
+          "baselineWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.5614970317550454
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 3,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":4,\"mode\":\"first2\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":4,\"mode\":\"first2\"}",
+          "position": null,
+          "mode": "first2",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":4,\"mode\":\"firstLast\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":4,\"mode\":\"firstLast\"}",
+          "position": null,
+          "mode": "firstLast",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":4,\"mode\":\"last2\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":4,\"mode\":\"last2\"}",
+          "position": null,
+          "mode": "last2",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":4,\"mode\":\"last3\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":4,\"mode\":\"last3\"}",
+          "position": null,
+          "mode": "last3",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":4,\"mode\":\"last4\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":4,\"mode\":\"last4\"}",
+          "position": null,
+          "mode": "last4",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 4,
+          "resolved": 4,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 4,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":5,\"mode\":\"first2\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":5,\"mode\":\"first2\"}",
+          "position": null,
+          "mode": "first2",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "baselineWilson": {
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":5,\"mode\":\"firstLast\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":5,\"mode\":\"firstLast\"}",
+          "position": null,
+          "mode": "firstLast",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 6,
+          "resolved": 5,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.43448246478317476
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.43448246478317476
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 5,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":5,\"mode\":\"last2\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":5,\"mode\":\"last2\"}",
+          "position": null,
+          "mode": "last2",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 6,
+          "resolved": 5,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.43448246478317476
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.43448246478317476
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 5,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":5,\"mode\":\"last3\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":5,\"mode\":\"last3\"}",
+          "position": null,
+          "mode": "last3",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 6,
+          "resolved": 5,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.43448246478317476
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.43448246478317476
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 5,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":5,\"mode\":\"last4\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":5,\"mode\":\"last4\"}",
+          "position": null,
+          "mode": "last4",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 4,
+          "resolved": 3,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.5614970317550454
+          },
+          "baselineWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.5614970317550454
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 3,
+          "pairedDifference": 0
+        }
+      ],
+      "limitations": [
+        "Cada grupo conserva la familia y la configuración congelada exactas; no se mezclan posiciones, modalidades, tamaños de pool ni ventanas diferentes.",
+        "Las tasas e intervalos de Wilson son descriptivos y no corrigen selección múltiple ni dependencia temporal entre sorteos.",
+        "La diferencia pareada compara los mismos pronósticos resueltos; no demuestra predictibilidad ni ventaja futura.",
+        "Los pronósticos pendientes se conservan en el denominador de cobertura, pero no en tasas de acierto.",
+        "Los registros duplicados de pronóstico se señalan; para el cálculo se conserva una sola resolución por ID y se evita duplicar la fila dentro del grupo. La auditoría de integridad debe revisarse por separado."
+      ]
+    }
+  },
+  "warnings": [
+    "La auditoría es de integridad estructural; no valida si un método predice mejor que el azar.",
+    "No puede verificar que generatedAt preceda al sorteo si el CSV solo conserva fecha sin hora oficial.",
+    "Los indicadores candidateHit y baselineHit se verifican por tipo, no se recalculan sin reinterpretar la configuración histórica.",
+    "No reconstruye pronósticos faltantes, no corrige ni modifica archivos y no altera candidatos, pesos, señales o portafolios.",
+    "Cada grupo conserva la familia y la configuración congelada exactas; no se mezclan posiciones, modalidades, tamaños de pool ni ventanas diferentes.",
+    "Las tasas e intervalos de Wilson son descriptivos y no corrigen selección múltiple ni dependencia temporal entre sorteos.",
+    "La diferencia pareada compara los mismos pronósticos resueltos; no demuestra predictibilidad ni ventaja futura.",
+    "Los pronósticos pendientes se conservan en el denominador de cobertura, pero no en tasas de acierto.",
+    "Los registros duplicados de pronóstico se señalan; para el cálculo se conserva una sola resolución por ID y se evita duplicar la fila dentro del grupo. La auditoría de integridad debe revisarse por separado.",
+    "Only forecasts present in the append-only live cycle ledger are evaluated; missed contests are not backfilled.",
+    "A current module status proves provenance and integrity, not predictive advantage."
+  ]
+}
