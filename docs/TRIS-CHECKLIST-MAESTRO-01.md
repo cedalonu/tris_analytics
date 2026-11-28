@@ -320,6 +320,7 @@ Continuar automáticamente con la siguiente tarea aprobada y desbloqueada. Si ap
 
 - [x] Añadir `scripts/run-tris-research-mount-audit.ts` para recorrer el catálogo y detectar referencias de import/JSX en los dashboards activos.
 - [x] Ejecutarlo automáticamente junto a la auditoría live de 82 expedientes; adjunta reportes JSON/Markdown y resumen de Actions.
-- [ ] Confirmar resultado del primer ciclo sobre el HEAD que integra el auditor.
+- [x] Primer ciclo de la auditoría estática ejecutado (live run `46186129078`, success): 24 componentes catalogados y existentes; 23 referencias potenciales en dashboards/entrypoint; 1 sin localizar (fase 0 `src/App.tsx` porque el scan inicial aún no incluía `src/main.tsx`).
+- [x] Ampliar el scan al entrypoint `src/main.tsx`; la siguiente ejecución sobre HEAD `365c2100` o posterior debe confirmar el montaje de App.
 - [ ] Revisar falsos positivos/negativos; el scan estático no sustituye la prueba runtime ni la inspección de navegador.
 - [ ] Usar el resultado para priorizar las siguientes fases con componentes ubicados pero sin referencias activas.
