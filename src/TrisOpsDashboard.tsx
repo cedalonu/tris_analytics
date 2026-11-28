@@ -37,6 +37,28 @@ export default function TrisOpsDashboard() {
  const [researchWindow,setResearchWindow]=useState<50|150|500>(150);
  const [inaFocus,setInaFocus]=useState<string|null>(null);
  useEffect(()=>{
+  let cancelled=false;
+  const loadCanonical=async()=>{
+   try {
+    const response=await fetch("https://raw.githubusercontent.com/cedalonu/tris_analytics/research-core-v1/data/canonical/Tris.csv",{cache:"no-store"});
+    if(!response.ok) throw new Error("HTTP "+response.status);
+    const csv=await response.text();
+    const imported=importTrisCsv(csv);
+    const gaps=imported.validation.warnings.filter(w=>w.startsWith("draw gap "));
+    if(imported.validation.errors.length||gaps.length) throw new Error("El histórico canónico no superó la validación.");
+    if(cancelled)return;
+    const ds=imported.validation.valid;
+    const meta={importedAt:new Date().toISOString(),warnings:imported.validation.warnings,errors:[] as string[]};
+    setDraws(ds);setFileName("Pakin · histórico canónico research-core-v1");setImportMeta(meta);setStatus("Histórico oficial sincronizado automáticamente · "+ds.length+" sorteos");
+    localStorage.setItem(STORAGE_KEY,JSON.stringify({draws:ds,fileName:"Pakin · histórico canónico",meta}));
+   } catch(error) {
+    if(!cancelled) setStatus(current=>current==="Sin CSV importado"?"No se pudo cargar el histórico automático; puedes importar el CSV manualmente.":current);
+   }
+  };
+  loadCanonical();
+  return ()=>{cancelled=true;};
+ },[]);
+ useEffect(()=>{
   try {const saved=localStorage.getItem(STORAGE_KEY);if(saved){const parsed=JSON.parse(saved);if(Array.isArray(parsed.draws)){setDraws(parsed.draws);setFileName(parsed.fileName||"CSV guardado localmente");setImportMeta(parsed.meta||null);setStatus("Dataset local restaurado");}}}catch{setStatus("No se pudo restaurar el dataset local");}
  },[]);
  const sorted=useMemo(()=>[...draws].sort((a,b)=>a.drawId-b.drawId),[draws]);
