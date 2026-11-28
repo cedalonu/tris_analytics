@@ -11,7 +11,7 @@ import { PHASES } from "../src/ResearchPhaseCatalog";
 const manifestPath=resolve(process.argv[2]??"data/canonical/source-manifest.json");
 const reportDir=resolve(process.argv[3]??"reports/research-mount-audit");
 const manifest=JSON.parse(await readFile(manifestPath,"utf8")) as {snapshot:string;sha256:string;rowCount:number;latestDrawId:number;fetchedAt:string};
-const dashboardFiles=["src/ResearchDashboard.tsx","src/TrisOpsDashboard.tsx","src/InaCommandCenter.tsx","src/App.tsx"];
+const dashboardFiles=["src/main.tsx","src/ResearchDashboard.tsx","src/TrisOpsDashboard.tsx","src/InaCommandCenter.tsx","src/App.tsx"];
 const dashboardContents=await Promise.all(dashboardFiles.map(async path=>({path,content:await readFile(resolve(path),"utf8")})));
 async function fileExists(path:string){try{return(await stat(resolve(path))).isFile();}catch{return false;}}
 function componentName(path:string){const basename=path.split("/").at(-1)!.replace(/\.(tsx|jsx)$/,"");return basename;}
