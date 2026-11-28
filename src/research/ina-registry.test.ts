@@ -61,7 +61,8 @@ test("research outputs must match the registered engine and output key", () => {
   const context = createInaContext({
     snapshot: {
       snapshotId: "registry-test",
-      sourceUrl: "https://example.test/Tris.csv",
+      sourceType: "remote",
+  sourceUrl: "https://example.test/Tris.csv",
       fetchedAt: "2026-01-01T00:00:00.000Z",
       sha256: "c".repeat(64),
       rowCount: 1,
