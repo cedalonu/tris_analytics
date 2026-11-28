@@ -2,7 +2,8 @@ import React,{useEffect,useState} from "react";
 import {loadCanonicalTrisDataset} from "./research/load-canonical-tris";
 import {buildInaAbsence} from "./research/ina-absence";
 import {buildInaDashboardOverview} from "./research/ina-dashboard-overview";
-import {buildInaPositionalTransitions} from "./research/ina-positional-transitions";\nimport {analyzePositionalChangePoints} from "./research/positional-change-point-detection";
+import {buildInaPositionalTransitions} from "./research/ina-positional-transitions";
+import {analyzePositionalChangePoints} from "./research/positional-change-point-detection";
 type EvidenceRow={hypothesisId:string;title:string;level:"descriptive"|"pending";outputs:string[];sampleSize:number;cutoff:number|null;summary:string;warnings:string[]};
 type EvidenceState={loading:boolean;error:string|null;rows:EvidenceRow[];manifest:{sha256:string;rowCount:number;earliestDrawId:number|null;latestDrawId:number|null;fetchedAt:string}|null};
 function PendingGraphic({text}:{text:string}){return <div className="mt-3 rounded-lg border border-amber-900/50 bg-amber-950/20 p-3"><div className="text-xs font-bold text-amber-200">Gráfico empírico pendiente · no hay datos validados vinculados</div><p className="mt-1 text-xs text-slate-300">{text}</p><div className="mt-3 grid grid-cols-3 gap-2 text-[10px]"><div className="rounded border border-slate-800 p-2">Motor / output</div><div className="rounded border border-slate-800 p-2">Calibración nula</div><div className="rounded border border-slate-800 p-2">Holdout</div></div></div>}
@@ -23,7 +24,11 @@ export default function HypothesisEvidencePanel({selectedHypothesis}:{selectedHy
    const posRecent=Array.from({length:5},(_,p)=>Array.from({length:10},(_,d)=>recent.filter(x=>x.digits[p]===d).length));
    const gapBins=new Map<number,number>();
    for(let p=0;p<5;p++)for(let d=0;d<10;d++){const indices=draws.map((x,i)=>x.digits[p]===d?i:-1).filter(i=>i>=0);for(let i=1;i<indices.length;i++){const gap=indices[i]-indices[i-1]-1;gapBins.set(gap,(gapBins.get(gap)||0)+1)}}
-   const transitionTop=transitions.result.edges.slice().sort((a,b)=>b.n-a.n).slice(0,15);\n   const regimeStart=Math.max(50,draws.length-120);\n   const regimeResult=analyzePositionalChangePoints(draws,draws[regimeStart].drawId,draws[draws.length-1].drawId,{referenceWindow:25,recentWindow:25,minimumSupport:20,changeThreshold:0.2,returnThreshold:0.1});\n   const regimeSeries=regimeResult.observations.map((o:any)=>({drawId:o.drawId,positions:o.positions.map((p:any)=>({position:p.position,localDistance:p.localDistance,baselineDistance:p.baselineDistance}))}));\n   const regimeEvents=regimeResult.perPosition.map((p:any)=>({position:p.position,episodes:p.episodes,events:p.events,state:p.state}));
+   const transitionTop=transitions.result.edges.slice().sort((a,b)=>b.n-a.n).slice(0,15);
+   const regimeStart=Math.max(50,draws.length-120);
+   const regimeResult=analyzePositionalChangePoints(draws,draws[regimeStart].drawId,draws[draws.length-1].drawId,{referenceWindow:25,recentWindow:25,minimumSupport:20,changeThreshold:0.2,returnThreshold:0.1});
+   const regimeSeries=regimeResult.observations.map((o:any)=>({drawId:o.drawId,positions:o.positions.map((p:any)=>({position:p.position,localDistance:p.localDistance,baselineDistance:p.baselineDistance}))}));
+   const regimeEvents=regimeResult.perPosition.map((p:any)=>({position:p.position,episodes:p.episodes,events:p.events,state:p.state}));
    const absencePositions=absence.result.positions.length;
    const absenceIntervals=absence.result.positions.reduce((sum,p)=>sum+p.digitReports.reduce((n,d)=>n+d.completedAbsenceLengths.length,0),0);
    const rows:EvidenceRow[]=[
