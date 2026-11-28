@@ -299,6 +299,8 @@ La secuencia de trabajo vigente queda fijada así:
 - [x] **P1.2** Implementar INA Core como servicio puro con los primeros agregados descriptivos y pruebas. Evidencia: `src/research/ina-core.ts`, `src/research/ina-core-service.test.ts`, `docs/INA-CORE-SERVICE-01.md`; TypeScript, build y suite completa aprobados en run 46120748438.
 - [x] **P1.3** Registrar módulos consumidores y sus dependencias en un catálogo ejecutable. Evidencia: `src/research/ina-registry.ts`, `src/research/ina-registry.test.ts`, `docs/INA-MODULE-REGISTRY-01.md`; TypeScript, build y suite de pruebas aprobados en runs 46121112729 y 46121112726.
 - [ ] **P2** Migrar progresivamente cálculos existentes al núcleo compartido, empezando por los módulos descriptivos y evitando cambiar resultados sin pruebas de equivalencia.
+  - [x] **P2.1** Verificar snapshot canónico/local y migrar el resumen posicional a salida INA. Evidencia: `docs/P2-1-POSITION-OVERVIEW-INA-MIGRATION.md`.
+  - [ ] **P2.2** Migrar la tabla de frecuencias R1–R5 para que consuma los perfiles de posición de INA.
 - [ ] **P3** Completar las vistas reales de investigación, siguiendo la matriz.
 - [ ] **P4** Demostrar propagación automática completa desde Pakin.
 - [ ] **P5** Cerrar el centro de predicción respaldado por INA.
