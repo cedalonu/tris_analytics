@@ -87,6 +87,7 @@
     "test:research": "tsx --test src/*.test.ts src/research/*.test.ts",
     "research:cycles:source": "tsx scripts/run-tris-cycles-source.ts",
     "research:ina-canonical-audit": "tsx scripts/run-tris-ina-canonical-audit.ts",
+    "research:phase-0-audit": "tsx scripts/run-tris-phase-0-adapter-audit.ts",
     "research:phase-audit": "tsx scripts/run-tris-research-phase-audit.ts",
     "research:mount-audit": "tsx scripts/run-tris-research-mount-audit.ts"
   },
