@@ -49,3 +49,14 @@ La vista permite filtrar por familia y seleccionar una hipótesis para consultar
 ## Limitaciones
 
 Las referencias identifican código/documentación relacionados; no afirman que todos esos módulos estén conectados a un output INA versionado ni que sus resultados hayan sido reconciliados con el corte canónico vigente. Esa integración constituye el siguiente checkpoint.
+
+
+## Checkpoint visual 02 — Generación y selección de hipótesis (2026-11-28)
+
+- Nuevo panel `src/HypothesisPhasePanel.tsx` montado como ruta de la fase 2 del catálogo de investigación.
+- Vista de inventario por cinco familias (posicional, temporal, dependencia, estructural y prospectiva), con barras relativas y conteos derivados directamente de `RESEARCH_HYPOTHESES`.
+- Integra `HypothesisWorkspace.tsx` para filtrar familias y seleccionar hipótesis; el detalle expone pregunta, H₀, diseño, evidencia mínima, fases, artefactos y salvaguarda.
+- Botón abre el monitor de expedientes históricos; se mantiene separado del catálogo preregistrado.
+- Datos: 7 hipótesis, 7 exploratorias, 0 validadas. La visualización representa inventario, no resultados ni probabilidad.
+- Enrutamiento en `ResearchDashboard.tsx` y entrada visual en `ResearchPhaseCatalog.tsx`.
+- Estado de cierre: código conectado; pendiente CI, deploy y prueba real de apertura/navegación. Sin verificación de navegador en este checkpoint.
