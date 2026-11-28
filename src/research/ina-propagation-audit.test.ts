@@ -20,6 +20,7 @@ const current = (outputKey: string): PropagationOutputEvidence => ({
 test("marks only fully represented module outputs current", () => {
   const audit = auditInaPropagation(canonical, [
     current("ina.position-profile"),
+    current("ina.history"),
     current("research.positional-absence"),
   ], { generatedAt: "2026-11-28T12:00:00.000Z" });
   const absence = audit.targets.find(target => target.moduleId === "positional-absence");
