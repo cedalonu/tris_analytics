@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import type { Draw, PoolMethod, Validation } from "../research-core";
 import { buildPool, evaluatePool } from "../research-core";
 import { createInaContext, type DatasetSnapshot } from "./ina-contracts";
-import { buildInaPoolSelection } from "./ina-pool-selection";
+import { buildInaPoolSelection, rankPoolCombinations } from "./ina-pool-selection";
 
 const draws: Draw[] = Array.from({ length: 80 }, (_, index) => ({
   drawId: 2000 + index,
@@ -61,6 +61,9 @@ test("pool selection keeps exactly twelve ranked combinations and preserves lead
   assert.ok(output.result.combinations.every(row => row.digits.length === 5));
   assert.equal(output.result.combinations[0].score >= output.result.combinations.at(-1)!.score, true);
   assert.equal(output.result.pools.every(pool => pool.length === 2), true);
+  assert.equal(output.result.primary.length, 5);
+  assert.equal(output.result.primary[0], "0");
+  assert.deepEqual(output.result.combinations, rankPoolCombinations(output.result.pools, 2));
 });
 
 test("pool selection refuses invalid INA context", () => {
