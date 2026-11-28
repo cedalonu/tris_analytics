@@ -1,4 +1,5 @@
 import React,{useMemo,useState} from "react";
+import ResearchPhaseCatalog from "./ResearchPhaseCatalog";
 import HypothesisMonitor from "./HypothesisMonitor";
 import StructuralMotifRandomControl from "./StructuralMotifRandomControl";
 import StructuralMotifTemporalRobustness from "./StructuralMotifTemporalRobustness";
@@ -125,6 +126,7 @@ export default function ResearchDashboard({onBack,onOpenIntuition}:{onBack:()=>v
     </div>
     <div className="relative mt-5 flex flex-wrap gap-2 text-[10px] font-semibold"><span className="rounded-full border border-emerald-800 bg-emerald-950/50 px-3 py-1.5 text-emerald-300">● Solo análisis local</span><span className="rounded-full border border-slate-700 bg-slate-950/50 px-3 py-1.5 text-slate-300">Sin APIs ni descargas</span><span className="rounded-full border border-slate-700 bg-slate-950/50 px-3 py-1.5 text-slate-300">Sin afirmaciones predictivas no validadas</span></div>
    </div>
+   <ResearchPhaseCatalog/>
    <nav aria-label="Fases del centro de investigación" className="mt-5 grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
     {kinds.map((k,i)=><button key={k} type="button" aria-pressed={active===k} onClick={()=>setActive(k)} className={`group min-h-20 rounded-xl border p-3 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 ${active===k?"border-cyan-500/80 bg-cyan-950/40 shadow-[0_0_20px_rgba(34,211,238,.08)]":"border-slate-800 bg-slate-900/60 hover:border-slate-600"}`}>
      <div className="flex items-center justify-between"><span className="text-[10px] font-black tracking-widest text-slate-500">FASE {k==="structuralReproducibility"?101:k==="structuralEvidenceCenter"?100:k==="structuralExperimentComparator"?103:k==="structuralExperimentSnapshotComparator"?104:k==="structuralExperimentEvolution"?105:k==="structuralFindingPersistence"?106:k==="structuralFindingConsensus"?107:k==="structuralExperimentLedger"?102:k==="structuralOutcome"?93:k==="structuralRandomControl"?94:k==="structuralTemporalRobustness"?95:k==="structuralBlockBootstrap"?96:k==="structuralBootstrapSensitivity"?97:k==="structuralJointStability"?98:k==="jointPositionalInteractions"?117:k==="jointDigitDependence"?118:41+i}</span><span className={`text-xs ${hasReport(k)?"text-emerald-400":"text-slate-600"}`}>{k==="structuralEvidenceCenter"?"✦":hasReport(k)?"●":"○"}</span></div>
