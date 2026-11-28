@@ -99,7 +99,7 @@ const md = [
   "", "## Phase-level state",
   ...rows.map(row => "- " + row.id + " — " + row.title + ": " + row.overall +
     " (doc: " + row.documentation.state + "; visual: " + row.visualization.state +
-    "; engine: " + row.engine.state + "; output: " + row.output.state + "; mount: " + row.dashboardMount.state + "; binding: " + row.dataBinding.state + "; parity: " + row.numericalParity.state + ")")),
+    "; engine: " + row.engine.state + "; output: " + row.output.state + "; mount: " + row.dashboardMount.state + "; binding: " + row.dataBinding.state + "; parity: " + row.numericalParity.state + ")"),
   "", "## Limitations", ...report.limitations.map(item => "- " + item), "",
 ].join("\n");
 await writeFile(resolve(reportDir, "latest.md"), md);
