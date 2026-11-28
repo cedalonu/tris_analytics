@@ -111,14 +111,15 @@ Se añadió `src/research/load-canonical-tris.test.ts` con pruebas de éxito y r
 
 La validación de prefijo se extrajo a `validateCanonicalPrefix` y ahora la invoca directamente `scripts/run-tris-cycles-source.ts` antes de crear snapshots o lanzar el ledger. Esto permite probar la misma puerta que ejecuta el workflow sin tocar el CSV oficial.
 
-Los fixtures sintéticos cubren cinco rutas: append válido, mutación de un sorteo histórico, CSV/manifiesto desparejados, snapshot previo cuyo hash no coincide y truncamiento del histórico entrante. El caso de mutación debe fallar antes de cualquier escritura. El resultado de CI para el HEAD que incorpora estos fixtures sigue pendiente; no se declara validado hasta verlo en verde.
+Los fixtures sintéticos cubren cinco rutas: append válido, mutación de un sorteo histórico, CSV/manifiesto desparejados, snapshot previo cuyo hash no coincide y truncamiento del histórico entrante. El caso de mutación debe fallar antes de cualquier escritura. Research core checks run `46182581025` terminó `success`; su log confirma que el fixture de mutación retroactiva pasó (`ok 24`) y también pasaron los cuatro controles restantes. El ciclo live run `46182612431` terminó `success` con el mismo histórico 37008 y `newDrawCount: 0`, demostrando que la extracción del guard no alteró el comportamiento idempotente.
 
 ## 7. Pendientes para cerrar Etapa 1
 
-- [ ] Obtener TypeScript, pruebas de investigación y build en estado exitoso sobre el HEAD final (commit `886b633e`).
+- [x] TypeScript, pruebas del núcleo y fixture de mutación retroactiva en verde: Research core run `46182581025` (HEAD de código `526a82d3`).
+- [x] Build y despliegue de la vista previa en verde: run `46182580991`.
 - [ ] Obtener resultado final del workflow de validación real-histórica.
 - [ ] Obtener resultado final del workflow de auditoría INA contra el snapshot canónico vigente.
-- [ ] Confirmar que la captura live más reciente conserva el mismo comportamiento tras los cambios.
+- [x] Captura live posterior a la extracción del guard: run `46182612431`, success, histórico sin cambios en 37008 y auditoría de fases completada.
 - [ ] Registrar el commit final y las ejecuciones exitosas.
 
 ## 8. Límites de esta entrega
