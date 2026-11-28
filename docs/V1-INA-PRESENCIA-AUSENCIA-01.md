@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-11-28  
 **Rama:** `research-core-v1`  
-**Estado:** implementación inicial integrada; validación CI y reconciliación final pendientes.
+**Estado:** motor y vista conectados; validaciones automatizadas ampliadas aprobadas; inspección visual en navegador pendiente.
 
 ## Contrato
 
@@ -26,9 +26,11 @@
 
 En la sección Análisis por posición (`positions`) se añadió un panel V1 con selectores R1–R5 y dígito 0–9, métricas, timeline, distribución de intervalos y tabla de retorno condicionado. La UI presenta corte, muestra y prefijo SHA-256.
 
-## Pruebas
+## Pruebas y auditoría de paridad
 
 `src/research/ina-absence.test.ts` cubre un ejemplo determinista con intervalo conocido, timeline limitado, histórico vacío y corto, límites de parámetros y rechazo de snapshot inválido.
+
+El runner `scripts/run-tris-ina-canonical-audit.ts` verifica ahora, sobre el snapshot canónico real, las 50 combinaciones R1–R5 × dígito 0–9 contra `analyzePositionAbsences`: apariciones, tasa, ausencia actual, intervalos completos, denominadores de retorno condicionado y los IDs/estados de los últimos 100 sorteos. También verifica que la vista consuma los cinco campos analíticos y renderice las métricas correspondientes. Esto es paridad de implementación/salida y comprobación estática de binding; no sustituye una inspección de DOM en navegador.
 
 ## Salvaguardas
 
@@ -36,8 +38,10 @@ La ausencia no implica que un dígito esté “debido”. Los intervalos complet
 
 ## Criterios pendientes de cierre
 
-- [ ] TypeScript, pruebas unitarias y build verdes en el mismo HEAD que integra motor, registry y UI.
-- [ ] Workflows de investigación y real-history terminados en éxito.
-- [ ] Reconciliación numérica motor↔UI con `Tris-37007-e77a3ef65259.csv` (25,975 sorteos, corte 37007, SHA-256 `e77a3ef65259bff02fded5490714edf8caf5e6c4f1bd854f6f457918f948c1a6`).
-- [ ] Revisar denominadores, censura de intervalos, histórico vacío/corto y funcionamiento de selectores.
-- [ ] Actualizar matriz y checklist con commits y resultados finales.
+- [x] TypeScript, pruebas unitarias y build aprobados en TRIS research run `46182720872` y real-history run `46182720859`.
+- [x] Workflows de investigación y real-history terminados en éxito.
+- [x] Denominadores, censura de intervalos e históricos vacío/corto cubiertos por pruebas unitarias.
+- [x] Añadir auditoría real-snapshot de paridad para las 50 combinaciones posición/dígito y comprobaciones de binding UI; el nuevo runner se validará en CI posterior a este commit.
+- [ ] Confirmar informe de paridad sobre corte canónico vigente 37008 y conservar su SHA-256.
+- [ ] Inspección visual en navegador: selectores, timeline, distribución y tabla condicionada.
+- [ ] Actualizar matriz con resultado del runner y evidencia final.
