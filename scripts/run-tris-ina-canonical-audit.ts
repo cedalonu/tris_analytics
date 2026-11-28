@@ -10,6 +10,7 @@ import { resolve } from "node:path";
 import { importTrisCsv } from "../src/research/data-adapter";
 import { buildInaCore } from "../src/research/ina-core";
 import { buildInaAbsence } from "../src/research/ina-absence";
+import { analyzePositionAbsences } from "../src/research/absence-analysis";
 import { buildInaTransitionStability } from "../src/research/ina-transition-stability";
 import { buildInaTransitionWindowComparison } from "../src/research/ina-transition-window-comparison";
 import { snapshotFromCanonicalManifest, type CanonicalSourceManifest } from "../src/research/ina-snapshot";
@@ -80,6 +81,20 @@ assert.deepEqual(
 );
 assert.equal(absence.result.positions.length, 5);
 assert.equal(absence.result.positions.every(position => position.digitReports.length === 10), true);
+const absenceParityRows = absence.result.positions.flatMap(position => {
+  const reference = analyzePositionAbsences(core.context.draws, position.position, 20);
+  return position.digitReports.map(report => {
+    const expected = reference.digitReports[report.digit];
+    assert.equal(report.occurrences, expected.occurrences, `absence occurrences mismatch R${position.position + 1}-${report.digit}`);
+    assert.equal(report.rate, expected.rate, `absence rate mismatch R${position.position + 1}-${report.digit}`);
+    assert.equal(report.currentAbsence, expected.currentAbsence, `current absence mismatch R${position.position + 1}-${report.digit}`);
+    assert.deepEqual(report.completedAbsenceLengths, expected.completedAbsenceLengths, `completed intervals mismatch R${position.position + 1}-${report.digit}`);
+    assert.deepEqual(report.returnByPriorAbsence, expected.returnByPriorAbsence, `conditional return rows mismatch R${position.position + 1}-${report.digit}`);
+    const timeline = core.context.draws.slice(-100).map(draw => ({ drawId: draw.drawId, present: draw.digits[position.position] === report.digit }));
+    assert.deepEqual(report.timeline, timeline, `timeline mismatch R${position.position + 1}-${report.digit}`);
+    return { position: position.position, digit: report.digit, occurrences: report.occurrences, currentAbsence: report.currentAbsence, completedIntervals: report.completedAbsenceLengths.length, timelineRows: report.timeline.length, parity: "passed" as const };
+  });
+});
 
 const dashboard = await readFile(resolve("src/TrisOpsDashboard.tsx"), "utf8");
 const inaCenter = await readFile(resolve("src/InaCommandCenter.tsx"), "utf8");
@@ -91,6 +106,11 @@ const uiWiring = {
   transitionWindowOutputRendered: dashboard.includes("transitionWindowComparisonOutput.result.ranked"),
   absenceOutputComputedFromSharedInaContext: dashboard.includes("buildInaAbsence(inaResult.context"),
   absenceOutputUsedByDashboardView: dashboard.includes("selectedAbsence"),
+  absenceOccurrencesRendered: dashboard.includes("selectedAbsence.occurrences"),
+  absenceCurrentRunRendered: dashboard.includes("selectedAbsence.currentAbsence"),
+  absenceIntervalDistributionRendered: dashboard.includes("selectedAbsence.intervalDistribution"),
+  absenceConditionalReturnsRendered: dashboard.includes("selectedAbsence.returnByPriorAbsence"),
+  absenceTimelineRendered: dashboard.includes("selectedAbsence.timeline"),
 };
 for (const [check, passed] of Object.entries(uiWiring)) {
   assert.equal(passed, true, "dashboard wiring check failed: " + check);
@@ -129,6 +149,9 @@ const report = {
   absence: {
     positions: absence.result.positions.length,
     digitReports: absence.result.positions.reduce((sum, position) => sum + position.digitReports.length, 0),
+    engineParityRows: absenceParityRows.length,
+    engineParityStatus: absenceParityRows.every(row => row.parity === "passed") ? "passed" : "failed",
+    parityByPositionAndDigit: absenceParityRows,
   },
   uiWiring,
   propagation: {
@@ -162,6 +185,10 @@ const markdown = [
   "",
   "## Outputs",
   ...outputs.map(output => "- " + output.outputKey + ": " + output.sampleSize + " draws, cutoff " + output.drawCutoff + ", same snapshot SHA-256"),
+  "",
+  "## V1 presence/absence numeric parity",
+  "- Compared every R1–R5 × digit 0–9 report against the independent position analyzer: " + absenceParityRows.length + " / 50 passed.",
+  "- Verified occurrences, observed rate, current absence, complete intervals, conditional return denominators and timeline draw IDs.",
   "",
   "## Dashboard wiring",
   ...Object.entries(uiWiring).map(([name, passed]) => "- " + (passed ? "PASS" : "FAIL") + " — " + name),
