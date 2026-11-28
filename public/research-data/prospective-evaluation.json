@@ -1,24 +1,24 @@
 {
   "schemaVersion": 1,
-  "datasetVersionId": "tris:3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2:37008",
-  "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
-  "drawCutoff": 37008,
-  "sampleSize": 25976,
-  "generatedAt": "2026-11-28T19:18:05.459Z",
+  "datasetVersionId": "tris:7639b4dae7be020281c98cc994486fc1765fa084c1cf4216ebf596814b42288c:37009",
+  "snapshotSha256": "7639b4dae7be020281c98cc994486fc1765fa084c1cf4216ebf596814b42288c",
+  "drawCutoff": 37009,
+  "sampleSize": 25977,
+  "generatedAt": "2026-11-28T21:40:32.419Z",
   "result": {
-    "cycles": 7,
-    "frozenForecasts": 689,
-    "resolvedForecasts": 589,
+    "cycles": 8,
+    "frozenForecasts": 789,
+    "resolvedForecasts": 689,
     "pendingForecasts": 100,
-    "lastFrozenTargetDrawId": 37009,
-    "lastResolvedTargetDrawId": 37008,
+    "lastFrozenTargetDrawId": 37010,
+    "lastResolvedTargetDrawId": 37009,
     "ledgerAudit": {
       "method": "read-only-prospective-ledger-integrity-v1",
       "summary": {
-        "forecasts": 689,
-        "resolutions": 589,
+        "forecasts": 789,
+        "resolutions": 689,
         "pending": 100,
-        "resolved": 589,
+        "resolved": 689,
         "orphanResolutions": 0,
         "duplicateForecastIds": 0,
         "duplicateCandidateTargets": 0,
@@ -65,6 +65,12 @@
         {
           "targetDrawId": 37009,
           "forecasts": 100,
+          "resolved": 100,
+          "pending": 0
+        },
+        {
+          "targetDrawId": 37010,
+          "forecasts": 100,
           "resolved": 0,
           "pending": 100
         }
@@ -80,11 +86,11 @@
     "performance": {
       "method": "prospective-performance-by-config-v1",
       "summary": {
-        "forecastRecords": 689,
-        "resolvedRecords": 589,
+        "forecastRecords": 789,
+        "resolvedRecords": 689,
         "pendingRecords": 100,
-        "groups": 191,
-        "groupsWithEvidence": 177,
+        "groups": 206,
+        "groupsWithEvidence": 191,
         "duplicateForecastIds": 0,
         "duplicateOrMismatchedResolutions": 0
       },
@@ -93,6 +99,64 @@
           "key": "absence-return|{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":0}",
           "family": "absence-return",
           "config": "{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":0}",
+          "position": 0,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 8,
+          "resolved": 7,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
+          },
+          "baselineWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 7,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":1}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":1}",
+          "position": 0,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 8,
+          "resolved": 7,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 0,
+          "candidateRate": 0.14285714285714285,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.02567962434474355,
+            "upper": 0.5131278292743189
+          },
+          "baselineWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 6,
+          "pairedDifference": 0.14285714285714285
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":2}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":2}",
           "position": 0,
           "mode": null,
           "method": null,
@@ -116,64 +180,6 @@
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
           "ties": 6,
-          "pairedDifference": 0
-        },
-        {
-          "key": "absence-return|{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":1}",
-          "family": "absence-return",
-          "config": "{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":1}",
-          "position": 0,
-          "mode": null,
-          "method": null,
-          "poolSize": null,
-          "window": null,
-          "forecasts": 7,
-          "resolved": 6,
-          "pending": 1,
-          "candidateHits": 1,
-          "baselineHits": 0,
-          "candidateRate": 0.16666666666666666,
-          "baselineRate": 0,
-          "candidateWilson": {
-            "lower": 0.030053369748306635,
-            "upper": 0.5635028221864702
-          },
-          "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
-          },
-          "candidateOnlyWins": 1,
-          "baselineOnlyWins": 0,
-          "ties": 5,
-          "pairedDifference": 0.16666666666666666
-        },
-        {
-          "key": "absence-return|{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":2}",
-          "family": "absence-return",
-          "config": "{\"family\":\"absence-return\",\"position\":0,\"priorMisses\":2}",
-          "position": 0,
-          "mode": null,
-          "method": null,
-          "poolSize": null,
-          "window": null,
-          "forecasts": 6,
-          "resolved": 5,
-          "pending": 1,
-          "candidateHits": 0,
-          "baselineHits": 0,
-          "candidateRate": 0,
-          "baselineRate": 0,
-          "candidateWilson": {
-            "lower": 0,
-            "upper": 0.43448246478317476
-          },
-          "baselineWilson": {
-            "lower": 0,
-            "upper": 0.43448246478317476
-          },
-          "candidateOnlyWins": 0,
-          "baselineOnlyWins": 0,
-          "ties": 5,
           "pairedDifference": 0
         },
         {
@@ -214,9 +220,9 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 6,
+          "forecasts": 7,
           "resolved": 6,
-          "pending": 0,
+          "pending": 1,
           "candidateHits": 2,
           "baselineHits": 0,
           "candidateRate": 0.3333333333333333,
@@ -272,24 +278,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 3,
-          "resolved": 2,
+          "forecasts": 4,
+          "resolved": 3,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0,
-            "upper": 0.6576197724933469
+            "lower": 5.551115123125783e-17,
+            "upper": 0.5614970317550454
           },
           "baselineWilson": {
-            "lower": 0,
-            "upper": 0.6576197724933469
+            "lower": 5.551115123125783e-17,
+            "upper": 0.5614970317550454
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 2,
+          "ties": 3,
           "pairedDifference": 0
         },
         {
@@ -301,25 +307,25 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
-          "candidateHits": 1,
+          "candidateHits": 2,
           "baselineHits": 0,
-          "candidateRate": 0.16666666666666666,
+          "candidateRate": 0.2857142857142857,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0.030053369748306635,
-            "upper": 0.5635028221864702
+            "lower": 0.08221892400405678,
+            "upper": 0.6410655481673808
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
-          "candidateOnlyWins": 1,
+          "candidateOnlyWins": 2,
           "baselineOnlyWins": 0,
           "ties": 5,
-          "pairedDifference": 0.16666666666666666
+          "pairedDifference": 0.2857142857142857
         },
         {
           "key": "absence-return|{\"family\":\"absence-return\",\"position\":1,\"priorMisses\":1}",
@@ -331,23 +337,23 @@
           "poolSize": null,
           "window": null,
           "forecasts": 5,
-          "resolved": 4,
-          "pending": 1,
+          "resolved": 5,
+          "pending": 0,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
             "lower": 0,
-            "upper": 0.4898908364545973
+            "upper": 0.43448246478317476
           },
           "baselineWilson": {
             "lower": 0,
-            "upper": 0.4898908364545973
+            "upper": 0.43448246478317476
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 4,
+          "ties": 5,
           "pairedDifference": 0
         },
         {
@@ -359,9 +365,9 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 1,
+          "forecasts": 2,
           "resolved": 1,
-          "pending": 0,
+          "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
@@ -388,8 +394,8 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 5,
-          "resolved": 4,
+          "forecasts": 6,
+          "resolved": 5,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
@@ -397,15 +403,15 @@
           "baselineRate": 0,
           "candidateWilson": {
             "lower": 0,
-            "upper": 0.4898908364545973
+            "upper": 0.43448246478317476
           },
           "baselineWilson": {
             "lower": 0,
-            "upper": 0.4898908364545973
+            "upper": 0.43448246478317476
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 4,
+          "ties": 5,
           "pairedDifference": 0
         },
         {
@@ -446,8 +452,8 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 5,
-          "resolved": 4,
+          "forecasts": 6,
+          "resolved": 5,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
@@ -455,15 +461,15 @@
           "baselineRate": 0,
           "candidateWilson": {
             "lower": 0,
-            "upper": 0.4898908364545973
+            "upper": 0.43448246478317476
           },
           "baselineWilson": {
             "lower": 0,
-            "upper": 0.4898908364545973
+            "upper": 0.43448246478317476
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 4,
+          "ties": 5,
           "pairedDifference": 0
         },
         {
@@ -476,23 +482,23 @@
           "poolSize": null,
           "window": null,
           "forecasts": 5,
-          "resolved": 4,
-          "pending": 1,
+          "resolved": 5,
+          "pending": 0,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
             "lower": 0,
-            "upper": 0.4898908364545973
+            "upper": 0.43448246478317476
           },
           "baselineWilson": {
             "lower": 0,
-            "upper": 0.4898908364545973
+            "upper": 0.43448246478317476
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 4,
+          "ties": 5,
           "pairedDifference": 0
         },
         {
@@ -505,23 +511,23 @@
           "poolSize": null,
           "window": null,
           "forecasts": 3,
-          "resolved": 2,
-          "pending": 1,
+          "resolved": 3,
+          "pending": 0,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0,
-            "upper": 0.6576197724933469
+            "lower": 5.551115123125783e-17,
+            "upper": 0.5614970317550454
           },
           "baselineWilson": {
-            "lower": 0,
-            "upper": 0.6576197724933469
+            "lower": 5.551115123125783e-17,
+            "upper": 0.5614970317550454
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 2,
+          "ties": 3,
           "pairedDifference": 0
         },
         {
@@ -533,24 +539,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -562,25 +568,25 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 1,
           "baselineHits": 0,
-          "candidateRate": 0.16666666666666666,
+          "candidateRate": 0.14285714285714285,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0.030053369748306635,
-            "upper": 0.5635028221864702
+            "lower": 0.02567962434474355,
+            "upper": 0.5131278292743189
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 1,
           "baselineOnlyWins": 0,
-          "ties": 5,
-          "pairedDifference": 0.16666666666666666
+          "ties": 6,
+          "pairedDifference": 0.14285714285714285
         },
         {
           "key": "absence-return|{\"family\":\"absence-return\",\"position\":2,\"priorMisses\":13}",
@@ -620,9 +626,9 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 6,
+          "forecasts": 7,
           "resolved": 6,
-          "pending": 0,
+          "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
@@ -650,23 +656,23 @@
           "poolSize": null,
           "window": null,
           "forecasts": 7,
-          "resolved": 6,
-          "pending": 1,
+          "resolved": 7,
+          "pending": 0,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -678,25 +684,25 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
-          "candidateHits": 2,
+          "candidateHits": 3,
           "baselineHits": 0,
-          "candidateRate": 0.3333333333333333,
+          "candidateRate": 0.42857142857142855,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0.09677141110578041,
-            "upper": 0.700006684861608
+            "lower": 0.15821985525146975,
+            "upper": 0.7495416354723428
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
-          "candidateOnlyWins": 2,
+          "candidateOnlyWins": 3,
           "baselineOnlyWins": 0,
           "ties": 4,
-          "pairedDifference": 0.3333333333333333
+          "pairedDifference": 0.42857142857142855
         },
         {
           "key": "absence-return|{\"family\":\"absence-return\",\"position\":2,\"priorMisses\":8}",
@@ -707,9 +713,9 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 1,
+          "forecasts": 2,
           "resolved": 1,
-          "pending": 0,
+          "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
@@ -736,24 +742,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -765,30 +771,59 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
           "key": "absence-return|{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":2}",
           "family": "absence-return",
           "config": "{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":2}",
+          "position": 3,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 8,
+          "resolved": 7,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
+          },
+          "baselineWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 7,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":3}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":3}",
           "position": 3,
           "mode": null,
           "method": null,
@@ -815,10 +850,97 @@
           "pairedDifference": 0
         },
         {
-          "key": "absence-return|{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":3}",
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":5}",
           "family": "absence-return",
-          "config": "{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":3}",
+          "config": "{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":5}",
           "position": 3,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 5,
+          "resolved": 5,
+          "pending": 0,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.43448246478317476
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.43448246478317476
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 5,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":8}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":8}",
+          "position": 3,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 4,
+          "resolved": 3,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 0,
+          "candidateRate": 0.3333333333333333,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.06149194472039621,
+            "upper": 0.7923403991979522
+          },
+          "baselineWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.5614970317550454
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 0,
+          "ties": 2,
+          "pairedDifference": 0.3333333333333333
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":0}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":0}",
+          "position": 4,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 7,
+          "resolved": 6,
+          "pending": 1,
+          "candidateHits": 1,
+          "baselineHits": 1,
+          "candidateRate": 0.16666666666666666,
+          "baselineRate": 0.16666666666666666,
+          "candidateWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "baselineWilson": {
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
+          },
+          "candidateOnlyWins": 1,
+          "baselineOnlyWins": 1,
+          "ties": 4,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":1}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":1}",
+          "position": 4,
           "mode": null,
           "method": null,
           "poolSize": null,
@@ -841,122 +963,6 @@
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
           "ties": 5,
-          "pairedDifference": 0
-        },
-        {
-          "key": "absence-return|{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":5}",
-          "family": "absence-return",
-          "config": "{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":5}",
-          "position": 3,
-          "mode": null,
-          "method": null,
-          "poolSize": null,
-          "window": null,
-          "forecasts": 5,
-          "resolved": 4,
-          "pending": 1,
-          "candidateHits": 0,
-          "baselineHits": 0,
-          "candidateRate": 0,
-          "baselineRate": 0,
-          "candidateWilson": {
-            "lower": 0,
-            "upper": 0.4898908364545973
-          },
-          "baselineWilson": {
-            "lower": 0,
-            "upper": 0.4898908364545973
-          },
-          "candidateOnlyWins": 0,
-          "baselineOnlyWins": 0,
-          "ties": 4,
-          "pairedDifference": 0
-        },
-        {
-          "key": "absence-return|{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":8}",
-          "family": "absence-return",
-          "config": "{\"family\":\"absence-return\",\"position\":3,\"priorMisses\":8}",
-          "position": 3,
-          "mode": null,
-          "method": null,
-          "poolSize": null,
-          "window": null,
-          "forecasts": 3,
-          "resolved": 2,
-          "pending": 1,
-          "candidateHits": 1,
-          "baselineHits": 0,
-          "candidateRate": 0.5,
-          "baselineRate": 0,
-          "candidateWilson": {
-            "lower": 0.09453120573423074,
-            "upper": 0.9054687942657693
-          },
-          "baselineWilson": {
-            "lower": 0,
-            "upper": 0.6576197724933469
-          },
-          "candidateOnlyWins": 1,
-          "baselineOnlyWins": 0,
-          "ties": 1,
-          "pairedDifference": 0.5
-        },
-        {
-          "key": "absence-return|{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":0}",
-          "family": "absence-return",
-          "config": "{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":0}",
-          "position": 4,
-          "mode": null,
-          "method": null,
-          "poolSize": null,
-          "window": null,
-          "forecasts": 6,
-          "resolved": 5,
-          "pending": 1,
-          "candidateHits": 1,
-          "baselineHits": 1,
-          "candidateRate": 0.2,
-          "baselineRate": 0.2,
-          "candidateWilson": {
-            "lower": 0.03622410863243014,
-            "upper": 0.6244653702374747
-          },
-          "baselineWilson": {
-            "lower": 0.03622410863243014,
-            "upper": 0.6244653702374747
-          },
-          "candidateOnlyWins": 1,
-          "baselineOnlyWins": 1,
-          "ties": 3,
-          "pairedDifference": 0
-        },
-        {
-          "key": "absence-return|{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":1}",
-          "family": "absence-return",
-          "config": "{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":1}",
-          "position": 4,
-          "mode": null,
-          "method": null,
-          "poolSize": null,
-          "window": null,
-          "forecasts": 5,
-          "resolved": 4,
-          "pending": 1,
-          "candidateHits": 0,
-          "baselineHits": 0,
-          "candidateRate": 0,
-          "baselineRate": 0,
-          "candidateWilson": {
-            "lower": 0,
-            "upper": 0.4898908364545973
-          },
-          "baselineWilson": {
-            "lower": 0,
-            "upper": 0.4898908364545973
-          },
-          "candidateOnlyWins": 0,
-          "baselineOnlyWins": 0,
-          "ties": 4,
           "pairedDifference": 0
         },
         {
@@ -997,9 +1003,9 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 5,
+          "forecasts": 6,
           "resolved": 5,
-          "pending": 0,
+          "pending": 1,
           "candidateHits": 0,
           "baselineHits": 1,
           "candidateRate": 0,
@@ -1056,24 +1062,24 @@
           "poolSize": null,
           "window": null,
           "forecasts": 6,
-          "resolved": 5,
-          "pending": 1,
+          "resolved": 6,
+          "pending": 0,
           "candidateHits": 0,
           "baselineHits": 1,
           "candidateRate": 0,
-          "baselineRate": 0.2,
+          "baselineRate": 0.16666666666666666,
           "candidateWilson": {
-            "lower": 0,
-            "upper": 0.43448246478317476
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
           },
           "baselineWilson": {
-            "lower": 0.03622410863243014,
-            "upper": 0.6244653702374747
+            "lower": 0.030053369748306635,
+            "upper": 0.5635028221864702
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 1,
-          "ties": 4,
-          "pairedDifference": -0.2
+          "ties": 5,
+          "pairedDifference": -0.16666666666666666
         },
         {
           "key": "absence-return|{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":5}",
@@ -1084,9 +1090,38 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 4,
-          "resolved": 3,
+          "forecasts": 5,
+          "resolved": 4,
           "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 4,
+          "pairedDifference": 0
+        },
+        {
+          "key": "absence-return|{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":8}",
+          "family": "absence-return",
+          "config": "{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":8}",
+          "position": 4,
+          "mode": null,
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 3,
+          "resolved": 3,
+          "pending": 0,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
@@ -1105,35 +1140,6 @@
           "pairedDifference": 0
         },
         {
-          "key": "absence-return|{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":8}",
-          "family": "absence-return",
-          "config": "{\"family\":\"absence-return\",\"position\":4,\"priorMisses\":8}",
-          "position": 4,
-          "mode": null,
-          "method": null,
-          "poolSize": null,
-          "window": null,
-          "forecasts": 3,
-          "resolved": 2,
-          "pending": 1,
-          "candidateHits": 0,
-          "baselineHits": 0,
-          "candidateRate": 0,
-          "baselineRate": 0,
-          "candidateWilson": {
-            "lower": 0,
-            "upper": 0.6576197724933469
-          },
-          "baselineWilson": {
-            "lower": 0,
-            "upper": 0.6576197724933469
-          },
-          "candidateOnlyWins": 0,
-          "baselineOnlyWins": 0,
-          "ties": 2,
-          "pairedDifference": 0
-        },
-        {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":1,\"position\":0,\"window\":100}",
           "family": "pool-ranking",
           "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":1,\"position\":0,\"window\":100}",
@@ -1143,18 +1149,24 @@
           "poolSize": 1,
           "window": 100,
           "forecasts": 1,
-          "resolved": 0,
-          "pending": 1,
+          "resolved": 1,
+          "pending": 0,
           "candidateHits": 0,
           "baselineHits": 0,
-          "candidateRate": null,
-          "baselineRate": null,
-          "candidateWilson": null,
-          "baselineWilson": null,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 0,
-          "pairedDifference": null
+          "ties": 1,
+          "pairedDifference": 0
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":1,\"position\":0,\"window\":50}",
@@ -1184,6 +1196,29 @@
           "baselineOnlyWins": 0,
           "ties": 1,
           "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":1,\"position\":1,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":1,\"position\":1,\"window\":100}",
+          "position": 1,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 1,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":1,\"position\":1,\"window\":50}",
@@ -1311,18 +1346,24 @@
           "poolSize": 2,
           "window": 100,
           "forecasts": 1,
-          "resolved": 0,
-          "pending": 1,
+          "resolved": 1,
+          "pending": 0,
           "candidateHits": 0,
-          "baselineHits": 0,
-          "candidateRate": null,
-          "baselineRate": null,
-          "candidateWilson": null,
-          "baselineWilson": null,
+          "baselineHits": 1,
+          "candidateRate": 0,
+          "baselineRate": 1,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
           "candidateOnlyWins": 0,
-          "baselineOnlyWins": 0,
+          "baselineOnlyWins": 1,
           "ties": 0,
-          "pairedDifference": null
+          "pairedDifference": -1
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":2,\"position\":0,\"window\":50}",
@@ -1352,6 +1393,29 @@
           "baselineOnlyWins": 0,
           "ties": 1,
           "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":2,\"position\":1,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":2,\"position\":1,\"window\":100}",
+          "position": 1,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 2,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":2,\"position\":1,\"window\":50}",
@@ -1479,18 +1543,24 @@
           "poolSize": 3,
           "window": 100,
           "forecasts": 1,
-          "resolved": 0,
-          "pending": 1,
-          "candidateHits": 0,
-          "baselineHits": 0,
-          "candidateRate": null,
-          "baselineRate": null,
-          "candidateWilson": null,
-          "baselineWilson": null,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 1,
+          "baselineHits": 1,
+          "candidateRate": 1,
+          "baselineRate": 1,
+          "candidateWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
+          "baselineWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 0,
-          "pairedDifference": null
+          "ties": 1,
+          "pairedDifference": 0
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":3,\"position\":0,\"window\":50}",
@@ -1520,6 +1590,29 @@
           "baselineOnlyWins": 0,
           "ties": 1,
           "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":3,\"position\":1,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":3,\"position\":1,\"window\":100}",
+          "position": 1,
+          "mode": null,
+          "method": "balanced",
+          "poolSize": 3,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"balanced\",\"poolSize\":3,\"position\":1,\"window\":50}",
@@ -1676,18 +1769,24 @@
           "poolSize": 1,
           "window": 20,
           "forecasts": 1,
-          "resolved": 0,
-          "pending": 1,
+          "resolved": 1,
+          "pending": 0,
           "candidateHits": 0,
           "baselineHits": 0,
-          "candidateRate": null,
-          "baselineRate": null,
-          "candidateWilson": null,
-          "baselineWilson": null,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 0,
-          "pairedDifference": null
+          "ties": 1,
+          "pairedDifference": 0
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":0,\"window\":50}",
@@ -1698,24 +1797,24 @@
           "method": "frequency",
           "poolSize": 1,
           "window": 50,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -1746,6 +1845,29 @@
           "baselineOnlyWins": 0,
           "ties": 1,
           "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":1,\"window\":20}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":1,\"window\":20}",
+          "position": 1,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 1,
+          "window": 20,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":1,\"position\":1,\"window\":50}",
@@ -1814,24 +1936,24 @@
           "method": "frequency",
           "poolSize": 1,
           "window": 50,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -1930,9 +2052,9 @@
           "method": "frequency",
           "poolSize": 1,
           "window": 50,
-          "forecasts": 6,
+          "forecasts": 7,
           "resolved": 6,
-          "pending": 0,
+          "pending": 1,
           "candidateHits": 1,
           "baselineHits": 1,
           "candidateRate": 0.16666666666666666,
@@ -1959,25 +2081,25 @@
           "method": "frequency",
           "poolSize": 2,
           "window": 100,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
-          "candidateHits": 3,
-          "baselineHits": 1,
-          "candidateRate": 0.5,
-          "baselineRate": 0.16666666666666666,
+          "candidateHits": 4,
+          "baselineHits": 2,
+          "candidateRate": 0.5714285714285714,
+          "baselineRate": 0.2857142857142857,
           "candidateWilson": {
-            "lower": 0.18761630648265054,
-            "upper": 0.8123836935173494
+            "lower": 0.2504583645276572,
+            "upper": 0.8417801447485302
           },
           "baselineWilson": {
-            "lower": 0.030053369748306635,
-            "upper": 0.5635028221864702
+            "lower": 0.08221892400405678,
+            "upper": 0.6410655481673808
           },
           "candidateOnlyWins": 3,
           "baselineOnlyWins": 1,
-          "ties": 2,
-          "pairedDifference": 0.3333333333333333
+          "ties": 3,
+          "pairedDifference": 0.2857142857142857
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":0,\"window\":20}",
@@ -1988,19 +2110,25 @@
           "method": "frequency",
           "poolSize": 2,
           "window": 20,
-          "forecasts": 1,
-          "resolved": 0,
+          "forecasts": 2,
+          "resolved": 1,
           "pending": 1,
-          "candidateHits": 0,
+          "candidateHits": 1,
           "baselineHits": 0,
-          "candidateRate": null,
-          "baselineRate": null,
-          "candidateWilson": null,
-          "baselineWilson": null,
-          "candidateOnlyWins": 0,
+          "candidateRate": 1,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 1,
           "baselineOnlyWins": 0,
           "ties": 0,
-          "pairedDifference": null
+          "pairedDifference": 1
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":0,\"window\":50}",
@@ -2011,25 +2139,25 @@
           "method": "frequency",
           "poolSize": 2,
           "window": 50,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
-          "candidateHits": 3,
+          "candidateHits": 4,
           "baselineHits": 0,
-          "candidateRate": 0.5,
+          "candidateRate": 0.5714285714285714,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0.18761630648265054,
-            "upper": 0.8123836935173494
+            "lower": 0.2504583645276572,
+            "upper": 0.8417801447485302
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
-          "candidateOnlyWins": 3,
+          "candidateOnlyWins": 4,
           "baselineOnlyWins": 0,
           "ties": 3,
-          "pairedDifference": 0.5
+          "pairedDifference": 0.5714285714285714
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":1,\"window\":100}",
@@ -2059,6 +2187,29 @@
           "baselineOnlyWins": 0,
           "ties": 1,
           "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":1,\"window\":20}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":1,\"window\":20}",
+          "position": 1,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 2,
+          "window": 20,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":2,\"position\":1,\"window\":50}",
@@ -2272,25 +2423,48 @@
           "method": "frequency",
           "poolSize": 3,
           "window": 100,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
-          "candidateHits": 4,
-          "baselineHits": 1,
-          "candidateRate": 0.6666666666666666,
-          "baselineRate": 0.16666666666666666,
+          "candidateHits": 5,
+          "baselineHits": 2,
+          "candidateRate": 0.7142857142857143,
+          "baselineRate": 0.2857142857142857,
           "candidateWilson": {
-            "lower": 0.299993315138392,
-            "upper": 0.9032285888942195
+            "lower": 0.35893445183261935,
+            "upper": 0.9177810759959433
           },
           "baselineWilson": {
-            "lower": 0.030053369748306635,
-            "upper": 0.5635028221864702
+            "lower": 0.08221892400405678,
+            "upper": 0.6410655481673808
           },
           "candidateOnlyWins": 3,
           "baselineOnlyWins": 0,
-          "ties": 3,
-          "pairedDifference": 0.5
+          "ties": 4,
+          "pairedDifference": 0.42857142857142855
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":0,\"window\":20}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":0,\"window\":20}",
+          "position": 0,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 3,
+          "window": 20,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":0,\"window\":50}",
@@ -2301,25 +2475,25 @@
           "method": "frequency",
           "poolSize": 3,
           "window": 50,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
-          "candidateHits": 4,
+          "candidateHits": 5,
           "baselineHits": 0,
-          "candidateRate": 0.6666666666666666,
+          "candidateRate": 0.7142857142857143,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0.299993315138392,
-            "upper": 0.9032285888942195
+            "lower": 0.35893445183261935,
+            "upper": 0.9177810759959433
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
-          "candidateOnlyWins": 4,
+          "candidateOnlyWins": 5,
           "baselineOnlyWins": 0,
           "ties": 2,
-          "pairedDifference": 0.6666666666666666
+          "pairedDifference": 0.7142857142857143
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":1,\"window\":100}",
@@ -2359,25 +2533,25 @@
           "method": "frequency",
           "poolSize": 3,
           "window": 50,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
-          "candidateHits": 3,
+          "candidateHits": 4,
           "baselineHits": 2,
-          "candidateRate": 0.5,
-          "baselineRate": 0.3333333333333333,
+          "candidateRate": 0.5714285714285714,
+          "baselineRate": 0.2857142857142857,
           "candidateWilson": {
-            "lower": 0.18761630648265054,
-            "upper": 0.8123836935173494
+            "lower": 0.2504583645276572,
+            "upper": 0.8417801447485302
           },
           "baselineWilson": {
-            "lower": 0.09677141110578041,
-            "upper": 0.700006684861608
+            "lower": 0.08221892400405678,
+            "upper": 0.6410655481673808
           },
-          "candidateOnlyWins": 3,
+          "candidateOnlyWins": 4,
           "baselineOnlyWins": 2,
           "ties": 1,
-          "pairedDifference": 0.16666666666666666
+          "pairedDifference": 0.2857142857142857
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":3,\"position\":2,\"window\":100}",
@@ -2562,6 +2736,35 @@
           "method": "frequency",
           "poolSize": 4,
           "window": 50,
+          "forecasts": 3,
+          "resolved": 2,
+          "pending": 1,
+          "candidateHits": 2,
+          "baselineHits": 0,
+          "candidateRate": 1,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.34238022750665303,
+            "upper": 1
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.6576197724933469
+          },
+          "candidateOnlyWins": 2,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": 1
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":4,\"position\":1,\"window\":50}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":4,\"position\":1,\"window\":50}",
+          "position": 1,
+          "mode": null,
+          "method": "frequency",
+          "poolSize": 4,
+          "window": 50,
           "forecasts": 2,
           "resolved": 1,
           "pending": 1,
@@ -2583,29 +2786,6 @@
           "pairedDifference": 1
         },
         {
-          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":4,\"position\":1,\"window\":50}",
-          "family": "pool-ranking",
-          "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":4,\"position\":1,\"window\":50}",
-          "position": 1,
-          "mode": null,
-          "method": "frequency",
-          "poolSize": 4,
-          "window": 50,
-          "forecasts": 1,
-          "resolved": 0,
-          "pending": 1,
-          "candidateHits": 0,
-          "baselineHits": 0,
-          "candidateRate": null,
-          "baselineRate": null,
-          "candidateWilson": null,
-          "baselineWilson": null,
-          "candidateOnlyWins": 0,
-          "baselineOnlyWins": 0,
-          "ties": 0,
-          "pairedDifference": null
-        },
-        {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":4,\"position\":2,\"window\":50}",
           "family": "pool-ranking",
           "config": "{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":4,\"position\":2,\"window\":50}",
@@ -2615,18 +2795,24 @@
           "poolSize": 4,
           "window": 50,
           "forecasts": 1,
-          "resolved": 0,
-          "pending": 1,
+          "resolved": 1,
+          "pending": 0,
           "candidateHits": 0,
           "baselineHits": 0,
-          "candidateRate": null,
-          "baselineRate": null,
-          "candidateWilson": null,
-          "baselineWilson": null,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 0,
-          "pairedDifference": null
+          "ties": 1,
+          "pairedDifference": 0
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":4,\"position\":3,\"window\":50}",
@@ -2638,18 +2824,24 @@
           "poolSize": 4,
           "window": 50,
           "forecasts": 1,
-          "resolved": 0,
-          "pending": 1,
+          "resolved": 1,
+          "pending": 0,
           "candidateHits": 0,
-          "baselineHits": 0,
-          "candidateRate": null,
-          "baselineRate": null,
-          "candidateWilson": null,
-          "baselineWilson": null,
+          "baselineHits": 1,
+          "candidateRate": 0,
+          "baselineRate": 1,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
           "candidateOnlyWins": 0,
-          "baselineOnlyWins": 0,
+          "baselineOnlyWins": 1,
           "ties": 0,
-          "pairedDifference": null
+          "pairedDifference": -1
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":4,\"position\":4,\"window\":50}",
@@ -2661,18 +2853,24 @@
           "poolSize": 4,
           "window": 50,
           "forecasts": 1,
-          "resolved": 0,
-          "pending": 1,
-          "candidateHits": 0,
-          "baselineHits": 0,
-          "candidateRate": null,
-          "baselineRate": null,
-          "candidateWilson": null,
-          "baselineWilson": null,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 1,
+          "baselineHits": 1,
+          "candidateRate": 1,
+          "baselineRate": 1,
+          "candidateWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
+          "baselineWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 0,
-          "pairedDifference": null
+          "ties": 1,
+          "pairedDifference": 0
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":5,\"position\":0,\"window\":50}",
@@ -2683,19 +2881,25 @@
           "method": "frequency",
           "poolSize": 5,
           "window": 50,
-          "forecasts": 1,
-          "resolved": 0,
+          "forecasts": 2,
+          "resolved": 1,
           "pending": 1,
-          "candidateHits": 0,
+          "candidateHits": 1,
           "baselineHits": 0,
-          "candidateRate": null,
-          "baselineRate": null,
-          "candidateWilson": null,
-          "baselineWilson": null,
-          "candidateOnlyWins": 0,
+          "candidateRate": 1,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateOnlyWins": 1,
           "baselineOnlyWins": 0,
           "ties": 0,
-          "pairedDifference": null
+          "pairedDifference": 1
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":5,\"position\":1,\"window\":50}",
@@ -2707,18 +2911,24 @@
           "poolSize": 5,
           "window": 50,
           "forecasts": 1,
-          "resolved": 0,
-          "pending": 1,
-          "candidateHits": 0,
-          "baselineHits": 0,
-          "candidateRate": null,
-          "baselineRate": null,
-          "candidateWilson": null,
-          "baselineWilson": null,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 1,
+          "baselineHits": 1,
+          "candidateRate": 1,
+          "baselineRate": 1,
+          "candidateWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
+          "baselineWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 0,
-          "pairedDifference": null
+          "ties": 1,
+          "pairedDifference": 0
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":5,\"position\":2,\"window\":50}",
@@ -2730,18 +2940,24 @@
           "poolSize": 5,
           "window": 50,
           "forecasts": 1,
-          "resolved": 0,
-          "pending": 1,
+          "resolved": 1,
+          "pending": 0,
           "candidateHits": 0,
           "baselineHits": 0,
-          "candidateRate": null,
-          "baselineRate": null,
-          "candidateWilson": null,
-          "baselineWilson": null,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 0,
-          "pairedDifference": null
+          "ties": 1,
+          "pairedDifference": 0
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":5,\"position\":3,\"window\":50}",
@@ -2753,18 +2969,24 @@
           "poolSize": 5,
           "window": 50,
           "forecasts": 1,
-          "resolved": 0,
-          "pending": 1,
+          "resolved": 1,
+          "pending": 0,
           "candidateHits": 0,
-          "baselineHits": 0,
-          "candidateRate": null,
-          "baselineRate": null,
-          "candidateWilson": null,
-          "baselineWilson": null,
+          "baselineHits": 1,
+          "candidateRate": 0,
+          "baselineRate": 1,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "baselineWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
           "candidateOnlyWins": 0,
-          "baselineOnlyWins": 0,
+          "baselineOnlyWins": 1,
           "ties": 0,
-          "pairedDifference": null
+          "pairedDifference": -1
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"frequency\",\"poolSize\":5,\"position\":4,\"window\":50}",
@@ -2775,6 +2997,35 @@
           "method": "frequency",
           "poolSize": 5,
           "window": 50,
+          "forecasts": 1,
+          "resolved": 1,
+          "pending": 0,
+          "candidateHits": 1,
+          "baselineHits": 1,
+          "candidateRate": 1,
+          "baselineRate": 1,
+          "candidateWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
+          "baselineWilson": {
+            "lower": 0.20654931437723745,
+            "upper": 1
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 1,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":1,\"position\":0,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":1,\"position\":0,\"window\":100}",
+          "position": 0,
+          "mode": null,
+          "method": "long-absence",
+          "poolSize": 1,
+          "window": 100,
           "forecasts": 1,
           "resolved": 0,
           "pending": 1,
@@ -2885,25 +3136,25 @@
           "method": "long-absence",
           "poolSize": 1,
           "window": 50,
-          "forecasts": 3,
-          "resolved": 2,
+          "forecasts": 4,
+          "resolved": 3,
           "pending": 1,
           "candidateHits": 1,
           "baselineHits": 0,
-          "candidateRate": 0.5,
+          "candidateRate": 0.3333333333333333,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0.09453120573423074,
-            "upper": 0.9054687942657693
+            "lower": 0.06149194472039621,
+            "upper": 0.7923403991979522
           },
           "baselineWilson": {
-            "lower": 0,
-            "upper": 0.6576197724933469
+            "lower": 5.551115123125783e-17,
+            "upper": 0.5614970317550454
           },
           "candidateOnlyWins": 1,
           "baselineOnlyWins": 0,
-          "ties": 1,
-          "pairedDifference": 0.5
+          "ties": 2,
+          "pairedDifference": 0.3333333333333333
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":1,\"position\":4,\"window\":50}",
@@ -2933,6 +3184,29 @@
           "baselineOnlyWins": 0,
           "ties": 1,
           "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":2,\"position\":0,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":2,\"position\":0,\"window\":100}",
+          "position": 0,
+          "mode": null,
+          "method": "long-absence",
+          "poolSize": 2,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":2,\"position\":0,\"window\":50}",
@@ -3030,25 +3304,25 @@
           "method": "long-absence",
           "poolSize": 2,
           "window": 50,
-          "forecasts": 3,
-          "resolved": 2,
+          "forecasts": 4,
+          "resolved": 3,
           "pending": 1,
           "candidateHits": 2,
           "baselineHits": 0,
-          "candidateRate": 1,
+          "candidateRate": 0.6666666666666666,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0.34238022750665303,
-            "upper": 1
+            "lower": 0.2076596008020477,
+            "upper": 0.9385080552796037
           },
           "baselineWilson": {
-            "lower": 0,
-            "upper": 0.6576197724933469
+            "lower": 5.551115123125783e-17,
+            "upper": 0.5614970317550454
           },
           "candidateOnlyWins": 2,
           "baselineOnlyWins": 0,
-          "ties": 0,
-          "pairedDifference": 1
+          "ties": 1,
+          "pairedDifference": 0.6666666666666666
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":2,\"position\":4,\"window\":50}",
@@ -3060,24 +3334,47 @@
           "poolSize": 2,
           "window": 50,
           "forecasts": 2,
-          "resolved": 1,
-          "pending": 1,
+          "resolved": 2,
+          "pending": 0,
           "candidateHits": 1,
-          "baselineHits": 0,
-          "candidateRate": 1,
-          "baselineRate": 0,
+          "baselineHits": 1,
+          "candidateRate": 0.5,
+          "baselineRate": 0.5,
           "candidateWilson": {
-            "lower": 0.20654931437723745,
-            "upper": 1
+            "lower": 0.09453120573423074,
+            "upper": 0.9054687942657693
           },
           "baselineWilson": {
-            "lower": 0,
-            "upper": 0.7934506856227626
+            "lower": 0.09453120573423074,
+            "upper": 0.9054687942657693
           },
           "candidateOnlyWins": 1,
+          "baselineOnlyWins": 1,
+          "ties": 0,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":3,\"position\":0,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":3,\"position\":0,\"window\":100}",
+          "position": 0,
+          "mode": null,
+          "method": "long-absence",
+          "poolSize": 3,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
           "ties": 0,
-          "pairedDifference": 1
+          "pairedDifference": null
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":3,\"position\":0,\"window\":50}",
@@ -3088,25 +3385,25 @@
           "method": "long-absence",
           "poolSize": 3,
           "window": 50,
-          "forecasts": 6,
-          "resolved": 5,
+          "forecasts": 7,
+          "resolved": 6,
           "pending": 1,
           "candidateHits": 2,
           "baselineHits": 0,
-          "candidateRate": 0.4,
+          "candidateRate": 0.3333333333333333,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0.11762077423264783,
-            "upper": 0.769275718723987
+            "lower": 0.09677141110578041,
+            "upper": 0.700006684861608
           },
           "baselineWilson": {
-            "lower": 0,
-            "upper": 0.43448246478317476
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
           },
           "candidateOnlyWins": 2,
           "baselineOnlyWins": 0,
-          "ties": 3,
-          "pairedDifference": 0.4
+          "ties": 4,
+          "pairedDifference": 0.3333333333333333
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":3,\"position\":1,\"window\":50}",
@@ -3175,25 +3472,25 @@
           "method": "long-absence",
           "poolSize": 3,
           "window": 50,
-          "forecasts": 3,
-          "resolved": 2,
+          "forecasts": 4,
+          "resolved": 3,
           "pending": 1,
           "candidateHits": 2,
-          "baselineHits": 0,
-          "candidateRate": 1,
-          "baselineRate": 0,
+          "baselineHits": 1,
+          "candidateRate": 0.6666666666666666,
+          "baselineRate": 0.3333333333333333,
           "candidateWilson": {
-            "lower": 0.34238022750665303,
-            "upper": 1
+            "lower": 0.2076596008020477,
+            "upper": 0.9385080552796037
           },
           "baselineWilson": {
-            "lower": 0,
-            "upper": 0.6576197724933469
+            "lower": 0.06149194472039621,
+            "upper": 0.7923403991979522
           },
           "candidateOnlyWins": 2,
-          "baselineOnlyWins": 0,
+          "baselineOnlyWins": 1,
           "ties": 0,
-          "pairedDifference": 1
+          "pairedDifference": 0.3333333333333333
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"long-absence\",\"poolSize\":3,\"position\":4,\"window\":50}",
@@ -3205,24 +3502,47 @@
           "poolSize": 3,
           "window": 50,
           "forecasts": 2,
-          "resolved": 1,
-          "pending": 1,
+          "resolved": 2,
+          "pending": 0,
           "candidateHits": 1,
-          "baselineHits": 0,
-          "candidateRate": 1,
-          "baselineRate": 0,
+          "baselineHits": 1,
+          "candidateRate": 0.5,
+          "baselineRate": 0.5,
           "candidateWilson": {
-            "lower": 0.20654931437723745,
-            "upper": 1
+            "lower": 0.09453120573423074,
+            "upper": 0.9054687942657693
           },
           "baselineWilson": {
-            "lower": 0,
-            "upper": 0.7934506856227626
+            "lower": 0.09453120573423074,
+            "upper": 0.9054687942657693
           },
           "candidateOnlyWins": 1,
+          "baselineOnlyWins": 1,
+          "ties": 0,
+          "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":1,\"position\":0,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":1,\"position\":0,\"window\":100}",
+          "position": 0,
+          "mode": null,
+          "method": "recent-frequency",
+          "poolSize": 1,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
           "ties": 0,
-          "pairedDifference": 1
+          "pairedDifference": null
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":1,\"position\":0,\"window\":50}",
@@ -3370,6 +3690,29 @@
           "pairedDifference": 0
         },
         {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":2,\"position\":0,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":2,\"position\":0,\"window\":100}",
+          "position": 0,
+          "mode": null,
+          "method": "recent-frequency",
+          "poolSize": 2,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
+        },
+        {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":2,\"position\":0,\"window\":50}",
           "family": "pool-ranking",
           "config": "{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":2,\"position\":0,\"window\":50}",
@@ -3513,6 +3856,29 @@
           "baselineOnlyWins": 0,
           "ties": 1,
           "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":3,\"position\":0,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":3,\"position\":0,\"window\":100}",
+          "position": 0,
+          "mode": null,
+          "method": "recent-frequency",
+          "poolSize": 3,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"recent-frequency\",\"poolSize\":3,\"position\":0,\"window\":50}",
@@ -3660,6 +4026,29 @@
           "pairedDifference": 0
         },
         {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":1,\"position\":0,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":1,\"position\":0,\"window\":100}",
+          "position": 0,
+          "mode": null,
+          "method": "short-absence",
+          "poolSize": 1,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
+        },
+        {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":1,\"position\":0,\"window\":50}",
           "family": "pool-ranking",
           "config": "{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":1,\"position\":0,\"window\":50}",
@@ -3805,6 +4194,29 @@
           "pairedDifference": 0
         },
         {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":2,\"position\":0,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":2,\"position\":0,\"window\":100}",
+          "position": 0,
+          "mode": null,
+          "method": "short-absence",
+          "poolSize": 2,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
+        },
+        {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":2,\"position\":0,\"window\":50}",
           "family": "pool-ranking",
           "config": "{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":2,\"position\":0,\"window\":50}",
@@ -3948,6 +4360,29 @@
           "baselineOnlyWins": 0,
           "ties": 1,
           "pairedDifference": 0
+        },
+        {
+          "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":3,\"position\":0,\"window\":100}",
+          "family": "pool-ranking",
+          "config": "{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":3,\"position\":0,\"window\":100}",
+          "position": 0,
+          "mode": null,
+          "method": "short-absence",
+          "poolSize": 3,
+          "window": 100,
+          "forecasts": 1,
+          "resolved": 0,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": null,
+          "baselineRate": null,
+          "candidateWilson": null,
+          "baselineWilson": null,
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 0,
+          "pairedDifference": null
         },
         {
           "key": "pool-ranking|{\"family\":\"pool-ranking\",\"method\":\"short-absence\",\"poolSize\":3,\"position\":0,\"window\":50}",
@@ -4103,25 +4538,25 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 1,
           "baselineHits": 0,
-          "candidateRate": 0.16666666666666666,
+          "candidateRate": 0.14285714285714285,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0.030053369748306635,
-            "upper": 0.5635028221864702
+            "lower": 0.02567962434474355,
+            "upper": 0.5131278292743189
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 1,
           "baselineOnlyWins": 0,
-          "ties": 5,
-          "pairedDifference": 0.16666666666666666
+          "ties": 6,
+          "pairedDifference": 0.14285714285714285
         },
         {
           "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":1,\"position\":1}",
@@ -4132,25 +4567,25 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 1,
           "baselineHits": 0,
-          "candidateRate": 0.16666666666666666,
+          "candidateRate": 0.14285714285714285,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0.030053369748306635,
-            "upper": 0.5635028221864702
+            "lower": 0.02567962434474355,
+            "upper": 0.5131278292743189
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 1,
           "baselineOnlyWins": 0,
-          "ties": 5,
-          "pairedDifference": 0.16666666666666666
+          "ties": 6,
+          "pairedDifference": 0.14285714285714285
         },
         {
           "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":1,\"position\":2}",
@@ -4161,24 +4596,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -4190,25 +4625,25 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
-          "candidateHits": 1,
+          "candidateHits": 2,
           "baselineHits": 0,
-          "candidateRate": 0.16666666666666666,
+          "candidateRate": 0.2857142857142857,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0.030053369748306635,
-            "upper": 0.5635028221864702
+            "lower": 0.08221892400405678,
+            "upper": 0.6410655481673808
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
-          "candidateOnlyWins": 1,
+          "candidateOnlyWins": 2,
           "baselineOnlyWins": 0,
           "ties": 5,
-          "pairedDifference": 0.16666666666666666
+          "pairedDifference": 0.2857142857142857
         },
         {
           "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":1,\"position\":4}",
@@ -4219,25 +4654,25 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 1,
           "candidateRate": 0,
-          "baselineRate": 0.16666666666666666,
+          "baselineRate": 0.14285714285714285,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 0.030053369748306635,
-            "upper": 0.5635028221864702
+            "lower": 0.02567962434474355,
+            "upper": 0.5131278292743189
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 1,
-          "ties": 5,
-          "pairedDifference": -0.16666666666666666
+          "ties": 6,
+          "pairedDifference": -0.14285714285714285
         },
         {
           "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":2,\"position\":0}",
@@ -4248,25 +4683,25 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 1,
           "baselineHits": 0,
-          "candidateRate": 0.16666666666666666,
+          "candidateRate": 0.14285714285714285,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0.030053369748306635,
-            "upper": 0.5635028221864702
+            "lower": 0.02567962434474355,
+            "upper": 0.5131278292743189
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 1,
           "baselineOnlyWins": 0,
-          "ties": 5,
-          "pairedDifference": 0.16666666666666666
+          "ties": 6,
+          "pairedDifference": 0.14285714285714285
         },
         {
           "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":2,\"position\":1}",
@@ -4277,25 +4712,25 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
-          "candidateHits": 0,
+          "candidateHits": 1,
           "baselineHits": 0,
-          "candidateRate": 0,
+          "candidateRate": 0.14285714285714285,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 0.02567962434474355,
+            "upper": 0.5131278292743189
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
-          "candidateOnlyWins": 0,
+          "candidateOnlyWins": 1,
           "baselineOnlyWins": 0,
           "ties": 6,
-          "pairedDifference": 0
+          "pairedDifference": 0.14285714285714285
         },
         {
           "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":2,\"position\":2}",
@@ -4306,24 +4741,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -4335,24 +4770,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -4364,25 +4799,25 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 2,
           "baselineHits": 1,
-          "candidateRate": 0.3333333333333333,
-          "baselineRate": 0.16666666666666666,
+          "candidateRate": 0.2857142857142857,
+          "baselineRate": 0.14285714285714285,
           "candidateWilson": {
-            "lower": 0.09677141110578041,
-            "upper": 0.700006684861608
+            "lower": 0.08221892400405678,
+            "upper": 0.6410655481673808
           },
           "baselineWilson": {
-            "lower": 0.030053369748306635,
-            "upper": 0.5635028221864702
+            "lower": 0.02567962434474355,
+            "upper": 0.5131278292743189
           },
           "candidateOnlyWins": 1,
           "baselineOnlyWins": 0,
-          "ties": 5,
-          "pairedDifference": 0.16666666666666666
+          "ties": 6,
+          "pairedDifference": 0.14285714285714285
         },
         {
           "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":3,\"position\":0}",
@@ -4393,25 +4828,25 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 2,
           "baselineHits": 0,
-          "candidateRate": 0.3333333333333333,
+          "candidateRate": 0.2857142857142857,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0.09677141110578041,
-            "upper": 0.700006684861608
+            "lower": 0.08221892400405678,
+            "upper": 0.6410655481673808
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 2,
           "baselineOnlyWins": 0,
-          "ties": 4,
-          "pairedDifference": 0.3333333333333333
+          "ties": 5,
+          "pairedDifference": 0.2857142857142857
         },
         {
           "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":3,\"position\":1}",
@@ -4422,25 +4857,25 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 1,
           "baselineHits": 0,
-          "candidateRate": 0.16666666666666666,
+          "candidateRate": 0.14285714285714285,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0.030053369748306635,
-            "upper": 0.5635028221864702
+            "lower": 0.02567962434474355,
+            "upper": 0.5131278292743189
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 1,
           "baselineOnlyWins": 0,
-          "ties": 5,
-          "pairedDifference": 0.16666666666666666
+          "ties": 6,
+          "pairedDifference": 0.14285714285714285
         },
         {
           "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":3,\"position\":2}",
@@ -4451,24 +4886,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -4480,24 +4915,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -4509,25 +4944,25 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 1,
           "candidateRate": 0,
-          "baselineRate": 0.16666666666666666,
+          "baselineRate": 0.14285714285714285,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 0.030053369748306635,
-            "upper": 0.5635028221864702
+            "lower": 0.02567962434474355,
+            "upper": 0.5131278292743189
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 1,
-          "ties": 5,
-          "pairedDifference": -0.16666666666666666
+          "ties": 6,
+          "pairedDifference": -0.14285714285714285
         },
         {
           "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":4,\"position\":0}",
@@ -4538,24 +4973,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -4567,25 +5002,25 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 1,
           "baselineHits": 0,
-          "candidateRate": 0.16666666666666666,
+          "candidateRate": 0.14285714285714285,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0.030053369748306635,
-            "upper": 0.5635028221864702
+            "lower": 0.02567962434474355,
+            "upper": 0.5131278292743189
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 1,
           "baselineOnlyWins": 0,
-          "ties": 5,
-          "pairedDifference": 0.16666666666666666
+          "ties": 6,
+          "pairedDifference": 0.14285714285714285
         },
         {
           "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":4,\"position\":2}",
@@ -4596,24 +5031,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -4625,24 +5060,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -4654,24 +5089,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 1,
           "baselineHits": 1,
-          "candidateRate": 0.16666666666666666,
-          "baselineRate": 0.16666666666666666,
+          "candidateRate": 0.14285714285714285,
+          "baselineRate": 0.14285714285714285,
           "candidateWilson": {
-            "lower": 0.030053369748306635,
-            "upper": 0.5635028221864702
+            "lower": 0.02567962434474355,
+            "upper": 0.5131278292743189
           },
           "baselineWilson": {
-            "lower": 0.030053369748306635,
-            "upper": 0.5635028221864702
+            "lower": 0.02567962434474355,
+            "upper": 0.5131278292743189
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -4683,24 +5118,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -4712,25 +5147,25 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
-          "candidateHits": 1,
+          "candidateHits": 2,
           "baselineHits": 0,
-          "candidateRate": 0.16666666666666666,
+          "candidateRate": 0.2857142857142857,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0.030053369748306635,
-            "upper": 0.5635028221864702
+            "lower": 0.08221892400405678,
+            "upper": 0.6410655481673808
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
-          "candidateOnlyWins": 1,
+          "candidateOnlyWins": 2,
           "baselineOnlyWins": 0,
           "ties": 5,
-          "pairedDifference": 0.16666666666666666
+          "pairedDifference": 0.2857142857142857
         },
         {
           "key": "position-mutation|{\"family\":\"position-mutation\",\"lag\":5,\"position\":2}",
@@ -4741,24 +5176,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -4770,24 +5205,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -4799,24 +5234,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 1,
           "baselineHits": 1,
-          "candidateRate": 0.16666666666666666,
-          "baselineRate": 0.16666666666666666,
+          "candidateRate": 0.14285714285714285,
+          "baselineRate": 0.14285714285714285,
           "candidateWilson": {
-            "lower": 0.030053369748306635,
-            "upper": 0.5635028221864702
+            "lower": 0.02567962434474355,
+            "upper": 0.5131278292743189
           },
           "baselineWilson": {
-            "lower": 0.030053369748306635,
-            "upper": 0.5635028221864702
+            "lower": 0.02567962434474355,
+            "upper": 0.5131278292743189
           },
           "candidateOnlyWins": 1,
           "baselineOnlyWins": 1,
-          "ties": 4,
+          "ties": 5,
           "pairedDifference": 0
         },
         {
@@ -4828,25 +5263,25 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
-          "candidateHits": 0,
+          "candidateHits": 1,
           "baselineHits": 0,
-          "candidateRate": 0,
+          "candidateRate": 0.14285714285714285,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 0.02567962434474355,
+            "upper": 0.5131278292743189
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
-          "candidateOnlyWins": 0,
+          "candidateOnlyWins": 1,
           "baselineOnlyWins": 0,
           "ties": 6,
-          "pairedDifference": 0
+          "pairedDifference": 0.14285714285714285
         },
         {
           "key": "transition|{\"family\":\"transition\",\"lag\":1,\"mode\":\"firstLast\"}",
@@ -4857,24 +5292,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -4886,24 +5321,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -4915,24 +5350,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -4973,25 +5408,25 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 1,
           "baselineHits": 0,
-          "candidateRate": 0.16666666666666666,
+          "candidateRate": 0.14285714285714285,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0.030053369748306635,
-            "upper": 0.5635028221864702
+            "lower": 0.02567962434474355,
+            "upper": 0.5131278292743189
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 1,
           "baselineOnlyWins": 0,
-          "ties": 5,
-          "pairedDifference": 0.16666666666666666
+          "ties": 6,
+          "pairedDifference": 0.14285714285714285
         },
         {
           "key": "transition|{\"family\":\"transition\",\"lag\":2,\"mode\":\"firstLast\"}",
@@ -5002,24 +5437,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -5031,24 +5466,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -5060,24 +5495,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -5118,24 +5553,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -5147,24 +5582,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -5176,24 +5611,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
@@ -5205,175 +5640,30 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 7,
-          "resolved": 6,
+          "forecasts": 8,
+          "resolved": 7,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 6,
+          "ties": 7,
           "pairedDifference": 0
         },
         {
           "key": "transition|{\"family\":\"transition\",\"lag\":3,\"mode\":\"last4\"}",
           "family": "transition",
           "config": "{\"family\":\"transition\",\"lag\":3,\"mode\":\"last4\"}",
-          "position": null,
-          "mode": "last4",
-          "method": null,
-          "poolSize": null,
-          "window": null,
-          "forecasts": 4,
-          "resolved": 3,
-          "pending": 1,
-          "candidateHits": 0,
-          "baselineHits": 0,
-          "candidateRate": 0,
-          "baselineRate": 0,
-          "candidateWilson": {
-            "lower": 5.551115123125783e-17,
-            "upper": 0.5614970317550454
-          },
-          "baselineWilson": {
-            "lower": 5.551115123125783e-17,
-            "upper": 0.5614970317550454
-          },
-          "candidateOnlyWins": 0,
-          "baselineOnlyWins": 0,
-          "ties": 3,
-          "pairedDifference": 0
-        },
-        {
-          "key": "transition|{\"family\":\"transition\",\"lag\":4,\"mode\":\"first2\"}",
-          "family": "transition",
-          "config": "{\"family\":\"transition\",\"lag\":4,\"mode\":\"first2\"}",
-          "position": null,
-          "mode": "first2",
-          "method": null,
-          "poolSize": null,
-          "window": null,
-          "forecasts": 7,
-          "resolved": 6,
-          "pending": 1,
-          "candidateHits": 0,
-          "baselineHits": 0,
-          "candidateRate": 0,
-          "baselineRate": 0,
-          "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
-          },
-          "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
-          },
-          "candidateOnlyWins": 0,
-          "baselineOnlyWins": 0,
-          "ties": 6,
-          "pairedDifference": 0
-        },
-        {
-          "key": "transition|{\"family\":\"transition\",\"lag\":4,\"mode\":\"firstLast\"}",
-          "family": "transition",
-          "config": "{\"family\":\"transition\",\"lag\":4,\"mode\":\"firstLast\"}",
-          "position": null,
-          "mode": "firstLast",
-          "method": null,
-          "poolSize": null,
-          "window": null,
-          "forecasts": 7,
-          "resolved": 6,
-          "pending": 1,
-          "candidateHits": 0,
-          "baselineHits": 0,
-          "candidateRate": 0,
-          "baselineRate": 0,
-          "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
-          },
-          "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
-          },
-          "candidateOnlyWins": 0,
-          "baselineOnlyWins": 0,
-          "ties": 6,
-          "pairedDifference": 0
-        },
-        {
-          "key": "transition|{\"family\":\"transition\",\"lag\":4,\"mode\":\"last2\"}",
-          "family": "transition",
-          "config": "{\"family\":\"transition\",\"lag\":4,\"mode\":\"last2\"}",
-          "position": null,
-          "mode": "last2",
-          "method": null,
-          "poolSize": null,
-          "window": null,
-          "forecasts": 7,
-          "resolved": 6,
-          "pending": 1,
-          "candidateHits": 0,
-          "baselineHits": 0,
-          "candidateRate": 0,
-          "baselineRate": 0,
-          "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
-          },
-          "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
-          },
-          "candidateOnlyWins": 0,
-          "baselineOnlyWins": 0,
-          "ties": 6,
-          "pairedDifference": 0
-        },
-        {
-          "key": "transition|{\"family\":\"transition\",\"lag\":4,\"mode\":\"last3\"}",
-          "family": "transition",
-          "config": "{\"family\":\"transition\",\"lag\":4,\"mode\":\"last3\"}",
-          "position": null,
-          "mode": "last3",
-          "method": null,
-          "poolSize": null,
-          "window": null,
-          "forecasts": 7,
-          "resolved": 6,
-          "pending": 1,
-          "candidateHits": 0,
-          "baselineHits": 0,
-          "candidateRate": 0,
-          "baselineRate": 0,
-          "candidateWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
-          },
-          "baselineWilson": {
-            "lower": 2.7755575615628914e-17,
-            "upper": 0.3903342879021653
-          },
-          "candidateOnlyWins": 0,
-          "baselineOnlyWins": 0,
-          "ties": 6,
-          "pairedDifference": 0
-        },
-        {
-          "key": "transition|{\"family\":\"transition\",\"lag\":4,\"mode\":\"last4\"}",
-          "family": "transition",
-          "config": "{\"family\":\"transition\",\"lag\":4,\"mode\":\"last4\"}",
           "position": null,
           "mode": "last4",
           "method": null,
@@ -5400,11 +5690,185 @@
           "pairedDifference": 0
         },
         {
+          "key": "transition|{\"family\":\"transition\",\"lag\":4,\"mode\":\"first2\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":4,\"mode\":\"first2\"}",
+          "position": null,
+          "mode": "first2",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 8,
+          "resolved": 7,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
+          },
+          "baselineWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 7,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":4,\"mode\":\"firstLast\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":4,\"mode\":\"firstLast\"}",
+          "position": null,
+          "mode": "firstLast",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 8,
+          "resolved": 7,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
+          },
+          "baselineWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 7,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":4,\"mode\":\"last2\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":4,\"mode\":\"last2\"}",
+          "position": null,
+          "mode": "last2",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 8,
+          "resolved": 7,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
+          },
+          "baselineWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 7,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":4,\"mode\":\"last3\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":4,\"mode\":\"last3\"}",
+          "position": null,
+          "mode": "last3",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 8,
+          "resolved": 7,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
+          },
+          "baselineWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 7,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":4,\"mode\":\"last4\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":4,\"mode\":\"last4\"}",
+          "position": null,
+          "mode": "last4",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 5,
+          "resolved": 4,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "baselineWilson": {
+            "lower": 0,
+            "upper": 0.4898908364545973
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 4,
+          "pairedDifference": 0
+        },
+        {
           "key": "transition|{\"family\":\"transition\",\"lag\":5,\"mode\":\"first2\"}",
           "family": "transition",
           "config": "{\"family\":\"transition\",\"lag\":5,\"mode\":\"first2\"}",
           "position": null,
           "mode": "first2",
+          "method": null,
+          "poolSize": null,
+          "window": null,
+          "forecasts": 8,
+          "resolved": 7,
+          "pending": 1,
+          "candidateHits": 0,
+          "baselineHits": 0,
+          "candidateRate": 0,
+          "baselineRate": 0,
+          "candidateWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
+          },
+          "baselineWilson": {
+            "lower": 5.551115123125783e-17,
+            "upper": 0.35433043506668743
+          },
+          "candidateOnlyWins": 0,
+          "baselineOnlyWins": 0,
+          "ties": 7,
+          "pairedDifference": 0
+        },
+        {
+          "key": "transition|{\"family\":\"transition\",\"lag\":5,\"mode\":\"firstLast\"}",
+          "family": "transition",
+          "config": "{\"family\":\"transition\",\"lag\":5,\"mode\":\"firstLast\"}",
+          "position": null,
+          "mode": "firstLast",
           "method": null,
           "poolSize": null,
           "window": null,
@@ -5429,35 +5893,6 @@
           "pairedDifference": 0
         },
         {
-          "key": "transition|{\"family\":\"transition\",\"lag\":5,\"mode\":\"firstLast\"}",
-          "family": "transition",
-          "config": "{\"family\":\"transition\",\"lag\":5,\"mode\":\"firstLast\"}",
-          "position": null,
-          "mode": "firstLast",
-          "method": null,
-          "poolSize": null,
-          "window": null,
-          "forecasts": 6,
-          "resolved": 5,
-          "pending": 1,
-          "candidateHits": 0,
-          "baselineHits": 0,
-          "candidateRate": 0,
-          "baselineRate": 0,
-          "candidateWilson": {
-            "lower": 0,
-            "upper": 0.43448246478317476
-          },
-          "baselineWilson": {
-            "lower": 0,
-            "upper": 0.43448246478317476
-          },
-          "candidateOnlyWins": 0,
-          "baselineOnlyWins": 0,
-          "ties": 5,
-          "pairedDifference": 0
-        },
-        {
           "key": "transition|{\"family\":\"transition\",\"lag\":5,\"mode\":\"last2\"}",
           "family": "transition",
           "config": "{\"family\":\"transition\",\"lag\":5,\"mode\":\"last2\"}",
@@ -5466,24 +5901,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 6,
-          "resolved": 5,
+          "forecasts": 7,
+          "resolved": 6,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0,
-            "upper": 0.43448246478317476
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
           },
           "baselineWilson": {
-            "lower": 0,
-            "upper": 0.43448246478317476
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 5,
+          "ties": 6,
           "pairedDifference": 0
         },
         {
@@ -5495,24 +5930,24 @@
           "method": null,
           "poolSize": null,
           "window": null,
-          "forecasts": 6,
-          "resolved": 5,
+          "forecasts": 7,
+          "resolved": 6,
           "pending": 1,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 0,
-            "upper": 0.43448246478317476
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
           },
           "baselineWilson": {
-            "lower": 0,
-            "upper": 0.43448246478317476
+            "lower": 2.7755575615628914e-17,
+            "upper": 0.3903342879021653
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 5,
+          "ties": 6,
           "pairedDifference": 0
         },
         {
@@ -5525,23 +5960,23 @@
           "poolSize": null,
           "window": null,
           "forecasts": 4,
-          "resolved": 3,
-          "pending": 1,
+          "resolved": 4,
+          "pending": 0,
           "candidateHits": 0,
           "baselineHits": 0,
           "candidateRate": 0,
           "baselineRate": 0,
           "candidateWilson": {
-            "lower": 5.551115123125783e-17,
-            "upper": 0.5614970317550454
+            "lower": 0,
+            "upper": 0.4898908364545973
           },
           "baselineWilson": {
-            "lower": 5.551115123125783e-17,
-            "upper": 0.5614970317550454
+            "lower": 0,
+            "upper": 0.4898908364545973
           },
           "candidateOnlyWins": 0,
           "baselineOnlyWins": 0,
-          "ties": 3,
+          "ties": 4,
           "pairedDifference": 0
         }
       ],
