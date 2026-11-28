@@ -55,7 +55,7 @@ Los estados describen la madurez de la relación investigación-visual, no el é
 | MV-05 | Evaluación retrospectiva se distribuye entre salidas de motores, scripts y reportes de CI. | Alta | Crear índice de reportes con ejecución, hash/corte, train/test y baseline. |
 | MV-06 | El ledger prospectivo se genera y audita en Actions, pero el dashboard no demuestra todavía lectura automática de ese ledger publicado. | Crítica | Completar publicación/consumo persistente y prueba idempotente de UI + ledger. |
 | MV-07 | El Centro INA actual es una primera vista de relaciones posicionales, no un mapa integral del conocimiento. | Alta | Extenderlo al catálogo de módulos, hechos, hipótesis, dependencias y evidencias. |
-| MV-08 | P2.8 está cerrado por CI: motores separados para estabilidad 50/50 y comparación heredada 50/150/500, pruebas de paridad y consumidores INA integrados. La auditoría real-histórica se ejecutó con snapshot congelado 2026-11-25; queda reconciliación visual adicional con snapshot canónico 37007. | Alta | Cerrar equivalencia con lógica anterior, calibración y límites de ventanas. |
+| MV-08 | P2.8 cerrado por CI y validación real-histórica con snapshot congelado 2026-11-25. | Media | Reconciliar la salida de la UI con el snapshot canónico vigente 37007; conservar la distinción entre estabilidad 50/50 y comparador móvil 50/150/500. |
 
 ## 5. Orden de ejecución visual recomendado
 
