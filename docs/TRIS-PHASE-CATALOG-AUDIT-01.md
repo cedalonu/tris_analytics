@@ -36,7 +36,7 @@ El programa denominado “fase 120” está descrito en `docs/TRIS-FASE-RECONCIL
 
 - 82 expedientes documentales localizados.
 - 24 rutas visuales localizadas en el catálogo; se añadieron referencias específicas para fase 0 (`src/App.tsx`), fase 1 (`src/TrisOpsDashboard.tsx`), fase 3 (`src/InaProspectivePanel.tsx`) y fase 4 (`src/InaMemoryPanel.tsx`).
-- 0 expedientes declarados plenamente `verified`; fase 0 está `partially_verified` con motor/output verificados, montaje y binding confirmados por código y paridad de 25,976 filas aprobada; los otros 81 permanecen `unverified`.
+- 0 expedientes declarados plenamente `verified`; fases 0, 1, 3 y 4 están `partially_verified`; fase 0 tiene paridad de 25,976 filas, fase 1 tiene paridad parcial, fase 3 valida 589 resoluciones contra el histórico canónico y fase 4 tiene pruebas sintéticas; los otros 78 permanecen `unverified`.
 - 58 expedientes todavía sin una ruta visual específica registrada aquí; esto significa **sin correspondencia catalogada**, no que no exista ninguna visualización en el repositorio.
 - La matriz `docs/MATRIZ-INVESTIGACION-VISUAL-01.md` continúa siendo la autoridad para el estado investigación → motor → salida → visualización y sus brechas.
 
@@ -64,7 +64,7 @@ Diseñar y ejecutar la publicación automática de informes de GitHub Actions pa
 
 ## Checkpoint de visualización — 2026-11-28
 
-Live run `46185821125` confirmó sobre el snapshot 37008: 82 documentos localizados, 24 visualizaciones localizadas, 58 sin ruta visual catalogada, 0 referencias visuales rotas, 0 expedientes plenamente verificados, 1 `partially_verified` (fase 0) y 81 `unverified`. El despliegue de la vista previa con las cuatro rutas nuevas terminó en success en run `46185821059`.
+Live run `46185821125` confirmó sobre el snapshot 37008: 82 documentos localizados, 24 visualizaciones localizadas, 58 sin ruta visual catalogada, 0 referencias visuales rotas, 0 expedientes plenamente verificados, 4 `partially_verified` (fases 0, 1, 3 y 4) y 78 `unverified`. El despliegue de la vista previa con las cuatro rutas nuevas terminó en success en run `46185821059`.
 
 El catálogo ahora reconoce explícitamente las vistas de fases 0, 1, 3 y 4. La publicación automática del evaluador prospectivo está activa, pero no se extiende a todos los informes de las 82 investigaciones. La siguiente tarea sigue siendo construir el índice público general de informes y conectar las vistas específicas, sin marcar como actuales los expedientes que no tienen prueba de paridad.
 
@@ -82,3 +82,13 @@ Evidencia publicada en `public/research-data/research-phase-audit.json` (corte 3
 - Estado global: `partially_verified`, porque la inspección real del navegador y fallback visual sigue pendiente.
 
 El inventario actualizado registra 82 documentos, 24 visualizaciones localizadas, 58 sin ruta visual catalogada, 1 parcial, 81 sin verificar y 0 bloqueados. No se extiende la evidencia de fase 0 a las demás investigaciones.
+
+
+## Checkpoint de evidencia fases 1, 3 y 4 — 2026-11-28
+
+Live run `46188347254` terminó success y publicó el inventario actualizado:
+- **Fase 1 — descriptiva, pools y memoria:** 10 outputs con el mismo datasetVersionId/hash/corte; 7 módulos INA requeridos current; bindings de dashboard verificados por código. Paridad numérica parcial: overview y ausencia tienen comprobaciones, pero faltan fixtures independientes para recurrencia, pools, aging y transiciones.
+- **Fase 3 — señales y ciclos prospectivos:** ledger clean; 7 ciclos, 689 pronósticos congelados, 589 resueltos y 100 pendientes; cada resultado resuelto coincide con el concurso canónico. Panel estático montado y publicado. Falta revisión visual y evaluación independiente de ventaja predictiva.
+- **Fase 4 — memoria posicional/contextual:** output `research.memory-state` reconstruido desde el mismo INA context; 3 alcances temporales y contextuales, panel con selectores de alcance, rezago, posiciones y contexto. Pruebas sintéticas presentes; falta paridad numérica independiente sobre todo el histórico y revisión visual.
+
+El reporte público se normaliza para no generar despliegues horarios por cambios de `fetchedAt`. Estado del inventario: 82 documentos, 24 visualizaciones localizadas, 58 sin ruta visual catalogada, 4 parciales, 78 unverified, 0 bloqueados y 0 plenamente verificados. La vista previa fue desplegada con éxito en run `46188347255`.
