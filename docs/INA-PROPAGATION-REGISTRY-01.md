@@ -59,10 +59,30 @@ La suite `ina-propagation-audit.test.ts` cubre:
 
 El reporte generado se publica en `reports/ina-canonical-audit/latest.json` y `latest.md` dentro del artefacto del ciclo live. La ejecución de CI de este checkpoint debe cerrar antes de marcar las pruebas como aprobadas.
 
+## Incremento 02 — Inventario de los 82 expedientes
+
+Se exportó el catálogo de fases para reutilizarlo como fuente única y se añadió
+`scripts/run-tris-research-phase-audit.ts`. El runner se ejecuta en cada ciclo
+canónico, junto a la auditoría INA, y produce:
+
+- `reports/research-phase-audit/latest.json`
+- `reports/research-phase-audit/latest.md`
+
+Por cada expediente registra localización documental y visual, además de campos
+explícitos para motor, input canónico, output, montaje, binding y paridad. Los
+campos sin evidencia se mantienen `unverified`; la presencia de un archivo no
+los eleva a verificados. El reporte incluye snapshot, hash, corte y muestra del
+ciclo que lo generó.
+
+**Límite:** este incremento crea trazabilidad y un inventario repetible de los
+82 expedientes; no ejecuta todavía los 82 motores ni demuestra que sus datos o
+gráficas se hayan actualizado. La publicación actual queda en el artefacto del
+workflow y en su resumen, no en un endpoint público consumido por el dashboard.
+
 ## Siguiente incremento
 
-1. Añadir adaptadores de evidencia para cada output del registro INA.
-2. Expandir el inventario desde módulos INA a los expedientes 0–13, 23–30, 59–68 y 70–119.
-3. Enlazar cada salida con sus vistas activas y pruebas de paridad.
+1. Añadir adaptadores de evidencia para cada output INA y para cada expediente.
+2. Mapear motor y output esperado fase por fase, sin deducirlos del nombre del archivo.
+3. Probar montaje, binding y paridad para cada visualización.
 4. Publicar el índice de estado de forma consumible por el dashboard, sin importación manual.
 5. Probar con un nuevo concurso real, conservando snapshots y predicciones anteriores.
