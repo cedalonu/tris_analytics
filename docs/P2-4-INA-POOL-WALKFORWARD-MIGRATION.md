@@ -23,7 +23,7 @@ Conectar la evaluación retrospectiva de pools al mismo contexto INA sin modific
 CI:
 - [Research validation 46122236697](https://github.com/cedalonu/tris_analytics/actions/runs/46122236697): TypeScript, build visual y suite de investigación aprobados.
 - [Research core checks 46122195877](https://github.com/cedalonu/tris_analytics/actions/runs/46122195877): type check y suite de pruebas aprobados.
-- [Real-history validation 46122236665](https://github.com/cedalonu/tris_analytics/actions/runs/46122236665): TypeScript y suite de pruebas completadas; el build estaba pendiente al registrar este documento.
+- [Real-history validation 46122236665](https://github.com/cedalonu/tris_analytics/actions/runs/46122236665): TypeScript, suite de pruebas y build de integración histórica completados correctamente.
 
 ## Límites
 
