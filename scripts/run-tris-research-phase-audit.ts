@@ -14,6 +14,24 @@ const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as {
   snapshot: string; fetchedAt: string; sha256: string; rowCount: number;
   earliestDrawId: number; latestDrawId: number;
 };
+let phase0Evidence: any = null;
+try { phase0Evidence = JSON.parse(await readFile(resolve(reportDir, "phase-0-adapter-integrity.json"), "utf8")); }
+catch (error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error; }
+const phase0Checks = phase0Evidence?.evidence;
+const phase0Current = Boolean(
+  phase0Evidence?.status === "partially_verified" &&
+  phase0Evidence?.canonical?.sha256 === manifest.sha256 &&
+  phase0Evidence?.canonical?.drawCutoff === manifest.latestDrawId &&
+  phase0Evidence?.canonical?.sampleSize === manifest.rowCount &&
+  phase0Checks?.engine?.state === "verified" &&
+  phase0Checks?.canonicalInput?.state === "verified" &&
+  phase0Checks?.output?.state === "verified" &&
+  phase0Checks?.prefixGuard?.state === "verified" &&
+  phase0Checks?.numericalParity?.state === "passed" &&
+  phase0Checks?.dashboardMount?.state === "source_confirmed" &&
+  phase0Checks?.dataBinding?.state === "source_confirmed" &&
+  Object.values(phase0Checks?.wiring ?? {}).every(Boolean)
+);
 async function exists(path?: string): Promise<boolean> {
   if (!path) return false;
   try { return (await stat(resolve(path))).isFile(); } catch { return false; }
@@ -21,21 +39,23 @@ async function exists(path?: string): Promise<boolean> {
 const rows = await Promise.all(PHASES.map(async phase => {
   const documentExists = await exists(phase.artifact);
   const visualExists = await exists(phase.visual);
+  const verifiedPhase0 = phase.id === 0 && phase0Current;
   return {
     id: phase.id, title: phase.title, area: phase.area,
     documentation: { path: phase.artifact, state: documentExists ? "located" : "missing" },
-    engine: { state: "unverified", evidence: null },
+    engine: { state: verifiedPhase0 ? "verified" : "unverified", evidence: verifiedPhase0 ? phase0Checks.engine : null },
     canonicalInput: {
-      datasetVersionId: null, snapshotSha256: manifest.sha256,
+      datasetVersionId: verifiedPhase0 ? phase0Evidence.canonical.datasetVersionId : null,
+      snapshotSha256: manifest.sha256,
       drawCutoff: manifest.latestDrawId, sampleSize: manifest.rowCount,
-      state: "unverified",
+      state: verifiedPhase0 ? "verified" : "unverified",
     },
-    output: { keys: [], state: "unverified", evidence: null },
+    output: { keys: verifiedPhase0 ? [phase0Checks.output.key] : [], state: verifiedPhase0 ? "verified" : "unverified", evidence: verifiedPhase0 ? phase0Checks.output : null },
     visualization: { path: phase.visual ?? null, state: phase.visual ? (visualExists ? "located" : "missing") : "not_catalogued" },
-    dashboardMount: { state: "unverified", evidence: null },
-    dataBinding: { state: "unverified", evidence: null },
-    numericalParity: { state: "unverified", evidence: null },
-    overall: !documentExists || (phase.visual && !visualExists) ? "blocked" : "unverified",
+    dashboardMount: { state: verifiedPhase0 ? "source_confirmed" : "unverified", evidence: verifiedPhase0 ? phase0Checks.dashboardMount : null },
+    dataBinding: { state: verifiedPhase0 ? "source_confirmed" : "unverified", evidence: verifiedPhase0 ? phase0Checks.dataBinding : null },
+    numericalParity: { state: verifiedPhase0 ? "passed" : "unverified", evidence: verifiedPhase0 ? phase0Checks.numericalParity : null },
+    overall: !documentExists || (phase.visual && !visualExists) ? "blocked" : verifiedPhase0 ? "partially_verified" : "unverified",
   };
 }));
 const counts = {
@@ -47,6 +67,7 @@ const counts = {
   visualizationNotCatalogued: rows.filter(row => row.visualization.state === "not_catalogued").length,
   blocked: rows.filter(row => row.overall === "blocked").length,
   verified: rows.filter(row => row.overall === "verified").length,
+  partiallyVerified: rows.filter(row => row.overall === "partially_verified").length,
   unverified: rows.filter(row => row.overall === "unverified").length,
 };
 const report = {
@@ -57,11 +78,11 @@ const report = {
     sha256: manifest.sha256, sampleSize: manifest.rowCount,
     drawStart: manifest.earliestDrawId, drawCutoff: manifest.latestDrawId,
   },
-  counts, phases: rows,
+  counts, phase0Evidence: phase0Current ? phase0Evidence : null, phases: rows,
   limitations: [
     "This inventory covers the 82 phase records currently listed in ResearchPhaseCatalog.",
     "Located files do not prove that an engine ran, an output was generated, or a component is mounted.",
-    "Engine, output, dashboard mount, data binding and numerical parity remain unverified until explicit evidence is attached.",
+    "Engine, output, dashboard mount, data binding and numerical parity remain unverified until explicit evidence is attached; phase 0 may be partially verified by its dedicated adapter audit.",
     "This is not proof that all 82 dossiers have been refreshed by the latest draw.",
   ],
 };
@@ -78,7 +99,7 @@ const md = [
   "", "## Phase-level state",
   ...rows.map(row => "- " + row.id + " — " + row.title + ": " + row.overall +
     " (doc: " + row.documentation.state + "; visual: " + row.visualization.state +
-    "; engine/output/mount/binding/parity: unverified)"),
+    "; engine: " + row.engine.state + "; output: " + row.output.state + "; mount: " + row.dashboardMount.state + "; binding: " + row.dataBinding.state + "; parity: " + row.numericalParity.state + ")")),
   "", "## Limitations", ...report.limitations.map(item => "- " + item), "",
 ].join("\n");
 await writeFile(resolve(reportDir, "latest.md"), md);
