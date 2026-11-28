@@ -133,6 +133,16 @@ export const INA_MODULE_DEFINITIONS: InaModuleDefinition[] = [
     sourceFiles: ["src/research/ina-contracts.ts", "src/research/ina-core.ts"],
   },
   {
+    moduleId: "positional-absence",
+    title: "Presencia, ausencia e intervalos por posición",
+    engineId: "positional-absence-analysis",
+    engineVersion: "1.0.0",
+    consumes: ["ina.history"],
+    produces: ["research.positional-absence"],
+    status: "implemented",
+    sourceFiles: ["src/research/absence-analysis.ts", "src/research/ina-absence.ts", "src/research/ina-absence.test.ts", "src/TrisOpsDashboard.tsx"],
+  },
+  {
     moduleId: "position-overview",
     title: "Desplazamiento de frecuencias por posición",
     engineId: "dashboard-overview",
@@ -209,6 +219,7 @@ export const INA_MODULE_DEFINITIONS: InaModuleDefinition[] = [
     engineVersion: "1.0.0",
     consumes: [
       "ina.position-profile",
+      "research.positional-absence",
       "research.position-overview",
       "research.pool-evaluation",
       "research.positional-transitions",
