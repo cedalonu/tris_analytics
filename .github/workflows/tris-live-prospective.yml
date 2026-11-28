@@ -49,13 +49,22 @@ jobs:
               --repo "$GITHUB_REPOSITORY" \
               --name tris-live-prospective-ledger \
               --dir restored-ledger
-            if [ ! -d restored-ledger/cycles ]; then
+            # upload-artifact preserves paths from the common workspace root
+            # when the artifact contains both data/ and reports/ entries.
+            if [ ! -d restored-ledger/data/cycles ] && [ ! -d restored-ledger/cycles ]; then
               echo "Previous artifact has no cycles directory; refusing to bootstrap over missing state."
+              find restored-ledger -maxdepth 3 -type d -print
               exit 1
             fi
             mkdir -p data/cycles data/source-snapshots
-            cp -a restored-ledger/cycles/. data/cycles/
-            if [ -d restored-ledger/source-snapshots ]; then
+            if [ -d restored-ledger/data/cycles ]; then
+              cp -a restored-ledger/data/cycles/. data/cycles/
+            else
+              cp -a restored-ledger/cycles/. data/cycles/
+            fi
+            if [ -d restored-ledger/data/source-snapshots ]; then
+              cp -a restored-ledger/data/source-snapshots/. data/source-snapshots/
+            elif [ -d restored-ledger/source-snapshots ]; then
               cp -a restored-ledger/source-snapshots/. data/source-snapshots/
             fi
           else
