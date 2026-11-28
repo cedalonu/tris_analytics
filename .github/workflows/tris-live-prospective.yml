@@ -80,6 +80,9 @@ jobs:
             echo "Canonical TRIS dataset is unchanged; no commit required."
           else
             git commit -m "data(tris): refresh validated canonical history"
+            # Another research commit may land while the source is being processed.
+            # Rebase the isolated data commit instead of losing either update.
+            git pull --rebase origin research-core-v1
             git push origin research-core-v1
           fi
       - name: Record source freshness in job summary
