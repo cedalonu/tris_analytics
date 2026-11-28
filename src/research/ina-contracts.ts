@@ -92,7 +92,7 @@ export interface InaContextInput {
 /** Strictly checks the snapshot identity and rows before INA publishes a context. */
 export function createInaContext(input: InaContextInput): InaContext {
   const { snapshot, validation } = input;
-  const builtAt = input.builtAt ?? new Date().toISOString();
+  const builtAt = input.builtAt ?? snapshot.fetchedAt;
   if (!snapshot.snapshotId.trim()) throw new Error("snapshotId is required");
   if (!/^https?:\/\//.test(snapshot.sourceUrl)) throw new Error("sourceUrl must be an HTTP(S) URL");
   if (!Number.isFinite(Date.parse(snapshot.fetchedAt)) || !Number.isFinite(Date.parse(builtAt))) {
