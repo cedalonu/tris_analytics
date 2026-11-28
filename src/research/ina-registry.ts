@@ -178,9 +178,9 @@ export const INA_MODULE_DEFINITIONS: InaModuleDefinition[] = [
     engineId: "positional-transition-family",
     engineVersion: "1.0.0",
     consumes: ["ina.history", "ina.position-profile"],
-    produces: ["research.positional-transitions", "research.transition-stability"],
+    produces: ["research.positional-transitions", "research.transition-stability", "research.transition-window-comparison"],
     status: "partial",
-    sourceFiles: ["src/research/ina-positional-transitions.ts", "src/research/ina-transition-stability.ts", "src/research/ina-positional-transitions.test.ts", "src/research/ina-transition-stability.test.ts", "src/InaCommandCenter.tsx"],
+    sourceFiles: ["src/research/ina-positional-transitions.ts", "src/research/ina-transition-stability.ts", "src/research/ina-transition-window-comparison.ts", "src/research/ina-positional-transitions.test.ts", "src/research/ina-transition-stability.test.ts", "src/research/ina-transition-window-comparison.test.ts", "src/InaCommandCenter.tsx", "src/TrisOpsDashboard.tsx"],
   },
   {
     moduleId: "memory-research",
