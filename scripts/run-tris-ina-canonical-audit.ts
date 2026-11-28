@@ -82,7 +82,7 @@ assert.deepEqual(
 assert.equal(absence.result.positions.length, 5);
 assert.equal(absence.result.positions.every(position => position.digitReports.length === 10), true);
 const absenceParityRows = absence.result.positions.flatMap(position => {
-  const reference = analyzePositionAbsences(core.context.draws, position.position, 20);
+  const reference = analyzePositionAbsences([...core.context.draws], position.position, 20);
   return position.digitReports.map(report => {
     const expected = reference.digitReports[report.digit];
     assert.equal(report.occurrences, expected.occurrences, `absence occurrences mismatch R${position.position + 1}-${report.digit}`);
