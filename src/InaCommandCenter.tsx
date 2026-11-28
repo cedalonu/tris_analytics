@@ -1,10 +1,12 @@
 import React, { useMemo } from "react";
 import type { ResearchOutput } from "./research/ina-contracts";
 import type { InaTransitionKnowledge } from "./research/ina-positional-transitions";
+import type { InaTransitionStabilityKnowledge } from "./research/ina-transition-stability";
 
 type WindowSize = 50 | 150 | 500;
 interface Props {
   output: ResearchOutput<InaTransitionKnowledge> | null;
+  stabilityOutput: ResearchOutput<InaTransitionStabilityKnowledge> | null;
   windowSize: WindowSize;
   onWindowChange: (value: WindowSize) => void;
   focusedNode: string | null;
@@ -26,7 +28,7 @@ function Stat({ label, value, note }: { label: string; value: React.ReactNode; n
 }
 
 export default function InaCommandCenter({
-  output, windowSize, onWindowChange, focusedNode, onFocusNode,
+  output, stabilityOutput, windowSize, onWindowChange, focusedNode, onFocusNode,
   drawCount, drawStart, drawCutoff, sourceLabel, sourceFetchedAt, sha256,
 }: Props) {
   const result = output?.result;
@@ -142,6 +144,41 @@ export default function InaCommandCenter({
           <p className="mt-3 text-[10px] leading-relaxed text-slate-500">Ordenadas por conteo bruto. No son probabilidades ni señales predictivas validadas.</p>
         </div>
       </div>
+    </div>
+
+
+    <div className="ina-panel">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div><div className="ina-eyebrow">ESTABILIDAD Y DISPERSIÓN</div><h3 className="mt-1 text-lg font-semibold text-emerald-200">Cambios entre ventanas consecutivas</h3>
+          <p className="mt-1 text-[10px] text-slate-500">Comparación INA de ventanas recientes y previas no superpuestas. Entropía normalizada de 0 a 1; descriptiva, no predictiva.</p></div>
+        <span className="ina-evidence-tag">{stabilityOutput?.evidence.status ?? "SIN SALIDA"}</span>
+      </div>
+      {stabilityOutput ? <>
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+          <div className="ina-stat"><div className="ina-stat-label">Ventana reciente</div><div className="ina-stat-value">{stabilityOutput.result.recentDrawCount}</div><div className="ina-stat-note">#{stabilityOutput.result.recentStart ?? "—"} → #{stabilityOutput.result.recentCutoff ?? "—"}</div></div>
+          <div className="ina-stat"><div className="ina-stat-label">Ventana anterior</div><div className="ina-stat-value">{stabilityOutput.result.previousDrawCount}</div><div className="ina-stat-note">#{stabilityOutput.result.previousStart ?? "—"} → #{stabilityOutput.result.previousCutoff ?? "—"}</div></div>
+          <div className="ina-stat"><div className="ina-stat-label">Corte / versión</div><div className="ina-stat-value">#{stabilityOutput.drawCutoff ?? "—"}</div><div className="ina-stat-note">{stabilityOutput.datasetVersionId.slice(0, 24)}</div></div>
+        </div>
+        <div className="mt-4 grid gap-4 lg:grid-cols-[.85fr_1.15fr]">
+          <div><div className="ina-eyebrow">ENTROPÍA POR POSICIÓN</div><div className="mt-2 space-y-2">
+            {stabilityOutput.result.digitEntropy.map(row => <div key={row.p} className="grid grid-cols-[34px_1fr_52px] items-center gap-2 text-xs">
+              <b className="font-mono text-emerald-200">R{row.p + 1}</b>
+              <div className="h-2 overflow-hidden rounded-full bg-slate-900"><div className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-cyan-400" style={{width: (row.recent * 100) + "%"}}/></div>
+              <span className="text-right font-mono text-slate-300">{row.recent.toFixed(3)}</span>
+              <span className="col-start-2 text-[10px] text-slate-600">Anterior {row.previous.toFixed(3)} · Δ {row.delta >= 0 ? "+" : ""}{row.delta.toFixed(3)}</span>
+            </div>)}
+          </div></div>
+          <div><div className="ina-eyebrow">MAYORES CAMBIOS DE TRANSICIÓN</div><div className="mt-2 space-y-1">
+            {stabilityOutput.result.stability.filter(row => row.full + row.recent > 0).slice(0, 8).map(row => <div key={row.p + "-" + row.a + "-" + row.b} className="grid grid-cols-[1fr_42px_42px_76px] items-center gap-2 border-b border-slate-800/70 py-1.5 text-[11px]">
+              <span className="font-mono text-cyan-100">R{row.p + 1} {row.a} → R{row.p + 2} {row.b}</span>
+              <span className="text-right text-slate-400">{row.full}</span><span className="text-right text-slate-300">{row.recent}</span>
+              <b className={row.delta >= 0 ? "text-emerald-300 text-right" : "text-sky-300 text-right"}>{row.delta >= 0 ? "+" : ""}{(row.delta * 100).toFixed(2)} pp</b>
+            </div>)}
+            <div className="grid grid-cols-[1fr_42px_42px_76px] gap-2 text-[9px] text-slate-600"><span>Conexión</span><span className="text-right">Prev.</span><span className="text-right">Rec.</span><span className="text-right">Δ tasa</span></div>
+          </div></div>
+        </div>
+      </> : <p className="mt-3 text-xs text-slate-500">INA aún no dispone de una salida válida para comparar ventanas.</p>}
+      <p className="mt-3 text-[10px] text-amber-200/60">Las diferencias de tasa y entropía describen cambios de la muestra. No implican que un dígito o conexión esté “por salir”.</p>
     </div>
 
     <div className="ina-panel">
