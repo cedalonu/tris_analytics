@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
   "sourceUrl": "https://raw.githubusercontent.com/pakinja/pakin/master/Tris.csv",
-  "fetchedAt": "2026-11-28T19:18:04.938Z",
-  "sha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
-  "byteLength": 958288,
-  "rowCount": 25976,
+  "fetchedAt": "2026-11-28T21:40:31.963Z",
+  "sha256": "7639b4dae7be020281c98cc994486fc1765fa084c1cf4216ebf596814b42288c",
+  "byteLength": 958325,
+  "rowCount": 25977,
   "earliestDrawId": 11033,
-  "latestDrawId": 37008,
+  "latestDrawId": 37009,
   "earliestDate": "2007-09-03",
   "latestDate": "2026-11-28",
-  "snapshot": "Tris-37008-3a7c40e21738.csv",
-  "etag": "W/\"4191ac4e0d28531b10dc1496b343341cd56c9e14f7824f1807ed6ed51b9bc8dc\"",
+  "snapshot": "Tris-37009-7639b4dae7be.csv",
+  "etag": "W/\"4fa84347934c44fd7ccc1fb7fb9c77387557a74f9c19b108d7542c3a0ac36c1c\"",
   "lastModified": null
 }
