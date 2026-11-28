@@ -13,6 +13,10 @@ import { buildInaAbsence } from "../src/research/ina-absence";
 import { analyzePositionAbsences } from "../src/research/absence-analysis";
 import { buildInaTransitionStability } from "../src/research/ina-transition-stability";
 import { buildInaPositionalTransitions } from "../src/research/ina-positional-transitions";
+import { buildInaRecurrence } from "../src/research/ina-recurrence";
+import { buildInaPoolEvaluation } from "../src/research/ina-pool-evaluation";
+import { buildInaPoolSelection } from "../src/research/ina-pool-selection";
+import { buildInaAgingComparison } from "../src/research/ina-aging-comparison";
 import { buildInaTransitionWindowComparison } from "../src/research/ina-transition-window-comparison";
 import { snapshotFromCanonicalManifest, type CanonicalSourceManifest } from "../src/research/ina-snapshot";
 import { auditInaPropagation, propagationEvidenceFromResearchOutputs } from "../src/research/ina-propagation-audit";
@@ -45,12 +49,16 @@ assert.equal(core.context.version.drawCount, manifest.rowCount);
 assert.equal(core.context.version.drawStart, manifest.earliestDrawId);
 assert.equal(core.context.version.drawCutoff, manifest.latestDrawId);
 
+const recurrence = buildInaRecurrence(core.context);
+const poolEvaluation = buildInaPoolEvaluation(core.context, { poolSize: 3, windowSize: 150, minTrain: 30, historyLimit: 500 });
+const poolSelection = buildInaPoolSelection(core.context, { poolSize: 3, windowSize: 150, method: "frequency", minTrain: 30, historyLimit: 500 });
+const aging = buildInaAgingComparison(core.context, { poolSize: 3, historyLimit: 500, recentWindow: 50, broadWindow: 150, minTrain: 30, testLimit: 100 });
 const transitions = buildInaPositionalTransitions(core.context, 150);
 const stability = buildInaTransitionStability(core.context, 50, 50);
 const windowComparison = buildInaTransitionWindowComparison(core.context);
 const absence = buildInaAbsence(core.context, { maxPriorMisses: 20, timelineLimit: 100 });
 
-const outputs = [transitions, stability, windowComparison, absence];
+const outputs = [recurrence, poolEvaluation, poolSelection, aging, transitions, stability, windowComparison, absence];
 const propagation = auditInaPropagation({
   datasetVersionId: core.context.version.versionId,
   snapshotSha256: actualSha256,
@@ -80,6 +88,11 @@ for (const output of outputs) {
   assert.equal(output.sampleSize, manifest.rowCount, output.outputKey + " sample size mismatch");
 }
 
+assert.equal(recurrence.result.drawCutoff, manifest.latestDrawId);
+assert.equal(recurrence.result.uniqueCombinations > 0, true);
+assert.equal(poolEvaluation.result.poolSize, 3);
+assert.equal(poolSelection.result.poolSize, 3);
+assert.equal(aging.result.poolSize, 3);
 assert.equal(transitions.result.sampleSize, 150);
 assert.equal(transitions.result.edges.length > 0, true);
 assert.equal(stability.result.recentDrawCount, 50);
@@ -110,6 +123,14 @@ const absenceParityRows = absence.result.positions.flatMap(position => {
 const dashboard = await readFile(resolve("src/TrisOpsDashboard.tsx"), "utf8");
 const inaCenter = await readFile(resolve("src/InaCommandCenter.tsx"), "utf8");
 const uiWiring = {
+  recurrenceOutputComputedFromSharedInaContext: dashboard.includes("buildInaRecurrence(inaResult.context)"),
+  recurrenceOutputUsedByDashboard: dashboard.includes("combinationStats=recurrenceOutput?.result.combinations"),
+  poolEvaluationComputedFromSharedInaContext: dashboard.includes("buildInaPoolEvaluation(inaResult.context"),
+  poolEvaluationUsedByDashboard: dashboard.includes("poolEvaluationOutput.result.evaluations"),
+  poolSelectionComputedFromSharedInaContext: dashboard.includes("buildInaPoolSelection(inaResult.context"),
+  poolSelectionUsedByDashboard: dashboard.includes("poolSelectionOutput.result"),
+  agingComputedFromSharedInaContext: dashboard.includes("buildInaAgingComparison(inaResult.context"),
+  agingUsedByDashboard: dashboard.includes("agingOutput.result.agingPools"),
   transitionOutputComputedFromSharedInaContext: dashboard.includes("buildInaPositionalTransitions(inaResult.context,transitionWindow)"),
   transitionOutputRendered: dashboard.includes("transitionOutput?.result"),
   stabilityComputedFromSharedInaContext: dashboard.includes("buildInaTransitionStability(inaResult.context,50,50)"),
@@ -152,6 +173,9 @@ const report = {
     sampleSize: output.sampleSize,
     evidenceStatus: output.evidence.status,
   })),
+  recurrence: { uniqueCombinations: recurrence.result.uniqueCombinations, recurrentCombinations: recurrence.result.recurrentCombinations },
+  pools: { poolSize: poolSelection.result.poolSize, methods: poolSelection.result.selectedMethods, evaluationMethods: poolEvaluation.result.methods },
+  aging: { tested: aging.result.comparison.tested, poolSize: aging.result.poolSize },
   transitions: { windowSize: transitions.result.windowSize, sampleSize: transitions.result.sampleSize, edges: transitions.result.edges.length },
   stability: {
     recentDrawCount: stability.result.recentDrawCount,
