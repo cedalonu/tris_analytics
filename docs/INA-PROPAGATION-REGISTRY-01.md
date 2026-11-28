@@ -86,3 +86,48 @@ workflow y en su resumen, no en un endpoint público consumido por el dashboard.
 3. Probar montaje, binding y paridad para cada visualización.
 4. Publicar el índice de estado de forma consumible por el dashboard, sin importación manual.
 5. Probar con un nuevo concurso real, conservando snapshots y predicciones anteriores.
+
+## Checkpoint 2026-11-28 — primer sorteo nuevo e inventario de fases
+
+El ciclo live `46181725839` terminó en `success` e incorporó el sorteo 37008
+al histórico canónico. Snapshot observado por los runners:
+
+- Archivo: `Tris-37008-3a7c40e21738.csv`
+- Concursos: 11033–37008
+- Registros: 25,976
+- SHA-256: `3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2`
+
+En el mismo ciclo se ejecutó `research:phase-audit`. Resultado observado en
+el log de Actions:
+
+| Control | Resultado |
+|---|---:|
+| Expedientes del catálogo | 82 |
+| Documentos localizados | 82 |
+| Componentes visuales localizados | 20 |
+| Sin visual catalogada | 62 |
+| Bloqueados por rutas faltantes | 0 |
+| Conexiones funcionales verificadas | 0 |
+| Estado integral `unverified` | 82 |
+
+El artefacto de ciclo contiene `reports/research-phase-audit/latest.json` y
+`latest.md`. La auditoría se incorpora al resumen del workflow y se repite en
+cada ciclo canónico. La suite de núcleo que incluye el registro de propagación
+terminó en success en Research core run `46181697012`; la construcción y el
+despliegue de la vista previa terminaron en success en run `46181725851`.
+
+**Interpretación:** por primera vez el corte 37008 queda asociado a un inventario
+reproducible de los 82 expedientes. Esto no significa que los 82 motores se hayan
+ejecutado ni que todos sus outputs y gráficas estén actualizados. El inventario
+mantiene expresamente sin verificar motor, output, montaje, binding y paridad.
+Las validaciones extensas de investigación real-histórica y TRIS research
+asociadas a este grupo de commits seguían ejecutándose al redactar este
+checkpoint; no se declaran aprobadas aquí.
+
+## Siguiente incremento prioritario
+
+1. Crear el mapa de motor y output esperado por expediente, con evidencia de runner y de metadatos.
+2. Seleccionar la primera cadena completa (fase 0 / integridad de datos) y probarla de extremo a extremo.
+3. Incorporar adaptadores de salida y paridad para cada visualización, priorizando INA y presencia/ausencia.
+4. Publicar el índice del último audit como dato estático consumible por la vista previa, evitando importación manual.
+5. Probar la cuarentena de una mutación retroactiva con un fixture, sin modificar el histórico oficial.
