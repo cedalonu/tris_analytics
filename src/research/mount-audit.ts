@@ -7,7 +7,11 @@ export function findComponentReferences(componentName: string, files: MountScanF
   const importPattern = new RegExp(`import\\s+(?:[\\w{},*\\s]+\\s+from\\s+)?["']\\./(?:research/)?${componentName}(?:\\.tsx)?["']|import\\s+${componentName}\\s+from\\s+["']\\./(?:research/)?${componentName}(?:\\.tsx)?["']`);
   const jsxPattern = new RegExp(`<${componentName}(?:\\s|/|>)`);
   return files.flatMap(({path,content})=>{
-    const imported=importPattern.test(content),jsx=jsxPattern.test(content);
+    const jsxSource=content
+      .replace(/\/\*[\s\S]*?\*\//g,"")
+      .replace(/\/\/[^\n]*/g,"")
+      .replace(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g,"");
+    const imported=importPattern.test(content),jsx=jsxPattern.test(jsxSource);
     return imported||jsx?[{file:path,imported,jsx}]:[];
   });
 }
