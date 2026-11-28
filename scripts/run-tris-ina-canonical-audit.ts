@@ -67,7 +67,7 @@ const absence = buildInaAbsence(core.context, { maxPriorMisses: 20, timelineLimi
 
 const baseOutputs = [memory, overview, recurrence, poolEvaluation, poolSelection, aging, transitions, stability, windowComparison, absence];
 async function readJsonl<T>(path: string): Promise<T[]> {
-  try { return (await readFile(path, "utf8")).split(/\\r?\\n/).filter(Boolean).map(line => JSON.parse(line) as T); }
+  try { return (await readFile(path, "utf8")).split(/\r?\n/).filter(Boolean).map(line => JSON.parse(line) as T); }
   catch (error) { if ((error as NodeJS.ErrnoException).code === "ENOENT") return []; throw error; }
 }
 let prospective: ReturnType<typeof buildInaProspectiveEvaluation> | null = null;
@@ -279,6 +279,18 @@ const report = {
 };
 await mkdir(reportDir, { recursive: true });
 await writeFile(resolve(reportDir, "latest.json"), JSON.stringify(report, null, 2) + "\n", "utf8");
+if (prospective) {
+  await writeFile(resolve(reportDir, "prospective-evaluation.json"), JSON.stringify({
+    schemaVersion: 1,
+    datasetVersionId: prospective.datasetVersionId,
+    snapshotSha256: prospective.snapshotSha256,
+    drawCutoff: prospective.drawCutoff,
+    sampleSize: prospective.sampleSize,
+    generatedAt: prospective.generatedAt,
+    result: prospective.result,
+    warnings: prospective.warnings,
+  }, null, 2) + "\n", "utf8");
+}
 const markdown = [
   "# INA canonical snapshot audit",
   "",
