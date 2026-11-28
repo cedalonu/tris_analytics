@@ -305,13 +305,14 @@ La secuencia de trabajo vigente queda fijada así:
   - [x] **P2.4** Migrar la evaluación walk-forward de pools a una salida INA versionada, preservando el algoritmo original. Evidencia: `docs/P2-4-INA-POOL-WALKFORWARD-MIGRATION.md`.
   - [x] **P2.5** Migrar construcción/selección base de pools y ranking adaptativo a motores INA. Evidencia: `docs/P2-5-INA-POOL-SELECTION-MIGRATION.md`.
   - [x] **P2.6** Extraer el comparador aging vs. base a un motor INA independiente, preservando su estado experimental. Evidencia: `docs/P2-6-INA-AGING-EXPERIMENT-MIGRATION.md`.
-  - [ ] **P2.7** Migrar transiciones posicionales y redes de dígitos a salidas INA versionadas; eliminar matrices duplicadas en React.
+  - [x] **P2.7** Migrar los conteos base de transiciones posicionales a una salida INA compartida por la red principal y el mapa INA. Evidencia: `docs/P2-7-INA-POSITIONAL-TRANSITIONS-MIGRATION.md`.
+  - [ ] **P2.8** Migrar estabilidad temporal, entropía y detección de cambios posicionales a motores INA; mantener los umbrales como exploratorios hasta calibración.
 - [ ] **P3** Completar las vistas reales de investigación, siguiendo la matriz.
 - [ ] **P4** Demostrar propagación automática completa desde Pakin.
 - [ ] **P5** Cerrar el centro de predicción respaldado por INA.
 - [ ] **P6** Ejecutar auditoría integral y documentar operación.
 
-**P0 completada:** inventario, reconciliación de fases y baseline CI están documentados. La etapa P1 (contratos, servicio central y registro de módulos) está completada y validada. La siguiente tarea activa es **P2: migrar el primer conjunto de cálculos existentes para que consuma INA Core**, continuando con transiciones posicionales y redes de dígitos; después memorias y evaluación prospectiva. Los pendientes de ejecución sobre el snapshot actual y la propagación se conservan como gates de P4/P6; no se declaran resueltos por el baseline.
+**P0 completada:** inventario, reconciliación de fases y baseline CI están documentados. La etapa P1 (contratos, servicio central y registro de módulos) está completada y validada. La siguiente tarea activa es **P2: migrar el primer conjunto de cálculos existentes para que consuma INA Core**, continuando con estabilidad temporal, entropía y detección de cambios; después memorias y evaluación prospectiva. Los pendientes de ejecución sobre el snapshot actual y la propagación se conservan como gates de P4/P6; no se declaran resueltos por el baseline.
 
 ## 10. Criterio final del proyecto
 
