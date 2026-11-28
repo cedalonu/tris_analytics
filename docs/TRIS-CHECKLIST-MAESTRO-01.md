@@ -300,6 +300,7 @@ Continuar automáticamente con la siguiente tarea aprobada y desbloqueada. Si ap
 - [x] Reconstruir y auditar once outputs sobre el mismo contexto INA: memory-state, position-overview, combination-recurrence, pool-evaluation, pool-selection, aging-comparison, positional-transitions, transition-stability, transition-window-comparison, positional-absence y prospective-evaluation.
 - [x] Registrar como evidencia canónica los outputs de snapshot y sorteos validados, sin fabricarlos a partir de rutas o nombres.
 - [x] Auditoría de propagación live run `46185535779`: 11 módulos `current`, 0 `stale`, 0 `blocked`, 0 `missing`.
+- [x] Catálogo de 82 expedientes: mapear componentes visuales reales para fase 0 (`App.tsx`), fase 1 (`TrisOpsDashboard.tsx`), fase 3 (`InaProspectivePanel.tsx`) y fase 4 (`InaMemoryPanel.tsx`).
 - [x] V1 presencia/ausencia: 50/50 combinaciones posición/dígito con paridad; 12/12 comprobaciones de binding UI aprobadas.
 - [x] Snapshot de evidencia: `Tris-37008-3a7c40e21738.csv`, 25,976 filas, corte 37008, SHA-256 `3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2`.
 - [x] Montar `TrisOpsDashboard.tsx` desde el Centro de investigación y añadir `InaMemoryPanel.tsx` con selectores de alcance, rezago, posiciones y contexto.
@@ -307,7 +308,9 @@ Continuar automáticamente con la siguiente tarea aprobada y desbloqueada. Si ap
 - [x] Añadir `InaProspectivePanel.tsx`; publicar `public/research-data/prospective-evaluation.json` solo cuando cambia el ledger y despachar el despliegue automáticamente.
 - [x] Verificar por auditoría de código el montaje operativo desde `ResearchDashboard` y la carga del histórico canónico; run `46184641716`.
 - [x] Despliegue combinado de la vista previa con dashboard, memoria y panel prospectivo: run `46185535796`, success.
+- [x] Despliegue posterior a la asignación de visualizaciones por fase: run `46185821059`, success.
 - [ ] Terminar validaciones extendidas del commit final del evaluador prospectivo: TRIS research `46185535815` y real-history `46185535816`; no marcar hasta que concluyan.
 - [ ] Inspección visual manual en navegador; CI/build no sustituyen esta comprobación.
+- [x] Auditoría de fases live run `46185821125`: 82 documentos localizados; 24 visualizaciones localizadas; 58 sin ruta visual catalogada; 0 bloqueados; 0 verificados; 82 todavía `unverified`.
 
 **Estado INA:** los 11 módulos registrados están `current` en el corte 37008. Los 82 expedientes siguen con su auditoría individual; el último phase audit los mantiene `unverified` hasta probar motor, output, montaje, binding y paridad por expediente.
