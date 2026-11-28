@@ -10,7 +10,8 @@ import { buildInaPositionalTransitions } from "./research/ina-positional-transit
 import { buildInaTransitionStability } from "./research/ina-transition-stability";
 import { buildInaTransitionWindowComparison } from "./research/ina-transition-window-comparison";
 import { buildInaAbsence } from "./research/ina-absence";
-import { snapshotFromCanonicalManifest, snapshotFromLocalCsv, verifySnapshotBytes, type CanonicalSourceManifest } from "./research/ina-snapshot";
+import { snapshotFromLocalCsv } from "./research/ina-snapshot";
+import { loadCanonicalTrisDataset } from "./research/load-canonical-tris";
 import type { InaCoreResult } from "./research/ina-core";
 import ResearchSignalOverview from "./ResearchSignalOverview";
 import InaCommandCenter from "./InaCommandCenter";
@@ -55,36 +56,17 @@ export default function TrisOpsDashboard() {
  const [absenceDigit,setAbsenceDigit]=useState(0);
  useEffect(()=>{
   let cancelled=false;
-  const loadCanonical=async()=>{
-   try {
-    const [response,manifestResponse]=await Promise.all([
-     fetch("https://raw.githubusercontent.com/cedalonu/tris_analytics/research-core-v1/data/canonical/Tris.csv",{cache:"no-store"}),
-     fetch("https://raw.githubusercontent.com/cedalonu/tris_analytics/research-core-v1/data/canonical/source-manifest.json",{cache:"no-store"})
-    ]);
-    if(!response.ok) throw new Error("CSV HTTP "+response.status);
-    if(!manifestResponse.ok) throw new Error("Manifiesto HTTP "+manifestResponse.status);
-    const bytes=new Uint8Array(await response.arrayBuffer());
-    const manifest=await manifestResponse.json() as CanonicalSourceManifest;
-    const snapshot=snapshotFromCanonicalManifest(manifest);
-    if(!(await verifySnapshotBytes(bytes,snapshot))) throw new Error("El SHA-256 del CSV no coincide con el manifiesto canónico.");
-    const csv=new TextDecoder().decode(bytes);
-    const imported=importTrisCsv(csv,manifest.fetchedAt);
-    const gaps=imported.validation.warnings.filter(w=>w.startsWith("draw gap "));
-    if(imported.validation.errors.length||gaps.length) throw new Error("El histórico canónico no superó la validación.");
-    const ina=buildInaCore({snapshot,validation:imported.validation});
-    if(ina.status!=="ready") throw new Error("INA puso el histórico canónico en cuarentena: "+ina.blockers.join("; "));
-    if(cancelled)return;
-    const ds=imported.validation.valid;
-    const meta={importedAt:manifest.fetchedAt,warnings:imported.validation.warnings,errors:[] as string[]};
-    setDraws(ds);setInaResult(ina);setCanonicalLoaded(true);setFileName("Pakin · histórico canónico research-core-v1");setImportMeta(meta);setStatus("Histórico oficial verificado por SHA-256 · "+ds.length+" sorteos");
-    localStorage.setItem(STORAGE_KEY,JSON.stringify({draws:ds,snapshot,fileName:"Pakin · histórico canónico",meta}));
-   } catch(error) {
-    if(!cancelled) setStatus(current=>current==="Sin CSV importado"?"No se pudo verificar el histórico automático; se intentará restaurar una caché local con huella.":current);
-   } finally {
-    if(!cancelled)setCanonicalLoadComplete(true);
-   }
-  };
-  loadCanonical();
+  loadCanonicalTrisDataset().then(dataset=>{
+   if(cancelled)return;
+   const ds=dataset.draws,snapshot=dataset.ina.context.snapshot;
+   const meta={importedAt:dataset.manifest.fetchedAt,warnings:dataset.ina.context.quality.warnings,errors:[] as string[]};
+   setDraws(ds);setInaResult(dataset.ina);setCanonicalLoaded(true);setFileName("Pakin · histórico canónico research-core-v1");setImportMeta(meta);setStatus("Histórico oficial verificado por SHA-256 · "+ds.length+" sorteos");
+   localStorage.setItem(STORAGE_KEY,JSON.stringify({draws:ds,snapshot,fileName:"Pakin · histórico canónico",meta}));
+  }).catch(error=>{
+   if(!cancelled)setStatus("No se pudo verificar el histórico automático; se intentará restaurar una caché local con huella: "+(error instanceof Error?error.message:"error desconocido"));
+  }).finally(()=>{
+   if(!cancelled)setCanonicalLoadComplete(true);
+  });
   return ()=>{cancelled=true;};
  },[]);
  useEffect(()=>{
