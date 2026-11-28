@@ -5,8 +5,12 @@ import {buildInaDashboardOverview} from "./research/ina-dashboard-overview";
 import {buildInaPositionalTransitions} from "./research/ina-positional-transitions";
 type EvidenceRow={hypothesisId:string;title:string;level:"descriptive"|"pending";outputs:string[];sampleSize:number;cutoff:number|null;summary:string;warnings:string[]};
 type EvidenceState={loading:boolean;error:string|null;rows:EvidenceRow[];manifest:{sha256:string;rowCount:number;earliestDrawId:number|null;latestDrawId:number|null;fetchedAt:string}|null};
-export default function PendingGraphic({text}:{text:string}){return <div className="mt-3 rounded-lg border border-amber-900/50 bg-amber-950/20 p-3"><div className="text-xs font-bold text-amber-200">Gráfico empírico pendiente · no hay datos validados vinculados</div><p className="mt-1 text-xs text-slate-300">{text}</p><div className="mt-3 grid grid-cols-3 gap-2 text-[10px]"><div className="rounded border border-slate-800 p-2">Motor / output</div><div className="rounded border border-slate-800 p-2">Calibración nula</div><div className="rounded border border-slate-800 p-2">Holdout</div></div></div>}\nfunction HypothesisEvidencePanel({selectedHypothesis}:{selectedHypothesis?:string}){
- const [state,setState]=useState<EvidenceState>({loading:true,error:null,rows:[],manifest:null});\n const [chartData,setChartData]=useState<any>(null);\n const [opened,setOpened]=useState<string|null>(selectedHypothesis??null);\n useEffect(()=>{if(selectedHypothesis)setOpened(selectedHypothesis);},[selectedHypothesis]);
+export default function PendingGraphic({text}:{text:string}){return <div className="mt-3 rounded-lg border border-amber-900/50 bg-amber-950/20 p-3"><div className="text-xs font-bold text-amber-200">Gráfico empírico pendiente · no hay datos validados vinculados</div><p className="mt-1 text-xs text-slate-300">{text}</p><div className="mt-3 grid grid-cols-3 gap-2 text-[10px]"><div className="rounded border border-slate-800 p-2">Motor / output</div><div className="rounded border border-slate-800 p-2">Calibración nula</div><div className="rounded border border-slate-800 p-2">Holdout</div></div></div>}
+function HypothesisEvidencePanel({selectedHypothesis}:{selectedHypothesis?:string}){
+ const [state,setState]=useState<EvidenceState>({loading:true,error:null,rows:[],manifest:null});
+ const [chartData,setChartData]=useState<any>(null);
+ const [opened,setOpened]=useState<string|null>(selectedHypothesis??null);
+ useEffect(()=>{if(selectedHypothesis)setOpened(selectedHypothesis);},[selectedHypothesis]);
  useEffect(()=>{let cancelled=false;
   loadCanonicalTrisDataset().then(dataset=>{
    const context=dataset.ina.context;
