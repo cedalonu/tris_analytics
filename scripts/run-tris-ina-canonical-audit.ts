@@ -1,0 +1,145 @@
+#!/usr/bin/env tsx
+/**
+ * Audits INA outputs and dashboard wiring against the exact canonical TRIS snapshot.
+ * Descriptive verification only; this does not validate predictive value.
+ */
+import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { importTrisCsv } from "../src/research/data-adapter";
+import { buildInaCore } from "../src/research/ina-core";
+import { buildInaAbsence } from "../src/research/ina-absence";
+import { buildInaTransitionStability } from "../src/research/ina-transition-stability";
+import { buildInaTransitionWindowComparison } from "../src/research/ina-transition-window-comparison";
+import { snapshotFromCanonicalManifest, type CanonicalSourceManifest } from "../src/research/ina-snapshot";
+
+const csvPath = resolve(process.argv[2] ?? "data/canonical/Tris.csv");
+const manifestPath = resolve(process.argv[3] ?? "data/canonical/source-manifest.json");
+const reportDir = resolve(process.argv[4] ?? "reports/ina-canonical-audit");
+const csv = await readFile(csvPath, "utf8");
+const bytes = Buffer.from(csv, "utf8");
+const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as CanonicalSourceManifest;
+const actualSha256 = createHash("sha256").update(bytes).digest("hex");
+
+assert.equal(actualSha256, manifest.sha256.toLowerCase(), "canonical CSV SHA-256 does not match its manifest");
+assert.equal(bytes.byteLength, manifest.byteLength, "canonical CSV byte length does not match its manifest");
+
+const imported = importTrisCsv(csv);
+assert.equal(imported.validation.errors.length, 0, "canonical CSV contains validation errors");
+assert.equal(
+  imported.validation.warnings.some(warning => warning.startsWith("draw gap ")),
+  false,
+  "canonical CSV contains contest-number gaps",
+);
+
+const snapshot = snapshotFromCanonicalManifest(manifest);
+const core = buildInaCore({ snapshot, validation: imported.validation });
+assert.equal(core.status, "ready", "INA core quarantined the canonical snapshot");
+assert.equal(core.context.quality.valid, true);
+assert.equal(core.context.version.drawCount, manifest.rowCount);
+assert.equal(core.context.version.drawStart, manifest.earliestDrawId);
+assert.equal(core.context.version.drawCutoff, manifest.latestDrawId);
+
+const stability = buildInaTransitionStability(core.context, 50, 50);
+const windowComparison = buildInaTransitionWindowComparison(core.context);
+const absence = buildInaAbsence(core.context, { maxPriorMisses: 20, timelineLimit: 100 });
+
+const outputs = [stability, windowComparison, absence];
+for (const output of outputs) {
+  assert.equal(output.datasetVersionId, core.context.version.versionId, output.outputKey + " dataset version mismatch");
+  assert.equal(output.snapshotSha256, actualSha256, output.outputKey + " SHA-256 mismatch");
+  assert.equal(output.drawCutoff, manifest.latestDrawId, output.outputKey + " draw cutoff mismatch");
+  assert.equal(output.sampleSize, manifest.rowCount, output.outputKey + " sample size mismatch");
+}
+
+assert.equal(stability.result.recentDrawCount, 50);
+assert.equal(stability.result.previousDrawCount, 50);
+assert.equal(stability.result.digitEntropy.length, 5);
+assert.equal(stability.result.stability.length, 400);
+assert.deepEqual(
+  windowComparison.result.windows.map(window => [window.windowSize, window.sampleSize]),
+  [[50, 50], [150, 150], [500, 500]],
+);
+assert.equal(absence.result.positions.length, 5);
+assert.equal(absence.result.positions.every(position => position.digitReports.length === 10), true);
+
+const dashboard = await readFile(resolve("src/TrisOpsDashboard.tsx"), "utf8");
+const inaCenter = await readFile(resolve("src/InaCommandCenter.tsx"), "utf8");
+const uiWiring = {
+  stabilityComputedFromSharedInaContext: dashboard.includes("buildInaTransitionStability(inaResult.context,50,50)"),
+  stabilityOutputPassedToInaCenter: dashboard.includes("stabilityOutput={stabilityOutput}"),
+  stabilityOutputConsumedByInaCenter: inaCenter.includes("stabilityOutput"),
+  transitionWindowOutputComputedFromSharedInaContext: dashboard.includes("buildInaTransitionWindowComparison(inaResult.context)"),
+  transitionWindowOutputRendered: dashboard.includes("transitionWindowComparisonOutput.result.ranked"),
+  absenceOutputComputedFromSharedInaContext: dashboard.includes("buildInaAbsence(inaResult.context"),
+  absenceOutputUsedByDashboardView: dashboard.includes("selectedAbsence"),
+};
+for (const [check, passed] of Object.entries(uiWiring)) {
+  assert.equal(passed, true, "dashboard wiring check failed: " + check);
+}
+
+const report = {
+  status: "passed",
+  auditType: "canonical-ina-output-and-dashboard-wiring",
+  snapshot: {
+    id: manifest.snapshot,
+    sourceUrl: manifest.sourceUrl,
+    fetchedAt: manifest.fetchedAt,
+    sha256: actualSha256,
+    byteLength: bytes.byteLength,
+    rowCount: core.context.version.drawCount,
+    drawStart: core.context.version.drawStart,
+    drawCutoff: core.context.version.drawCutoff,
+  },
+  sharedDatasetVersionId: core.context.version.versionId,
+  outputs: outputs.map(output => ({
+    outputKey: output.outputKey,
+    outputId: output.outputId,
+    datasetVersionId: output.datasetVersionId,
+    snapshotSha256: output.snapshotSha256,
+    drawCutoff: output.drawCutoff,
+    sampleSize: output.sampleSize,
+    evidenceStatus: output.evidence.status,
+  })),
+  stability: {
+    recentDrawCount: stability.result.recentDrawCount,
+    previousDrawCount: stability.result.previousDrawCount,
+    transitionRows: stability.result.stability.length,
+    positionalEntropyRows: stability.result.digitEntropy.length,
+  },
+  transitionWindows: windowComparison.result.windows,
+  absence: {
+    positions: absence.result.positions.length,
+    digitReports: absence.result.positions.reduce((sum, position) => sum + position.digitReports.length, 0),
+  },
+  uiWiring,
+  limitations: [
+    "This audit verifies canonical bytes, INA output provenance and source-level dashboard wiring.",
+    "It does not replace a browser-based visual inspection of rendered charts.",
+    "All measured outputs are descriptive; no predictive advantage is implied.",
+  ],
+};
+await mkdir(reportDir, { recursive: true });
+await writeFile(resolve(reportDir, "latest.json"), JSON.stringify(report, null, 2) + "\n", "utf8");
+const markdown = [
+  "# INA canonical snapshot audit",
+  "",
+  "- Status: **PASSED**",
+  "- Snapshot: " + manifest.snapshot,
+  "- Draws: " + manifest.rowCount + " (" + manifest.earliestDrawId + "–" + manifest.latestDrawId + ")",
+  "- SHA-256: " + actualSha256,
+  "- Shared INA version: " + core.context.version.versionId,
+  "",
+  "## Outputs",
+  ...outputs.map(output => "- " + output.outputKey + ": " + output.sampleSize + " draws, cutoff " + output.drawCutoff + ", same snapshot SHA-256"),
+  "",
+  "## Dashboard wiring",
+  ...Object.entries(uiWiring).map(([name, passed]) => "- " + (passed ? "PASS" : "FAIL") + " — " + name),
+  "",
+  "## Scope and limitations",
+  ...report.limitations.map(item => "- " + item),
+  "",
+].join("\n");
+await writeFile(resolve(reportDir, "latest.md"), markdown, "utf8");
+console.log(markdown);
