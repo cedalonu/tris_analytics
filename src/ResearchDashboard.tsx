@@ -96,6 +96,7 @@ function TemporalTimeline({windows,minimum}:{windows:any[];minimum:number}){
 }
 export default function ResearchDashboard({onBack,onOpenIntuition}:{onBack:()=>void;onOpenIntuition:()=>void}){
  const [showMonitor,setShowMonitor]=useState(false);
+ const [showInaDashboard,setShowInaDashboard]=useState(false);
  const [reports,setReports]=useState<ReportRecord[]>([]);
  const [errors,setErrors]=useState<string[]>([]);
  const [active,setActive]=useState<ReportKind>("performance");
@@ -117,6 +118,10 @@ export default function ResearchDashboard({onBack,onOpenIntuition}:{onBack:()=>v
  const performanceGroups=useMemo(()=>{const groups=performance?.groups??[];const q=performanceQuery.trim().toLowerCase();return groups.filter((g:any)=>(performanceFamily==="all"||g.family===performanceFamily)&&(!q||[g.family,g.method,g.mode,g.config].filter(Boolean).join(" ").toLowerCase().includes(q))).sort((a:any,b:any)=>performanceSort==="difference"?((b.pairedDifference??-Infinity)-(a.pairedDifference??-Infinity)):performanceSort==="sample"?(b.resolved-a.resolved):a.family.localeCompare(b.family));},[performance,performanceFamily,performanceQuery,performanceSort]);
  const performanceFamilies=useMemo(()=>[...new Set((performance?.groups??[]).map((g:any)=>g.family))].sort() as string[],[performance]);
  if(showMonitor)return <HypothesisMonitor onBack={()=>setShowMonitor(false)} />;
+ if(showInaDashboard)return <div className="fixed inset-0 z-[120] overflow-y-auto bg-[#080d18] text-slate-100">
+  <div className="mx-auto max-w-[1600px] px-3 pt-3"><button onClick={()=>setShowInaDashboard(false)} className="mb-3 rounded-lg border border-emerald-700/70 bg-emerald-950/30 px-4 py-2 text-sm font-bold text-emerald-200 hover:bg-emerald-900/40">← Volver al Centro de investigación</button></div>
+  <TrisOpsDashboard/>
+ </div>;
  return <div className="fixed inset-0 z-[100] overflow-y-auto bg-[#080d18] text-slate-100">
   <div className="mx-auto max-w-7xl px-4 py-5 md:px-7">
    <div className="relative overflow-hidden rounded-2xl border border-cyan-900/70 bg-gradient-to-br from-slate-900 via-[#0b1830] to-violet-950/40 p-5 md:p-7">
