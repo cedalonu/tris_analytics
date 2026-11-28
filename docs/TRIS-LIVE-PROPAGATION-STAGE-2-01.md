@@ -50,7 +50,14 @@ La auditoría actual cubre explícitamente las salidas enumeradas en la sección
 
 Tampoco se considera probado el comportamiento ante una corrección retroactiva del histórico de Pakin. Esa ruta requiere comparar el nuevo snapshot con el prefijo canónico previo y poner en cuarentena cualquier alteración antes de reemplazar el histórico.
 
-## 5. Pruebas de aceptación pendientes
+## 5. Correcciones operativas durante la validación
+
+- El primer intento con la nueva auditoría INA terminó correctamente en el run `46179666650`: captura, publicación canónica, auditoría INA y carga del artefacto completadas.
+- La revisión del artefacto detectó que `upload-artifact` conserva las rutas bajo `data/cycles` y `data/source-snapshots`, mientras que el paso de restauración esperaba directorios en la raíz. Se corrigió la restauración para aceptar ambas estructuras.
+- Se añadió al capturador una guarda del prefijo canónico: verifica CSV+manifiesto previos, hash, tamaño, rango, conteo y huella lógica del prefijo antes de aceptar la nueva fuente. Las modificaciones retroactivas se rechazan en vez de sobrescribirse.
+- El primer intento de ejecutar esta guarda no alcanzó el capturador porque falló antes la restauración del ledger. El nuevo intento con la corrección de rutas está en ejecución; la guarda todavía no se considera validada en producción.
+
+## 6. Pruebas de aceptación pendientes
 
 - [ ] Workflow live ejecuta la auditoría INA después de cada captura y termina en `success`.
 - [ ] Artefacto live contiene los dos reportes de auditoría.
@@ -61,6 +68,6 @@ Tampoco se considera probado el comportamiento ante una corrección retroactiva 
 - [ ] Se amplía la cobertura desde estas salidas iniciales al resto de módulos INA y expedientes.
 - [ ] Se verifica la representación en navegador, no solo la conexión por inspección de código.
 
-## 6. Siguiente tarea
+## 7. Siguiente tarea
 
 Implementar la comparación de prefijo histórico en el proceso live y crear el manifiesto de propagación por módulo/expediente. Ningún componente se marcará como actualizado si su versión de dataset no coincide con el snapshot canónico del ciclo.
