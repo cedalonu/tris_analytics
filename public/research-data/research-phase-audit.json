@@ -105,6 +105,7 @@
       "A successful phase-0 adapter audit does not verify the other 81 research dossiers."
     ]
   },
+  "phase1Evidence": null,
   "phases": [
     {
       "id": 0,
@@ -3579,7 +3580,7 @@
   "limitations": [
     "This inventory covers the 82 phase records currently listed in ResearchPhaseCatalog.",
     "Located files do not prove that an engine ran, an output was generated, or a component is mounted.",
-    "Engine, output, dashboard mount, data binding and numerical parity remain unverified until explicit evidence is attached; phase 0 may be partially verified by its dedicated adapter audit.",
+    "Engine, output, dashboard mount, data binding and numerical parity remain unverified until explicit evidence is attached; phases 0 and 1 may be partially verified by their dedicated audits.",
     "This is not proof that all 82 dossiers have been refreshed by the latest draw."
   ]
 }
