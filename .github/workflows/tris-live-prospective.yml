@@ -108,13 +108,21 @@ jobs:
         run: npm run research:phase-audit -- data/canonical/source-manifest.json
       - name: Audit static dashboard references for catalogued research visuals
         run: npm run research:mount-audit -- data/canonical/source-manifest.json
-      - name: Publish frozen prospective evaluation for the static dashboard
+      - name: Publish frozen prospective and phase audit payloads for the static dashboard
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           test -s reports/ina-canonical-audit/prospective-evaluation.json
           test -s reports/research-phase-audit/latest.json
+          git fetch origin research-core-v1
+          REMOTE_CUTOFF=$(git show origin/research-core-v1:public/research-data/research-phase-audit.json 2>/dev/null | jq -r '.canonical.drawCutoff // 0' || echo 0)
+          LOCAL_CUTOFF=$(jq -r '.canonical.drawCutoff' reports/research-phase-audit/latest.json)
+          if [ "${LOCAL_CUTOFF}" -lt "${REMOTE_CUTOFF}" ]; then
+            echo "Remote branch already contains a newer canonical cutoff (${REMOTE_CUTOFF}); skipping stale publication."
+            exit 0
+          fi
+          git reset --hard origin/research-core-v1
           mkdir -p public/research-data
           cp reports/ina-canonical-audit/prospective-evaluation.json public/research-data/prospective-evaluation.json
           jq 'del(.generatedAt,.canonical.fetchedAt,.phase0Evidence.generatedAt,.phase0Evidence.canonical.fetchedAt,.phase1Evidence.generatedAt,.phase1Evidence.canonical.fetchedAt,.phase3Evidence.generatedAt,.phase3Evidence.canonical.fetchedAt,.phase4Evidence.generatedAt,.phase4Evidence.canonical.fetchedAt)' reports/research-phase-audit/latest.json > public/research-data/research-phase-audit.json
@@ -124,9 +132,11 @@ jobs:
           if git diff --cached --quiet; then
             echo "Frozen prospective and phase audit dashboard payloads unchanged; no publication commit required."
           else
-            git commit -m "research: publish frozen prospective evaluation"
-            git pull --rebase origin research-core-v1
-            git push origin research-core-v1
+            git commit -m "research: publish current INA and phase audit payloads"
+            if ! git push origin research-core-v1; then
+              echo "Concurrent branch update detected; next live cycle will reconcile and publish."
+              exit 0
+            fi
             echo "Published changed INA/phase audit payloads; dispatching Pages deployment."
             gh workflow run deploy.yml --repo "$GITHUB_REPOSITORY" --ref research-core-v1
           fi
