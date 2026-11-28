@@ -5,6 +5,10 @@
 **Rama de trabajo:** `research-core-v1`  
 **Documento rector:** este plan coordina y amplía `TRIS-DEVELOPMENT-ROADMAP-v1.md`, `INA-NUCLEO-CENTRAL-01.md`, `CHECKPOINT-INTEGRACION-FUNCIONAL-02.md` y `CHECKPOINT-LOGICA-VISUAL-01.md`.
 
+## 0. Control de ejecución
+
+El seguimiento operativo de este plan se lleva en [`docs/TRIS-CHECKLIST-MAESTRO-01.md`](./TRIS-CHECKLIST-MAESTRO-01.md). El checklist no sustituye este documento ni la matriz visual: registra tareas, gates, criterios de cierre, evidencias y checkpoints. Toda actualización de estado debe respetar los criterios definidos aquí y en la matriz.
+
 ## 1. Objetivo rector
 
 Construir TRIS Analytics como un sistema integral de investigación, memoria, evaluación y representación visual, cuyo núcleo de conocimiento sea INA.
