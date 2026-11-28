@@ -47,8 +47,8 @@ export function buildInaTransitionStability(
   if (!context.quality.valid) throw new Error("cannot build transition stability from an invalid INA context");
   const recentSize = Math.max(1, Math.floor(recentWindow));
   const previousSize = Math.max(1, Math.floor(previousWindow));
-  const recent = context.draws.slice(-recentSize);
-  const previous = context.draws.slice(-(recentSize + previousSize), -recentSize);
+  const recent = context.draws.slice(-Math.min(recentSize, context.draws.length));
+  const previous = context.draws.slice(-Math.min(recentSize + previousSize, context.draws.length), -Math.min(recentSize, context.draws.length));
   const countEdges = (draws: InaContext["draws"]) => {
     const matrix = Array.from({ length: 4 }, () => Array.from({ length: 10 }, () => Array(10).fill(0)));
     draws.forEach(draw => {
