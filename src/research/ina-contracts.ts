@@ -3,7 +3,8 @@ import type { Draw, Validation } from "../research-core";
 /** A captured, immutable source artifact. SHA-256 is supplied by the ingestion layer. */
 export interface DatasetSnapshot {
   snapshotId: string;
-  sourceUrl: string;
+  sourceType: "remote" | "local";
+  sourceUrl: string | null;
   fetchedAt: string;
   sha256: string;
   byteLength?: number;
@@ -97,7 +98,8 @@ export function createInaContext(input: InaContextInput): InaContext {
   const { snapshot, validation } = input;
   const builtAt = input.builtAt ?? snapshot.fetchedAt;
   if (!snapshot.snapshotId.trim()) throw new Error("snapshotId is required");
-  if (!/^https?:\/\//.test(snapshot.sourceUrl)) throw new Error("sourceUrl must be an HTTP(S) URL");
+  if (snapshot.sourceType === "remote" && (!snapshot.sourceUrl || !/^https?:\/\//.test(snapshot.sourceUrl))) throw new Error("remote snapshot requires an HTTP(S) sourceUrl");
+  if (snapshot.sourceType === "local" && snapshot.sourceUrl !== null) throw new Error("local snapshot sourceUrl must be null");
   if (!Number.isFinite(Date.parse(snapshot.fetchedAt)) || !Number.isFinite(Date.parse(builtAt))) {
     throw new Error("snapshot fetchedAt and builtAt must be valid timestamps");
   }
