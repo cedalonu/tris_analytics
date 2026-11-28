@@ -180,7 +180,7 @@ export const INA_MODULE_DEFINITIONS: InaModuleDefinition[] = [
     consumes: ["ina.history", "ina.position-profile"],
     produces: ["research.positional-transitions", "research.transition-stability"],
     status: "partial",
-    sourceFiles: ["src/research/positional-transition-persistence.ts", "src/research/joint-positional-interactions.ts"],
+    sourceFiles: ["src/research/ina-positional-transitions.ts", "src/research/ina-transition-stability.ts", "src/research/ina-positional-transitions.test.ts", "src/research/ina-transition-stability.test.ts", "src/InaCommandCenter.tsx"],
   },
   {
     moduleId: "memory-research",
