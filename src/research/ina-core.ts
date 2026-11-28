@@ -101,7 +101,7 @@ export function buildInaCore(input: InaContextInput): InaCoreResult {
     engineId: "ina-core-position-profile",
     engineVersion: "1.0.0",
     parameters: { positions: 5, digitDomain: "0-9", method: "empirical-counts" },
-    generatedAt: input.builtAt ?? new Date().toISOString(),
+    generatedAt: input.builtAt ?? context.snapshot.fetchedAt,
     evidence: {
       status: "descriptive",
       phase: "observation",
