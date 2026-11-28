@@ -19,8 +19,8 @@
     "visualizationNotCatalogued": 58,
     "blocked": 0,
     "verified": 0,
-    "partiallyVerified": 1,
-    "unverified": 81
+    "partiallyVerified": 2,
+    "unverified": 80
   },
   "phase0Evidence": {
     "schemaVersion": 1,
@@ -105,7 +105,125 @@
       "A successful phase-0 adapter audit does not verify the other 81 research dossiers."
     ]
   },
-  "phase1Evidence": null,
+  "phase1Evidence": {
+    "schemaVersion": 1,
+    "phaseId": 1,
+    "phaseTitle": "Investigación descriptiva, pools y memoria",
+    "status": "partially_verified",
+    "generatedAt": "2026-11-28T19:18:04.938Z",
+    "canonical": {
+      "id": "Tris-37008-3a7c40e21738.csv",
+      "sourceUrl": "https://raw.githubusercontent.com/pakinja/pakin/master/Tris.csv",
+      "fetchedAt": "2026-11-28T19:18:04.938Z",
+      "sha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+      "byteLength": 958288,
+      "rowCount": 25976,
+      "drawStart": 11033,
+      "drawCutoff": 37008
+    },
+    "sharedDatasetVersionId": "tris:3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2:37008",
+    "evidence": {
+      "engine": {
+        "state": "verified",
+        "outputs": 10,
+        "modules": [
+          "position-overview",
+          "combination-recurrence",
+          "pool-research",
+          "aging-experiment",
+          "positional-transitions",
+          "positional-absence",
+          "memory-research"
+        ]
+      },
+      "canonicalInput": {
+        "state": "verified",
+        "datasetVersionId": "tris:3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2:37008",
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976
+      },
+      "output": {
+        "state": "verified",
+        "keys": [
+          "research.memory-state",
+          "research.position-overview",
+          "research.combination-recurrence",
+          "research.pool-evaluation",
+          "research.pool-selection",
+          "research.aging-comparison",
+          "research.positional-transitions",
+          "research.transition-stability",
+          "research.transition-window-comparison",
+          "research.positional-absence"
+        ]
+      },
+      "visualization": {
+        "state": "located",
+        "path": "src/TrisOpsDashboard.tsx"
+      },
+      "dashboardMount": {
+        "state": "source_confirmed",
+        "entry": "ResearchDashboard → TrisOpsDashboard"
+      },
+      "dataBinding": {
+        "state": "source_confirmed",
+        "uiChecks": [
+          "overviewOutputComputedFromSharedInaContext",
+          "overviewOutputUsedByFrequencyCharts",
+          "overviewProvenanceRendered",
+          "recurrenceOutputComputedFromSharedInaContext",
+          "recurrenceOutputUsedByDashboard",
+          "poolEvaluationComputedFromSharedInaContext",
+          "poolEvaluationUsedByDashboard",
+          "poolSelectionComputedFromSharedInaContext",
+          "poolSelectionUsedByDashboard",
+          "agingComputedFromSharedInaContext",
+          "agingUsedByDashboard",
+          "transitionOutputComputedFromSharedInaContext",
+          "transitionOutputRendered",
+          "stabilityComputedFromSharedInaContext",
+          "stabilityOutputPassedToInaCenter",
+          "stabilityOutputConsumedByInaCenter",
+          "transitionWindowOutputComputedFromSharedInaContext",
+          "transitionWindowOutputRendered",
+          "absenceOutputComputedFromSharedInaContext",
+          "absenceOutputUsedByDashboardView",
+          "absenceOccurrencesRendered",
+          "absenceCurrentRunRendered",
+          "absenceIntervalDistributionRendered",
+          "absenceConditionalReturnsRendered",
+          "absenceTimelineRendered",
+          "memoryOutputComputedFromSharedInaContext",
+          "memoryPanelImported",
+          "memoryPanelMountedInInaCenter",
+          "memoryPanelConsumesTemporalOutput",
+          "memoryPanelConsumesContextualOutput",
+          "memoryPanelShowsSnapshotProvenance"
+        ]
+      },
+      "numericalParity": {
+        "state": "partial",
+        "verified": "position-overview count parity and 50/50 positional absence cells",
+        "remaining": "independent numerical parity for recurrence, pools, aging and transition charts"
+      }
+    },
+    "checks": {
+      "requiredOutputCount": 10,
+      "metadataMismatches": [],
+      "nonCurrentModules": [],
+      "failedUiChecks": [],
+      "absenceParityRows": 50
+    },
+    "remaining": [
+      "Add independent numerical parity fixtures for recurrence, pool evaluation/selection, aging and transition visual summaries.",
+      "Inspect rendered charts and controls in a browser at the same canonical cutoff."
+    ],
+    "limitations": [
+      "The live INA audit proves common provenance and source-level bindings, not predictive advantage.",
+      "Numerical parity is partial; do not mark the whole phase fully verified."
+    ]
+  },
   "phases": [
     {
       "id": 0,
@@ -183,38 +301,117 @@
         "state": "located"
       },
       "engine": {
-        "state": "unverified",
-        "evidence": null
+        "state": "verified",
+        "evidence": {
+          "state": "verified",
+          "outputs": 10,
+          "modules": [
+            "position-overview",
+            "combination-recurrence",
+            "pool-research",
+            "aging-experiment",
+            "positional-transitions",
+            "positional-absence",
+            "memory-research"
+          ]
+        }
       },
       "canonicalInput": {
-        "datasetVersionId": null,
+        "datasetVersionId": "tris:3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2:37008",
         "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
         "drawCutoff": 37008,
         "sampleSize": 25976,
-        "state": "unverified"
+        "state": "verified"
       },
       "output": {
-        "keys": [],
-        "state": "unverified",
-        "evidence": null
+        "keys": [
+          "research.memory-state",
+          "research.position-overview",
+          "research.combination-recurrence",
+          "research.pool-evaluation",
+          "research.pool-selection",
+          "research.aging-comparison",
+          "research.positional-transitions",
+          "research.transition-stability",
+          "research.transition-window-comparison",
+          "research.positional-absence"
+        ],
+        "state": "verified",
+        "evidence": {
+          "state": "verified",
+          "keys": [
+            "research.memory-state",
+            "research.position-overview",
+            "research.combination-recurrence",
+            "research.pool-evaluation",
+            "research.pool-selection",
+            "research.aging-comparison",
+            "research.positional-transitions",
+            "research.transition-stability",
+            "research.transition-window-comparison",
+            "research.positional-absence"
+          ]
+        }
       },
       "visualization": {
         "path": "src/TrisOpsDashboard.tsx",
         "state": "located"
       },
       "dashboardMount": {
-        "state": "unverified",
-        "evidence": null
+        "state": "source_confirmed",
+        "evidence": {
+          "state": "source_confirmed",
+          "entry": "ResearchDashboard → TrisOpsDashboard"
+        }
       },
       "dataBinding": {
-        "state": "unverified",
-        "evidence": null
+        "state": "source_confirmed",
+        "evidence": {
+          "state": "source_confirmed",
+          "uiChecks": [
+            "overviewOutputComputedFromSharedInaContext",
+            "overviewOutputUsedByFrequencyCharts",
+            "overviewProvenanceRendered",
+            "recurrenceOutputComputedFromSharedInaContext",
+            "recurrenceOutputUsedByDashboard",
+            "poolEvaluationComputedFromSharedInaContext",
+            "poolEvaluationUsedByDashboard",
+            "poolSelectionComputedFromSharedInaContext",
+            "poolSelectionUsedByDashboard",
+            "agingComputedFromSharedInaContext",
+            "agingUsedByDashboard",
+            "transitionOutputComputedFromSharedInaContext",
+            "transitionOutputRendered",
+            "stabilityComputedFromSharedInaContext",
+            "stabilityOutputPassedToInaCenter",
+            "stabilityOutputConsumedByInaCenter",
+            "transitionWindowOutputComputedFromSharedInaContext",
+            "transitionWindowOutputRendered",
+            "absenceOutputComputedFromSharedInaContext",
+            "absenceOutputUsedByDashboardView",
+            "absenceOccurrencesRendered",
+            "absenceCurrentRunRendered",
+            "absenceIntervalDistributionRendered",
+            "absenceConditionalReturnsRendered",
+            "absenceTimelineRendered",
+            "memoryOutputComputedFromSharedInaContext",
+            "memoryPanelImported",
+            "memoryPanelMountedInInaCenter",
+            "memoryPanelConsumesTemporalOutput",
+            "memoryPanelConsumesContextualOutput",
+            "memoryPanelShowsSnapshotProvenance"
+          ]
+        }
       },
       "numericalParity": {
-        "state": "unverified",
-        "evidence": null
+        "state": "partial",
+        "evidence": {
+          "state": "partial",
+          "verified": "position-overview count parity and 50/50 positional absence cells",
+          "remaining": "independent numerical parity for recurrence, pools, aging and transition charts"
+        }
       },
-      "overall": "unverified"
+      "overall": "partially_verified"
     },
     {
       "id": 2,
