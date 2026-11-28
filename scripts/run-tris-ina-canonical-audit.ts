@@ -63,6 +63,15 @@ const windowComparison = buildInaTransitionWindowComparison(core.context);
 const absence = buildInaAbsence(core.context, { maxPriorMisses: 20, timelineLimit: 100 });
 
 const outputs = [memory, overview, recurrence, poolEvaluation, poolSelection, aging, transitions, stability, windowComparison, absence];
+const appSource = await readFile(resolve("src/App.tsx"), "utf8");
+const researchDashboardSource = await readFile(resolve("src/ResearchDashboard.tsx"), "utf8");
+const operationalDashboardSourceMounted =
+  appSource.includes("<ResearchDashboard") &&
+  researchDashboardSource.includes('import TrisOpsDashboard from "./TrisOpsDashboard"') &&
+  researchDashboardSource.includes("<TrisOpsDashboard/>") &&
+  researchDashboardSource.includes("setShowInaDashboard(true)") &&
+  (await readFile(resolve("src/TrisOpsDashboard.tsx"), "utf8")).includes("loadCanonicalTrisDataset()");
+assert.equal(operationalDashboardSourceMounted, true, "operational INA dashboard is not mounted through the research center");
 const propagation = auditInaPropagation({
   datasetVersionId: core.context.version.versionId,
   snapshotSha256: actualSha256,
@@ -79,6 +88,13 @@ const propagation = auditInaPropagation({
   })),
   {
     outputKey: "ina.history",
+    datasetVersionId: core.context.version.versionId,
+    snapshotSha256: actualSha256,
+    drawCutoff: manifest.latestDrawId,
+    sampleSize: manifest.rowCount,
+  },
+  {
+    outputKey: "ui.operational-dashboard",
     datasetVersionId: core.context.version.versionId,
     snapshotSha256: actualSha256,
     drawCutoff: manifest.latestDrawId,
@@ -138,6 +154,7 @@ const dashboard = await readFile(resolve("src/TrisOpsDashboard.tsx"), "utf8");
 const inaCenter = await readFile(resolve("src/InaCommandCenter.tsx"), "utf8");
 const memoryPanel = await readFile(resolve("src/InaMemoryPanel.tsx"), "utf8");
 const uiWiring = {
+  operationalDashboardMountedThroughResearchCenter: operationalDashboardSourceMounted,
   memoryOutputComputedFromSharedInaContext: dashboard.includes("buildInaMemoryState(inaResult.context)"),
   memoryPanelImported: dashboard.includes('import InaMemoryPanel from "./InaMemoryPanel"'),
   memoryPanelMountedInInaCenter: dashboard.includes("<InaMemoryPanel output={memoryOutput}/>"),
