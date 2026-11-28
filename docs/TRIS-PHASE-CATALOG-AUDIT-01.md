@@ -36,7 +36,7 @@ El programa denominado “fase 120” está descrito en `docs/TRIS-FASE-RECONCIL
 
 - 82 expedientes documentales localizados.
 - 24 rutas visuales localizadas en el catálogo; se añadieron referencias específicas para fase 0 (`src/App.tsx`), fase 1 (`src/TrisOpsDashboard.tsx`), fase 3 (`src/InaProspectivePanel.tsx`) y fase 4 (`src/InaMemoryPanel.tsx`).
-- 0 expedientes declarados `verified`; los 82 permanecen `unverified` porque la auditoría individual aún no adjunta motor, output, montaje, binding y paridad por expediente.
+- 0 expedientes declarados plenamente `verified`; fase 0 está `partially_verified` con motor/output verificados, montaje y binding confirmados por código y paridad de 25,976 filas aprobada; los otros 81 permanecen `unverified`.
 - 58 expedientes todavía sin una ruta visual específica registrada aquí; esto significa **sin correspondencia catalogada**, no que no exista ninguna visualización en el repositorio.
 - La matriz `docs/MATRIZ-INVESTIGACION-VISUAL-01.md` continúa siendo la autoridad para el estado investigación → motor → salida → visualización y sus brechas.
 
@@ -64,6 +64,21 @@ Diseñar y ejecutar la publicación automática de informes de GitHub Actions pa
 
 ## Checkpoint de visualización — 2026-11-28
 
-Live run `46185821125` confirmó sobre el snapshot 37008: 82 documentos localizados, 24 visualizaciones localizadas, 58 sin ruta visual catalogada, 0 referencias visuales rotas, 0 expedientes verificados y 82 `unverified`. El despliegue de la vista previa con las cuatro rutas nuevas terminó en success en run `46185821059`.
+Live run `46185821125` confirmó sobre el snapshot 37008: 82 documentos localizados, 24 visualizaciones localizadas, 58 sin ruta visual catalogada, 0 referencias visuales rotas, 0 expedientes plenamente verificados, 1 `partially_verified` (fase 0) y 81 `unverified`. El despliegue de la vista previa con las cuatro rutas nuevas terminó en success en run `46185821059`.
 
 El catálogo ahora reconoce explícitamente las vistas de fases 0, 1, 3 y 4. La publicación automática del evaluador prospectivo está activa, pero no se extiende a todos los informes de las 82 investigaciones. La siguiente tarea sigue siendo construir el índice público general de informes y conectar las vistas específicas, sin marcar como actuales los expedientes que no tienen prueba de paridad.
+
+
+## Checkpoint de evidencia fase 0 — 2026-11-28
+
+El nuevo runner `scripts/run-tris-phase-0-adapter-audit.ts` ejecutó el cargador de producción con un fetcher controlado que sirve los mismos bytes y manifiesto del snapshot oficial. Validó SHA-256, longitud, filas, rango, fechas, estado INA, guard de prefijo idempotente y el mapeo canónico→dashboard.
+
+Evidencia publicada en `public/research-data/research-phase-audit.json` (corte 37008, 25,976 filas, SHA `3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2`):
+- Motor y entrada canónica: `verified`.
+- Output `data.canonical-adapter`: `verified`.
+- Prefijo histórico: `verified`, idempotente.
+- Paridad numérica: 25,976/25,976 filas; IDs, cinco dígitos y fechas coinciden.
+- Montaje y binding: confirmados por código.
+- Estado global: `partially_verified`, porque la inspección real del navegador y fallback visual sigue pendiente.
+
+El inventario actualizado registra 82 documentos, 24 visualizaciones localizadas, 58 sin ruta visual catalogada, 1 parcial, 81 sin verificar y 0 bloqueados. No se extiende la evidencia de fase 0 a las demás investigaciones.
