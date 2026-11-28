@@ -147,3 +147,6 @@ Localizar una vista no certifica su paridad por expediente. El siguiente trabajo
 
 
 La evidencia específica de fase 0 está publicada en `public/research-data/research-phase-audit.json`. El Centro de investigación carga ese índice para mostrar el estado parcial por expediente; la inspección real del navegador sigue siendo una puerta pendiente, no una inferencia de CI.
+
+
+Las fases 1, 3 y 4 también tienen evidencia específica publicada: outputs INA alineados, ledger prospectivo reconciliado y memoria temporal/contextual montada. Sus estados siguen siendo parciales por paridad numérica incompleta o inspección visual pendiente; no se promueven a verificados en bloque.
