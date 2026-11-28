@@ -1515,6 +1515,7 @@ export default function App() {
 
     const [toastMsg, setToastMsg] = useState<string | null>(null);
     const [csvImportError, setCsvImportError] = useState<string | null>(null);
+    const [canonicalInfo, setCanonicalInfo] = useState<{ cutoff: number; fetchedAt: string; sha256: string } | null>(null);
 
     function showToast(msg: string) {
         setToastMsg(msg);
@@ -1539,6 +1540,7 @@ export default function App() {
             const livePools = getPoolsForDrawAllPos(parsed, null, poolSize);
             buildPoolsList(livePools, poolSize);
             setCsvImportError(null);
+            setCanonicalInfo(null); // La importación manual reemplaza el corte canónico verificado.
             showToast(`CSV validado: ${parsed.length.toLocaleString('es-MX')} sorteos cargados.`);
         } catch (error) {
             setCsvImportError(error instanceof Error ? error.message : 'No se pudo importar el CSV.');
@@ -1561,6 +1563,7 @@ export default function App() {
                 try {
                     // La aplicación principal usa el mismo CSV canónico verificado que INA.
                     const dataset = await loadCanonicalTrisDataset();
+                    setCanonicalInfo({ cutoff: dataset.manifest.latestDrawId, fetchedAt: dataset.manifest.fetchedAt, sha256: dataset.manifest.sha256 });
                     parsed = dataset.draws.map(draw => ({
                         num: draw.drawId,
                         win: [...draw.digits],
@@ -1574,6 +1577,7 @@ export default function App() {
                     try { localStorage.setItem('tris_csv_cache', canonicalCsv); } catch { /* la sesión puede continuar sin caché */ }
                     setCsvImportError(null);
                 } catch (error) {
+                    setCanonicalInfo(null);
                     canonicalFailure = error instanceof Error ? error.message : 'error desconocido';
                     const cachedCsv = localStorage.getItem('tris_csv_cache');
                     if (cachedCsv) {
@@ -1929,7 +1933,7 @@ export default function App() {
                         <div className="mt-1 text-[34px] font-black text-[#ffeb3b] drop-shadow-[0_0_12px_rgba(255,235,59,.55)] leading-[0.95] md:text-[40px]">
                             INTUICIÓN ARTIFICIAL <span className="text-[#00e5ff]">TRIS</span>
                         </div>
-                        <div className="mt-2 text-[10px] tracking-wide text-[#777]">Motor local de análisis por posición · evidencia verificable · sin conexión a APIs</div>
+                        <div className="mt-2 text-[10px] tracking-wide text-[#777]">Motor local de análisis por posición · evidencia verificable · sin APIs externas de predicción</div>
                     </div>
                     <div className="text-center my-3 space-y-2">
                         {allDraws.length > 0 ? <span className="pill inline-flex items-center rounded-full px-3.5 py-1.5 text-[11px] font-bold bg-[rgba(0,229,255,.1)] border border-[rgba(0,229,255,.3)] text-[#00e5ff]">
@@ -1940,8 +1944,12 @@ export default function App() {
                                 Importar Tris.csv
                                 <input type="file" accept=".csv,text/csv" className="hidden" onChange={e => { void handleCsvImport(e.target.files?.[0]); e.currentTarget.value = ''; }} />
                             </label>
-                            <span className="text-[10px] text-[#777]">Carga manual · sin descargas automáticas</span>
+                            <span className="text-[10px] text-[#777]">Histórico oficial sincronizado automáticamente · importación manual opcional</span>
                         </div>
+                        {canonicalInfo && <div className="text-[10px] text-[#69f0ae] font-semibold" title={`SHA-256: ${canonicalInfo.sha256} · Capturado: ${canonicalInfo.fetchedAt}`}>
+                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#69f0ae] mr-1.5 shadow-[0_0_6px_#69f0ae]" />
+                            HISTÓRICO CANÓNICO VERIFICADO · CORTE #{canonicalInfo.cutoff} · {new Date(canonicalInfo.fetchedAt).toLocaleString('es-MX')}
+                        </div>}
                         {csvImportError && <p role="alert" className="text-[11px] text-red-400">{csvImportError}</p>}
                     </div>
 
