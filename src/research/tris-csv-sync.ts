@@ -42,8 +42,8 @@ export function syncTrisCsvSnapshot(
     if (index && draw.drawId !== draws[index - 1].drawId + 1) {
       throw new Error("missing contest ID between " + draws[index - 1].drawId + " and " + draw.drawId);
     }
-    if (draw.date && Number.isNaN(Date.parse(draw.date))) {
-      throw new Error("invalid draw date at contest " + draw.drawId);
+    if (!draw.date || Number.isNaN(Date.parse(draw.date))) {
+      throw new Error("missing or invalid draw date at contest " + draw.drawId);
     }
   }
 
