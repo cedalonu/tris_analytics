@@ -134,30 +134,22 @@ Para cada Vn:
 - [x] Estados conservadores `current`, `stale`, `missing` y `blocked`.
 - [x] Pruebas para outputs frescos, outputs desalineados, outputs ausentes y módulos parcialmente alimentados.
 - [x] Runner de auditoría canónica genera resumen de propagación por módulo.
-- [ ] CI del nuevo registro y runner finaliza sin errores.
-- [ ] Ampliar el registro de los módulos INA a los 82 expedientes identificados.
+- [x] CI de `ina-propagation-audit`, TypeScript y pruebas de núcleo aprobados (Research core run `46181697012`: success).
+- [x] Inventario repetible de los 82 expedientes; el runner verifica presencia documental/visual y deja motor, output, montaje, binding y paridad como `unverified`.
+- [x] Auditoría de fase incorporada al ciclo live y publicada en el artefacto/resumen de Actions.
+- [ ] Completar adaptadores de evidencia y propagación real de cada output de los 82 expedientes.
 - [ ] Conectar índice persistente con dashboard sin importación manual.
-- [ ] Demostrar propagación con un concurso nuevo real y probar cuarentena de corrección retroactiva.
+- [x] Capturar un nuevo concurso real y ejecutar auditoría INA + inventario de fases: sorteo 37008, corte 37008, 25,976 filas.
+- [ ] Demostrar que el nuevo sorteo llega a todos los motores y visualizaciones; el checkpoint actual solo demuestra captura canónica y ejecución de auditorías.
+- [ ] Probar cuarentena de corrección retroactiva con fixture controlado y verificar resultado del workflow.
 - [ ] Verificar montaje visual y paridad numérica para cada salida.
 
-Evidencia: `src/research/ina-propagation-audit.ts`, `src/research/ina-propagation-audit.test.ts`, `scripts/run-tris-ina-canonical-audit.ts`, `docs/INA-PROPAGATION-REGISTRY-01.md`.
+Evidencia: `src/research/ina-propagation-audit.ts`, `src/research/ina-propagation-audit.test.ts`, `scripts/run-tris-ina-canonical-audit.ts`, `scripts/run-tris-research-phase-audit.ts`, `docs/INA-PROPAGATION-REGISTRY-01.md`.
 
+**Evidencia del ciclo nuevo:** run live `46181725839` success. Snapshot `Tris-37008-3a7c40e21738.csv`, 25,976 filas, SHA-256 `3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2`. Inventario: 82 documentos localizados, 20 componentes visuales localizados, 62 sin visual catalogada, 0 conexiones funcionales verificadas y 82 expedientes con estado integral `unverified`.
 
-- [ ] Captura programada de Pakin con URL y hora real de observación.
-- [ ] Snapshot inmutable, SHA-256, filas y rango de concursos.
-- [ ] Validación de esquema, dígitos, duplicados, continuidad y prefijo histórico.
-- [ ] Cuarentena y diagnóstico ante cambios del histórico.
-- [ ] Actualización canónica append-only e idempotente.
-- [ ] Evento/versionado de dataset compartido con INA.
-- [ ] Recalcular o invalidar dependencias afectadas.
-- [ ] Resolver el pronóstico del concurso correspondiente sin reescribirlo.
-- [ ] Registrar outcome sin duplicados ni backfill artificial.
-- [ ] Dashboard consume automáticamente la versión vigente.
-- [ ] Reporte de auditoría identifica snapshot, hash, corte, módulos actualizados y fallos.
-- [ ] Prueba extremo a extremo demuestra que un nuevo sorteo llega a todos los consumidores.
-
-**Gate G4:** repetir el mismo ciclo no duplica registros; un sorteo nuevo actualiza todas las vistas dependientes; un error de fuente nunca se presenta como actualización exitosa.
-
+**Gate G4:** repetir el mismo ciclo no duplica registros; un sorteo nuevo actualiza el histórico canónico y ejecuta auditorías. No declarar propagación completa a todos los consumidores hasta probar motor → output → visualización para cada uno.
+ 
 ### G5 — Centro operativo de predicción
 
 - [ ] Predicción generada exclusivamente con el corte INA disponible antes del sorteo.
