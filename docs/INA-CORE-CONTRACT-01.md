@@ -11,16 +11,16 @@ Definir una identidad única del histórico que todos los motores y vistas pueda
 ## 2. Tipos implementados
 
 En `src/research/ina-contracts.ts`:
-- `DatasetSnapshot`: URL de origen, hora de captura, SHA-256, tamaño opcional, cantidad de filas, rango de concursos y metadatos HTTP.
+- `DatasetSnapshot`: tipo de origen remoto/local, URL remota cuando aplica, hora de captura, SHA-256, tamaño opcional, cantidad de filas, rango de concursos y metadatos HTTP. Los archivos locales no reciben una URL ficticia.
 - `DatasetVersion`: identidad determinista por SHA-256 y último concurso, rango y tamaño.
 - `InaContext`: versión, snapshot, sorteos ordenados, calidad de datos y hora de construcción.
-- `ResearchOutput<T>`: salida genérica de un motor con módulo, versión del motor, parámetros, resultado, evidencia, warnings, versión/hash/corte y tamaño de muestra heredados de INA.
+- `ResearchOutput<T>`: salida genérica de un motor con módulo, versión del motor, `outputKey`, parámetros, resultado, evidencia, warnings, versión/hash/corte y tamaño de muestra heredados de INA.
 - `EvidenceStatus`: observed, descriptive, exploratory, backtested, holdout, prospective, accepted-experimental y quarantined.
 - `InaModuleDefinition`: registro de motor, entradas y salidas.
 
 ## 3. Reglas de integridad
 
-1. La URL de fuente debe ser HTTP(S), la captura y construcción deben tener timestamps válidos y el digest debe tener 64 caracteres hexadecimales.
+1. Si el origen es remoto, la URL debe ser HTTP(S); si es local, la URL debe ser nula. La captura y construcción deben tener timestamps válidos y el digest debe tener 64 caracteres hexadecimales.
 2. La cantidad de filas y los concursos inicial/final declarados deben coincidir con las filas validadas.
 3. Los errores del validador, duplicados o resultados que no contengan cinco dígitos 0–9 hacen que el contexto quede inválido.
 4. Los warnings no se ocultan ni se convierten automáticamente en errores; el consumidor debe decidir si el tipo de warning es tolerable.
@@ -32,7 +32,7 @@ En `src/research/ina-contracts.ts`:
 
 El identificador es `tris:<sha256>:<drawCutoff>`. El SHA-256 debe provenir de la captura verificada, no de una huella improvisada del navegador. La identidad cambia si cambia el snapshot, incluso si el último concurso no cambia. Un snapshot vacío conserva un corte nulo.
 
-El contrato no implementa todavía persistencia, invalidación de dependencias, actualización automática ni un catálogo de resultados; esos son trabajos P1.2, P1.3 y P4. El servicio tampoco certifica que un hash declarado corresponda a los bytes: esa comprobación pertenece a la etapa de ingestión.
+El contrato no implementa todavía persistencia, invalidación de dependencias, actualización automática ni un catálogo de resultados; esos son trabajos P1.2, P1.3 y P4. El servicio tampoco certifica que un hash declarado corresponda a los bytes: esa comprobación pertenece a la etapa de ingestión y se implementa en `ina-snapshot.ts` para las capturas remotas y los CSV locales.
 
 ## 5. Pruebas
 
