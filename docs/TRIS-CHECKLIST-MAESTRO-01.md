@@ -297,13 +297,15 @@ Continuar automáticamente con la siguiente tarea aprobada y desbloqueada. Si ap
 ## 5.3 Checkpoint de propagación INA y V1 (2026-11-28)
 
 - [x] Añadir salida versionada de frecuencia posicional `research.position-overview` y conectar la vista de frecuencia a sus datos históricos; provenance visible.
-- [x] Reconstruir y auditar nueve outputs sobre el mismo contexto INA: position-overview, combination-recurrence, pool-evaluation, pool-selection, aging-comparison, positional-transitions, transition-stability, transition-window-comparison y positional-absence.
+- [x] Reconstruir y auditar diez outputs sobre el mismo contexto INA: memory-state, position-overview, combination-recurrence, pool-evaluation, pool-selection, aging-comparison, positional-transitions, transition-stability, transition-window-comparison y positional-absence.
 - [x] Registrar como evidencia canónica los outputs de snapshot y sorteos validados, sin fabricarlos a partir de rutas o nombres.
-- [x] Auditoría de propagación live run `46183853597`: 8 módulos `current`, 0 `stale`, 0 `blocked`, 3 `missing`.
+- [x] Auditoría de propagación live run `46184641716`: 10 módulos `current`, 0 `stale`, 0 `blocked`, 1 `missing` (`prospective-evaluator`).
 - [x] V1 presencia/ausencia: 50/50 combinaciones posición/dígito con paridad; 12/12 comprobaciones de binding UI aprobadas.
 - [x] Snapshot de evidencia: `Tris-37008-3a7c40e21738.csv`, 25,976 filas, corte 37008, SHA-256 `3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2`.
-- [x] Despliegue combinado de la vista previa con dashboard principal actualizado: run `46183853575`, success.
-- [ ] Terminar validaciones extendidas del commit de integración visual: TRIS research `46183853602` y real-history `46183853601`; no marcar hasta que concluyan.
+- [x] Montar `TrisOpsDashboard.tsx` desde el Centro de investigación y añadir `InaMemoryPanel.tsx` con selectores de alcance, rezago, posiciones y contexto.
+- [x] Verificar por auditoría de código el montaje operativo desde `ResearchDashboard` y la carga del histórico canónico; run `46184641716`.
+- [x] Despliegue combinado de la vista previa con dashboard y panel de memoria: run `46184562709`, success; nuevo build posterior en validación.
+- [ ] Terminar validaciones extendidas del commit de integración de memoria: TRIS research `46184641679` y real-history `46184641682`; no marcar hasta que concluyan.
 - [ ] Inspección visual manual en navegador; CI/build no sustituyen esta comprobación.
 
-**Tres módulos INA aún no propagados:** `memory-research`, `prospective-evaluator` y `operational-dashboard`. Los 82 expedientes siguen con su auditoría individual; no se declara propagación integral de los 82 por tener ocho módulos INA actuales.
+**Único módulo INA aún sin output:** `prospective-evaluator` (`research.prospective-evaluation`). Los 82 expedientes siguen con su auditoría individual; no se declara propagación integral de los 82 por tener diez módulos INA actuales.
