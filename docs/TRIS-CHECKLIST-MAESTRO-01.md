@@ -314,3 +314,12 @@ Continuar automáticamente con la siguiente tarea aprobada y desbloqueada. Si ap
 - [x] Auditoría de fases live run `46185821125`: 82 documentos localizados; 24 visualizaciones localizadas; 58 sin ruta visual catalogada; 0 bloqueados; 0 verificados; 82 todavía `unverified`.
 
 **Estado INA:** los 11 módulos registrados están `current` en el corte 37008. Los 82 expedientes siguen con su auditoría individual; el último phase audit los mantiene `unverified` hasta probar motor, output, montaje, binding y paridad por expediente.
+
+
+## 5.4 Auditoría estática de montaje visual (nuevo checkpoint)
+
+- [x] Añadir `scripts/run-tris-research-mount-audit.ts` para recorrer el catálogo y detectar referencias de import/JSX en los dashboards activos.
+- [x] Ejecutarlo automáticamente junto a la auditoría live de 82 expedientes; adjunta reportes JSON/Markdown y resumen de Actions.
+- [ ] Confirmar resultado del primer ciclo sobre el HEAD que integra el auditor.
+- [ ] Revisar falsos positivos/negativos; el scan estático no sustituye la prueba runtime ni la inspección de navegador.
+- [ ] Usar el resultado para priorizar las siguientes fases con componentes ubicados pero sin referencias activas.
