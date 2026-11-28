@@ -27,6 +27,7 @@ La importación se conserva en el almacenamiento local del navegador. No envía 
 - Estabilidad temporal: compara el top-10 de conexiones por conteo en ventanas de 50/150/500 sorteos; lista las conexiones que aparecen en top-10 de al menos dos ventanas y muestra conteos crudos. Repetición es descriptiva y no implica persistencia estadística ni predictiva.
 - Referencia nula descriptiva: conteo esperado aproximado N/100 por pareja bajo independencia y uniformidad de dígitos. Ratio observado/esperado se muestra solo como descripción; no prueba señal, no corrige por múltiples comparaciones y no representa probabilidad del siguiente sorteo.
 - Prospectiva / Ledger: ciclo por concurso, forecasts congelados, outcomes, hits y comparativa por familia.
+- Aging / Recurrencia: frecuencia de combinaciones de 5 dígitos, aging por concursos y días, primera/última aparición, gaps promedio/mediano/máximo, ranking recurrentes y más atrasadas, distribución de gaps y consulta exacta; ID excluido. Solo descriptivo, sin afectar modelo ni forecasts.
 - Historial: buscar concurso, resultado o fecha.
 - Análisis por posición: frecuencia de 0–9 en R1 a R5.
 - Integridad: advertencias, errores, saltos de concursos y reglas de importación.
