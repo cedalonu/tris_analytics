@@ -1570,7 +1570,7 @@ export default function App() {
                     const canonicalCsv = [
                         'CONCURSO,ID,R1,R2,R3,R4,R5,FECHA',
                         ...parsed.map(draw => [draw.num, '', ...draw.digits, draw.date].join(','))
-                    ].join('\\n');
+                    ].join('\n');
                     try { localStorage.setItem('tris_csv_cache', canonicalCsv); } catch { /* la sesión puede continuar sin caché */ }
                     setCsvImportError(null);
                 } catch (error) {
