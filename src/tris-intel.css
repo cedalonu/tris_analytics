@@ -18,3 +18,15 @@
 .tris-intel .tris-heatcell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:5px;font-size:11px;color:#e4ffff;border:1px solid rgba(100,220,220,.08)}
 .tris-intel table{border-collapse:separate;border-spacing:0}
 .tris-intel tbody tr:hover{background:rgba(40,220,190,.035)}
+
+/* INA reference: neural-network focal panel and high-contrast signal hierarchy */
+.tris-intel .tris-card:has(svg){position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,rgba(32,210,145,.075),transparent 65%),rgba(3,10,20,.86);border-color:rgba(70,240,190,.22)}
+.tris-intel .tris-card svg{filter:drop-shadow(0 0 3px rgba(52,220,190,.12));}
+.tris-intel .tris-card svg line{transition:opacity .2s ease,stroke-width .2s ease;}
+.tris-intel .tris-card svg circle{filter:drop-shadow(0 0 3px rgba(65,245,195,.4));}
+.tris-intel .tris-card svg text{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.02em;}
+.tris-intel .tris-card:has(svg) h3{color:#7df8c7!important;text-shadow:0 0 12px rgba(50,245,175,.18)}
+.tris-intel .tris-heatcell{background-image:linear-gradient(145deg,rgba(10,250,165,.06),rgba(10,90,140,.06));}
+.tris-intel .tris-bars span{background:linear-gradient(180deg,#66ffc4,#159a8a 58%,#146b86);box-shadow:0 0 14px rgba(35,245,180,.18);}
+.tris-intel .tris-glow{color:#75ffd0;text-shadow:0 0 18px rgba(45,240,190,.55);}
+@media(min-width:1280px){.tris-intel .tris-card:has(svg){padding:18px}.tris-intel .tris-card svg{max-height:380px}}
