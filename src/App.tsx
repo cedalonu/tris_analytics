@@ -1564,12 +1564,7 @@ export default function App() {
                     // La aplicación principal usa el mismo CSV canónico verificado que INA.
                     const dataset = await loadCanonicalTrisDataset();
                     setCanonicalInfo({ cutoff: dataset.manifest.latestDrawId, fetchedAt: dataset.manifest.fetchedAt, sha256: dataset.manifest.sha256 });
-                    parsed = dataset.draws.map(draw => ({
-                        num: draw.drawId,
-                        win: [...draw.digits],
-                        digits: [...draw.digits],
-                        date: draw.date || ''
-                    }));
+                    parsed = mapCanonicalDrawsToApp(dataset.draws);
                     const canonicalCsv = [
                         'CONCURSO,ID,R1,R2,R3,R4,R5,FECHA',
                         ...parsed.map(draw => [draw.num, '', ...draw.digits, draw.date].join(','))
