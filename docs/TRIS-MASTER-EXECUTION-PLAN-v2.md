@@ -294,7 +294,7 @@ La secuencia de trabajo vigente queda fijada así:
 
 - [x] **P0.1** Crear la matriz de investigación y visualización. Evidencia: `docs/MATRIZ-INVESTIGACION-VISUAL-01.md`.
 - [x] **P0.2** Conciliar roadmap v1, fases 0–13 y programa 120. Evidencia: `docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md`.
-- [ ] **P0.3** Obtener línea base real de tests, TypeScript, build y workflows.
+- [x] **P0.3** Obtener línea base real de tests, TypeScript, build y workflows. Evidencia: `docs/TRIS-CI-BASELINE-AUDIT-01.md`; baseline aprobado con límites pendientes explícitos.
 - [ ] **P1.1** Definir tipos y contrato de versión/contexto de INA.
 - [ ] **P1.2** Implementar INA Core como servicio puro con pruebas.
 - [ ] **P1.3** Registrar módulos consumidores y sus dependencias.
@@ -304,7 +304,7 @@ La secuencia de trabajo vigente queda fijada así:
 - [ ] **P5** Cerrar el centro de predicción respaldado por INA.
 - [ ] **P6** Ejecutar auditoría integral y documentar operación.
 
-**La tarea activa es P0.3: baseline técnico y auditoría de ejecuciones.** P0.1 y P0.2 están documentados; no se inicia una reescritura masiva del dashboard ni se cambia el predictor antes de cerrar el diagnóstico.
+**P0 completada:** inventario, reconciliación de fases y baseline CI están documentados. La siguiente tarea activa es **P1.1: definir el contrato de datos/versiones/contexto de INA Core**. Los pendientes de ejecución sobre el snapshot actual y la propagación se conservan como gates de P4/P6; no se declaran resueltos por el baseline.
 
 ## 10. Criterio final del proyecto
 
