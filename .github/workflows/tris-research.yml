@@ -11,6 +11,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'tsconfig.json'
+      - 'data/canonical/**'
 
 jobs:
   research:
@@ -28,6 +29,8 @@ jobs:
         run: npm run lint
       - name: Build visual application
         run: npm run build
+      - name: Audit INA outputs and dashboard wiring against canonical snapshot
+        run: npm run research:ina-canonical-audit -- data/canonical/Tris.csv data/canonical/source-manifest.json
       - name: Research unit tests
         run: npm run test:research
       - name: Run past-only regime classifier calibration
@@ -64,6 +67,8 @@ jobs:
             reports/family-concordance-null/latest.json
             reports/family-concordance-null/latest.md
             reports/position-null/latest.md
+            reports/ina-canonical-audit/latest.json
+            reports/ina-canonical-audit/latest.md
             reports/regime-calibration/latest.json
             reports/regime-calibration/latest.md
             reports/positional-stability-calibration/latest.json
