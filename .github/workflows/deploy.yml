@@ -47,7 +47,7 @@ jobs:
 
       - name: Install research preview dependencies
         working-directory: research-preview-source
-        run: npm ci --legacy-peer-deps
+        run: npm install --legacy-peer-deps
 
       - name: Build research preview
         working-directory: research-preview-source
