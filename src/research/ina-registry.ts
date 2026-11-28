@@ -158,7 +158,7 @@ export const INA_MODULE_DEFINITIONS: InaModuleDefinition[] = [
     engineId: "pool-research-family",
     engineVersion: "1.0.0",
     consumes: ["ina.history", "ina.position-profile"],
-    produces: ["research.pool-evaluation"],
+    produces: ["research.pool-evaluation", "research.pool-selection"],
     status: "partial",
     sourceFiles: ["src/research/pool-analysis.ts", "src/research/candidate-portfolio-walk-forward.ts"],
   },
