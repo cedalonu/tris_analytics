@@ -96,6 +96,8 @@ jobs:
           fi
       - name: Rebuild and audit INA outputs against the newly validated canonical snapshot
         run: npm run research:ina-canonical-audit -- data/canonical/Tris.csv data/canonical/source-manifest.json
+      - name: Audit all catalogued research phases against the current snapshot
+        run: npm run research:phase-audit -- data/canonical/source-manifest.json
       - name: Record source freshness and INA propagation in job summary
         if: always()
         run: |
@@ -104,6 +106,7 @@ jobs:
           echo "- Fuente: https://raw.githubusercontent.com/pakinja/pakin/master/Tris.csv" >> "$GITHUB_STEP_SUMMARY"
           if [ -f data/cycles/latest-report.md ]; then cat data/cycles/latest-report.md >> "$GITHUB_STEP_SUMMARY"; fi
           if [ -f reports/ina-canonical-audit/latest.md ]; then cat reports/ina-canonical-audit/latest.md >> "$GITHUB_STEP_SUMMARY"; fi
+          if [ -f reports/research-phase-audit/latest.md ]; then cat reports/research-phase-audit/latest.md >> "$GITHUB_STEP_SUMMARY"; fi
       - name: Publish current cycle summary
         run: |
           if [ -f data/cycles/latest-report.md ]; then
@@ -119,5 +122,7 @@ jobs:
             data/source-snapshots/Tris-*.json
             reports/ina-canonical-audit/latest.json
             reports/ina-canonical-audit/latest.md
+            reports/research-phase-audit/latest.json
+            reports/research-phase-audit/latest.md
           if-no-files-found: error
           retention-days: 90
