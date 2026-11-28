@@ -20,7 +20,7 @@ La tarea de esta etapa no es duplicar esa captura. Es reforzar el adaptador y la
 Componentes relacionados:
 
 - `src/research/data-adapter.ts`: importador CSV.
-- `scripts/run-tris-cycles-source.ts`: captura oficial y snapshot.
+- `scripts/run-tris-cycles-source.ts`: captura oficial y snapshot; delega la puerta del prefijo canónico al validador testeable `src/research/canonical-prefix-guard.ts`.
 - `src/research/tris-csv-sync.ts` y `scripts/run-tris-sync.ts`: detector incremental local/manual; no sustituye al workflow de captura.
 - `data/canonical/source-manifest.json`: manifiesto del snapshot canónico.
 - `src/research/load-canonical-tris.ts`: verificación de SHA-256, tamaño, conteo, rango, fechas de borde, continuidad y preparación INA.
@@ -92,6 +92,7 @@ Se reforzó `scripts/run-tris-cycles-source.ts` para:
 - Valores de sorteo inválidos.
 - Fechas ausentes o inválidas en la entrada del sincronizador.
 - Repetición del mismo snapshot y protección del prefijo histórico.
+- Fixture del guard del runner: acepta append intacto, rechaza cambio retroactivo de dígitos, CSV/manifiesto huérfanos, snapshot previo corrupto e histórico entrante truncado (`src/research/canonical-prefix-guard.test.ts`).
 
 **CI:** los workflows de validación fueron iniciados para los cambios de esta etapa. Su estado final debe registrarse antes de cerrar la etapa; no se marca como exitoso mientras siga `in_progress` ni se oculta un fallo de un intento anterior.
 
@@ -106,7 +107,13 @@ Se detectó que el cargador compartido verificaba hash, bytes y número de filas
 
 Se añadió `src/research/load-canonical-tris.test.ts` con pruebas de éxito y rechazo para conteo, rango, fechas, SHA-256, timestamp y tamaño. Esta puerta corre antes de construir el contexto INA; cualquier discordancia detiene la carga.
 
-## 6. Pendientes para cerrar Etapa 1
+## 6. Verificación de la puerta retroactiva a nivel del runner (2026-11-28)
+
+La validación de prefijo se extrajo a `validateCanonicalPrefix` y ahora la invoca directamente `scripts/run-tris-cycles-source.ts` antes de crear snapshots o lanzar el ledger. Esto permite probar la misma puerta que ejecuta el workflow sin tocar el CSV oficial.
+
+Los fixtures sintéticos cubren cinco rutas: append válido, mutación de un sorteo histórico, CSV/manifiesto desparejados, snapshot previo cuyo hash no coincide y truncamiento del histórico entrante. El caso de mutación debe fallar antes de cualquier escritura. El resultado de CI para el HEAD que incorpora estos fixtures sigue pendiente; no se declara validado hasta verlo en verde.
+
+## 7. Pendientes para cerrar Etapa 1
 
 - [ ] Obtener TypeScript, pruebas de investigación y build en estado exitoso sobre el HEAD final (commit `886b633e`).
 - [ ] Obtener resultado final del workflow de validación real-histórica.
@@ -114,7 +121,7 @@ Se añadió `src/research/load-canonical-tris.test.ts` con pruebas de éxito y r
 - [ ] Confirmar que la captura live más reciente conserva el mismo comportamiento tras los cambios.
 - [ ] Registrar el commit final y las ejecuciones exitosas.
 
-## 7. Límites de esta entrega
+## 8. Límites de esta entrega
 
 - La carga inicial de `App.tsx` ahora usa el loader canónico, pero la ruta manual de importación CSV sigue disponible y puede sustituir el conjunto de datos durante la sesión.
 - La conexión de la aplicación principal al loader canónico está pendiente de CI/build final y comprobación en navegador.
