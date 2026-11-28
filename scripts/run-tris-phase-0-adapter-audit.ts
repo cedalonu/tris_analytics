@@ -49,8 +49,8 @@ assert.equal(prefixCheckpoint.processedDrawCount, manifest.rowCount);
 const legacyRows = mapCanonicalDrawsToApp(dataset.draws);
 assert.equal(legacyRows.length, dataset.draws.length);
 assert.deepEqual(
-  legacyRows.map(row => [row.num, row.digits, row.date]),
-  dataset.draws.map(row => [row.drawId, row.digits, row.date ?? ""]),
+  legacyRows.map(row => [row.num, row.win, row.digits, row.date]),
+  dataset.draws.map(row => [row.drawId, row.digits, row.digits, row.date ?? ""]),
 );
 
 const app = await readFile(resolve("src/App.tsx"), "utf8");
