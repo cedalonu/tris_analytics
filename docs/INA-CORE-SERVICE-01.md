@@ -32,7 +32,7 @@ Si la versión del snapshot no coincide con conteo/rango o tiene errores de vali
 
 ## 5. Validación CI
 
-Run [46120748438](https://github.com/cedalonu/tris_analytics/actions/runs/46120748438), sobre el commit `f5d3b685a830bb5a60fa510a04ea927f64cb7b06`: TypeScript, 632 pruebas de investigación y build terminaron correctamente. El run [46120748358](https://github.com/cedalonu/tris_analytics/actions/runs/46120748358) también completó correctamente el type check y la suite de investigación. La validación extendida de calibraciones continúa en el workflow correspondiente.
+Run [46120748438](https://github.com/cedalonu/tris_analytics/actions/runs/46120748438), sobre el commit `f5d3b685a830bb5a60fa510a04ea927f64cb7b06`: TypeScript, la suite completa de pruebas de investigación y build terminaron correctamente. El run [46120748358](https://github.com/cedalonu/tris_analytics/actions/runs/46120748358) también completó correctamente el type check y la suite de investigación. La validación extendida de calibraciones continúa en el workflow correspondiente.
 
 ## 6. Límites y siguiente paso
 
