@@ -3,7 +3,7 @@ export interface MountReferenceEvidence { file: string; imported: boolean; jsx: 
 
 /** Detect source-level import and JSX references; not a runtime mount guarantee. */
 export function findComponentReferences(componentName: string, files: MountScanFile[]): MountReferenceEvidence[] {
-  if (!/^[A-Za-z_$][\\w$]*$/.test(componentName)) throw new Error("invalid component name");
+  if (!/^[A-Za-z_$][\w$]*$/.test(componentName)) throw new Error("invalid component name");
   const importPattern = new RegExp(`import\\s+(?:[\\w{},*\\s]+\\s+from\\s+)?["']\\./(?:research/)?${componentName}(?:\\.tsx)?["']|import\\s+${componentName}\\s+from\\s+["']\\./(?:research/)?${componentName}(?:\\.tsx)?["']`);
   const jsxPattern = new RegExp(`<${componentName}(?:\\s|/|>)`);
   return files.flatMap(({path,content})=>{
