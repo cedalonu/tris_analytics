@@ -139,7 +139,7 @@ export const INA_MODULE_DEFINITIONS: InaModuleDefinition[] = [
     engineVersion: "1.0.0",
     consumes: ["ina.history"],
     produces: ["research.position-overview"],
-    status: "partial",
+    status: "implemented",
     sourceFiles: ["src/research/dashboard-overview.ts", "src/ResearchSignalOverview.tsx"],
   },
   {
