@@ -41,3 +41,27 @@ La importación se conserva en el almacenamiento local del navegador. No envía 
 
 ## Alcance
 Esta entrega conecta la interfaz con CSV histórico y permite importar el ledger prospectivo real de los artefactos de CI. La auditoría de integridad del ledger todavía debe verificarse por separado; importación visual no significa auditoría aprobada.
+
+
+## Línea analítica independiente: aging y recurrencia de combinaciones (propuesta aprobada)
+
+Esta línea es **descriptiva y separada del modelo predictivo**. El campo `ID` permanece excluido: no se lee, interpreta, utiliza para vincular registros ni se incluye en cálculos, ranking o generación de pronósticos.
+
+### Métricas por combinación exacta de cinco dígitos
+- **Frecuencia histórica:** número de apariciones de la combinación exacta en el histórico disponible.
+- **Aging en sorteos:** cantidad de concursos transcurridos desde su aparición más reciente; se calcula con la secuencia de `CONCURSO`, no con `ID`.
+- **Aging en días:** diferencia de fechas desde la última aparición, cuando las fechas son válidas; se muestra por separado del aging por concursos.
+- **Última aparición:** concurso y fecha más recientes en que se observó.
+- **Primera aparición observada:** primer concurso/fecha del dataset disponible, aclarando que no necesariamente es la primera aparición histórica absoluta.
+- **Intervalos entre apariciones:** gaps de concursos; resumen mínimo, mediano, máximo y promedio cuando haya suficientes repeticiones.
+- **Estado:** observada repetidamente, observada una vez o no encontrada en el histórico cargado. Las combinaciones no observadas no deben tener frecuencia o aging inventados.
+
+### Reglas de integridad y presentación
+- Usar la cadena de cinco dígitos R1–R5 en orden; preservar ceros a la izquierda.
+- Definir aging en concursos como `último concurso cargado − concurso de última aparición` (consecutividad validada; si existen huecos, avisar).
+- No inferir que una combinación “debe salir” por estar atrasada ni que su frecuencia la hace más probable.
+- No usar estas métricas como input, filtro, peso o criterio del investigador automático ni de ninguna familia de pronósticos, salvo aprobación explícita posterior y evaluación prospectiva separada.
+- Etiquetar las visualizaciones como retrospectivas/descriptivas; evitar lenguaje de “caliente”, “fría”, “debida” o “probabilidad aumentada”.
+
+### Próxima implementación visual
+Un panel independiente en el dashboard con búsqueda de combinación, tabla de frecuencia y aging, distribución de gaps, ranking por más repetidas y por mayor aging (solo descriptivo), y filtros por rango de concursos. Este panel no altera resultados, forecasts congelados ni ledger prospectivo.
