@@ -71,3 +71,18 @@ Para evitar series ficticias, `edgeTimeline` ahora se calcula en `buildInaPositi
 Pruebas ampliadas para verificar que la suma de cada serie temporal coincide con el conteo total observado de su conexión y que el histórico vacío no crea señales.
 
 **Estado de validación de esta iteración:** TypeScript y build visual aparecen exitosos en una ejecución de CI del componente; las ejecuciones que incluyen la serie temporal ampliada están todavía en curso. No se declara CI completa hasta su cierre.
+
+
+## Tercera iteración visual — estabilidad y entropía INA
+
+Se integra en el Centro INA un panel de estabilidad temporal y dispersión por posición. La vista recibe `ResearchOutput<InaTransitionStabilityKnowledge>` generado desde el mismo `InaContext` que alimenta la red de transiciones.
+
+Elementos mostrados:
+- tamaño y rango real de las ventanas reciente y anterior, no superpuestas;
+- entropía normalizada por posición para ambas ventanas y su diferencia;
+- conexiones con mayores cambios de tasa entre ventanas, con conteos anterior/reciente y diferencia en puntos porcentuales;
+- corte y versión del dataset compartidos con el resto de INA.
+
+El componente no calcula entropía ni compara ventanas: representa la salida del motor `buildInaTransitionStability`. Se mantiene el lenguaje descriptivo y se advierte que ni la entropía ni el cambio de tasa son señales predictivas validadas.
+
+**Estado:** avance P2.8/P3; no se declara cerrada la migración mientras siga existiendo el comparador duplicado en la vista general ni se hayan completado las pruebas de equivalencia y CI integral.
