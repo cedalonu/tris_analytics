@@ -68,7 +68,8 @@ const num=(v:any)=>typeof v==="number"&&Number.isFinite(v)?v.toLocaleString("es-
 function Metric({label,value,detail}:{label:string;value:React.ReactNode;detail?:string}){return <div className="rounded-xl border border-slate-700 bg-slate-900/80 p-4 min-w-0"><div className="text-xs uppercase tracking-wider text-slate-400">{label}</div><div className="mt-2 text-2xl font-bold text-slate-100 break-words">{value}</div>{detail&&<div className="mt-1 text-xs text-slate-500">{detail}</div>}</div>}
 
 function parseAdapterCsv(csv:string){
- const lines=csv.replace(/^\uFEFF/,"").split(/\r?\n/).filter(line=>line.trim());
+ const lines=csv.replace(/^\uFEFF/,"").split(/\r?
+/).filter(line=>line.trim());
  const headers=(lines[0]??"").split(",").map(x=>x.trim().toUpperCase());
  const indexes=[headers.indexOf("R1"),headers.indexOf("R2"),headers.indexOf("R3"),headers.indexOf("R4"),headers.indexOf("R5")];
  const rows:any[]=[];
@@ -87,7 +88,8 @@ function AdapterDigitsChart({rows,label}:{rows:any[];label:string}){
 function AdapterIntegrityPanel({onClose}:{onClose:()=>void}){
  const [report,setReport]=useState<any>(null);const [loadError,setLoadError]=useState("");const [fileResult,setFileResult]=useState<any>(null);const [canonicalRows,setCanonicalRows]=useState<any[]>([]);const [busy,setBusy]=useState(false);
  useEffect(()=>{let live=true;fetch("./research-data/research-phase-audit.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("Reporte de auditoría aún no publicado.");return r.json();}).then(v=>{if(live)setReport(v);}).catch(e=>{if(live)setLoadError(e.message||"No se pudo leer el informe");});fetch("https://raw.githubusercontent.com/cedalonu/tris_analytics/research-core-v1/data/canonical/Tris.csv",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("Histórico canónico no disponible");return r.text();}).then(csv=>{if(live){const parsed=parseAdapterCsv(csv);setCanonicalRows(parsed.rows);}}).catch(e=>{if(live)setLoadError((old:string)=>old?old+" · "+(e.message||"Histórico no disponible"):(e.message||"Histórico no disponible"));});return()=>{live=false};},[]);
- async function inspectFile(file:File){setBusy(true);try{const bytes=await file.arrayBuffer();const textContent=new TextDecoder().decode(bytes);const parsed=parseAdapterCsv(textContent);const lines=textContent.split(/\r?\n/).filter(x=>x.trim());const head=lines[0]??"";const headerOk=/^\s*(ID|id|Sorteo|draw|num).*?(Fecha|date).*?(R1|digits|Resultado|result)/i.test(head)||/^(ID|id|Sorteo|draw|num),/i.test(head);const digest=await crypto.subtle.digest("SHA-256",bytes);const hex=Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,"0")).join("");setFileResult({name:file.name,size:file.size,rows:parsed.rows.length,header:head,headerOk,sha256:hex,drawRange:lines.length>1?{first:lines[1]?.split(",")[0],last:lines[lines.length-1]?.split(",")[0]}:null,parsedRows:parsed.rows});}catch(e){setFileResult({error:e instanceof Error?e.message:"Error de lectura"});}finally{setBusy(false)}}
+ async function inspectFile(file:File){setBusy(true);try{const bytes=await file.arrayBuffer();const textContent=new TextDecoder().decode(bytes);const parsed=parseAdapterCsv(textContent);const lines=textContent.split(/\r?
+/).filter(x=>x.trim());const head=lines[0]??"";const headerOk=/^\s*(ID|id|Sorteo|draw|num).*?(Fecha|date).*?(R1|digits|Resultado|result)/i.test(head)||/^(ID|id|Sorteo|draw|num),/i.test(head);const digest=await crypto.subtle.digest("SHA-256",bytes);const hex=Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,"0")).join("");setFileResult({name:file.name,size:file.size,rows:parsed.rows.length,header:head,headerOk,sha256:hex,drawRange:lines.length>1?{first:lines[1]?.split(",")[0],last:lines[lines.length-1]?.split(",")[0]}:null,parsedRows:parsed.rows});}catch(e){setFileResult({error:e instanceof Error?e.message:"Error de lectura"});}finally{setBusy(false)}}
  const canonical=report?.canonical;const phase0=report?.phase0Evidence;const checks=phase0?.evidence;const states=checks?Object.entries(checks).map(([k,v]:any)=>({name:k,state:v?.state??"sin evidencia",detail:v?.detail??v?.message??""})):[];
  return <div className="fixed inset-0 z-[140] overflow-y-auto bg-[#050912]/95 p-3 md:p-6"><div className="mx-auto max-w-6xl rounded-2xl border border-cyan-800/60 bg-slate-950 shadow-2xl"><header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-slate-800 bg-slate-950 p-4"><div><div className="text-[10px] uppercase tracking-[.2em] text-cyan-300">Checkpoint 01 · Datos</div><h2 className="text-xl font-black text-white">Adaptador, importación e integridad</h2></div><button onClick={onClose} className="rounded-lg border border-slate-700 px-3 py-2 text-sm hover:bg-slate-800">Cerrar ×</button></header>
  <div className="p-4 md:p-6 space-y-5"><div className="grid grid-cols-2 gap-3 md:grid-cols-4"><Metric label="Sorteo de corte" value={canonical?.drawCutoff??"—"}/><Metric label="Filas históricas" value={num(canonical?.sampleSize)}/><Metric label="Expedientes verificados" value={report?.counts?.verified??"—"}/><Metric label="Estado de checkpoint" value={phase0?.status??"Pendiente"} detail="Basado en reporte publicado"/></div>
@@ -129,7 +131,8 @@ function TemporalTimeline({windows,minimum}:{windows:any[];minimum:number}){
 export default function ResearchDashboard({onBack,onOpenIntuition}:{onBack:()=>void;onOpenIntuition:()=>void}){
  const [showMonitor, setShowMonitor] = useState<boolean>(false);
  const [showAdapterPanel,setShowAdapterPanel]=useState(false);
- const [showInaDashboard,setShowInaDashboard]=useState(false);\n const [showHypothesisPhase,setShowHypothesisPhase]=useState(false);
+ const [showInaDashboard,setShowInaDashboard]=useState(false);
+ const [showHypothesisPhase,setShowHypothesisPhase]=useState(false);
  const [reports,setReports]=useState<ReportRecord[]>([]);
  const [errors,setErrors]=useState<string[]>([]);
  const [active,setActive]=useState<ReportKind>("performance");
@@ -150,7 +153,8 @@ export default function ResearchDashboard({onBack,onOpenIntuition}:{onBack:()=>v
  const current=active==="structuralEvidenceCenter"?undefined:byKind[active]?.data;
  const performanceGroups=useMemo(()=>{const groups=performance?.groups??[];const q=performanceQuery.trim().toLowerCase();return groups.filter((g:any)=>(performanceFamily==="all"||g.family===performanceFamily)&&(!q||[g.family,g.method,g.mode,g.config].filter(Boolean).join(" ").toLowerCase().includes(q))).sort((a:any,b:any)=>performanceSort==="difference"?((b.pairedDifference??-Infinity)-(a.pairedDifference??-Infinity)):performanceSort==="sample"?(b.resolved-a.resolved):a.family.localeCompare(b.family));},[performance,performanceFamily,performanceQuery,performanceSort]);
  const performanceFamilies = useMemo(() => Array.from(new Set((performance?.groups ?? []).map((g: any) => g.family))).sort() as string[], [performance]);
- if(showAdapterPanel)return <AdapterIntegrityPanel onClose={()=>setShowAdapterPanel(false)}/>;\n if(showHypothesisPhase)return <HypothesisPhasePanel onClose={()=>setShowHypothesisPhase(false)}/>;
+ if(showAdapterPanel)return <AdapterIntegrityPanel onClose={()=>setShowAdapterPanel(false)}/>;
+ if(showHypothesisPhase)return <HypothesisPhasePanel onClose={()=>setShowHypothesisPhase(false)}/>;
  if(showMonitor)return <HypothesisMonitor onBack={()=>setShowMonitor(false)} />;
  if(showInaDashboard)return <div className="fixed inset-0 z-[120] overflow-y-auto bg-[#080d18] text-slate-100">
   <div className="mx-auto max-w-[1600px] px-3 pt-3"><button onClick={()=>setShowInaDashboard(false)} className="mb-3 rounded-lg border border-emerald-700/70 bg-emerald-950/30 px-4 py-2 text-sm font-bold text-emerald-200 hover:bg-emerald-900/40">← Volver al Centro de investigación</button></div>
