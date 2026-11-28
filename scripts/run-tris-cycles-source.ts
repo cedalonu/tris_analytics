@@ -47,9 +47,18 @@ let previousCheckpoint = null as {
   processedPrefixSha256: string;
   updatedAt: string;
 } | null;
-try {
-  const previousBytes = await readFile(canonicalCsvPath);
-  const previousManifest = JSON.parse(await readFile(canonicalManifestPath, "utf8")) as {
+let previousBytes: Buffer | null = null;
+let previousManifestText: string | null = null;
+try { previousBytes = await readFile(canonicalCsvPath); }
+catch (error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error; }
+try { previousManifestText = await readFile(canonicalManifestPath, "utf8"); }
+catch (error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error; }
+
+if (Boolean(previousBytes) !== Boolean(previousManifestText)) {
+  throw new Error("Canonical CSV and manifest must either both exist or both be absent; refusing update.");
+}
+if (previousBytes && previousManifestText) {
+  const previousManifest = JSON.parse(previousManifestText) as {
     schemaVersion?: number; sha256?: string; byteLength?: number; rowCount?: number;
     earliestDrawId?: number; latestDrawId?: number;
   };
@@ -75,15 +84,6 @@ try {
     processedPrefixSha256: fingerprintDraws(previousDraws),
     updatedAt: fetchedAt,
   };
-} catch (error) {
-  if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
-  // A first-time bootstrap is allowed only when neither canonical file exists.
-  try {
-    await readFile(canonicalManifestPath);
-    throw new Error("Canonical manifest exists without its CSV; refusing bootstrap.");
-  } catch (manifestError) {
-    if ((manifestError as NodeJS.ErrnoException).code !== "ENOENT") throw manifestError;
-  }
 }
 const sync = syncTrisCsvSnapshot(draws, previousCheckpoint, fetchedAt);
 console.log("Canonical prefix guard:", JSON.stringify({
