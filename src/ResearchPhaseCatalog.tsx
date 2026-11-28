@@ -1,7 +1,7 @@
 import React,{useMemo,useState} from "react";
 
-type Phase={id:number;title:string;artifact:string;area:string;visual?:string};
-const PHASES:Phase[]=[
+export type Phase={id:number;title:string;artifact:string;area:string;visual?:string};
+export const PHASES:Phase[]=[
 { id:0,title:"Adaptador, importación e integridad",artifact:"docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",area:"Datos"},
 { id:1,title:"Investigación descriptiva, pools y memoria",artifact:"docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",area:"INA"},
 { id:2,title:"Generación y selección de hipótesis",artifact:"docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",area:"Hipótesis"},
