@@ -34,7 +34,7 @@ export default function InaCommandCenter({
   const nodeCounts = result?.nodeCounts ?? Array.from({ length: 5 }, () => Array(10).fill(0));
   const maxCount = result?.maxCount ?? 1;
   const expected = result?.expectedPerPair ?? 0;
-  const focus = focusedNode ? focusedNode.split("-").map(Number) : null;
+  const focus = focusedNode ? [Number(focusedNode.split("-")[0].replace("R", "")) - 1, Number(focusedNode.split("-")[1])] : null;
   const focusEdges = useMemo(() => focus ? edges.filter(edge =>
     (edge.p === focus[0] && edge.a === focus[1]) ||
     (edge.p + 1 === focus[0] && edge.b === focus[1])
