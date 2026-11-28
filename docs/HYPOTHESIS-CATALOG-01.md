@@ -65,3 +65,12 @@ Las referencias identifican código/documentación relacionados; no afirman que 
 ## Corrección visual 02-B — Enlace directo de cada ficha (2026-11-28)
 
 Se corrigió el comportamiento: los títulos del catálogo ahora seleccionan la ficha y el panel de evidencia expande la visualización asociada. La ficha 001 muestra conteos posicionales por dígito; 002 muestra un histograma de intervalos completos de ausencia; 003 muestra conteos de pares adyacentes observados. Las fichas 004–007 abren panel de estado con su gráfico empírico explícitamente pendiente, sin fabricar series. El panel está montado debajo del detalle seleccionado y recibe el ID de hipótesis. TypeScript/build/CI y publicación deben confirmarse antes de marcar runtime cerrado.
+
+
+## Corrección 02-C — H-TRIS-004: serie empírica conectada (2026-11-28)
+
+- Se conectó `analyzePositionalChangePoints` al snapshot histórico canónico INA.
+- El panel calcula la serie del detector para los últimos 120 sorteos disponibles, con ventanas de referencia y recientes de 25 sorteos, soporte mínimo 20, umbral local Jensen–Shannon 0.20 y retorno 0.10. Parámetros quedan visibles en código/versionado.
+- Gráficas por R1–R5: distancia local por sorteo; marcas de inicio de episodios; estado/episodios y retornos descriptivos.
+- Nivel de salida: **descriptivo, no calibrado**. No constituye prueba de cambio de régimen ni capacidad predictiva.
+- Pendiente: simulación nula y calibración de falsas alarmas, sensibilidad de parámetros, reporte INA versionado, holdout cronológico y runtime/browser.
