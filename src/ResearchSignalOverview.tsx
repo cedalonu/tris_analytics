@@ -1,23 +1,24 @@
 import React, { useMemo, useState } from "react";
-import type { Draw } from "./research-core";
-import { buildDashboardOverview } from "./research/dashboard-overview";
+import type { InaContext } from "./research/ina-contracts";
+import { buildInaDashboardOverview } from "./research/ina-dashboard-overview";
 
 type WindowSize = 50 | 100 | 250 | 500;
 const pct = (value: number) => (value * 100).toFixed(1) + "%";
 const signed = (value: number) => (value > 0 ? "+" : "") + value.toFixed(1) + " pp";
 
-export default function ResearchSignalOverview({ draws }: { draws: Draw[] }) {
+export default function ResearchSignalOverview({ context }: { context: InaContext | null }) {
   const [windowSize, setWindowSize] = useState<WindowSize>(100);
   const [positionFilter, setPositionFilter] = useState<"all" | 0 | 1 | 2 | 3 | 4>("all");
-  const report = useMemo(() => buildDashboardOverview(draws, windowSize), [draws, windowSize]);
-  const positions = positionFilter === "all"
+  const output = useMemo(() => context ? buildInaDashboardOverview(context, windowSize) : null, [context, windowSize]);
+  const report = output?.result ?? null;
+  const positions = !report ? [] : positionFilter === "all"
     ? report.positions
     : report.positions.filter((item) => item.position === positionFilter);
-  const strongest = report.positions.flatMap((row) => row.digits.map((digit) => ({
+  const strongest = report?.positions.flatMap((row) => row.digits.map((digit) => ({
     position: row.position, ...digit,
   }))).sort((a, b) => Math.abs(b.deltaPp) - Math.abs(a.deltaPp))[0];
 
-  if (!draws.length) return (
+  if (!report || !report.totalDraws || !output) return (
     <section className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
       <h3 className="font-semibold text-cyan-200">Lectura integrada de señales</h3>
       <p className="mt-2 text-sm text-slate-400">Importa o sincroniza el histórico para construir la comparación por posición.</p>
@@ -70,7 +71,7 @@ export default function ResearchSignalOverview({ draws }: { draws: Draw[] }) {
           </tbody>
         </table>
       </div>
-      <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-500"><span>Verde: frecuencia reciente por encima de su tasa histórica · Ámbar: por debajo.</span><span>Referencia histórica inclusiva · sin prueba de significancia.</span></div>
+      <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-500"><span>Verde: frecuencia reciente por encima de su tasa histórica · Ámbar: por debajo.</span><span>Referencia histórica inclusiva · sin prueba de significancia.</span><span>INA {output.datasetVersionId.slice(0, 24)} · SHA {output.snapshotSha256.slice(0, 12)} · N={output.sampleSize}</span></div>
     </section>
   );
 }
