@@ -14,6 +14,7 @@ import { analyzePositionAbsences } from "../src/research/absence-analysis";
 import { buildInaTransitionStability } from "../src/research/ina-transition-stability";
 import { buildInaPositionalTransitions } from "../src/research/ina-positional-transitions";
 import { buildInaRecurrence } from "../src/research/ina-recurrence";
+import { buildInaDashboardOverview } from "../src/research/ina-dashboard-overview";
 import { buildInaPoolEvaluation } from "../src/research/ina-pool-evaluation";
 import { buildInaPoolSelection } from "../src/research/ina-pool-selection";
 import { buildInaAgingComparison } from "../src/research/ina-aging-comparison";
@@ -49,6 +50,7 @@ assert.equal(core.context.version.drawCount, manifest.rowCount);
 assert.equal(core.context.version.drawStart, manifest.earliestDrawId);
 assert.equal(core.context.version.drawCutoff, manifest.latestDrawId);
 
+const overview = buildInaDashboardOverview(core.context, 100);
 const recurrence = buildInaRecurrence(core.context);
 const poolEvaluation = buildInaPoolEvaluation(core.context, { poolSize: 3, windowSize: 150, minTrain: 30, historyLimit: 500 });
 const poolSelection = buildInaPoolSelection(core.context, { poolSize: 3, windowSize: 150, method: "frequency", minTrain: 30, historyLimit: 500 });
@@ -58,7 +60,7 @@ const stability = buildInaTransitionStability(core.context, 50, 50);
 const windowComparison = buildInaTransitionWindowComparison(core.context);
 const absence = buildInaAbsence(core.context, { maxPriorMisses: 20, timelineLimit: 100 });
 
-const outputs = [recurrence, poolEvaluation, poolSelection, aging, transitions, stability, windowComparison, absence];
+const outputs = [overview, recurrence, poolEvaluation, poolSelection, aging, transitions, stability, windowComparison, absence];
 const propagation = auditInaPropagation({
   datasetVersionId: core.context.version.versionId,
   snapshotSha256: actualSha256,
@@ -88,6 +90,12 @@ for (const output of outputs) {
   assert.equal(output.sampleSize, manifest.rowCount, output.outputKey + " sample size mismatch");
 }
 
+assert.equal(overview.result.totalDraws, manifest.rowCount);
+assert.equal(overview.result.latestDrawId, manifest.latestDrawId);
+assert.deepEqual(
+  overview.result.positions.map(position => position.digits.map(digit => digit.historicalCount)),
+  core.knowledge!.positions.map(position => position.digits.map(digit => digit.occurrences)),
+);
 assert.equal(recurrence.result.drawCutoff, manifest.latestDrawId);
 assert.equal(recurrence.result.uniqueCombinations > 0, true);
 assert.equal(poolEvaluation.result.poolSize, 3);
@@ -123,6 +131,9 @@ const absenceParityRows = absence.result.positions.flatMap(position => {
 const dashboard = await readFile(resolve("src/TrisOpsDashboard.tsx"), "utf8");
 const inaCenter = await readFile(resolve("src/InaCommandCenter.tsx"), "utf8");
 const uiWiring = {
+  overviewOutputComputedFromSharedInaContext: dashboard.includes("buildInaDashboardOverview(inaResult.context,100)"),
+  overviewOutputUsedByFrequencyCharts: dashboard.includes("positionCounts=overviewOutput?.result.positions.map"),
+  overviewProvenanceRendered: dashboard.includes("research.position-overview"),
   recurrenceOutputComputedFromSharedInaContext: dashboard.includes("buildInaRecurrence(inaResult.context)"),
   recurrenceOutputUsedByDashboard: dashboard.includes("combinationStats=recurrenceOutput?.result.combinations"),
   poolEvaluationComputedFromSharedInaContext: dashboard.includes("buildInaPoolEvaluation(inaResult.context"),
@@ -173,6 +184,7 @@ const report = {
     sampleSize: output.sampleSize,
     evidenceStatus: output.evidence.status,
   })),
+  overview: { totalDraws: overview.result.totalDraws, latestDrawId: overview.result.latestDrawId, windowSize: overview.result.windowSize },
   recurrence: { uniqueCombinations: recurrence.result.uniqueCombinations, recurrentCombinations: recurrence.result.recurrentCombinations },
   pools: { poolSize: poolSelection.result.poolSize, methods: poolSelection.result.selectedMethods, evaluationMethods: poolEvaluation.result.methods },
   aging: { tested: aging.result.comparison.tested, poolSize: aging.result.poolSize },
