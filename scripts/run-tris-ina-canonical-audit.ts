@@ -12,6 +12,7 @@ import { buildInaCore } from "../src/research/ina-core";
 import { buildInaAbsence } from "../src/research/ina-absence";
 import { analyzePositionAbsences } from "../src/research/absence-analysis";
 import { buildInaTransitionStability } from "../src/research/ina-transition-stability";
+import { buildInaPositionalTransitions } from "../src/research/ina-positional-transitions";
 import { buildInaTransitionWindowComparison } from "../src/research/ina-transition-window-comparison";
 import { snapshotFromCanonicalManifest, type CanonicalSourceManifest } from "../src/research/ina-snapshot";
 import { auditInaPropagation, propagationEvidenceFromResearchOutputs } from "../src/research/ina-propagation-audit";
@@ -44,11 +45,12 @@ assert.equal(core.context.version.drawCount, manifest.rowCount);
 assert.equal(core.context.version.drawStart, manifest.earliestDrawId);
 assert.equal(core.context.version.drawCutoff, manifest.latestDrawId);
 
+const transitions = buildInaPositionalTransitions(core.context, 150);
 const stability = buildInaTransitionStability(core.context, 50, 50);
 const windowComparison = buildInaTransitionWindowComparison(core.context);
 const absence = buildInaAbsence(core.context, { maxPriorMisses: 20, timelineLimit: 100 });
 
-const outputs = [stability, windowComparison, absence];
+const outputs = [transitions, stability, windowComparison, absence];
 const propagation = auditInaPropagation({
   datasetVersionId: core.context.version.versionId,
   snapshotSha256: actualSha256,
@@ -71,6 +73,8 @@ for (const output of outputs) {
   assert.equal(output.sampleSize, manifest.rowCount, output.outputKey + " sample size mismatch");
 }
 
+assert.equal(transitions.result.sampleSize, 150);
+assert.equal(transitions.result.edges.length > 0, true);
 assert.equal(stability.result.recentDrawCount, 50);
 assert.equal(stability.result.previousDrawCount, 50);
 assert.equal(stability.result.digitEntropy.length, 5);
@@ -99,6 +103,8 @@ const absenceParityRows = absence.result.positions.flatMap(position => {
 const dashboard = await readFile(resolve("src/TrisOpsDashboard.tsx"), "utf8");
 const inaCenter = await readFile(resolve("src/InaCommandCenter.tsx"), "utf8");
 const uiWiring = {
+  transitionOutputComputedFromSharedInaContext: dashboard.includes("buildInaPositionalTransitions(inaResult.context,transitionWindow)"),
+  transitionOutputRendered: dashboard.includes("transitionOutput?.result"),
   stabilityComputedFromSharedInaContext: dashboard.includes("buildInaTransitionStability(inaResult.context,50,50)"),
   stabilityOutputPassedToInaCenter: dashboard.includes("stabilityOutput={stabilityOutput}"),
   stabilityOutputConsumedByInaCenter: inaCenter.includes("stabilityOutput"),
@@ -139,6 +145,7 @@ const report = {
     sampleSize: output.sampleSize,
     evidenceStatus: output.evidence.status,
   })),
+  transitions: { windowSize: transitions.result.windowSize, sampleSize: transitions.result.sampleSize, edges: transitions.result.edges.length },
   stability: {
     recentDrawCount: stability.result.recentDrawCount,
     previousDrawCount: stability.result.previousDrawCount,
