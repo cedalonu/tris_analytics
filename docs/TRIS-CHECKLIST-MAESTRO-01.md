@@ -1,7 +1,7 @@
 # TRIS Analytics — Checklist maestro de control y continuidad
 
-**Versión:** 1.3  
-**Fecha:** 2026-11-28 (actualización de control)  
+**Versión:** 1.4  
+**Fecha:** 2026-11-28 (cierre P2.8 e inicio V1)  
 **Rama obligatoria:** `research-core-v1`  
 **Documento rector:** `docs/TRIS-MASTER-EXECUTION-PLAN-v2.md`  
 **Matriz visual:** `docs/MATRIZ-INVESTIGACION-VISUAL-01.md`
@@ -85,8 +85,11 @@ Evidencia base: `src/research/ina-contracts.ts`, `src/research/ina-core.ts`, `sr
   - [x] Añadir pruebas de paridad del top-10 y ranking heredado para 0, 1, 49, 50, 149, 150, 499, 500 y 620 sorteos.
   - [x] Sustituir el cálculo inline 50/150/500 por el output INA en la vista general.
   - [x] Sustituir el recálculo inline de matrices 50/50 y entropía en Mapa INA por `stabilityOutput` compartido.
-  - [ ] Auditar ventanas completas/parciales, muestras cortas/vacías, denominadores, umbrales y falsos positivos con CI y snapshot real.
-  - [ ] Confirmar workflows completos y registrar equivalencia motor↔UI; cerrar P2.8 solo tras CI completa.
+  - [x] Auditar ventanas completas/parciales y muestras cortas/vacías mediante fixtures; confirmar denominadores y límites descriptivos.
+  - [x] Confirmar TypeScript, pruebas, build y validación real-histórica completos; registrar equivalencia del motor heredado con sus fixtures y la salida INA.
+  - [x] Cerrar P2.8 con workflows exitosos: Research core `46168800004` (2d3ef6d9), TRIS research `46168837028`, real-history `46168837025` y live prospective `46168837068` (07b43362). El job real-history completó 44/44 pasos.
+  - [x] Registrar snapshot de auditoría `Tris-2026-11-25.csv`, 25,965 filas, concursos 11033–36997, SHA-256 `c48077fe3f62b6d33029a6f7ae735ac501361cc74d648e714eac3ccedff881b1`.
+  - [ ] Repetir la comparación visual/motor con el snapshot canónico vigente `Tris-37007-e77a3ef65259.csv`, 25,975 filas, corte 37007, SHA-256 `e77a3ef65259bff02fded5490714edf8caf5e6c4f1bd854f6f457918f948c1a6`.
 
 **Gate G2:** cada migración preserva resultados o documenta diferencias justificadas; no se elimina lógica previa antes de probar equivalencia.
 
@@ -199,17 +202,18 @@ Añadir una entrada por cada entrega significativa, sin borrar entradas anterior
 
 ## 5.1 Próximo bloque de trabajo (sin saltar gates)
 
-**Bloque activo: P2.8 — estabilidad temporal y entropía.** Implementación del comparador migrado en curso de validación CI.
+**Bloque activo: V1 — presencia y ausencia.** P2.8 está cerrado por CI y auditoría real-histórica; queda pendiente reconciliar la UI con el snapshot canónico 37007.
 
 1. [x] Localizar el cálculo heredado: top-10 por ventanas móviles 50/150/500 en `TrisOpsDashboard.tsx`.
 2. [x] Separar esa magnitud del contraste de dos ventanas 50/50 y entropía; no forzar equivalencia conceptual.
 3. [x] Crear fixtures deterministas para 0, 1, 49, 50, 149, 150, 499, 500 y 620 sorteos.
 4. [x] Implementar `buildInaTransitionWindowComparison` y prueba de paridad contra el ranking anterior.
 5. [x] Conectar la vista general al output INA y reutilizar `stabilityOutput` en el Mapa INA.
-6. [ ] Completar CI, revisar salida real y registrar equivalencia final motor↔UI.
-7. [ ] Al cerrar P2.8, iniciar V1: presencia/ausencia, con salida INA dedicada y visualización de timeline e intervalos.
+6. [x] Completar CI y validación real-histórica; cerrar P2.8 con la evidencia registrada.
+7. [x] Iniciar V1: motor `buildInaAbsence`, output `research.positional-absence`, pruebas de intervalos y edge cases, vista timeline/distribución/tasas condicionadas en el panel Posiciones.
+8. [ ] Obtener CI verde para V1, auditar motor↔UI con snapshot canónico 37007 y actualizar la matriz con evidencia final.
 
-**Nota de auditoría:** en la inspección de esta sesión se confirmó que `TrisOpsDashboard.tsx` y `InaCommandCenter.tsx` comparten `transitionOutput` para la red posicional; esto demuestra reutilización de una salida, pero no identifica por sí solo el comparador heredado citado en el documento P2.8. Por ello, la tarea de localizarlo permanece abierta y no se elimina código por conjetura.
+**Nota de auditoría P2.8:** el comparador heredado 50/150/500 y la estabilidad 50/50 son cálculos distintos. Ambos están ahora en salidas INA separadas y sus consumidores reutilizan las salidas versionadas. La paridad del comparador heredado se cubre con muestras límite; el paquete real-histórico usa el snapshot congelado 2026-11-25, no el snapshot canónico 37007. La comparación visual con este último queda como verificación pendiente explícita.
 
 ## 6. Formato de reporte al usuario
 
