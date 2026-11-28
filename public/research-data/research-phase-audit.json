@@ -1,10 +1,8 @@
 {
   "schemaVersion": 1,
   "auditType": "research-phase-propagation-inventory",
-  "generatedAt": "2026-11-28T19:18:04.938Z",
   "canonical": {
     "snapshot": "Tris-37008-3a7c40e21738.csv",
-    "fetchedAt": "2026-11-28T19:18:04.938Z",
     "sha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
     "sampleSize": 25976,
     "drawStart": 11033,
@@ -19,15 +17,14 @@
     "visualizationNotCatalogued": 58,
     "blocked": 0,
     "verified": 0,
-    "partiallyVerified": 2,
-    "unverified": 80
+    "partiallyVerified": 4,
+    "unverified": 78
   },
   "phase0Evidence": {
     "schemaVersion": 1,
     "phaseId": 0,
     "phaseTitle": "Adaptador, importación e integridad",
     "status": "partially_verified",
-    "generatedAt": "2026-11-28T19:18:04.938Z",
     "canonical": {
       "snapshot": "Tris-37008-3a7c40e21738.csv",
       "datasetVersionId": "tris:3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2:37008",
@@ -36,8 +33,7 @@
       "byteLength": 958288,
       "sampleSize": 25976,
       "drawStart": 11033,
-      "drawCutoff": 37008,
-      "fetchedAt": "2026-11-28T19:18:04.938Z"
+      "drawCutoff": 37008
     },
     "evidence": {
       "engine": {
@@ -110,11 +106,9 @@
     "phaseId": 1,
     "phaseTitle": "Investigación descriptiva, pools y memoria",
     "status": "partially_verified",
-    "generatedAt": "2026-11-28T19:18:04.938Z",
     "canonical": {
       "id": "Tris-37008-3a7c40e21738.csv",
       "sourceUrl": "https://raw.githubusercontent.com/pakinja/pakin/master/Tris.csv",
-      "fetchedAt": "2026-11-28T19:18:04.938Z",
       "sha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
       "byteLength": 958288,
       "rowCount": 25976,
@@ -224,8 +218,216 @@
       "Numerical parity is partial; do not mark the whole phase fully verified."
     ]
   },
-  "phase3Evidence": null,
-  "phase4Evidence": null,
+  "phase3Evidence": {
+    "schemaVersion": 1,
+    "phaseId": 3,
+    "phaseTitle": "Memoria de señales y ciclos prospectivos",
+    "status": "partially_verified",
+    "canonical": {
+      "id": "Tris-37008-3a7c40e21738.csv",
+      "sourceUrl": "https://raw.githubusercontent.com/pakinja/pakin/master/Tris.csv",
+      "sha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+      "byteLength": 958288,
+      "rowCount": 25976,
+      "drawStart": 11033,
+      "drawCutoff": 37008
+    },
+    "sharedDatasetVersionId": "tris:3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2:37008",
+    "evidence": {
+      "engine": {
+        "state": "verified",
+        "engineId": "prospective-evaluation-family",
+        "frozenForecasts": 689
+      },
+      "canonicalInput": {
+        "state": "verified",
+        "datasetVersionId": "tris:3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2:37008",
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976
+      },
+      "output": {
+        "state": "verified",
+        "key": "research.prospective-evaluation",
+        "ledgerIntegrity": "clean",
+        "groups": 191
+      },
+      "visualization": {
+        "state": "located",
+        "path": "src/InaProspectivePanel.tsx"
+      },
+      "dashboardMount": {
+        "state": "source_confirmed",
+        "entry": "ResearchDashboard → TrisOpsDashboard → InaProspectivePanel"
+      },
+      "dataBinding": {
+        "state": "source_confirmed",
+        "source": "public/research-data/prospective-evaluation.json",
+        "workflowUpdatesOnLedgerChange": true
+      },
+      "numericalParity": {
+        "state": "passed",
+        "resolvedForecasts": 589,
+        "canonicalResolutionCheck": "each actual result matches the canonical five digits"
+      }
+    },
+    "checks": {
+      "outputPresent": true,
+      "outputVersionMatches": true,
+      "outputHashMatches": true,
+      "outputCutoffMatches": true,
+      "outputSampleMatches": true,
+      "payloadVersionMatches": true,
+      "payloadHashMatches": true,
+      "payloadCutoffMatches": true,
+      "ledgerIntegrityClean": true,
+      "resolvedMatchesAudit": true,
+      "frozenMatchesAudit": true,
+      "pendingMatchesAudit": true,
+      "prospectiveModuleCurrent": true,
+      "operationalDashboardCurrent": true,
+      "panelImported": true,
+      "panelMounted": true,
+      "panelFetchesPublishedPayload": true,
+      "panelDisplaysConfigGroups": true,
+      "panelMountedThroughResearchCenter": true,
+      "workflowPublishesOnlyChangedPayload": true,
+      "workflowDispatchesPages": true
+    },
+    "summary": {
+      "cycles": 7,
+      "frozenForecasts": 689,
+      "resolvedForecasts": 589,
+      "pendingForecasts": 100,
+      "configurations": 191
+    },
+    "remaining": [
+      "Inspect the rendered panel and controls in a browser.",
+      "Complete prospective calibration and independent baseline/holdout review before predictive interpretation."
+    ],
+    "limitations": [
+      "The panel reports descriptive performance by frozen configuration, not calibrated probabilities or expected value.",
+      "A clean ledger and canonical result match do not establish predictive advantage."
+    ]
+  },
+  "phase4Evidence": {
+    "schemaVersion": 1,
+    "phaseId": 4,
+    "phaseTitle": "Memoria posicional y contextual",
+    "status": "partially_verified",
+    "canonical": {
+      "id": "Tris-37008-3a7c40e21738.csv",
+      "sourceUrl": "https://raw.githubusercontent.com/pakinja/pakin/master/Tris.csv",
+      "sha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+      "byteLength": 958288,
+      "rowCount": 25976,
+      "drawStart": 11033,
+      "drawCutoff": 37008
+    },
+    "sharedDatasetVersionId": "tris:3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2:37008",
+    "evidence": {
+      "engine": {
+        "state": "verified",
+        "engineId": "research-memory-family",
+        "temporalScopes": 3,
+        "contextualScopes": 3
+      },
+      "canonicalInput": {
+        "state": "verified",
+        "datasetVersionId": "tris:3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2:37008",
+        "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
+        "drawCutoff": 37008,
+        "sampleSize": 25976
+      },
+      "output": {
+        "state": "verified",
+        "key": "research.memory-state",
+        "temporalComparisons": 375,
+        "contextualComparisons": 750
+      },
+      "visualization": {
+        "state": "located",
+        "path": "src/InaMemoryPanel.tsx"
+      },
+      "dashboardMount": {
+        "state": "source_confirmed",
+        "entry": "ResearchDashboard → TrisOpsDashboard → InaMemoryPanel"
+      },
+      "dataBinding": {
+        "state": "source_confirmed",
+        "selectors": [
+          "scope",
+          "lag",
+          "sourcePosition",
+          "targetPosition",
+          "contextKind"
+        ]
+      },
+      "numericalParity": {
+        "state": "partial",
+        "syntheticUnitTests": true,
+        "fullCanonicalIndependentRecomputation": false
+      }
+    },
+    "checks": {
+      "outputPresent": true,
+      "outputVersionMatches": true,
+      "outputHashMatches": true,
+      "outputCutoffMatches": true,
+      "outputSampleMatches": true,
+      "memoryModuleCurrent": true,
+      "temporalAllHistory": true,
+      "temporalRecent200": true,
+      "contextualAllHistory": true,
+      "contextualRecent200": true,
+      "panelImported": true,
+      "panelMounted": true,
+      "panelConsumesTemporal": true,
+      "panelConsumesContextual": true,
+      "panelHasScopeLagPositionContextSelectors": true,
+      "panelShowsProvenance": true,
+      "panelMountedThroughResearchCenter": true,
+      "unitTestsLocated": true
+    },
+    "summary": {
+      "temporalScopes": [
+        {
+          "scope": "all-history",
+          "comparisons": 125
+        },
+        {
+          "scope": "last-200",
+          "comparisons": 125
+        },
+        {
+          "scope": "last-1000",
+          "comparisons": 125
+        }
+      ],
+      "contextualScopes": [
+        {
+          "scope": "all-history",
+          "comparisons": 250
+        },
+        {
+          "scope": "last-200",
+          "comparisons": 250
+        },
+        {
+          "scope": "last-1000",
+          "comparisons": 250
+        }
+      ]
+    },
+    "remaining": [
+      "Inspect interactive selectors, transition bars and context distributions in a browser.",
+      "Add independent full-canonical numeric parity checks for the temporal/contextual distributions."
+    ],
+    "limitations": [
+      "Memory metrics are descriptive dependencies; they do not imply causality or predictive advantage.",
+      "All-history and trailing scopes overlap and are not independent replications."
+    ]
+  },
   "phases": [
     {
       "id": 0,
@@ -466,38 +668,60 @@
         "state": "located"
       },
       "engine": {
-        "state": "unverified",
-        "evidence": null
+        "state": "verified",
+        "evidence": {
+          "state": "verified",
+          "engineId": "prospective-evaluation-family",
+          "frozenForecasts": 689
+        }
       },
       "canonicalInput": {
-        "datasetVersionId": null,
+        "datasetVersionId": "tris:3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2:37008",
         "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
         "drawCutoff": 37008,
         "sampleSize": 25976,
-        "state": "unverified"
+        "state": "verified"
       },
       "output": {
-        "keys": [],
-        "state": "unverified",
-        "evidence": null
+        "keys": [
+          "research.prospective-evaluation"
+        ],
+        "state": "verified",
+        "evidence": {
+          "state": "verified",
+          "key": "research.prospective-evaluation",
+          "ledgerIntegrity": "clean",
+          "groups": 191
+        }
       },
       "visualization": {
         "path": "src/InaProspectivePanel.tsx",
         "state": "located"
       },
       "dashboardMount": {
-        "state": "unverified",
-        "evidence": null
+        "state": "source_confirmed",
+        "evidence": {
+          "state": "source_confirmed",
+          "entry": "ResearchDashboard → TrisOpsDashboard → InaProspectivePanel"
+        }
       },
       "dataBinding": {
-        "state": "unverified",
-        "evidence": null
+        "state": "source_confirmed",
+        "evidence": {
+          "state": "source_confirmed",
+          "source": "public/research-data/prospective-evaluation.json",
+          "workflowUpdatesOnLedgerChange": true
+        }
       },
       "numericalParity": {
-        "state": "unverified",
-        "evidence": null
+        "state": "passed",
+        "evidence": {
+          "state": "passed",
+          "resolvedForecasts": 589,
+          "canonicalResolutionCheck": "each actual result matches the canonical five digits"
+        }
       },
-      "overall": "unverified"
+      "overall": "partially_verified"
     },
     {
       "id": 4,
@@ -508,38 +732,66 @@
         "state": "located"
       },
       "engine": {
-        "state": "unverified",
-        "evidence": null
+        "state": "verified",
+        "evidence": {
+          "state": "verified",
+          "engineId": "research-memory-family",
+          "temporalScopes": 3,
+          "contextualScopes": 3
+        }
       },
       "canonicalInput": {
-        "datasetVersionId": null,
+        "datasetVersionId": "tris:3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2:37008",
         "snapshotSha256": "3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2",
         "drawCutoff": 37008,
         "sampleSize": 25976,
-        "state": "unverified"
+        "state": "verified"
       },
       "output": {
-        "keys": [],
-        "state": "unverified",
-        "evidence": null
+        "keys": [
+          "research.memory-state"
+        ],
+        "state": "verified",
+        "evidence": {
+          "state": "verified",
+          "key": "research.memory-state",
+          "temporalComparisons": 375,
+          "contextualComparisons": 750
+        }
       },
       "visualization": {
         "path": "src/InaMemoryPanel.tsx",
         "state": "located"
       },
       "dashboardMount": {
-        "state": "unverified",
-        "evidence": null
+        "state": "source_confirmed",
+        "evidence": {
+          "state": "source_confirmed",
+          "entry": "ResearchDashboard → TrisOpsDashboard → InaMemoryPanel"
+        }
       },
       "dataBinding": {
-        "state": "unverified",
-        "evidence": null
+        "state": "source_confirmed",
+        "evidence": {
+          "state": "source_confirmed",
+          "selectors": [
+            "scope",
+            "lag",
+            "sourcePosition",
+            "targetPosition",
+            "contextKind"
+          ]
+        }
       },
       "numericalParity": {
-        "state": "unverified",
-        "evidence": null
+        "state": "partial",
+        "evidence": {
+          "state": "partial",
+          "syntheticUnitTests": true,
+          "fullCanonicalIndependentRecomputation": false
+        }
       },
-      "overall": "unverified"
+      "overall": "partially_verified"
     },
     {
       "id": 5,
