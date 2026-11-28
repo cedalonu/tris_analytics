@@ -129,7 +129,7 @@ Para cada Vn:
 
 ### G4 — Actualización automática y propagación
 
-**Checkpoint de implementación (2026-11-28):**
+**Checkpoint de implementación (2026-11-28, actualización posterior al sorteo 37008):**
 - [x] Registro central INA que compara outputs con versión, SHA-256, corte y tamaño del snapshot.
 - [x] Estados conservadores `current`, `stale`, `missing` y `blocked`.
 - [x] Pruebas para outputs frescos, outputs desalineados, outputs ausentes y módulos parcialmente alimentados.
@@ -140,16 +140,34 @@ Para cada Vn:
 - [ ] Completar adaptadores de evidencia y propagación real de cada output de los 82 expedientes.
 - [ ] Conectar índice persistente con dashboard sin importación manual.
 - [x] Capturar un nuevo concurso real y ejecutar auditoría INA + inventario de fases: sorteo 37008, corte 37008, 25,976 filas.
+- [x] Ciclo live repetido e idempotente en run `46182036283`: corte 37008, `newDrawCount: 0`, checkpoint `matched`, 7 ciclos congelados, 689 señales y 589 resultados resueltos; destino prospectivo 37009.
+- [x] Reforzar cargador canónico: manifiesto contra bytes, conteo, concurso inicial/final y fechas de borde; pruebas de rechazo añadidas en `src/research/load-canonical-tris.test.ts`.
+- [x] Research core checks run `46182036295`: TypeScript y suite de investigación success. Build/deploy run `46182036297`: success.
 - [ ] Demostrar que el nuevo sorteo llega a todos los motores y visualizaciones; el checkpoint actual solo demuestra captura canónica y ejecución de auditorías.
 - [ ] Probar cuarentena de corrección retroactiva con fixture controlado y verificar resultado del workflow.
 - [ ] Verificar montaje visual y paridad numérica para cada salida.
 
 Evidencia: `src/research/ina-propagation-audit.ts`, `src/research/ina-propagation-audit.test.ts`, `scripts/run-tris-ina-canonical-audit.ts`, `scripts/run-tris-research-phase-audit.ts`, `docs/INA-PROPAGATION-REGISTRY-01.md`.
 
-**Evidencia del ciclo nuevo:** run live `46181725839` success. Snapshot `Tris-37008-3a7c40e21738.csv`, 25,976 filas, SHA-256 `3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2`. Inventario: 82 documentos localizados, 20 componentes visuales localizados, 62 sin visual catalogada, 0 conexiones funcionales verificadas y 82 expedientes con estado integral `unverified`.
+**Evidencia del ciclo nuevo:** run live `46181725839` success; repetición idempotente y auditoría de fases en run `46182036283` success. Snapshot `Tris-37008-3a7c40e21738.csv`, 25,976 filas, SHA-256 `3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2`. Inventario: 82 documentos localizados, 20 componentes visuales localizados, 62 sin visual catalogada, 0 conexiones funcionales verificadas y 82 expedientes con estado integral `unverified`.
 
 **Gate G4:** repetir el mismo ciclo no duplica registros; un sorteo nuevo actualiza el histórico canónico y ejecuta auditorías. No declarar propagación completa a todos los consumidores hasta probar motor → output → visualización para cada uno.
  
+### Etapa 1 — Adaptador, importación e integridad (checkpoint 2026-11-28)
+
+- [x] Adaptador CSV estricto: esquema obligatorio, comillas, fechas, cinco dígitos, duplicados y huecos; `ID` excluido del modelo.
+- [x] Sincronizador incremental: append-only, idempotencia, continuidad y rechazo de prefijos modificados.
+- [x] Captura live: fuente Pakin, snapshot direccionado por contenido, manifiesto, hash y auditoría sobre el mismo snapshot.
+- [x] Cargador canónico reforzado: coteja bytes, SHA-256, filas, rango de concursos y fechas de borde.
+- [x] Pruebas nuevas de metadatos canónicos: commit `886b633e`.
+- [x] TypeScript + suite de investigación en Research core run `46182036295`: success.
+- [x] Build y despliegue de vista previa en run `46182036297`: success.
+- [x] Ciclo live repetido en run `46182036283`: success; corte 37008, sin duplicar concursos, checkpoint `matched`.
+- [ ] Validación TRIS research run `46182036294` y real-history run `46182036423`: esperar finalización; no cerrar Etapa 1 antes de sus resultados.
+- [ ] Prueba de rechazo de modificación retroactiva a nivel del runner live con fixture controlado; los tests del sincronizador cubren la protección de prefijo, pero aún no el workflow completo.
+- [ ] Probar que la carga del dashboard principal usa el cargador canónico común y no una ruta heredada de CSV local.
+
+**Estado Etapa 1:** implementación reforzada y checks principales aprobados; cierre integral pendiente de las validaciones largas y de comprobar consumidores heredados.
 ### G5 — Centro operativo de predicción
 
 - [ ] Predicción generada exclusivamente con el corte INA disponible antes del sorteo.
