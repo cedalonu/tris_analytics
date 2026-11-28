@@ -54,3 +54,20 @@ npm run dev
 ```
 
 Abrir `http://localhost:3000/?dashboard=operational` y elegir **Centro INA** en la navegación lateral.
+
+
+## Segunda iteración visual — aproximación fiel a `pics/ina.jpg`
+
+La imagen del repositorio `pics/ina.jpg` es la referencia de diseño que debe replicarse en la aplicación, no una imagen decorativa que se inserta en el dashboard. La segunda iteración refuerza su composición:
+
+- núcleo de red neuronal central con iluminación verde/cian y fondo técnico oscuro;
+- paneles laterales de señales;
+- pequeñas series temporales reales para las cinco conexiones más frecuentes, divididas cronológicamente dentro de la ventana seleccionada;
+- jerarquía de paneles e instrumentación de aspecto analítico;
+- procedencia y límites interpretativos siempre visibles.
+
+Para evitar series ficticias, `edgeTimeline` ahora se calcula en `buildInaPositionalTransitions` a partir de los sorteos reales del snapshot y se incluye en el output versionado. La interfaz solo representa esa serie; no fabrica puntos ni vuelve a calcular la estadística.
+
+Pruebas ampliadas para verificar que la suma de cada serie temporal coincide con el conteo total observado de su conexión y que el histórico vacío no crea señales.
+
+**Estado de validación de esta iteración:** TypeScript y build visual aparecen exitosos en una ejecución de CI del componente; las ejecuciones que incluyen la serie temporal ampliada están todavía en curso. No se declara CI completa hasta su cierre.
