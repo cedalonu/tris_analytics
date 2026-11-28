@@ -21,6 +21,7 @@ const csv = await readFile(csvPath, "utf8");
 const bytes = Buffer.from(csv, "utf8");
 const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as CanonicalSourceManifest;
 const actualSha256 = createHash("sha256").update(bytes).digest("hex");
+assert.equal(manifest.schemaVersion, 1, "unsupported canonical manifest schema version");
 
 assert.equal(actualSha256, manifest.sha256.toLowerCase(), "canonical CSV SHA-256 does not match its manifest");
 assert.equal(bytes.byteLength, manifest.byteLength, "canonical CSV byte length does not match its manifest");
