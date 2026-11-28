@@ -156,3 +156,14 @@ La auditoría de propagación reportó **8 módulos current, 0 stale, 0 blocked 
 La comprobación de presencia/ausencia comparó las 50 combinaciones posición/dígito con el analizador de referencia: 50/50 pasaron. Se comprobaron además los bindings fuente de los paneles. La frecuencia posicional ahora consume `research.position-overview` y presenta versión, SHA, corte y tamaño de muestra.
 
 **Límites:** `current` significa que el output esperado se reconstruyó y sus metadatos coinciden con el snapshot; no certifica ventaja predictiva. La inspección visual real en navegador sigue pendiente. El inventario de 82 expedientes tampoco se eleva automáticamente por estos ocho módulos.
+
+
+## Checkpoint 2026-11-28 — memoria INA y montaje operativo
+
+Se añadió `buildInaMemoryState` (`research.memory-state`) como output versionado que combina `analyzeTemporalMemory` y `analyzeContextualMemory` sobre el mismo `InaContext`. El componente `InaMemoryPanel.tsx` ofrece selectores de alcance, rezago, posición de origen/objetivo y tipo de contexto; representa transiciones soportadas, información mutua, entropía y distribuciones condicionadas. Sus advertencias mantienen las métricas como descriptivas.
+
+Se detectó además que `TrisOpsDashboard.tsx` existía pero no estaba montado desde el Centro de investigación. Se conectó mediante el botón **Centro INA operativo** en `ResearchDashboard.tsx`, con retorno al centro anterior. El propio dashboard carga `loadCanonicalTrisDataset()`, por lo que el panel operativo parte del histórico canónico validado.
+
+**Ejecución live:** run `46184641716`, success. La auditoría de propagación registró **10 módulos current, 0 stale, 0 blocked y 1 missing**. El único módulo aún sin output es `prospective-evaluator` (`research.prospective-evaluation`). Se verificó por código que el dashboard operativo está montado y que el panel de memoria consume las dos ramas del output. El reporte de los 82 expedientes permanece conservador: 82 `unverified`, porque esa auditoría individual exige evidencia por expediente y no hereda el estado del registro INA.
+
+La suite de investigación, TypeScript, build y auditoría INA pasaron en el workflow `46184641679` hasta el paso de calibración sintética final; el real-history `46184641682` seguía con validación cronológica extendida. La inspección visual manual en navegador sigue pendiente. El módulo prospectivo tampoco se considera current hasta reconstruir su output desde el ledger congelado y verificar su vista.
