@@ -53,6 +53,7 @@ test("invalid validation errors prevent publishing a research output", () => {
   assert.equal(context.quality.valid, false);
   assert.throws(() => createResearchOutput(context, {
     outputId: "positions-v1",
+    outputKey: "ina.position-profile",
     moduleId: "positions",
     engineId: "dashboard-overview",
     engineVersion: "1.0.0",
