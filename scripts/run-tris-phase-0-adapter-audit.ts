@@ -42,8 +42,9 @@ assert.equal(dataset.draws.length, manifest.rowCount);
 assertCanonicalManifestMatchesDraws(manifest, dataset.draws, bytes.byteLength);
 
 const prefixCheckpoint = validateCanonicalPrefix(csv, manifestText, dataset.draws, manifest.fetchedAt);
-assert.equal(prefixCheckpoint?.processedThroughDrawId, manifest.latestDrawId);
-assert.equal(prefixCheckpoint?.processedDrawCount, manifest.rowCount);
+assert.ok(prefixCheckpoint, "canonical prefix checkpoint must be created");
+assert.equal(prefixCheckpoint.processedThroughDrawId, manifest.latestDrawId);
+assert.equal(prefixCheckpoint.processedDrawCount, manifest.rowCount);
 
 const legacyRows = mapCanonicalDrawsToApp(dataset.draws);
 assert.equal(legacyRows.length, dataset.draws.length);
