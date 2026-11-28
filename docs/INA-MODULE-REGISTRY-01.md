@@ -2,7 +2,7 @@
 
 **Etapa:** P1.3 del plan maestro TRIS  
 **Rama:** `research-core-v1`  
-**Estado:** primer registro ejecutable creado; validación CI pendiente.
+**Estado:** registro ejecutable implementado y validado por TypeScript, build y suite de pruebas.
 
 ## 1. Propósito
 
@@ -53,6 +53,10 @@ El constructor del registro:
 - Calcula un orden topológico reproducible.
 - Verifica que cada salida declare un módulo, motor, versión y outputKey compatibles con el registro.
 
-## 6. Límite importante
+## 6. Validación CI
+
+Run [46121112729](https://github.com/cedalonu/tris_analytics/actions/runs/46121112729), sobre el commit `0cfd5753768974e102efccf107a616d157a9a115`, completó TypeScript, build visual y suite de pruebas de investigación. Run [46121112726](https://github.com/cedalonu/tris_analytics/actions/runs/46121112726) completó TypeScript, suite de pruebas y build de integración histórica. El workflow extendido de calibraciones sigue su ciclo independiente.
+
+## 7. Límite importante
 
 El registro describe y valida el contrato del flujo, pero no ejecuta automáticamente los motores ni migra sus datos. La integración real de cada familia se realizará por etapas, actualizando su estado de `partial` a `implemented` sólo después de pruebas y evidencia de consumo del mismo INA context.
