@@ -72,6 +72,10 @@ Los estados describen la madurez de la relación investigación-visual, no el é
 
 ## 6. Criterios de cierre por fila
 
+### Regla no negociable: una salida, una representación trazable
+
+Cada salida analítica producida por una investigación debe contar con su representación visual correspondiente dentro de una vista activa del dashboard. Si una investigación genera varias salidas, cada una debe quedar representada; si una visualización combina varias salidas, debe identificar todas sus fuentes. La relación obligatoria es **investigación → motor → salida versionada → visualización → prueba de paridad**. No se cierra una fila con una salida huérfana, una gráfica sin salida fuente o una representación que recalcule métricas por separado.
+
 Una fila solo podrá pasar a **Implementada y representada** cuando cumpla todos estos puntos:
 
 - Motor y función exacta identificados.
