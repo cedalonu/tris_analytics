@@ -324,3 +324,9 @@ Continuar automáticamente con la siguiente tarea aprobada y desbloqueada. Si ap
 - [x] Ampliar el scan al entrypoint `src/main.tsx`; la siguiente ejecución sobre HEAD `365c2100` o posterior debe confirmar el montaje de App.
 - [ ] Revisar falsos positivos/negativos; el scan estático no sustituye la prueba runtime ni la inspección de navegador.
 - [ ] Usar el resultado para priorizar las siguientes fases con componentes ubicados pero sin referencias activas.
+
+
+### Incidencia CI — 2026-11-28
+
+- [x] TypeScript detectó una referencia a helper inexistente `mapCanonicalDrawsToApp` en `src/App.tsx` (run `46186193832` y real-history `46186193850`). Se corrigió usando el mapeo explícito `drawId → num; digits → win/digits; date` del loader canónico (commit `4bea664d`).
+- [ ] Confirmar TypeScript y validaciones verdes sobre el commit de corrección; no borrar el registro del fallo anterior.
