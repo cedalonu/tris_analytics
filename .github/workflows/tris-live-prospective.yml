@@ -96,6 +96,8 @@ jobs:
           fi
       - name: Rebuild and audit INA outputs against the newly validated canonical snapshot
         run: npm run research:ina-canonical-audit -- data/canonical/Tris.csv data/canonical/source-manifest.json reports/ina-canonical-audit data/cycles
+      - name: Audit phase 1 descriptive INA outputs and dashboard bindings
+        run: npm run research:phase-1-audit -- reports/ina-canonical-audit/latest.json reports/research-phase-audit/phase-1-descriptive-integrity.json
       - name: Audit phase 0 canonical adapter, integrity and main dashboard binding
         run: npm run research:phase-0-audit -- data/canonical/Tris.csv data/canonical/source-manifest.json reports/research-phase-audit/phase-0-adapter-integrity.json
       - name: Audit all catalogued research phases against the current snapshot
