@@ -70,7 +70,8 @@ const wiring = {
   retroactivePrefixTestsLocated: prefixTests.isFile(),
   legacyAdapterParityTestsLocated: adapterTests.isFile(),
 };
-assert.equal(Object.values(wiring).every(Boolean), true, "phase 0 adapter wiring evidence failed");
+const failedWiring = Object.entries(wiring).filter(([, passed]) => !passed).map(([key]) => key);
+assert.deepEqual(failedWiring, [], "phase 0 adapter wiring evidence failed: " + failedWiring.join(", "));
 
 const report = {
   schemaVersion: 1,
