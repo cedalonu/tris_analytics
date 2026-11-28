@@ -169,7 +169,7 @@ export const INA_MODULE_DEFINITIONS: InaModuleDefinition[] = [
     engineVersion: "1.0.0",
     consumes: ["ina.history"],
     produces: ["research.aging-comparison"],
-    status: "partial",
+    status: "implemented",
     sourceFiles: ["src/research/ina-aging-comparison.ts", "src/TrisOpsDashboard.tsx"],
   },
   {
