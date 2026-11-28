@@ -42,6 +42,11 @@ export default function InaCommandCenter({
   const topEdges = [...edges].sort((a, b) => b.n - a.n || a.key.localeCompare(b.key)).slice(0, 12);
   const focusedCount = focus ? nodeCounts[focus[0]]?.[focus[1]] ?? 0 : null;
   const activeEdges = focusedNode ? focusEdges : edges;
+  const timeline = result?.edgeTimeline ?? [];
+  const sparkline = (values: number[]) => {
+    const max = Math.max(1, ...values);
+    return values.map((value, index) => `${values.length > 1 ? 8 + index * 124 / (values.length - 1) : 70},${42 - value / max * 34}`).join(" ");
+  };
 
   return <section className="ina-command space-y-4">
     <div className="ina-command-hero">
@@ -118,13 +123,23 @@ export default function InaCommandCenter({
           <p className="mt-1 text-xs text-slate-500">{focusedNode ? "Apariciones del dígito en su posición dentro de la ventana." : "Conexiones distintas observadas entre posiciones consecutivas."}</p>
           {focusedNode && <div className="mt-3 space-y-2">{focusEdges.slice().sort((a,b)=>b.n-a.n).slice(0,6).map(edge=><div key={edge.key} className="flex justify-between gap-2 border-t border-slate-800 pt-2 text-xs"><span className="font-mono text-cyan-200">{edge.from} → {edge.to}</span><b className="text-emerald-200">{edge.n}</b></div>)}</div>}
         </div>
+        <div className="ina-panel ina-timeline-panel">
+          <div className="ina-eyebrow">EVOLUCIÓN TEMPORAL</div>
+          <h3 className="mt-1 text-lg font-semibold text-emerald-200">Persistencia de conexiones</h3>
+          <p className="mt-1 text-[10px] text-slate-500">Conteos por segmentos cronológicos dentro de la ventana elegida.</p>
+          <div className="mt-3 space-y-3">{timeline.slice(0,4).map((series,index)=><div key={series.key} className="ina-spark-row">
+            <div className="flex items-center justify-between gap-2"><span className="font-mono text-[10px] text-cyan-100">{series.from} → {series.to}</span><b className="text-[10px] text-emerald-200">{series.values.reduce((a,b)=>a+b,0)}</b></div>
+            <svg viewBox="0 0 140 48" role="img" aria-label={`Evolución de ${series.from} a ${series.to}`}><polyline points={sparkline(series.values)} fill="none" stroke={index%2===0?"#53efba":"#39bce5"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>{series.values.map((v,i)=><circle key={i} cx={series.values.length>1?8+i*124/(series.values.length-1):70} cy={42-v/Math.max(1,...series.values)*34} r="2" fill={index%2===0?"#a7f3d0":"#7dd3fc"}/>)}</svg>
+          </div>)}</div>
+          <p className="mt-2 text-[10px] leading-relaxed text-slate-500">Serie descriptiva de frecuencia observada; no representa una proyección.</p>
+        </div>
         <div className="ina-panel">
           <div className="ina-eyebrow">SEÑALES MÁS FRECUENTES</div>
           <h3 className="mt-1 text-lg font-semibold text-emerald-200">Conexiones destacadas</h3>
-          <div className="mt-3 space-y-2">{topEdges.slice(0,8).map((edge,index)=><button key={edge.key} onClick={()=>onFocusNode(edge.from)} className="ina-edge-row">
+          <div className="mt-3 space-y-2">{topEdges.slice(0,6).map((edge,index)=><button key={edge.key} onClick={()=>onFocusNode(edge.from)} className="ina-edge-row">
             <span className="ina-edge-rank">{String(index+1).padStart(2,"0")}</span><span className="font-mono text-cyan-100">{edge.from} <span className="text-slate-600">→</span> {edge.to}</span><b>{edge.n}</b>
           </button>)}</div>
-          <p className="mt-3 text-[10px] leading-relaxed text-slate-500">Ordenadas por conteo bruto en esta ventana. No son probabilidades ni señales predictivas validadas.</p>
+          <p className="mt-3 text-[10px] leading-relaxed text-slate-500">Ordenadas por conteo bruto. No son probabilidades ni señales predictivas validadas.</p>
         </div>
       </div>
     </div>
