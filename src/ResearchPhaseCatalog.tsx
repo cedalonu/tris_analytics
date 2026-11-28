@@ -2,11 +2,11 @@ import React,{useMemo,useState} from "react";
 
 export type Phase={id:number;title:string;artifact:string;area:string;visual?:string};
 export const PHASES:Phase[]=[
-{ id:0,title:"Adaptador, importación e integridad",artifact:"docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",area:"Datos"},
-{ id:1,title:"Investigación descriptiva, pools y memoria",artifact:"docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",area:"INA"},
+{ id:0,title:"Adaptador, importación e integridad",artifact:"docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",area:"Datos",visual:"src/App.tsx"},
+{ id:1,title:"Investigación descriptiva, pools y memoria",artifact:"docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",area:"INA",visual:"src/TrisOpsDashboard.tsx"},
 { id:2,title:"Generación y selección de hipótesis",artifact:"docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",area:"Hipótesis"},
-{ id:3,title:"Memoria de señales y ciclos prospectivos",artifact:"docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",area:"Memoria"},
-{ id:4,title:"Memoria posicional y contextual",artifact:"docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",area:"Memoria"},
+{ id:3,title:"Memoria de señales y ciclos prospectivos",artifact:"docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",area:"Memoria",visual:"src/InaProspectivePanel.tsx"},
+{ id:4,title:"Memoria posicional y contextual",artifact:"docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",area:"Memoria",visual:"src/InaMemoryPanel.tsx"},
 { id:5,title:"Cambios por posición y calibración nula",artifact:"docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",area:"Regímenes"},
 { id:6,title:"Concordancia y evaluación integral",artifact:"docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",area:"Evaluación"},
 { id:7,title:"Walk-forward de carteras estructurales",artifact:"docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md",area:"Carteras"},
