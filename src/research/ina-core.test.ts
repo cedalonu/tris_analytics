@@ -10,6 +10,7 @@ const draws: Draw[] = [
 const validation: Validation = { valid: draws, errors: [], warnings: ["draw gap 101 → 102 is absent only if nonconsecutive"] };
 const snapshot: DatasetSnapshot = {
   snapshotId: "Tris-102-test",
+  sourceType: "remote",
   sourceUrl: "https://example.test/Tris.csv",
   fetchedAt: "2026-11-27T10:00:00.000Z",
   sha256: "a".repeat(64),
