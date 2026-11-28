@@ -117,7 +117,7 @@ jobs:
           test -s reports/research-phase-audit/latest.json
           mkdir -p public/research-data
           cp reports/ina-canonical-audit/prospective-evaluation.json public/research-data/prospective-evaluation.json
-          cp reports/research-phase-audit/latest.json public/research-data/research-phase-audit.json
+          jq 'del(.generatedAt,.canonical.fetchedAt,.phase0Evidence.generatedAt,.phase0Evidence.canonical.fetchedAt,.phase1Evidence.generatedAt,.phase1Evidence.canonical.fetchedAt,.phase3Evidence.generatedAt,.phase3Evidence.canonical.fetchedAt,.phase4Evidence.generatedAt,.phase4Evidence.canonical.fetchedAt)' reports/research-phase-audit/latest.json > public/research-data/research-phase-audit.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public/research-data/prospective-evaluation.json public/research-data/research-phase-audit.json
