@@ -241,7 +241,7 @@ Añadir una entrada por cada entrega significativa, sin borrar entradas anterior
 
 ## 5.1 Próximo bloque de trabajo (sin saltar gates)
 
-**Bloque activo: V1 — presencia y ausencia.** P2.8 está cerrado por CI y auditoría real-histórica; queda pendiente reconciliar la UI con el snapshot canónico 37007.
+**Bloque activo: V1 — presencia y ausencia.** P2.8 está cerrado por CI y auditoría real-histórica; la paridad numérica de V1 quedó aprobada sobre el snapshot canónico 37008; sigue pendiente la inspección visual en navegador.
 
 1. [x] Localizar el cálculo heredado: top-10 por ventanas móviles 50/150/500 en `TrisOpsDashboard.tsx`.
 2. [x] Separar esa magnitud del contraste de dos ventanas 50/50 y entropía; no forzar equivalencia conceptual.
@@ -291,4 +291,19 @@ Continuar automáticamente con la siguiente tarea aprobada y desbloqueada. Si ap
 
 **Evidencia documental:** `docs/TRIS-ADAPTER-IMPORT-INTEGRITY-AUDIT-01.md`.
 
-**Límite:** la ejecución live confirmó el snapshot 37007, pero no incorporó un sorteo nuevo en ese ciclo. La propagación de un nuevo concurso a todos los motores, expedientes y visualizaciones sigue siendo parte de G4/Etapas 2–5; no se declara completada aquí.
+**Límite:** el snapshot canónico vigente confirmado por live es 37008 (25,976 filas, SHA `3a7c40e2…`); las ejecuciones idempotentes posteriores no añadieron otro sorteo. La propagación de un nuevo concurso a todos los motores, expedientes y visualizaciones sigue siendo parte de G4/Etapas 2–5; no se declara completada aquí.
+
+
+## 5.3 Checkpoint de propagación INA y V1 (2026-11-28)
+
+- [x] Añadir salida versionada de frecuencia posicional `research.position-overview` y conectar la vista de frecuencia a sus datos históricos; provenance visible.
+- [x] Reconstruir y auditar nueve outputs sobre el mismo contexto INA: position-overview, combination-recurrence, pool-evaluation, pool-selection, aging-comparison, positional-transitions, transition-stability, transition-window-comparison y positional-absence.
+- [x] Registrar como evidencia canónica los outputs de snapshot y sorteos validados, sin fabricarlos a partir de rutas o nombres.
+- [x] Auditoría de propagación live run `46183853597`: 8 módulos `current`, 0 `stale`, 0 `blocked`, 3 `missing`.
+- [x] V1 presencia/ausencia: 50/50 combinaciones posición/dígito con paridad; 12/12 comprobaciones de binding UI aprobadas.
+- [x] Snapshot de evidencia: `Tris-37008-3a7c40e21738.csv`, 25,976 filas, corte 37008, SHA-256 `3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2`.
+- [x] Despliegue combinado de la vista previa con dashboard principal actualizado: run `46183853575`, success.
+- [ ] Terminar validaciones extendidas del commit de integración visual: TRIS research `46183853602` y real-history `46183853601`; no marcar hasta que concluyan.
+- [ ] Inspección visual manual en navegador; CI/build no sustituyen esta comprobación.
+
+**Tres módulos INA aún no propagados:** `memory-research`, `prospective-evaluator` y `operational-dashboard`. Los 82 expedientes siguen con su auditoría individual; no se declara propagación integral de los 82 por tener ocho módulos INA actuales.
