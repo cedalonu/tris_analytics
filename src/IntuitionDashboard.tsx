@@ -1,5 +1,6 @@
 import React,{useMemo,useState} from "react";
 import type {Draw} from "./tris-csv";
+import type {Digit} from "./research-core";
 import {assessSignal,type SignalRecord,type SignalStatus} from "./research/intuition-ledger";
 import {analyzeTemporalMemory,type MemoryScope} from "./research/temporal-memory";
 import {analyzeContextualMemory} from "./research/contextual-memory";
@@ -90,7 +91,7 @@ export default function IntuitionDashboard({draws,onBack,onOpenResearch}:Props){
  const [investigatorName,setInvestigatorName]=useState("");
  const [investigatorError,setInvestigatorError]=useState("");
  const sorted=useMemo(()=>[...draws].sort((a,b)=>a.num-b.num),[draws]);
- const memoryDraws=useMemo(()=>sorted.map(d=>({drawId:d.num,digits:d.digits})),[sorted]);
+ const memoryDraws=useMemo(()=>sorted.map(d=>({drawId:d.num,digits:d.digits as Digit[]})),[sorted]);
  const memoryAnalysis=useMemo(()=>{
   if(memoryDraws.length<2)return null;
   try{return {temporal:analyzeTemporalMemory(memoryDraws),contextual:analyzeContextualMemory(memoryDraws),error:""};}
