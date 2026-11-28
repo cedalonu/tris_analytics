@@ -12,6 +12,8 @@ Este checklist controla la ejecución del plan aprobado. No sustituye el plan ma
 
 - [ ] No iniciar una tarea dependiente si su gate anterior no está cerrado.
 - [ ] No marcar una tarea como completada por crear código, documentación o una gráfica solamente.
+- [ ] Regla obligatoria investigación→salida→visualización: cada salida analítica debe tener una visualización específica, activa y conectada a esa salida; ninguna investigación se cierra si falta cualquiera de los tres eslabones.
+- [ ] Validar que la visualización represente exactamente los datos, parámetros, filtros, denominadores, corte, hash y estado de evidencia de su salida; no aceptar gráficas decorativas ni cálculos UI duplicados.
 - [ ] Toda tarea completada debe tener commit, archivos, pruebas ejecutadas y evidencia enlazable.
 - [ ] Si una prueba falla o no se ejecutó, dejarla abierta y registrar el bloqueo.
 - [ ] No cambiar a `main`; todos los cambios se realizan en `research-core-v1`.
@@ -110,6 +112,9 @@ La matriz es la fuente de estado por dominio. No cambiar los estados sin evidenc
 
 Para cada Vn:
 
+- [ ] Identificar explícitamente la salida analítica que alimenta cada elemento visual (motor → output versionado → componente).
+- [ ] Inventariar todas las salidas de la investigación; no dejar outputs huérfanos sin representación ni visualizaciones sin fuente trazable.
+- [ ] Verificar paridad motor↔UI para cada métrica, serie, tabla, gráfico, selector e interacción.
 - [ ] Motor y función exacta identificados.
 - [ ] Salida estructurada y versionada.
 - [ ] Componente visual activo y conectado a esa salida.
