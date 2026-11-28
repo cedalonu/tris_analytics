@@ -23,7 +23,8 @@ Componentes relacionados:
 - `scripts/run-tris-cycles-source.ts`: captura oficial y snapshot.
 - `src/research/tris-csv-sync.ts` y `scripts/run-tris-sync.ts`: detector incremental local/manual; no sustituye al workflow de captura.
 - `data/canonical/source-manifest.json`: manifiesto del snapshot canónico.
-- `src/research/load-canonical-tris.ts`: verificación de SHA-256, tamaño, conteo, continuidad y preparación INA.
+- `src/research/load-canonical-tris.ts`: verificación de SHA-256, tamaño, conteo, rango, fechas de borde, continuidad y preparación INA.
+- `src/App.tsx`: la aplicación principal ahora intenta cargar el histórico canónico verificado al iniciar; solo recurre a caché local si la fuente canónica falla y muestra una advertencia de posible desactualización.
 - `.github/workflows/tris-research.yml`: auditoría de salidas INA y conexiones del dashboard cuando cambia el código o el histórico canónico.
 
 ## 2. Línea base observada
@@ -115,6 +116,8 @@ Se añadió `src/research/load-canonical-tris.test.ts` con pruebas de éxito y r
 
 ## 7. Límites de esta entrega
 
+- La carga inicial de `App.tsx` ahora usa el loader canónico, pero la ruta manual de importación CSV sigue disponible y puede sustituir el conjunto de datos durante la sesión.
+- La conexión de la aplicación principal al loader canónico está pendiente de CI/build final y comprobación en navegador.
 - Esta etapa no implementa todavía propagación completa a los 82 expedientes ni certifica que cada motor/gráfica esté al último concurso.
 - La captura horaria de Pakin ya existe; su operación se ha observado en una ejecución exitosa, pero la cobertura de cada publicación individual deberá verificarse en la siguiente etapa.
 - El workflow real-histórico usa un snapshot fechado de noviembre 25 para pruebas reproducibles; no debe confundirse con el histórico canónico live.
