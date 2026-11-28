@@ -41,7 +41,7 @@ El registro utiliza tres estados:
 - `partial`: existen motores/vistas, pero todavía no consumen INA de forma uniforme o la propagación no se ha demostrado.
 - `planned`: módulo futuro sin implementación suficiente.
 
-En el registro inicial sólo INA Core se etiqueta como implementado. La fuente, dashboard, pools, transiciones, memoria y evaluación prospectiva permanecen parciales. Este estado evita presentar la arquitectura objetivo como integración terminada.
+INA Core y el resumen descriptivo posicional se etiquetan como implementados: el segundo ya consume el contexto de INA y su salida se representa en el dashboard con versión/hash/corte. La fuente, dashboard operativo global, pools, transiciones, memoria y evaluación prospectiva permanecen parciales. Este estado evita presentar la arquitectura objetivo como integración terminada.
 
 ## 5. Validaciones automáticas
 
