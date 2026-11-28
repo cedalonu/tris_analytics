@@ -1,6 +1,7 @@
 import React,{useEffect,useMemo,useState} from "react";
 import ResearchPhaseCatalog from "./ResearchPhaseCatalog";
 import HypothesisMonitor from "./HypothesisMonitor";
+import HypothesisPhasePanel from "./HypothesisPhasePanel";
 import StructuralMotifRandomControl from "./StructuralMotifRandomControl";
 import StructuralMotifTemporalRobustness from "./StructuralMotifTemporalRobustness";
 import StructuralMotifBlockBootstrap from "./StructuralMotifBlockBootstrap";
@@ -128,7 +129,7 @@ function TemporalTimeline({windows,minimum}:{windows:any[];minimum:number}){
 export default function ResearchDashboard({onBack,onOpenIntuition}:{onBack:()=>void;onOpenIntuition:()=>void}){
  const [showMonitor, setShowMonitor] = useState<boolean>(false);
  const [showAdapterPanel,setShowAdapterPanel]=useState(false);
- const [showInaDashboard,setShowInaDashboard]=useState(false);
+ const [showInaDashboard,setShowInaDashboard]=useState(false);\n const [showHypothesisPhase,setShowHypothesisPhase]=useState(false);
  const [reports,setReports]=useState<ReportRecord[]>([]);
  const [errors,setErrors]=useState<string[]>([]);
  const [active,setActive]=useState<ReportKind>("performance");
@@ -149,7 +150,7 @@ export default function ResearchDashboard({onBack,onOpenIntuition}:{onBack:()=>v
  const current=active==="structuralEvidenceCenter"?undefined:byKind[active]?.data;
  const performanceGroups=useMemo(()=>{const groups=performance?.groups??[];const q=performanceQuery.trim().toLowerCase();return groups.filter((g:any)=>(performanceFamily==="all"||g.family===performanceFamily)&&(!q||[g.family,g.method,g.mode,g.config].filter(Boolean).join(" ").toLowerCase().includes(q))).sort((a:any,b:any)=>performanceSort==="difference"?((b.pairedDifference??-Infinity)-(a.pairedDifference??-Infinity)):performanceSort==="sample"?(b.resolved-a.resolved):a.family.localeCompare(b.family));},[performance,performanceFamily,performanceQuery,performanceSort]);
  const performanceFamilies = useMemo(() => Array.from(new Set((performance?.groups ?? []).map((g: any) => g.family))).sort() as string[], [performance]);
- if(showAdapterPanel)return <AdapterIntegrityPanel onClose={()=>setShowAdapterPanel(false)}/>;
+ if(showAdapterPanel)return <AdapterIntegrityPanel onClose={()=>setShowAdapterPanel(false)}/>;\n if(showHypothesisPhase)return <HypothesisPhasePanel onClose={()=>setShowHypothesisPhase(false)}/>;
  if(showMonitor)return <HypothesisMonitor onBack={()=>setShowMonitor(false)} />;
  if(showInaDashboard)return <div className="fixed inset-0 z-[120] overflow-y-auto bg-[#080d18] text-slate-100">
   <div className="mx-auto max-w-[1600px] px-3 pt-3"><button onClick={()=>setShowInaDashboard(false)} className="mb-3 rounded-lg border border-emerald-700/70 bg-emerald-950/30 px-4 py-2 text-sm font-bold text-emerald-200 hover:bg-emerald-900/40">← Volver al Centro de investigación</button></div>
@@ -165,7 +166,7 @@ export default function ResearchDashboard({onBack,onOpenIntuition}:{onBack:()=>v
     </div>
     <div className="relative mt-5 flex flex-wrap gap-2 text-[10px] font-semibold"><span className="rounded-full border border-emerald-800 bg-emerald-950/50 px-3 py-1.5 text-emerald-300">● Solo análisis local</span><span className="rounded-full border border-slate-700 bg-slate-950/50 px-3 py-1.5 text-slate-300">Sin APIs ni descargas</span><span className="rounded-full border border-slate-700 bg-slate-950/50 px-3 py-1.5 text-slate-300">Sin afirmaciones predictivas no validadas</span></div>
    </div>
-   <ResearchPhaseCatalog onSelectPhase={(phase)=>{if(phase.id===0)setShowAdapterPanel(true);if(phase.id===1)setShowInaDashboard(true);}}/>
+   <ResearchPhaseCatalog onSelectPhase={(phase)=>{if(phase.id===0)setShowAdapterPanel(true);if(phase.id===1)setShowInaDashboard(true);if(phase.id===2)setShowHypothesisPhase(true);}}/>
    <nav aria-label="Fases del centro de investigación" className="mt-5 grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
     {kinds.map((k,i)=><button key={k} type="button" aria-pressed={active===k} onClick={()=>setActive(k)} className={`group min-h-20 rounded-xl border p-3 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 ${active===k?"border-cyan-500/80 bg-cyan-950/40 shadow-[0_0_20px_rgba(34,211,238,.08)]":"border-slate-800 bg-slate-900/60 hover:border-slate-600"}`}>
      <div className="flex items-center justify-between"><span className="text-[10px] font-black tracking-widest text-slate-500">FASE {k==="structuralReproducibility"?101:k==="structuralEvidenceCenter"?100:k==="structuralExperimentComparator"?103:k==="structuralExperimentSnapshotComparator"?104:k==="structuralExperimentEvolution"?105:k==="structuralFindingPersistence"?106:k==="structuralFindingConsensus"?107:k==="structuralExperimentLedger"?102:k==="structuralOutcome"?93:k==="structuralRandomControl"?94:k==="structuralTemporalRobustness"?95:k==="structuralBlockBootstrap"?96:k==="structuralBootstrapSensitivity"?97:k==="structuralJointStability"?98:k==="jointPositionalInteractions"?117:k==="jointDigitDependence"?118:41+i}</span><span className={`text-xs ${hasReport(k)?"text-emerald-400":"text-slate-600"}`}>{k==="structuralEvidenceCenter"?"✦":hasReport(k)?"●":"○"}</span></div>
