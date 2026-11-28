@@ -295,8 +295,8 @@ La secuencia de trabajo vigente queda fijada así:
 - [x] **P0.1** Crear la matriz de investigación y visualización. Evidencia: `docs/MATRIZ-INVESTIGACION-VISUAL-01.md`.
 - [x] **P0.2** Conciliar roadmap v1, fases 0–13 y programa 120. Evidencia: `docs/TRIS-FASE-RECONCILIACION-0-13-Y-PROGRAMA-120.md`.
 - [x] **P0.3** Obtener línea base real de tests, TypeScript, build y workflows. Evidencia: `docs/TRIS-CI-BASELINE-AUDIT-01.md`; baseline aprobado con límites pendientes explícitos.
-- [ ] **P1.1** Definir tipos y contrato de versión/contexto de INA.
-- [ ] **P1.2** Implementar INA Core como servicio puro con pruebas.
+- [x] **P1.1** Definir tipos y contrato de versión/contexto de INA. Evidencia: `src/research/ina-contracts.ts`, `src/research/ina-core.test.ts`, `docs/INA-CORE-CONTRACT-01.md`; TypeScript, build y suite de pruebas aprobados en runs 46120444742, 46120444875 y 46120444758.
+- [ ] **P1.2** Implementar INA Core como servicio puro con agregados compartidos, catálogo de conocimiento y pruebas.
 - [ ] **P1.3** Registrar módulos consumidores y sus dependencias.
 - [ ] **P2** Migrar progresivamente cálculos existentes al núcleo compartido.
 - [ ] **P3** Completar las vistas reales de investigación, siguiendo la matriz.
@@ -304,7 +304,7 @@ La secuencia de trabajo vigente queda fijada así:
 - [ ] **P5** Cerrar el centro de predicción respaldado por INA.
 - [ ] **P6** Ejecutar auditoría integral y documentar operación.
 
-**P0 completada:** inventario, reconciliación de fases y baseline CI están documentados. La siguiente tarea activa es **P1.1: definir el contrato de datos/versiones/contexto de INA Core**. Los pendientes de ejecución sobre el snapshot actual y la propagación se conservan como gates de P4/P6; no se declaran resueltos por el baseline.
+**P0 completada:** inventario, reconciliación de fases y baseline CI están documentados. P1.1 está completada y validada. La siguiente tarea activa es **P1.2: implementar el servicio INA Core y sus agregados compartidos**. Los pendientes de ejecución sobre el snapshot actual y la propagación se conservan como gates de P4/P6; no se declaran resueltos por el baseline.
 
 ## 10. Criterio final del proyecto
 
