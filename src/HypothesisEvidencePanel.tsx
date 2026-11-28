@@ -13,6 +13,13 @@ export default function PendingGraphic({text}:{text:string}){return <div classNa
    const overview=buildInaDashboardOverview(context,100);
    const absence=buildInaAbsence(context,{timelineLimit:100});
    const transitions=buildInaPositionalTransitions(context,150);
+   const draws=context.draws;
+   const posCounts=Array.from({length:5},(_,p)=>Array.from({length:10},(_,d)=>draws.filter(x=>x.digits[p]===d).length));
+   const recent=draws.slice(-100);
+   const posRecent=Array.from({length:5},(_,p)=>Array.from({length:10},(_,d)=>recent.filter(x=>x.digits[p]===d).length));
+   const gapBins=new Map<number,number>();
+   for(let p=0;p<5;p++)for(let d=0;d<10;d++){const indices=draws.map((x,i)=>x.digits[p]===d?i:-1).filter(i=>i>=0);for(let i=1;i<indices.length;i++){const gap=indices[i]-indices[i-1]-1;gapBins.set(gap,(gapBins.get(gap)||0)+1)}}
+   const transitionTop=transitions.result.edges.slice().sort((a,b)=>b.n-a.n).slice(0,15);
    const absencePositions=absence.result.positions.length;
    const absenceIntervals=absence.result.positions.reduce((sum,p)=>sum+p.digitReports.reduce((n,d)=>n+d.completedAbsenceLengths.length,0),0);
    const rows:EvidenceRow[]=[
