@@ -301,6 +301,7 @@ Continuar automáticamente con la siguiente tarea aprobada y desbloqueada. Si ap
 - [x] Registrar como evidencia canónica los outputs de snapshot y sorteos validados, sin fabricarlos a partir de rutas o nombres.
 - [x] Auditoría de propagación live run `46185535779`: 11 módulos `current`, 0 `stale`, 0 `blocked`, 0 `missing`.
 - [x] Catálogo de 82 expedientes: mapear componentes visuales reales para fase 0 (`App.tsx`), fase 1 (`TrisOpsDashboard.tsx`), fase 3 (`InaProspectivePanel.tsx`) y fase 4 (`InaMemoryPanel.tsx`).
+- [x] Auditoría específica de fase 0: cargador de producción, manifiesto, guard idempotente, adaptador legacy y paridad 25,976/25,976; estado parcial porque falta navegador.
 - [x] V1 presencia/ausencia: 50/50 combinaciones posición/dígito con paridad; 12/12 comprobaciones de binding UI aprobadas.
 - [x] Snapshot de evidencia: `Tris-37008-3a7c40e21738.csv`, 25,976 filas, corte 37008, SHA-256 `3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2`.
 - [x] Montar `TrisOpsDashboard.tsx` desde el Centro de investigación y añadir `InaMemoryPanel.tsx` con selectores de alcance, rezago, posiciones y contexto.
@@ -311,7 +312,7 @@ Continuar automáticamente con la siguiente tarea aprobada y desbloqueada. Si ap
 - [x] Despliegue posterior a la asignación de visualizaciones por fase: run `46185821059`, success.
 - [ ] Terminar validaciones extendidas del commit final del evaluador prospectivo: TRIS research `46185535815` y real-history `46185535816`; no marcar hasta que concluyan.
 - [ ] Inspección visual manual en navegador; CI/build no sustituyen esta comprobación.
-- [x] Auditoría de fases live run `46185821125`: 82 documentos localizados; 24 visualizaciones localizadas; 58 sin ruta visual catalogada; 0 bloqueados; 0 verificados; 82 todavía `unverified`.
+- [x] Auditoría de fases live run `46186996596`: 82 documentos localizados; 24 visualizaciones localizadas; 58 sin ruta visual catalogada; 0 bloqueados; 0 plenamente verificados; 1 `partially_verified` (fase 0); 81 `unverified`.
 
 **Estado INA:** los 11 módulos registrados están `current` en el corte 37008. Los 82 expedientes siguen con su auditoría individual; el último phase audit los mantiene `unverified` hasta probar motor, output, montaje, binding y paridad por expediente.
 
@@ -330,3 +331,15 @@ Continuar automáticamente con la siguiente tarea aprobada y desbloqueada. Si ap
 
 - [x] TypeScript detectó una referencia a helper inexistente `mapCanonicalDrawsToApp` en `src/App.tsx` (run `46186193832` y real-history `46186193850`). Se corrigió usando el mapeo explícito `drawId → num; digits → win/digits; date` del loader canónico (commit `4bea664d`).
 - [ ] Confirmar TypeScript y validaciones verdes sobre el commit de corrección; no borrar el registro del fallo anterior.
+
+
+## 5.4 Evidencia fase 0 — adaptador e integridad
+
+- [x] Extraer `mapCanonicalDrawsToApp` y usarlo desde `App.tsx`; test de no mutación y equivalencia de IDs, dígitos y fechas.
+- [x] Ejecutar el loader real con fetcher controlado que sirve los bytes exactos del snapshot canónico.
+- [x] Verificar manifiesto, SHA-256, byteLength, rowCount, límites de concurso/fecha y estado INA ready.
+- [x] Ejecutar el guard del prefijo contra el mismo histórico; checkpoint idempotente hasta el corte.
+- [x] Confirmar binding del dashboard principal y acceso al dashboard INA operativo por código.
+- [x] Publicar evidencia en `public/research-data/research-phase-audit.json`.
+- [x] Resultado: fase 0 `partially_verified`; motor/output/paridad verificados, montaje/binding source-confirmed, vista localizada.
+- [ ] Inspección visual manual de éxito, caché fallback y corte visible en navegador.
