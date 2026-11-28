@@ -37,7 +37,7 @@ En la consulta de GitHub Actions del 2026-11-27, los workflows para el commit `a
 
 Los runs 282/838/73 del commit anterior `c99a8fc` también aparecieron completados con éxito. Estos resultados validan los workflows ejecutados; no equivalen a demostrar capacidad predictiva.
 
-## Próximo ciclo de trabajo
+## Checkpoint complementario obligatorio\n\nLa integración funcional y propagación de datos se rige además por [Checkpoint 02 — Integración funcional de datos y cambios](./CHECKPOINT-INTEGRACION-FUNCIONAL-02.md). Ningún módulo se considera completo si el dato o cambio no tiene una ruta comprobable desde la base hasta la lógica, la evaluación y su representación visual (o una justificación explícita de no aplicabilidad).\n\n## Próximo ciclo de trabajo
 
 1. Extraer los cálculos del dashboard que deban compartirse y centralizarlos en módulos analíticos puros cuando corresponda.
 2. Definir contratos tipados de entrada/salida para que la UI no replique fórmulas.
