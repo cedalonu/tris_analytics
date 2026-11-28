@@ -1,5 +1,6 @@
 import React,{useMemo,useState} from "react";
 import {RESEARCH_HYPOTHESES,type HypothesisStage} from "./research/hypothesis-catalog";
+import HypothesisEvidencePanel from "./HypothesisEvidencePanel";
 const stageLabels:Record<HypothesisStage,string>={positional:"Posicional",temporal:"Temporal",dependence:"Dependencia",structure:"Estructural",prospective:"Prospectiva"};
 const stageColors:Record<HypothesisStage,string>={positional:"border-cyan-800 text-cyan-300",temporal:"border-violet-800 text-violet-300",dependence:"border-sky-800 text-sky-300",structure:"border-fuchsia-800 text-fuchsia-300",prospective:"border-amber-800 text-amber-300"};
 export default function HypothesisWorkspace(){
@@ -8,6 +9,7 @@ export default function HypothesisWorkspace(){
  const active=rows.find(h=>h.id===selected)??rows[0];
  return <section className="mt-4 rounded-2xl border border-cyan-900/60 bg-slate-900/70 p-4 md:p-5">
   <div className="flex flex-wrap items-start justify-between gap-3"><div><div className="text-[10px] font-black uppercase tracking-[.2em] text-cyan-300">INA · Registro científico</div><h2 className="mt-1 text-xl font-bold">Catálogo de hipótesis</h2><p className="mt-1 max-w-3xl text-xs text-slate-400">Preguntas falsables pre-registradas, hipótesis nulas, pruebas requeridas y trazabilidad a motores. Este catálogo define qué investigar; no declara resultados empíricos.</p></div><span className="rounded-full border border-amber-800 bg-amber-950/30 px-3 py-1 text-[11px] text-amber-300">7 exploratorias · 0 validadas</span></div>
+  <HypothesisEvidencePanel/>
   <div className="mt-4 grid grid-cols-2 gap-2 md:grid-cols-5">{Object.entries(stageLabels).map(([key,label])=><button key={key} onClick={()=>setStage(stage===key?"all":key as HypothesisStage)} className={`rounded-lg border px-3 py-2 text-xs ${stage===key?"border-cyan-400 bg-cyan-950/50 text-cyan-100":"border-slate-800 bg-slate-950/60 text-slate-400"}`}>{label} <b className="ml-1">{RESEARCH_HYPOTHESES.filter(h=>h.stage===key).length}</b></button>)}</div>
   <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(260px,0.85fr)_minmax(0,1.5fr)]">
    <div className="space-y-2">{rows.map(h=><button key={h.id} onClick={()=>setSelected(h.id)} className={`w-full rounded-xl border p-3 text-left transition ${active?.id===h.id?"border-cyan-500 bg-cyan-950/30":"border-slate-800 bg-slate-950/50 hover:border-slate-600"}`}><div className="flex items-center justify-between gap-2"><span className="font-mono text-[10px] text-slate-500">{h.id}</span><span className={`rounded-full border px-2 py-0.5 text-[9px] ${stageColors[h.stage]}`}>{stageLabels[h.stage]}</span></div><div className="mt-1 text-sm font-semibold text-slate-100">{h.title}</div><div className="mt-1 text-[10px] text-amber-300">Exploratoria · evidencia pendiente</div></button>)}</div>
