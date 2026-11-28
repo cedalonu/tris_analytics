@@ -28,6 +28,7 @@ export function buildInaProspectiveEvaluation(
   resolutions: ResolvedCycleSignal[],
 ): ResearchOutput<InaProspectiveEvaluation> {
   if (!context.quality.valid) throw new Error("cannot evaluate prospective ledger from an invalid INA context");
+  if (!cycles.length) throw new Error("no frozen prospective cycles found; an empty ledger is not a validated evaluation");
   const draws = [...context.draws] as Draw[];
   const firstDrawId = draws[0]?.drawId ?? 0;
   const drawById = new Map(draws.map(draw => [draw.drawId, draw]));
