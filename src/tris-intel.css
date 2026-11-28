@@ -30,3 +30,37 @@
 .tris-intel .tris-bars span{background:linear-gradient(180deg,#66ffc4,#159a8a 58%,#146b86);box-shadow:0 0 14px rgba(35,245,180,.18);}
 .tris-intel .tris-glow{color:#75ffd0;text-shadow:0 0 18px rgba(45,240,190,.55);}
 @media(min-width:1280px){.tris-intel .tris-card:has(svg){padding:18px}.tris-intel .tris-card svg{max-height:380px}}
+
+
+/* INA command center — connected visual layer */
+.tris-intel .ina-command{color:#e5f7f2}
+.tris-intel .ina-command-hero{position:relative;overflow:hidden;border:1px solid rgba(66,230,177,.28);border-radius:24px;padding:22px;background:radial-gradient(ellipse at 78% 0%,rgba(16,185,129,.18),transparent 44%),linear-gradient(135deg,#071b20,#07111e 58%,#081b25)}
+.tris-intel .ina-eyebrow{font-size:9px;font-weight:800;letter-spacing:.2em;color:#62e6b5;text-transform:uppercase}
+.tris-intel .ina-live{display:flex;align-items:center;gap:8px;border:1px solid rgba(52,211,153,.28);border-radius:999px;padding:8px 12px;color:#a7f3d0;background:rgba(16,185,129,.08);font-size:10px;font-weight:800;letter-spacing:.1em}
+.tris-intel .ina-live-dot{width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 12px #34d399}
+.tris-intel .ina-kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.tris-intel .ina-stat{min-width:0;border:1px solid rgba(94,234,212,.13);border-radius:14px;padding:12px;background:rgba(2,12,20,.62)}
+.tris-intel .ina-stat-label{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:#7d9b9e}
+.tris-intel .ina-stat-value{margin-top:5px;font-size:clamp(18px,2vw,27px);font-weight:750;color:#eafff7;overflow-wrap:anywhere}
+.tris-intel .ina-stat-note{margin-top:3px;font-size:10px;color:#6f9295;overflow-wrap:anywhere}
+.tris-intel .ina-command-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(270px,.8fr);gap:14px}
+.tris-intel .ina-panel{min-width:0;border:1px solid rgba(68,205,180,.17);border-radius:18px;padding:16px;background:linear-gradient(145deg,rgba(8,25,35,.96),rgba(3,12,22,.96));box-shadow:0 12px 36px rgba(0,0,0,.2)}
+.tris-intel .ina-graph-wrap{overflow-x:auto;border:1px solid rgba(94,234,212,.1);border-radius:14px;padding:10px;background:radial-gradient(ellipse at center,rgba(6,95,80,.13),rgba(2,9,18,.75) 68%),linear-gradient(rgba(45,212,191,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(45,212,191,.025) 1px,transparent 1px);background-size:auto,24px 24px,24px 24px}
+.tris-intel .ina-graph{display:block;width:100%;min-width:620px;height:auto;max-height:390px}
+.tris-intel .ina-svg-heading{fill:#6ee7b7;font-size:12px;font-weight:800;letter-spacing:.12em}
+.tris-intel .ina-svg-digit{fill:#d1fae5;font-size:10px;font-weight:700;pointer-events:none}
+.tris-intel .ina-legend-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px}
+.tris-intel .ina-legend-green{background:#6ee7b7}.tris-intel .ina-legend-blue{background:#38bdf8}
+.tris-intel .ina-side-stack{display:flex;flex-direction:column;gap:14px}
+.tris-intel .ina-edge-row{display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid rgba(71,85,105,.28);padding:9px 2px;text-align:left;font-size:11px}
+.tris-intel .ina-edge-row:hover{background:rgba(16,185,129,.07)}
+.tris-intel .ina-edge-row b{color:#a7f3d0;font-variant-numeric:tabular-nums}
+.tris-intel .ina-edge-rank{color:#52777b;font-size:9px}
+.tris-intel .ina-evidence-tag{border:1px solid rgba(52,211,153,.22);border-radius:999px;padding:5px 9px;background:rgba(16,185,129,.07);color:#a7f3d0;font-size:9px;font-weight:800;letter-spacing:.1em}
+.tris-intel .ina-provenance-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.tris-intel .ina-provenance-grid>div{min-width:0;border:1px solid rgba(71,85,105,.28);border-radius:12px;padding:10px;background:rgba(2,10,18,.55)}
+.tris-intel .ina-provenance-grid span{display:block;color:#718b91;font-size:9px;text-transform:uppercase;letter-spacing:.1em}
+.tris-intel .ina-provenance-grid b{display:block;margin-top:5px;color:#d7f6eb;font-size:11px;overflow-wrap:anywhere}
+.tris-intel .ina-provenance-grid .ina-hash{grid-column:span 2}
+@media(max-width:900px){.tris-intel .ina-command-grid{grid-template-columns:1fr}.tris-intel .ina-side-stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.tris-intel .ina-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tris-intel .ina-provenance-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tris-intel .ina-provenance-grid .ina-hash{grid-column:span 2}.tris-intel .ina-side-stack{grid-template-columns:1fr}.tris-intel .ina-command-hero{padding:16px}}
