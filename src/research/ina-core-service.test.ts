@@ -73,3 +73,12 @@ test("empty validated snapshot yields explicit empty knowledge without invented 
   assert.equal(result.knowledge?.positions[0].digits[0].lastSeenDrawId, null);
   assert.equal(result.outputs[0].sampleSize, 0);
 });
+
+test("default build timestamp comes from the immutable snapshot and remains reproducible", () => {
+  const result = buildInaCore({ snapshot, validation });
+  assert.equal(result.context.builtAt, snapshot.fetchedAt);
+  assert.equal(result.outputs[0].generatedAt, snapshot.fetchedAt);
+  const repeated = buildInaCore({ snapshot, validation });
+  assert.equal(repeated.context.version.versionId, result.context.version.versionId);
+  assert.equal(repeated.outputs[0].generatedAt, result.outputs[0].generatedAt);
+});
