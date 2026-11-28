@@ -182,7 +182,7 @@ const uiWiring = {
   prospectivePanelMountedInInaCenter: dashboard.includes("<InaProspectivePanel/>"),
   prospectivePanelLoadsStaticFrozenEvaluation: prospectivePanel.includes('fetch("./research-data/prospective-evaluation.json"'),
   prospectivePanelDisplaysFrozenConfigurationGroups: prospectivePanel.includes("result.performance.groups"),
-  prospectiveLedgerOutputBuiltFromCycleFiles: prospective !== null,
+  prospectiveLedgerOutputBuiltFromCycleFiles: (await readFile(resolve("scripts/run-tris-ina-canonical-audit.ts"), "utf8")).includes("buildInaProspectiveEvaluation(core.context, prospectiveCycles, prospectiveOutcomes)"),
   overviewOutputComputedFromSharedInaContext: dashboard.includes("buildInaDashboardOverview(inaResult.context,100)"),
   overviewOutputUsedByFrequencyCharts: dashboard.includes("positionCounts=overviewOutput?.result.positions.map"),
   overviewProvenanceRendered: dashboard.includes("research.position-overview"),
