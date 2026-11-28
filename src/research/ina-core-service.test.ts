@@ -12,6 +12,7 @@ const draws: Draw[] = [
 ];
 const snapshot: DatasetSnapshot = {
   snapshotId: "snapshot-13",
+  sourceType: "remote",
   sourceUrl: "https://example.test/Tris.csv",
   fetchedAt: "2026-01-04T12:00:00.000Z",
   sha256: "b".repeat(64),
