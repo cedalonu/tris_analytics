@@ -41,7 +41,7 @@ La ausencia no implica que un dígito esté “debido”. Los intervalos complet
 - [x] TypeScript, pruebas unitarias y build aprobados en TRIS research run `46182720872` y real-history run `46182720859`.
 - [x] Workflows de investigación y real-history terminados en éxito.
 - [x] Denominadores, censura de intervalos e históricos vacío/corto cubiertos por pruebas unitarias.
-- [x] Añadir auditoría real-snapshot de paridad para las 50 combinaciones posición/dígito y comprobaciones de binding UI; el nuevo runner se validará en CI posterior a este commit.
-- [ ] Confirmar informe de paridad sobre corte canónico vigente 37008 y conservar su SHA-256.
+- [x] Auditoría real-snapshot ejecutada en live run `46183853597`: 50/50 combinaciones posición/dígito aprobadas y 12/12 comprobaciones de binding de dashboard aprobadas.
+- [x] Informe de paridad confirmado sobre corte 37008, 25,976 sorteos, SHA-256 `3a7c40e21738f8d181c7bab725c0c8de023496a4c7dc65d97a246565068907b2`.
 - [ ] Inspección visual en navegador: selectores, timeline, distribución y tabla condicionada.
 - [ ] Actualizar matriz con resultado del runner y evidencia final.
