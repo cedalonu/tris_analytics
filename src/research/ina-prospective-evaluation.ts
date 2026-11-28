@@ -86,6 +86,7 @@ export function buildInaProspectiveEvaluation(
     ledgerAudit,
     performance,
   };
+  const generatedAt = [...cycles.map(cycle => cycle.generatedAt), ...resolutions.map(row => row.resolvedAt)].sort().at(-1) ?? context.builtAt;
   const output = createResearchOutput(context, {
     outputId: "ina-prospective-evaluation-v1",
     outputKey: "research.prospective-evaluation",
@@ -98,7 +99,7 @@ export function buildInaProspectiveEvaluation(
       performanceGrouping: "family + frozenConfig",
       resolution: "exact target draw and canonical result",
     },
-    generatedAt: context.builtAt,
+    generatedAt,
     evidence: {
       status: "descriptive",
       phase: "prospective",
