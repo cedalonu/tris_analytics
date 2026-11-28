@@ -1,5 +1,5 @@
 import {test} from "node:test";import {strict as assert} from "node:assert";import {RESEARCH_HYPOTHESES,validateResearchHypothesisCatalog} from "./hypothesis-catalog";
 test("catalog contains unique, falsifiable and traceable research hypotheses",()=>{assert.equal(RESEARCH_HYPOTHESES.length,7);assert.deepEqual(validateResearchHypothesisCatalog(),[]);});
 test("catalog rejects duplicate identities",()=>{const duplicate=[...RESEARCH_HYPOTHESES,RESEARCH_HYPOTHESES[0]];assert.ok(validateResearchHypothesisCatalog(duplicate).includes("duplicate-id:H-TRIS-001"));});
-test("catalog rejects missing evidence traceability",()=>{const broken={...RESEARCH_HYPOTHESES[0],outputIds:[]};assert.ok(validateResearchHypothesisCatalog([broken]).includes("missing-traceability:H-TRIS-001"));});
+test("catalog rejects missing evidence traceability",()=>{const broken={...RESEARCH_HYPOTHESES[0],relatedArtifacts:[]};assert.ok(validateResearchHypothesisCatalog([broken]).includes("missing-traceability:H-TRIS-001"));});
 test("catalog cannot silently promote hypotheses to validated",()=>{const promoted={...RESEARCH_HYPOTHESES[0],status:"Active" as const};assert.ok(validateResearchHypothesisCatalog([promoted]).includes("unapproved-status:H-TRIS-001"));});
