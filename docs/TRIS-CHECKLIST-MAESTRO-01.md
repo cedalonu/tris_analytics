@@ -129,6 +129,20 @@ Para cada Vn:
 
 ### G4 — Actualización automática y propagación
 
+**Checkpoint de implementación (2026-11-28):**
+- [x] Registro central INA que compara outputs con versión, SHA-256, corte y tamaño del snapshot.
+- [x] Estados conservadores `current`, `stale`, `missing` y `blocked`.
+- [x] Pruebas para outputs frescos, outputs desalineados, outputs ausentes y módulos parcialmente alimentados.
+- [x] Runner de auditoría canónica genera resumen de propagación por módulo.
+- [ ] CI del nuevo registro y runner finaliza sin errores.
+- [ ] Ampliar el registro de los módulos INA a los 82 expedientes identificados.
+- [ ] Conectar índice persistente con dashboard sin importación manual.
+- [ ] Demostrar propagación con un concurso nuevo real y probar cuarentena de corrección retroactiva.
+- [ ] Verificar montaje visual y paridad numérica para cada salida.
+
+Evidencia: `src/research/ina-propagation-audit.ts`, `src/research/ina-propagation-audit.test.ts`, `scripts/run-tris-ina-canonical-audit.ts`, `docs/INA-PROPAGATION-REGISTRY-01.md`.
+
+
 - [ ] Captura programada de Pakin con URL y hora real de observación.
 - [ ] Snapshot inmutable, SHA-256, filas y rango de concursos.
 - [ ] Validación de esquema, dígitos, duplicados, continuidad y prefijo histórico.
